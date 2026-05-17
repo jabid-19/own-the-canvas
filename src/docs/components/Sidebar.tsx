@@ -42,15 +42,20 @@ const CSS = `
   padding: 0 0 32px;
 }
 
+.sidebar-logo-area {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
 .sidebar-logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px;
   text-decoration: none;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
-  flex-shrink: 0;
 }
 .sidebar-logo:hover { opacity: 0.85; }
 .sidebar-logo img {
@@ -211,10 +216,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         className={`sidebar${open ? " open" : ""}`}
         aria-label="Docs navigation"
       >
-        <Link to="/" className="sidebar-logo">
-          <img className="sidebar-logo-img" src="/logo.png" alt="own-the-canvas logo" />
-          <span className="sidebar-logo-name">own-the-canvas</span>
-        </Link>
+        <div className="sidebar-logo-area">
+          <Link to="/" className="sidebar-logo">
+            <img className="sidebar-logo-img" src="/logo.png" alt="own-the-canvas logo" />
+            <span className="sidebar-logo-name">own-the-canvas</span>
+          </Link>
+        </div>
 
         <div className="sidebar-section">
           <div className="sidebar-label">Getting Started</div>
