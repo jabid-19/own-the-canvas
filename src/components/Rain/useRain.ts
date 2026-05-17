@@ -84,10 +84,10 @@ export function useRain(
 
     function applyDpr(width: number, height: number) {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      canvas!.width = Math.round(width * dpr);
+      canvas!.height = Math.round(height * dpr);
+      canvas!.style.width = `${width}px`;
+      canvas!.style.height = `${height}px`;
       ctx.scale(dpr, dpr);
       w = width; h = height;
       initDrops();

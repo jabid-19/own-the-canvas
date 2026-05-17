@@ -5,7 +5,7 @@ import { PropsTable } from "../../components/PropsTable";
 import { FireEffect } from "../../../components/FireEffect";
 
 const PROPS = [
-  { name: "palette",   type: '"ash" | "inferno" | "toxic" | "ice" | "plasma"', default: '"ash"', description: "Color palette for the fire simulation." },
+  { name: "palette",   type: '"smoke" | "inferno" | "toxic" | "ice" | "plasma"', default: '"smoke"', description: "Color palette for the fire simulation." },
   { name: "intensity", type: "number", default: "0.95",  description: "Fire intensity (0–1). Higher = taller flames." },
   { name: "windStrength", type: "number", default: "0.3", description: "Horizontal wind drift strength." },
   { name: "spread",    type: "number", default: "0.7",   description: "Horizontal spread of the flame base." },
@@ -20,7 +20,7 @@ export function FireEffectPage() {
       lead="Pixel-level fire simulation using a cellular automaton approach. Choose from four distinct color palettes."
     >
       <PreviewBox playgroundId="FireEffect">
-        <FireEffect palette="ash" intensity={0.95} width="100%" height="100%" />
+        <FireEffect palette="smoke" intensity={0.95} width="100%" height="100%" />
       </PreviewBox>
 
       <section className="page-section" aria-labelledby="usage-h">
@@ -29,7 +29,7 @@ export function FireEffectPage() {
           code={`import { FireEffect } from 'own-the-canvas';
 
 <FireEffect
-  palette="ash"
+  palette="smoke"
   intensity={0.95}
   windStrength={0.3}
   spread={0.7}

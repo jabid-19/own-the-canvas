@@ -1,0 +1,7 @@
+import{j as e,p as t,q as a,m as s,s as r,t as n}from"./index-B9SmDpOO.js";const i=[{name:"starCount",type:"number",default:"200",description:"Number of stars to render."},{name:"speed",type:"number",default:"0.5",description:"Star movement speed."},{name:"backgroundColor",type:"string",default:'"#111111"',description:"Sky background color."},{name:"perspective",type:'"2D" | "3D"',default:'"2D"',description:"2D twinkle field or 3D warp tunnel."},{name:"twinkle",type:"boolean",default:"true",description:"Enable star twinkle animation."},{name:"shootingStars",type:"boolean",default:"false",description:"Enable random shooting star events."}];function o(){return e.jsxs(t,{eyebrow:"Component",title:"Starfield",lead:"2D twinkle field or 3D warp-speed star tunnel. Switch perspectives with the perspective prop.",children:[e.jsx(a,{playgroundId:"Starfield",children:e.jsx(s,{starCount:200,twinkle:!0,speed:.5,width:"100%",height:"100%"})}),e.jsxs("section",{className:"page-section","aria-labelledby":"usage-h",children:[e.jsx("h2",{className:"page-h2",id:"usage-h",children:"Usage"}),e.jsx(r,{code:`import { Starfield } from 'own-the-canvas';
+
+// 2D twinkle field
+<Starfield starCount={200} twinkle />
+
+// 3D warp tunnel
+<Starfield perspective="3D" speed={4} />`,language:"tsx"})]}),e.jsxs("section",{"aria-labelledby":"props-h",children:[e.jsx("h2",{className:"page-h2",id:"props-h",children:"Props"}),e.jsx(n,{props:i})]})]})}export{o as StarfieldPage};

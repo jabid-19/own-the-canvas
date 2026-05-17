@@ -64,10 +64,10 @@ export function useLightning(
 
     function applyDpr(width: number, height: number) {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      canvas!.width = Math.round(width * dpr);
+      canvas!.height = Math.round(height * dpr);
+      canvas!.style.width = `${width}px`;
+      canvas!.style.height = `${height}px`;
       ctx.scale(dpr, dpr);
       w = width; h = height;
     }
@@ -183,7 +183,7 @@ export function useLightning(
 
     function onClick(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
-      const r = canvas.getBoundingClientRect();
+      const r = canvas!.getBoundingClientRect();
       strike(e.clientX - r.left, e.clientY - r.top);
     }
     canvas.addEventListener("click", onClick);
