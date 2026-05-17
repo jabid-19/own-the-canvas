@@ -40,7 +40,6 @@ All components default to `width: "100%"` and `height: "100%"` so they fill thei
 
 Classic falling character rain effect.
 
-![MatrixRain](https://placehold.co/600x200/000000/00ff41?text=MatrixRain+GIF)
 
 ```tsx
 import { MatrixRain } from 'own-the-canvas';
@@ -71,7 +70,6 @@ import { MatrixRain } from 'own-the-canvas';
 
 Floating particles with optional connections and mouse repulsion.
 
-![ParticleField](https://placehold.co/600x200/0a0a0a/7eb8f7?text=ParticleField+GIF)
 
 ```tsx
 import { ParticleField } from 'own-the-canvas';
@@ -102,7 +100,6 @@ import { ParticleField } from 'own-the-canvas';
 
 2D twinkle or 3D warp tunnel starfield.
 
-![Starfield](https://placehold.co/600x200/000010/ffffff?text=Starfield+GIF)
 
 ```tsx
 import { Starfield } from 'own-the-canvas';
@@ -132,7 +129,6 @@ import { Starfield } from 'own-the-canvas';
 
 Pixel-level fire simulation with multiple palettes.
 
-![FireEffect](https://placehold.co/600x200/000000/ff4400?text=FireEffect+GIF)
 
 ```tsx
 import { FireEffect } from 'own-the-canvas';
@@ -155,7 +151,6 @@ import { FireEffect } from 'own-the-canvas';
 
 Web Audio API visualizer with 4 modes.
 
-![AudioVisualizer](https://placehold.co/600x200/050505/00cfff?text=AudioVisualizer+GIF)
 
 ```tsx
 import { AudioVisualizer } from 'own-the-canvas';
@@ -188,7 +183,6 @@ const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
 Burst or continuous confetti cannon.
 
-![Confetti](https://placehold.co/600x200/0a0a0a/ffdd00?text=Confetti+GIF)
 
 ```tsx
 import { Confetti } from 'own-the-canvas';
@@ -218,7 +212,6 @@ const [fire, setFire] = useState(false);
 
 Expanding ring ripples on click or auto.
 
-![RippleEffect](https://placehold.co/600x200/050510/00cfff?text=RippleEffect+GIF)
 
 ```tsx
 import { RippleEffect } from 'own-the-canvas';
@@ -243,7 +236,6 @@ import { RippleEffect } from 'own-the-canvas';
 
 Animated Perlin noise–driven color gradient.
 
-![NoiseGradient](https://placehold.co/600x200/0d0221/38ef7d?text=NoiseGradient+GIF)
 
 ```tsx
 import { NoiseGradient } from 'own-the-canvas';
@@ -271,7 +263,6 @@ import { NoiseGradient } from 'own-the-canvas';
 
 Pixelated dissolve transition overlay for any React content.
 
-![PixelDissolve](https://placehold.co/600x200/667eea/ffffff?text=PixelDissolve+GIF)
 
 ```tsx
 import { PixelDissolve } from 'own-the-canvas';
@@ -297,7 +288,6 @@ import { PixelDissolve } from 'own-the-canvas';
 
 Draggable star constellation with animated connections.
 
-![ConstellationMap](https://placehold.co/600x200/050510/8888ff?text=ConstellationMap+GIF)
 
 ```tsx
 import { ConstellationMap } from 'own-the-canvas';
