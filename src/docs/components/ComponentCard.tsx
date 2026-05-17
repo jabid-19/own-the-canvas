@@ -79,20 +79,20 @@ const CSS = `
 
 function LazyPreview({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setMounted(true); observer.disconnect(); } },
-      { rootMargin: "200px" }
+      ([entry]) => { setVisible(entry.isIntersecting); },
+      { rootMargin: "100px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  return <div ref={ref} style={{ width: "100%", height: "100%" }}>{mounted ? children : null}</div>;
+  return <div ref={ref} style={{ width: "100%", height: "100%" }}>{visible ? children : null}</div>;
 }
 
 interface ComponentCardProps {
