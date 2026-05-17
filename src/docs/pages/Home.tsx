@@ -66,7 +66,7 @@ const CSS = `
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: #111111;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -335,20 +335,15 @@ export function Home() {
       {/* Sticky topbar */}
       <div className="home-topbar">
         <div className="home-topbar-logo">
-          <div className="home-topbar-logo-icon" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="1" y="1" width="5" height="5" rx="1" fill="white" fillOpacity=".9" />
-              <rect x="8" y="1" width="5" height="5" rx="1" fill="white" fillOpacity=".5" />
-              <rect x="1" y="8" width="5" height="5" rx="1" fill="white" fillOpacity=".5" />
-              <rect x="8" y="8" width="5" height="5" rx="1" fill="white" fillOpacity=".9" />
-            </svg>
+          <div className="home-topbar-logo-icon">
+            <img src="/logo.png" alt="own-the-canvas" width={28} height={28} style={{ objectFit: "cover" }} />
           </div>
           own-the-canvas
         </div>
         <div className="home-topbar-spacer" />
         <span className="home-topbar-badge">v1.0.0</span>
         <a
-          href="https://github.com"
+          href="https://github.com/jabid-19/own-the-canvas"
           className="home-topbar-gh"
           target="_blank"
           rel="noopener noreferrer"

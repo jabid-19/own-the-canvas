@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jabid-19/own-the-canvas/main/.github/assets/logo.png" alt="own-the-canvas logo" width="120" />
+</p>
+
 # own-the-canvas
 
 > Beautiful, responsive, fully customizable HTML canvas–based React visual components. Zero dependencies. TypeScript. 60fps.
 
-![Demo](https://placehold.co/800x400/0a0a0a/00cfff?text=own-the-canvas+Demo+GIF)
+![own-the-canvas cover](https://raw.githubusercontent.com/jabid-19/own-the-canvas/main/.github/assets/cover.png)
 
 ## Install
 
