@@ -57,9 +57,30 @@ export function useGlitchOverlay(
 
     function draw() {
       const {
-        intensity, speed, rgbShift, scanlines, scanlineOpacity, scanlineSpacing,
+        animated, intensity, speed, rgbShift, scanlines, scanlineOpacity, scanlineSpacing,
         blockGlitch, blockCount, noiseOpacity, flickerRate, color, backgroundColor,
       } = optionsRef.current;
+
+      ctx.clearRect(0, 0, w, h);
+      if (backgroundColor && backgroundColor !== "transparent") {
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // Scanlines — always drawn regardless of animated state
+      if (scanlines) {
+        ctx.fillStyle = "rgba(0,0,0,1)";
+        for (let y = 0; y < h; y += scanlineSpacing) {
+          ctx.globalAlpha = scanlineOpacity;
+          ctx.fillRect(0, y, w, 1);
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      if (!animated) {
+        rafRef.current = requestAnimationFrame(draw);
+        return;
+      }
 
       timeRef.current += speed * 0.016;
 
@@ -73,23 +94,7 @@ export function useGlitchOverlay(
       if (glitchDurationRef.current > 0) glitchDurationRef.current -= 16;
       else glitchActiveRef.current = false;
 
-      ctx.clearRect(0, 0, w, h);
-      if (backgroundColor && backgroundColor !== "transparent") {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, w, h);
-      }
-
       const isGlitching = glitchActiveRef.current;
-
-      // Scanlines
-      if (scanlines) {
-        ctx.fillStyle = "rgba(0,0,0,1)";
-        for (let y = 0; y < h; y += scanlineSpacing) {
-          ctx.globalAlpha = scanlineOpacity;
-          ctx.fillRect(0, y, w, 1);
-        }
-        ctx.globalAlpha = 1;
-      }
 
       // Flicker
       if (Math.random() < flickerRate * (isGlitching ? 3 : 1)) {

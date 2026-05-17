@@ -6,6 +6,7 @@ type SpotlightPreset = "default" | "soft" | "dramatic" | "neon" | "ellipse";
 
 interface SpotlightPresetValues {
   radius?: number;
+  color?: string;
   overlayColor?: string;
   overlayOpacity?: number;
   edgeSoftness?: number;
@@ -69,7 +70,7 @@ const PRESETS: Record<SpotlightPreset, SpotlightPresetValues> = {
 export interface SpotlightProps extends BaseCanvasProps {
   /** Spotlight radius in px (default: 120) */
   radius?: number;
-  /** Spotlight light color — currently unused visually but reserved for future tinting */
+  /** Spotlight inner tint color — drawn as a radial gradient inside the reveal area (default: "#ffffff", tint only visible for non-white colors) */
   color?: string;
   /** Overlay fill color (default: "#000000") */
   overlayColor?: string;
@@ -115,7 +116,7 @@ export const Spotlight = forwardRef<HTMLCanvasElement, SpotlightProps>(
 
     useSpotlight(internalRef, {
       radius: radius ?? p.radius ?? 120,
-      color: color ?? "#ffffff",
+      color: color ?? p.color ?? "#ffffff",
       overlayColor: overlayColor ?? p.overlayColor ?? "#000000",
       overlayOpacity: overlayOpacity ?? p.overlayOpacity ?? 0.75,
       edgeSoftness: edgeSoftness ?? p.edgeSoftness ?? 0.4,

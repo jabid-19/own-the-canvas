@@ -366,6 +366,29 @@ const GLOBAL_CSS = `
     border-radius: var(--r);
     overflow: hidden;
   }
+  /* Code block inside preview area — bottom-right overlay */
+  .canvas-wrap > .code-block {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 3;
+    margin-top: 0;
+    width: 340px;
+    max-width: calc(100% - 32px);
+    max-height: 200px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.98);
+    border-color: rgba(255,255,255,0.35);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+  .canvas-wrap > .code-block .code-block-header {
+    background: rgba(0,0,0,0.04);
+  }
+  .canvas-wrap > .code-block .code-pre {
+    background: transparent;
+  }
   .code-block-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 8px 14px;
@@ -385,9 +408,10 @@ const GLOBAL_CSS = `
   .code-copy-btn:hover { color: var(--text-1); border-color: var(--border-mid); }
   .code-copy-btn.copied { color: #22c55e; border-color: rgba(34,197,94,0.3); }
   .code-pre {
-    padding: 14px; overflow-x: auto;
+    padding: 14px; overflow-x: auto; overflow-y: auto;
     font-family: var(--mono); font-size: 12px; line-height: 1.7;
     scrollbar-width: thin;
+    max-height: 160px;
   }
   /* Syntax colors */
   .tok-kw { color: #bf5fff; }
@@ -849,8 +873,17 @@ function ColoredLine({ line }: { line: string }) {
 }
 
 // ─── Component Control Panels ─────────────────────────────────────────────────
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function MatrixRainPanel() {
   const [color, setColor] = useState("#fff");
+  const [bgColor, setBgColor] = useState("#111111");
+  const [trailOpacity, setTrailOpacity] = useState(0.1);
   const [fontSize, setFontSize] = useState(14);
   const [speed, setSpeed] = useState(33);
   const [charset, setCharset] = useState("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -872,15 +905,18 @@ function MatrixRainPanel() {
         <div className="canvas-wrap-inner">
           <MatrixRain color={color} fontSize={fontSize} speed={speed}
             charset={charset} resetThreshold={resetThreshold}
-            width="100%" height="100%" />
+            backgroundColor={hexToRgba(bgColor, trailOpacity)} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="MatrixRain" />
         <div className="ctrl-body">
           <div className="ctl-section">
             <ColorPicker label="Color" value={color} onChange={setColor} />
+            <ColorPicker label="Background" value={bgColor} onChange={setBgColor} />
+            <Slider label="Trail opacity" value={trailOpacity} min={0.02} max={0.5} step={0.01} onChange={setTrailOpacity} />
             <Slider label="Font size" value={fontSize} min={8} max={36} step={1} onChange={setFontSize} />
             <Slider label="Speed (ms/frame)" value={speed} min={10} max={200} step={1} onChange={setSpeed} />
             <Slider label="Reset threshold" value={resetThreshold} min={0.5} max={0.99} step={0.01} onChange={setResetThreshold} />
@@ -895,8 +931,6 @@ function MatrixRainPanel() {
               spellCheck={false}
             />
           </div>
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -906,6 +940,7 @@ function MatrixRainPanel() {
 function ParticleFieldPanel() {
   const [pc, setPc] = useState("#ffffff");
   const [lc, setLc] = useState("#6b7280");
+  const [bg, setBg] = useState("transparent");
   const [count, setCount] = useState(120);
   const [dist, setDist] = useState(120);
   const [size, setSize] = useState(2.5);
@@ -930,9 +965,10 @@ function ParticleFieldPanel() {
           <ParticleField particleColor={pc} lineColor={lc}
             particleCount={count} lineDistance={dist} particleSize={size}
             speed={speed} connectParticles={connect} interactive={interact}
-            backgroundColor="transparent" width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to repel</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="ParticleField" />
@@ -940,6 +976,7 @@ function ParticleFieldPanel() {
           <div className="ctl-section">
             <ColorPicker label="Particle color" value={pc} onChange={setPc} />
             <ColorPicker label="Line color" value={lc} onChange={setLc} />
+            <ColorPicker label="Background" value={bg} onChange={setBg} />
             <Slider label="Count" value={count} min={20} max={400} step={10} onChange={setCount} />
             <Slider label="Line distance" value={dist} min={40} max={250} step={5} onChange={setDist} />
             <Slider label="Particle size" value={size} min={0.5} max={8} step={0.5} onChange={setSize} />
@@ -948,8 +985,6 @@ function ParticleFieldPanel() {
           <Divider />
           <Toggle label="Connect particles" value={connect} onChange={setConnect} />
           <Toggle label="Mouse repulsion" value={interact} onChange={setInteract} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -983,6 +1018,7 @@ function StarfieldPanel() {
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Starfield" />
@@ -997,8 +1033,6 @@ function StarfieldPanel() {
           <Divider />
           <Toggle label="Twinkle" value={twinkle} onChange={setTwinkle} />
           <Toggle label="Shooting stars" value={shooting} onChange={setShooting} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1031,6 +1065,7 @@ function FireEffectPanel() {
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Pixel simulation</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="FireEffect" />
@@ -1043,8 +1078,6 @@ function FireEffectPanel() {
             <Slider label="Spread" value={spread} min={0} max={1} step={0.05} onChange={setSpread} />
             <Slider label="Cooling" value={cooling} min={0.05} max={0.8} step={0.05} onChange={setCooling} />
           </div>
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1054,6 +1087,7 @@ function FireEffectPanel() {
 function AudioVisualizerPanel() {
   const [mode, setMode] = useState<VisualizerMode>("bars");
   const [color, setColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#050010");
   const [barCount, setBarCount] = useState(64);
   const [sensitivity, setSensitivity] = useState(1);
   const [gap, setGap] = useState(2);
@@ -1094,6 +1128,7 @@ function AudioVisualizerPanel() {
             barColor={color} waveColor={color} barCount={barCount}
             sensitivity={sensitivity} gapBetweenBars={gap}
             rounded={rounded} gradient={gradient}
+            backgroundColor={bg}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label">
@@ -1102,6 +1137,7 @@ function AudioVisualizerPanel() {
             : <><div className="canvas-dot" /><span>Idle animation — start mic to visualize</span></>
           }
         </div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="AudioVisualizer" />
@@ -1116,6 +1152,7 @@ function AudioVisualizerPanel() {
           <Divider />
           <div className="ctl-section">
             <ColorPicker label="Color" value={color} onChange={setColor} />
+            <ColorPicker label="Background" value={bg} onChange={setBg} />
             <Slider label="Bar count" value={barCount} min={16} max={256} step={8} onChange={setBarCount} />
             <Slider label="Sensitivity" value={sensitivity} min={0.2} max={3} step={0.1} onChange={setSensitivity} />
             <Slider label="Bar gap" value={gap} min={0} max={8} step={1} onChange={setGap} />
@@ -1123,8 +1160,6 @@ function AudioVisualizerPanel() {
           <Divider />
           <Toggle label="Rounded bars" value={rounded} onChange={setRounded} />
           <Toggle label="Gradient fill" value={gradient} onChange={setGradient} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1172,6 +1207,7 @@ const [show, setShow] = useState(false);
           </button>
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click button to burst</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Confetti" />
@@ -1188,8 +1224,6 @@ const [show, setShow] = useState(false);
           </div>
           <Divider />
           <Toggle label="Continuous rain" value={continuous} onChange={setContinuous} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1198,6 +1232,7 @@ const [show, setShow] = useState(false);
 
 function RippleEffectPanel() {
   const [color, setColor] = useState("#ffffff");
+  const [bg, setBg] = useState("transparent");
   const [maxR, setMaxR] = useState(150);
   const [speed, setSpeed] = useState(2);
   const [lw, setLw] = useState(1.5);
@@ -1220,16 +1255,18 @@ function RippleEffectPanel() {
         <div className="canvas-wrap-inner">
           <RippleEffect color={color} maxRadius={maxR} speed={speed}
             lineWidth={lw} decay={decay} multiRipple={multi}
-            backgroundColor="transparent" interactive={interact}
+            backgroundColor={bg} interactive={interact}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>{interact ? "Click canvas to ripple" : "Auto-ripple mode"}</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="RippleEffect" />
         <div className="ctrl-body">
           <div className="ctl-section">
             <ColorPicker label="Color" value={color} onChange={setColor} />
+            <ColorPicker label="Background" value={bg} onChange={setBg} />
             <Slider label="Max radius" value={maxR} min={30} max={400} step={10} onChange={setMaxR} />
             <Slider label="Speed" value={speed} min={0.5} max={10} step={0.5} onChange={setSpeed} />
             <Slider label="Line width" value={lw} min={0.5} max={5} step={0.5} onChange={setLw} />
@@ -1238,8 +1275,6 @@ function RippleEffectPanel() {
           <Divider />
           <Toggle label="Multi ripple" value={multi} onChange={setMulti} />
           <Toggle label="Click to ripple" value={interact} onChange={setInteract} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1282,6 +1317,7 @@ function NoiseGradientPanel() {
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Perlin noise — pure JS</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="NoiseGradient" />
@@ -1297,8 +1333,6 @@ function NoiseGradientPanel() {
           </div>
           <Divider />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1343,6 +1377,7 @@ function PixelDissolvePanel() {
           </div>
         </PixelDissolve>
         <div className="canvas-label" style={{ zIndex: 4 }}><div className="canvas-dot" /><span>Click "Trigger" in controls</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="PixelDissolve" />
@@ -1355,8 +1390,6 @@ function PixelDissolvePanel() {
             <Slider label="Pixel size" value={pixelSize} min={2} max={32} step={1} onChange={setPixelSize} />
             <Slider label="Speed" value={speed} min={0.1} max={2} step={0.1} onChange={setSpeed} />
           </div>
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1395,6 +1428,7 @@ function ConstellationMapPanel() {
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>{interact ? "Drag stars to reposition" : "Auto-drift mode"}</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="ConstellationMap" />
@@ -1411,8 +1445,6 @@ function ConstellationMapPanel() {
           <Sel label="Line style" value={lineStyle} options={["solid", "dashed"]} onChange={setLineStyle} />
           <Toggle label="Drag to move stars" value={interact} onChange={setInteract} />
           <Toggle label="Star glow" value={glow} onChange={setGlow} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1426,6 +1458,7 @@ function FlowFieldPanel() {
   const [speed, setSpeed] = useState(1);
   const [curl, setCurl] = useState(false);
   const [lineWidth, setLineWidth] = useState(1);
+  const [bg, setBg] = useState("#111111");
   const code = `import { FlowField } from 'own-the-canvas';
 
 <FlowField
@@ -1439,21 +1472,21 @@ function FlowFieldPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <FlowField preset={preset} particleCount={count} speed={speed} curl={curl} lineWidth={lineWidth} width="100%" height="100%" />
+          <FlowField preset={preset} particleCount={count} speed={speed} curl={curl} lineWidth={lineWidth} backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="FlowField" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Particle count" value={count} min={100} max={2000} step={100} onChange={setCount} />
           <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
           <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
           <Toggle label="Curl noise" value={curl} onChange={setCurl} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1467,6 +1500,12 @@ function SpotlightPanel() {
   const [softness, setSoftness] = useState(0.4);
   const [glow, setGlow] = useState(true);
   const [glowColor, setGlowColor] = useState("#6b7280");
+  const [overlayColor, setOverlayColor] = useState("#000000");
+  const [color, setColor] = useState("#ffffff");
+  const [followSpeed, setFollowSpeed] = useState(0.1);
+  const [shape, setShape] = useState<"circle" | "ellipse">("circle");
+  const [ellipseRatio, setEllipseRatio] = useState(0.6);
+  const [interactive, setInteractive] = useState(true);
   const code = `import { Spotlight } from 'own-the-canvas';
 
 <div style={{ position: "relative" }}>
@@ -1475,7 +1514,9 @@ function SpotlightPanel() {
     preset="${preset}"
     radius={${radius}}
     overlayOpacity={${opacity}}
+    shape="${shape}"
     showGlow={${glow}}
+    interactive={${interactive}}
     style={{ position: "absolute", inset: 0 }}
   />
 </div>`;
@@ -1487,22 +1528,27 @@ function SpotlightPanel() {
             <div style={{ fontSize: 48, fontWeight: 700, letterSpacing: -2, marginBottom: 12 }}>Move cursor</div>
             <div style={{ fontSize: 18, opacity: 0.4 }}>The spotlight follows your mouse</div>
           </div>
-          <Spotlight preset={preset} radius={radius} overlayOpacity={opacity} edgeSoftness={softness} showGlow={glow} glowColor={glowColor} style={{ position: "absolute", inset: 0 }} />
+          <Spotlight preset={preset} radius={radius} overlayColor={overlayColor} overlayOpacity={opacity} edgeSoftness={softness} showGlow={glow} glowColor={glowColor} color={color} followSpeed={followSpeed} shape={shape} ellipseRatio={ellipseRatio} interactive={interactive} style={{ position: "absolute", inset: 0 }} />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor over canvas</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Spotlight" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "soft", "dramatic", "neon", "ellipse"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Overlay color" value={overlayColor} onChange={setOverlayColor} />
+          <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
+          <ColorPicker label="Spotlight tint" value={color} onChange={setColor} />
           <Slider label="Radius" value={radius} min={40} max={300} step={10} onChange={setRadius} />
           <Slider label="Overlay opacity" value={opacity} min={0.1} max={0.98} step={0.02} onChange={setOpacity} />
           <Slider label="Edge softness" value={softness} min={0} max={1} step={0.05} onChange={setSoftness} />
-          <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
+          <Slider label="Follow speed" value={followSpeed} min={0.01} max={1} step={0.01} onChange={setFollowSpeed} />
+          {shape === "ellipse" && <Slider label="Ellipse ratio" value={ellipseRatio} min={0.2} max={1} step={0.05} onChange={setEllipseRatio} />}
+          <Sel label="Shape" value={shape} options={["circle", "ellipse"]} onChange={(v) => setShape(v as "circle" | "ellipse")} />
           <Toggle label="Show glow ring" value={glow} onChange={setGlow} />
-          <Divider />
-          <CodeSnippet code={code} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -1514,6 +1560,7 @@ function ShockwavePanel() {
   const [ringCount, setRingCount] = useState(3);
   const [speed, setSpeed] = useState(4);
   const [color, setColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
   const [glow, setGlow] = useState(true);
   const [autoFire, setAutoFire] = useState(false);
   const code = `import { Shockwave } from 'own-the-canvas';
@@ -1529,9 +1576,10 @@ function ShockwavePanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Shockwave preset={preset} ringCount={ringCount} speed={speed} color={color} glowEffect={glow} autoFire={autoFire} autoInterval={1500} width="100%" height="100%" />
+          <Shockwave preset={preset} ringCount={ringCount} speed={speed} color={color} backgroundColor={bg} glowEffect={glow} autoFire={autoFire} autoInterval={1500} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click anywhere to fire</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Shockwave" />
@@ -1539,12 +1587,11 @@ function ShockwavePanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "explosion", "ripple", "minimal"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Ring color" value={color} onChange={setColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Ring count" value={ringCount} min={1} max={8} step={1} onChange={setRingCount} />
           <Slider label="Speed" value={speed} min={1} max={12} step={0.5} onChange={setSpeed} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
           <Toggle label="Auto-fire" value={autoFire} onChange={setAutoFire} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1556,6 +1603,7 @@ function FireworksPanel() {
   const [count, setCount] = useState(80);
   const [gravity, setGravity] = useState(0.08);
   const [spread, setSpread] = useState(5);
+  const [bg, setBg] = useState("#111111");
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [glow, setGlow] = useState(true);
   const code = `import { Fireworks } from 'own-the-canvas';
@@ -1570,22 +1618,22 @@ function FireworksPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Fireworks preset={preset} particleCount={count} gravity={gravity} spread={spread} autoLaunch={autoLaunch} glowEffect={glow} width="100%" height="100%" />
+          <Fireworks preset={preset} particleCount={count} gravity={gravity} spread={spread} backgroundColor={bg} autoLaunch={autoLaunch} glowEffect={glow} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to launch a shell</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Fireworks" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "celebration", "subtle", "neon", "golden"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Particle count" value={count} min={20} max={200} step={10} onChange={setCount} />
           <Slider label="Gravity" value={gravity} min={0.01} max={0.3} step={0.01} onChange={setGravity} />
           <Slider label="Spread" value={spread} min={2} max={10} step={0.5} onChange={setSpread} />
           <Toggle label="Auto-launch" value={autoLaunch} onChange={setAutoLaunch} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1595,9 +1643,15 @@ function FireworksPanel() {
 function GlitchOverlayPanel() {
   const [preset, setPreset] = useState("default");
   const [intensity, setIntensity] = useState(0.6);
+  const [speed, setSpeed] = useState(1);
   const [rgbShift, setRgbShift] = useState(8);
+  const [bg, setBg] = useState("#111111");
+  const [color, setColor] = useState("#ffffff");
   const [scanlines, setScanlines] = useState(true);
   const [blockGlitch, setBlockGlitch] = useState(true);
+  const [noiseOpacity, setNoiseOpacity] = useState(0.02);
+  const [flickerRate, setFlickerRate] = useState(0.02);
+  const [animated, setAnimated] = useState(true);
   const code = `import { GlitchOverlay } from 'own-the-canvas';
 
 <div style={{ position: "relative" }}>
@@ -1605,7 +1659,9 @@ function GlitchOverlayPanel() {
   <GlitchOverlay
     preset="${preset}"
     intensity={${intensity}}
+    speed={${speed}}
     rgbShift={${rgbShift}}
+    animated={${animated}}
     style={{ position: "absolute", inset: 0 }}
   />
 </div>`;
@@ -1617,21 +1673,26 @@ function GlitchOverlayPanel() {
             <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2, marginBottom: 8 }}>GLITCH</div>
             <div style={{ fontSize: 14, opacity: 0.4, letterSpacing: 6 }}>OVERLAY EFFECT</div>
           </div>
-          <GlitchOverlay preset={preset} intensity={intensity} rgbShift={rgbShift} scanlines={scanlines} blockGlitch={blockGlitch} style={{ position: "absolute", inset: 0 }} />
+          <GlitchOverlay preset={preset} intensity={intensity} speed={speed} rgbShift={rgbShift} color={color} scanlines={scanlines} blockGlitch={blockGlitch} noiseOpacity={noiseOpacity} flickerRate={flickerRate} animated={animated} backgroundColor={bg} style={{ position: "absolute", inset: 0 }} />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Overlay composited on content</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="GlitchOverlay" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <ColorPicker label="Glitch color" value={color} onChange={setColor} />
           <Slider label="Intensity" value={intensity} min={0} max={1} step={0.05} onChange={setIntensity} />
+          <Slider label="Speed" value={speed} min={0.1} max={3} step={0.1} onChange={setSpeed} />
           <Slider label="RGB shift" value={rgbShift} min={0} max={40} step={1} onChange={setRgbShift} />
+          <Slider label="Noise opacity" value={noiseOpacity} min={0} max={0.1} step={0.005} onChange={setNoiseOpacity} />
+          <Slider label="Flicker rate" value={flickerRate} min={0} max={0.1} step={0.005} onChange={setFlickerRate} />
           <Toggle label="Scanlines" value={scanlines} onChange={setScanlines} />
           <Toggle label="Block glitch" value={blockGlitch} onChange={setBlockGlitch} />
-          <Divider />
-          <CodeSnippet code={code} />
+          <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
     </>
@@ -1644,6 +1705,7 @@ function LiveChartPanel() {
   const [showGrid, setShowGrid] = useState(true);
   const [showDots, setShowDots] = useState(false);
   const [glow, setGlow] = useState(true);
+  const [bg, setBg] = useState("#111111");
 
   const series: LiveChartSeries[] = React.useMemo(() => [
     { data: Array.from({ length: 40 }, (_, i) => 50 + Math.sin(i * 0.4) * 30 + Math.random() * 10), color: "#ffffff", filled: true },
@@ -1665,21 +1727,21 @@ function LiveChartPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <LiveChart preset={preset} series={series} smooth={smooth} showGrid={showGrid} showDots={showDots} glowEffect={glow} width="100%" height="100%" />
+          <LiveChart preset={preset} series={series} smooth={smooth} showGrid={showGrid} showDots={showDots} glowEffect={glow} backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Static dataset — push data dynamically</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="LiveChart" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "ocean", "fire"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Toggle label="Smooth curves" value={smooth} onChange={setSmooth} />
           <Toggle label="Grid lines" value={showGrid} onChange={setShowGrid} />
           <Toggle label="Data dots" value={showDots} onChange={setShowDots} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1691,6 +1753,7 @@ function MandalaPanel() {
   const [symmetry, setSymmetry] = useState(8);
   const [layers, setLayers] = useState(5);
   const [speed, setSpeed] = useState(1);
+  const [bg, setBg] = useState("#111111");
   const [mirror, setMirror] = useState(true);
   const [glow, setGlow] = useState(true);
   const code = `import { Mandala } from 'own-the-canvas';
@@ -1706,22 +1769,22 @@ function MandalaPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Mandala preset={preset} symmetry={symmetry} layers={layers} speed={speed} mirror={mirror} glowEffect={glow} width="100%" height="100%" />
+          <Mandala preset={preset} symmetry={symmetry} layers={layers} speed={speed} mirror={mirror} glowEffect={glow} backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Mandala" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Symmetry arms" value={symmetry} min={3} max={24} step={1} onChange={setSymmetry} />
           <Slider label="Layers" value={layers} min={1} max={8} step={1} onChange={setLayers} />
           <Slider label="Speed" value={speed} min={0} max={3} step={0.1} onChange={setSpeed} />
           <Toggle label="Bilateral mirror" value={mirror} onChange={setMirror} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1733,6 +1796,7 @@ function MagneticBlobPanel() {
   const [count, setCount] = useState(5);
   const [radius, setRadius] = useState(80);
   const [threshold, setThreshold] = useState(1.8);
+  const [bg, setBg] = useState("#111111");
   const [followMouse, setFollowMouse] = useState(true);
   const [glow, setGlow] = useState(true);
   const code = `import { MagneticBlob } from 'own-the-canvas';
@@ -1748,22 +1812,22 @@ function MagneticBlobPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <MagneticBlob preset={preset} count={count} radius={radius} threshold={threshold} followMouse={followMouse} glowEffect={glow} width="100%" height="100%" />
+          <MagneticBlob preset={preset} count={count} radius={radius} threshold={threshold} followMouse={followMouse} glowEffect={glow} backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to attract blobs</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="MagneticBlob" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Blob count" value={count} min={2} max={10} step={1} onChange={setCount} />
           <Slider label="Radius" value={radius} min={30} max={150} step={5} onChange={setRadius} />
           <Slider label="Merge threshold" value={threshold} min={1} max={3} step={0.1} onChange={setThreshold} />
           <Toggle label="Follow mouse" value={followMouse} onChange={setFollowMouse} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1777,6 +1841,7 @@ function ClothSimulationPanel() {
   const [wind, setWind] = useState(0.3);
   const [tearable, setTearable] = useState(false);
   const [lineColor, setLineColor] = useState("#6b7280");
+  const [bg, setBg] = useState("#111111");
   const code = `import { ClothSimulation } from 'own-the-canvas';
 
 <ClothSimulation
@@ -1790,9 +1855,10 @@ function ClothSimulationPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <ClothSimulation preset={preset} cols={cols} gravity={gravity} wind={wind} tearable={tearable} lineColor={lineColor} width="100%" height="100%" />
+          <ClothSimulation preset={preset} cols={cols} gravity={gravity} wind={wind} tearable={tearable} lineColor={lineColor} backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>{tearable ? "Click to tear cloth" : "Hover to push cloth"}</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="ClothSimulation" />
@@ -1800,12 +1866,11 @@ function ClothSimulationPanel() {
           <Sel label="Preset" value={preset} options={["default", "silk", "net", "heavy", "spider"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Cloth color" value={lineColor} onChange={setLineColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Columns" value={cols} min={10} max={40} step={1} onChange={setCols} />
           <Slider label="Gravity" value={gravity} min={0.05} max={1.5} step={0.05} onChange={setGravity} />
           <Slider label="Wind" value={wind} min={0} max={1} step={0.05} onChange={setWind} />
           <Toggle label="Tearable" value={tearable} onChange={setTearable} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1818,6 +1883,7 @@ function FluidSimulationPanel() {
   const [dissipation, setDissipation] = useState(0.995);
   const [autoInk, setAutoInk] = useState(true);
   const [mouseForce, setMouseForce] = useState(5);
+  const [bg, setBg] = useState("#111111");
   const code = `import { FluidSimulation } from 'own-the-canvas';
 
 <FluidSimulation
@@ -1831,21 +1897,21 @@ function FluidSimulationPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <FluidSimulation preset={preset} resolution={resolution} dissipation={dissipation} autoInk={autoInk} mouseForce={mouseForce} width="100%" height="100%" />
+          <FluidSimulation preset={preset} resolution={resolution} dissipation={dissipation} autoInk={autoInk} mouseForce={mouseForce} backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to paint fluid</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="FluidSimulation" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Resolution" value={resolution} min={32} max={128} step={8} onChange={setResolution} />
           <Slider label="Dissipation" value={dissipation} min={0.97} max={0.999} step={0.001} onChange={setDissipation} />
           <Slider label="Mouse force" value={mouseForce} min={1} max={15} step={1} onChange={setMouseForce} />
           <Toggle label="Auto-ink bursts" value={autoInk} onChange={setAutoInk} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1859,6 +1925,7 @@ function RainPanel() {
   const [wind, setWind] = useState(0.3);
   const [dropColor, setDropColor] = useState("#ffffff");
   const [splashColor, setSplashColor] = useState("#6b7280");
+  const [bg, setBg] = useState("#111111");
   const [showSplashes, setShowSplashes] = useState(true);
   const code = `import { Rain } from 'own-the-canvas';
 
@@ -1876,9 +1943,10 @@ function RainPanel() {
         <div className="canvas-wrap-inner">
           <Rain preset={preset} dropCount={dropCount} speed={speed} wind={wind}
             dropColor={dropColor} splashColor={splashColor} showSplashes={showSplashes}
-            width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Rain with wind drift</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Rain" />
@@ -1887,12 +1955,11 @@ function RainPanel() {
           <Divider />
           <ColorPicker label="Drop color" value={dropColor} onChange={setDropColor} />
           <ColorPicker label="Splash color" value={splashColor} onChange={setSplashColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Drop count" value={dropCount} min={20} max={800} step={10} onChange={setDropCount} />
           <Slider label="Speed" value={speed} min={2} max={40} step={1} onChange={setSpeed} />
           <Slider label="Wind" value={wind} min={0} max={3} step={0.05} onChange={setWind} />
           <Toggle label="Show splashes" value={showSplashes} onChange={setShowSplashes} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1902,6 +1969,7 @@ function RainPanel() {
 function LightningPanel() {
   const [preset, setPreset] = useState("default");
   const [color, setColor] = useState("#6b7280");
+  const [bg, setBg] = useState("#111111");
   const [branchChance, setBranchChance] = useState(0.3);
   const [glowBlur, setGlowBlur] = useState(20);
   const [autoInterval, setAutoInterval] = useState(2000);
@@ -1921,9 +1989,10 @@ function LightningPanel() {
         <div className="canvas-wrap-inner">
           <Lightning preset={preset} color={color} branchChance={branchChance}
             glowBlur={glowBlur} autoInterval={autoInterval}
-            width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to strike</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Lightning" />
@@ -1931,11 +2000,10 @@ function LightningPanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "storm", "plasma", "subtle"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Bolt color" value={color} onChange={setColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Branch chance" value={branchChance} min={0} max={0.8} step={0.05} onChange={setBranchChance} />
           <Slider label="Glow blur" value={glowBlur} min={0} max={60} step={2} onChange={setGlowBlur} />
           <Slider label="Auto interval (ms)" value={autoInterval} min={500} max={6000} step={100} onChange={setAutoInterval} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1948,6 +2016,7 @@ function GameOfLifePanel() {
   const [speed, setSpeed] = useState(10);
   const [aliveColor, setAliveColor] = useState("#ffffff");
   const [oldColor, setOldColor] = useState("#6b7280");
+  const [bg, setBg] = useState("#111111");
   const [showAge, setShowAge] = useState(true);
   const code = `import { GameOfLife } from 'own-the-canvas';
 
@@ -1965,9 +2034,10 @@ function GameOfLifePanel() {
         <div className="canvas-wrap-inner">
           <GameOfLife preset={preset} cellSize={cellSize} speed={speed}
             aliveColor={aliveColor} oldColor={oldColor} showAge={showAge}
-            width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click cells to draw • Conway's Game of Life</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="GameOfLife" />
@@ -1976,11 +2046,10 @@ function GameOfLifePanel() {
           <Divider />
           <ColorPicker label="Alive color" value={aliveColor} onChange={setAliveColor} />
           <ColorPicker label="Old cell color" value={oldColor} onChange={setOldColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Cell size" value={cellSize} min={4} max={24} step={2} onChange={setCellSize} />
           <Slider label="Speed (updates/s)" value={speed} min={1} max={30} step={1} onChange={setSpeed} />
           <Toggle label="Show age gradient" value={showAge} onChange={setShowAge} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -1993,6 +2062,7 @@ function WormholePanel() {
   const [twist, setTwist] = useState(0.3);
   const [ringCount, setRingCount] = useState(30);
   const [starCount, setStarCount] = useState(100);
+  const [bg, setBg] = useState("#111111");
   const code = `import { Wormhole } from 'own-the-canvas';
 
 <Wormhole
@@ -2008,21 +2078,21 @@ function WormholePanel() {
         <div className="canvas-wrap-inner">
           <Wormhole preset={preset} speed={speed} twist={twist}
             ringCount={ringCount} starCount={starCount}
-            width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Mouse X controls speed</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Wormhole" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "hyperspace", "neon", "vortex", "minimal"]} onChange={setPreset} />
           <Divider />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Speed" value={speed} min={0.2} max={5} step={0.1} onChange={setSpeed} />
           <Slider label="Twist" value={twist} min={0} max={2} step={0.05} onChange={setTwist} />
           <Slider label="Ring count" value={ringCount} min={10} max={60} step={5} onChange={setRingCount} />
           <Slider label="Star count" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>
@@ -2034,6 +2104,7 @@ function BoidsPanel() {
   const [count, setCount] = useState(80);
   const [maxSpeed, setMaxSpeed] = useState(3);
   const [color, setColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
   const [trailLength, setTrailLength] = useState(8);
   const [sepForce, setSepForce] = useState(0.05);
   const code = `import { Boids } from 'own-the-canvas';
@@ -2052,9 +2123,10 @@ function BoidsPanel() {
         <div className="canvas-wrap-inner">
           <Boids preset={preset} count={count} maxSpeed={maxSpeed}
             color={color} trailLength={trailLength} separationForce={sepForce}
-            width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to scatter the flock</span></div>
+        <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="Boids" />
@@ -2062,12 +2134,11 @@ function BoidsPanel() {
           <Sel label="Preset" value={preset} options={["default", "birds", "fish", "swarm", "neon"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Color" value={color} onChange={setColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Count" value={count} min={10} max={300} step={10} onChange={setCount} />
           <Slider label="Max speed" value={maxSpeed} min={0.5} max={8} step={0.5} onChange={setMaxSpeed} />
           <Slider label="Trail length" value={trailLength} min={0} max={30} step={1} onChange={setTrailLength} />
           <Slider label="Separation force" value={sepForce} min={0} max={0.2} step={0.005} onChange={setSepForce} />
-          <Divider />
-          <CodeSnippet code={code} />
         </div>
       </div>
     </>

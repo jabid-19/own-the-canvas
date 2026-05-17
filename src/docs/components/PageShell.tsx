@@ -97,16 +97,25 @@ const CSS = `
 .page-preview-playground-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--accent);
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
   text-decoration: none;
   font-family: var(--mono);
   margin-bottom: 20px;
-  transition: opacity 150ms;
+  padding: 6px 14px;
+  border-radius: 999px;
+  
 }
-.page-preview-playground-link:hover { opacity: 0.75; }
+.page-preview-playground-link:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 0 0 1px var(--accent), 0 4px 20px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.page-preview-playground-link:active {
+  transform: translateY(0) scale(0.98);
+}
 .page-preview-dot {
   width: 6px;
   height: 6px;
@@ -204,7 +213,7 @@ export function PreviewBox({ children, playgroundId }: { children: React.ReactNo
       </div>
       {playgroundId && (
         <Link to={`/playground?component=${playgroundId}`} className="page-preview-playground-link">
-          ↗ Try in Playground
+          ⚡ Try in Playground
         </Link>
       )}
     </>

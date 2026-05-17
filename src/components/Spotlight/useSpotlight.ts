@@ -1,5 +1,16 @@
 import { useRef, useEffect, RefObject } from "react";
 
+function toRgba(color: string, alpha: number): string {
+  const h = color.replace("#", "");
+  if (h.length === 3) {
+    return `rgba(${parseInt(h[0]+h[0],16)},${parseInt(h[1]+h[1],16)},${parseInt(h[2]+h[2],16)},${alpha})`;
+  }
+  if (h.length === 6) {
+    return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${alpha})`;
+  }
+  return color;
+}
+
 export interface UseSpotlightOptions {
   radius: number;
   color: string;
@@ -67,7 +78,7 @@ export function useSpotlight(
     parent.addEventListener("mouseleave", onMouseLeave);
 
     function draw() {
-      const { radius, overlayColor, overlayOpacity, edgeSoftness, followSpeed,
+      const { radius, color, overlayColor, overlayOpacity, edgeSoftness, followSpeed,
               glowColor, glowSize, showGlow, shape, ellipseRatio, defaultX, defaultY } = optionsRef.current;
 
       // Smooth follow
@@ -96,33 +107,49 @@ export function useSpotlight(
 
       // Glow ring
       if (showGlow) {
-        const glow = ctx.createRadialGradient(cx, cy, rx * 0.8, cx, cy, rx + glowSize);
-        glow.addColorStop(0, `${glowColor}40`);
-        glow.addColorStop(1, "transparent");
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(1, ry / rx);
+        const glow = ctx.createRadialGradient(0, 0, rx * 0.8, 0, 0, rx + glowSize);
+        glow.addColorStop(0, toRgba(glowColor, 0.25));
+        glow.addColorStop(1, toRgba(glowColor, 0));
         ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.ellipse(cx, cy, rx + glowSize, ry + glowSize, 0, 0, Math.PI * 2);
+        ctx.arc(0, 0, rx + glowSize, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
       }
 
-      // Cut the spotlight hole using destination-out
+      // Cut the spotlight hole using destination-out with proper elliptical gradient
       ctx.globalCompositeOperation = "destination-out";
-
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, ry / rx);
+      const innerR = rx * (1 - edgeSoftness * 0.5);
       const outerR = rx + rx * edgeSoftness;
-      const outerRy = ry + ry * edgeSoftness;
-      const radialX = shape === "ellipse"
-        ? ctx.createRadialGradient(cx, cy, rx * (1 - edgeSoftness * 0.5), cx, cy, outerR)
-        : ctx.createRadialGradient(cx, cy, rx * (1 - edgeSoftness * 0.5), cx, cy, outerR);
-
-      radialX.addColorStop(0, "rgba(0,0,0,1)");
-      radialX.addColorStop(1, "rgba(0,0,0,0)");
-
-      ctx.fillStyle = radialX;
+      const grad = ctx.createRadialGradient(0, 0, innerR, 0, 0, outerR);
+      grad.addColorStop(0, "rgba(0,0,0,1)");
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.ellipse(cx, cy, outerR, outerRy, 0, 0, Math.PI * 2);
+      ctx.arc(0, 0, outerR, 0, Math.PI * 2);
       ctx.fill();
-
+      ctx.restore();
       ctx.globalCompositeOperation = "source-over";
+
+      // Spotlight color tint drawn into the transparent hole area
+      if (color && color !== "#ffffff") {
+        ctx.save();
+        ctx.globalAlpha = 0.15;
+        const tint = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
+        tint.addColorStop(0, color);
+        tint.addColorStop(1, toRgba(color, 0));
+        ctx.fillStyle = tint;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
 
       rafRef.current = requestAnimationFrame(draw);
     }

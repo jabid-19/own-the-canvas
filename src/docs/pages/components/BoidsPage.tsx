@@ -1,7 +1,7 @@
-import React from "react";
-import { PageShell, PreviewBox } from "../../components/PageShell";
-import { CodeBlock } from "../../components/CodeBlock";
+import { useState } from "react";
+import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
+import { PlaygroundShell, PSel, PSlider, PColor, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { Boids } from "../../../components/Boids";
 
 const PROPS = [
@@ -25,6 +25,60 @@ const PROPS = [
   { name: "preset",           type: "string",  default: "—",         description: '"default" | "birds" | "fish" | "swarm" | "neon"' },
 ];
 
+function BoidsPlayground() {
+  const [preset, setPreset] = useState("default");
+  const [count, setCount] = useState(80);
+  const [maxSpeed, setMaxSpeed] = useState(3);
+  const [color, setColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
+  const [trailLength, setTrailLength] = useState(8);
+  const [sepForce, setSepForce] = useState(0.05);
+
+  const code = [
+    `import { Boids } from 'own-the-canvas';`,
+    ``,
+    `<Boids`,
+    `  preset="${preset}"`,
+    `  count={${count}}`,
+    `  maxSpeed={${maxSpeed}}`,
+    `  color="${color}"`,
+    `  trailLength={${trailLength}}`,
+    `  separationForce={${sepForce}}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
+  const preview = (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <Boids preset={preset} count={count} maxSpeed={maxSpeed} color={color}
+        trailLength={trailLength} separationForce={sepForce}
+        backgroundColor={bg} width="100%" height="100%" />
+      <PLiveLabel text="Move cursor to scatter flock" />
+    </div>
+  );
+
+  const controls = (
+    <>
+      <div>
+        <PSel label="Preset" value={preset} options={["default", "birds", "fish", "swarm", "neon"]} onChange={setPreset} />
+        <PDivider />
+        <PColor label="Color" value={color} onChange={setColor} />
+        <PColor label="Background" value={bg} onChange={setBg} />
+        <PSlider label="Count" value={count} min={10} max={300} step={10} onChange={setCount} />
+      </div>
+      <div>
+        <PSlider label="Max speed" value={maxSpeed} min={0.5} max={8} step={0.5} onChange={setMaxSpeed} />
+        <PSlider label="Trail length" value={trailLength} min={0} max={30} step={1} onChange={setTrailLength} />
+        <PSlider label="Separation force" value={sepForce} min={0} max={0.2} step={0.01} onChange={setSepForce} />
+      </div>
+    </>
+  );
+
+  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+}
+
 export function BoidsPage() {
   return (
     <PageShell
@@ -32,28 +86,11 @@ export function BoidsPage() {
       title="Boids"
       lead="Craig Reynolds' emergent flocking algorithm — separation, alignment, and cohesion produce lifelike murmuration. Move your cursor to scatter the flock."
     >
-      <PreviewBox playgroundId="Boids">
-        <Boids width="100%" height="100%" />
-      </PreviewBox>
+      <BoidsPlayground />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>
-        <CodeBlock code={`import { Boids } from 'own-the-canvas';
-
-<Boids
-  count={80}
-  maxSpeed={3}
-  interactive
-  preset="birds"
-  width="100%"
-  height="100%"
-/>
-
-// Fish school
-<Boids preset="fish" cohesionForce={0.05} />
-
-// Dense insect swarm
-<Boids preset="swarm" count={200} boidSize={4} />`} language="tsx" />
+        <p className="page-p">The code block above updates live as you adjust the controls.</p>
       </section>
 
       <section aria-labelledby="props-h">

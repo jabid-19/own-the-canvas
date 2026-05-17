@@ -1,32 +1,32 @@
 import React from "react";
-import { NavLink, useMatch } from "react-router-dom";
+import { Link, NavLink, useMatch } from "react-router-dom";
 
 const COMPONENT_LINKS = [
-  { name: "MatrixRain",       path: "/components/matrix-rain" },
+  { name: "MatrixRain", path: "/components/matrix-rain" },
   { name: "ConstellationMap", path: "/components/constellation-map" },
-  { name: "FluidSimulation",  path: "/components/fluid-simulation" },
-  { name: "FlowField",        path: "/components/flow-field" },
-  { name: "Boids",            path: "/components/boids" },
-  { name: "GlitchOverlay",    path: "/components/glitch-overlay" },
-  { name: "PixelDissolve",    path: "/components/pixel-dissolve" },
-  { name: "Confetti",         path: "/components/confetti" },
-  { name: "AudioVisualizer",  path: "/components/audio-visualizer" },
-  { name: "Mandala",          path: "/components/mandala" },
-  { name: "Spotlight",        path: "/components/spotlight" },
-  { name: "Starfield",        path: "/components/starfield" },
-  { name: "NoiseGradient",    path: "/components/noise-gradient" },
-  { name: "RippleEffect",     path: "/components/ripple-effect" },
-  { name: "Shockwave",        path: "/components/shockwave" },
-  { name: "Fireworks",        path: "/components/fireworks" },
-  { name: "Wormhole",         path: "/components/wormhole" },
-  { name: "ClothSimulation",  path: "/components/cloth-simulation" },
-  { name: "MagneticBlob",     path: "/components/magnetic-blob" },
-  { name: "GameOfLife",       path: "/components/game-of-life" },
-  { name: "Rain",             path: "/components/rain" },
-  { name: "Lightning",        path: "/components/lightning" },
-  { name: "FireEffect",       path: "/components/fire-effect" },
-  { name: "LiveChart",        path: "/components/live-chart" },
-  { name: "ParticleField",    path: "/components/particle-field" },
+  { name: "FluidSimulation", path: "/components/fluid-simulation" },
+  { name: "FlowField", path: "/components/flow-field" },
+  { name: "Boids", path: "/components/boids" },
+  { name: "GlitchOverlay", path: "/components/glitch-overlay" },
+  { name: "PixelDissolve", path: "/components/pixel-dissolve" },
+  { name: "Confetti", path: "/components/confetti" },
+  { name: "AudioVisualizer", path: "/components/audio-visualizer" },
+  { name: "Mandala", path: "/components/mandala" },
+  { name: "Spotlight", path: "/components/spotlight" },
+  { name: "Starfield", path: "/components/starfield" },
+  { name: "NoiseGradient", path: "/components/noise-gradient" },
+  { name: "RippleEffect", path: "/components/ripple-effect" },
+  { name: "Shockwave", path: "/components/shockwave" },
+  { name: "Fireworks", path: "/components/fireworks" },
+  { name: "Wormhole", path: "/components/wormhole" },
+  { name: "ClothSimulation", path: "/components/cloth-simulation" },
+  { name: "MagneticBlob", path: "/components/magnetic-blob" },
+  { name: "GameOfLife", path: "/components/game-of-life" },
+  { name: "Rain", path: "/components/rain" },
+  { name: "Lightning", path: "/components/lightning" },
+  { name: "FireEffect", path: "/components/fire-effect" },
+  { name: "LiveChart", path: "/components/live-chart" },
+  { name: "ParticleField", path: "/components/particle-field" },
 ];
 
 const CSS = `
@@ -39,7 +39,31 @@ const CSS = `
   flex-direction: column;
   overflow: hidden;
   flex-shrink: 0;
-  padding: 20px 0 32px;
+  padding: 0 0 32px;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.sidebar-logo:hover { opacity: 0.85; }
+.sidebar-logo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+.sidebar-logo-name {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
 }
 
 .sidebar-components-scroll {
@@ -60,7 +84,7 @@ const CSS = `
   margin-bottom: 4px;
   margin-top: 20px;
 }
-.sidebar-label:first-child { margin-top: 4px; }
+.sidebar-label:first-child { margin-top: 8px; }
 
 .sidebar-link {
   display: block;
@@ -126,6 +150,13 @@ const CSS = `
   z-index: 40;
 }
 
+.sidebar-logo-img {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -180,6 +211,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         className={`sidebar${open ? " open" : ""}`}
         aria-label="Docs navigation"
       >
+        <Link to="/" className="sidebar-logo">
+          <img className="sidebar-logo-img" src="/logo.png" alt="own-the-canvas logo" />
+          <span className="sidebar-logo-name">own-the-canvas</span>
+        </Link>
+
         <div className="sidebar-section">
           <div className="sidebar-label">Getting Started</div>
           <NavItem to="/" end>Introduction</NavItem>

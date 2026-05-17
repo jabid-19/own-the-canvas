@@ -1,7 +1,7 @@
-import React from "react";
-import { PageShell, PreviewBox } from "../../components/PageShell";
-import { CodeBlock } from "../../components/CodeBlock";
+import { useState } from "react";
+import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
+import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { GlitchOverlay } from "../../../components/GlitchOverlay";
 
 const PROPS = [
@@ -20,6 +20,81 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",            description: '"default" | "crt" | "cyberpunk" | "subtle" | "corrupt"' },
 ];
 
+function GlitchOverlayPlayground() {
+  const [preset, setPreset] = useState("default");
+  const [intensity, setIntensity] = useState(0.6);
+  const [speed, setSpeed] = useState(1);
+  const [rgbShift, setRgbShift] = useState(8);
+  const [color, setColor] = useState("#ffffff");
+  const [scanlines, setScanlines] = useState(true);
+  const [blockGlitch, setBlockGlitch] = useState(true);
+  const [animated, setAnimated] = useState(true);
+
+  const code = [
+    `import { GlitchOverlay } from 'own-the-canvas';`,
+    ``,
+    `// Overlay over any content`,
+    `<div style={{ position: "relative" }}>`,
+    `  <YourContent />`,
+    `  <GlitchOverlay`,
+    `    preset="${preset}"`,
+    `    intensity={${intensity}}`,
+    `    speed={${speed}}`,
+    `    rgbShift={${rgbShift}}`,
+    `    color="${color}"`,
+    !scanlines ? `    scanlines={false}` : null,
+    !blockGlitch ? `    blockGlitch={false}` : null,
+    !animated ? `    animated={false}` : null,
+    `    style={{ position: "absolute", inset: 0 }}`,
+    `  />`,
+    `</div>`,
+  ].filter(Boolean).join("\n");
+
+  const preview = (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <div style={{ position: "absolute", inset: 0, background: "#111111", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "monospace", userSelect: "none" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2 }}>GLITCH</div>
+          <div style={{ fontSize: 12, opacity: 0.4, letterSpacing: 6, marginTop: 8 }}>OVERLAY EFFECT</div>
+        </div>
+      </div>
+      <GlitchOverlay
+        preset={preset}
+        intensity={intensity}
+        speed={speed}
+        rgbShift={rgbShift}
+        color={color}
+        scanlines={scanlines}
+        blockGlitch={blockGlitch}
+        animated={animated}
+        style={{ position: "absolute", inset: 0 }}
+      />
+      <PLiveLabel text="CRT glitch overlay" />
+    </div>
+  );
+
+  const controls = (
+    <>
+      <div>
+        <PSel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={setPreset} />
+        <PDivider />
+        <PColor label="Accent color" value={color} onChange={setColor} />
+        <PSlider label="Intensity" value={intensity} min={0} max={1} step={0.05} onChange={setIntensity} />
+        <PSlider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
+      </div>
+      <div>
+        <PSlider label="RGB shift" value={rgbShift} min={0} max={30} step={1} onChange={setRgbShift} />
+        <PDivider />
+        <PToggle label="Scanlines" value={scanlines} onChange={setScanlines} />
+        <PToggle label="Block glitch" value={blockGlitch} onChange={setBlockGlitch} />
+        <PToggle label="Animated" value={animated} onChange={setAnimated} />
+      </div>
+    </>
+  );
+
+  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+}
+
 export function GlitchOverlayPage() {
   return (
     <PageShell
@@ -27,33 +102,11 @@ export function GlitchOverlayPage() {
       title="GlitchOverlay"
       lead="CRT-style overlay with scanlines, RGB channel shift, block glitch, and film noise. Composited as an absolute overlay over any content beneath it."
     >
-      <PreviewBox playgroundId="GlitchOverlay">
-        <div style={{ position: "relative", width: "100%", height: "100%" }}>
-          <div style={{ position: "absolute", inset: 0, background: "#111111", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "monospace", userSelect: "none" }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2 }}>GLITCH</div>
-              <div style={{ fontSize: 12, opacity: 0.4, letterSpacing: 6, marginTop: 8 }}>OVERLAY EFFECT</div>
-            </div>
-          </div>
-          <GlitchOverlay style={{ position: "absolute", inset: 0 }} />
-        </div>
-      </PreviewBox>
+      <GlitchOverlayPlayground />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>
-        <CodeBlock code={`import { GlitchOverlay } from 'own-the-canvas';
-
-// Overlay over any content
-<div style={{ position: "relative" }}>
-  <YourContent />
-  <GlitchOverlay
-    intensity={0.6}
-    rgbShift={8}
-    scanlines
-    preset="cyberpunk"
-    style={{ position: "absolute", inset: 0 }}
-  />
-</div>`} language="tsx" />
+        <p className="page-p">The code block above updates live as you adjust the controls.</p>
       </section>
 
       <section aria-labelledby="props-h">
