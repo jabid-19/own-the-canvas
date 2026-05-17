@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ComponentCard } from "../components/ComponentCard";
 import { CodeBlock } from "../components/CodeBlock";
 import { MatrixRain } from "../../components/MatrixRain";
@@ -295,6 +296,10 @@ const INSTALL_CMD = "npm install own-the-canvas";
 export function Home() {
   return (
     <>
+      <Helmet>
+        <title>Own The Canvas — React Canvas Component Library</title>
+        <meta name="description" content="30+ beautiful, responsive canvas-based React components. MatrixRain, FluidSimulation, Boids, Fireworks, and more. Zero dependencies, TypeScript, MIT license." />
+      </Helmet>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <div className="home-topbar">
@@ -329,7 +334,7 @@ export function Home() {
             <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
               <circle cx="6" cy="6" r="5" />
             </svg>
-            20+ components · Zero dependencies · TypeScript
+            30+ components · Zero dependencies · TypeScript
           </div>
           <h1 className="home-hero-title">
             Canvas arts <span>for React</span>
@@ -365,7 +370,7 @@ export function Home() {
         {/* Stats */}
         <div className="home-stats" role="list" aria-label="Library stats">
           {[
-            { n: "20+", l: "Components" },
+            { n: "30+", l: "Components" },
             { n: "0", l: "Dependencies" },
             { n: "TS", l: "TypeScript" },
             { n: "MIT", l: "License" },

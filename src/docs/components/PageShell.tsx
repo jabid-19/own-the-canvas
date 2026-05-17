@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const CSS = `
 .page-shell {
@@ -190,6 +191,10 @@ interface PageShellProps {
 export function PageShell({ eyebrow, title, lead, children }: PageShellProps) {
   return (
     <>
+      <Helmet>
+        <title>{title} — React Canvas Component | Own The Canvas</title>
+        {lead && <meta name="description" content={lead} />}
+      </Helmet>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="page-shell">
         {eyebrow && <div className="page-eyebrow">{eyebrow}</div>}

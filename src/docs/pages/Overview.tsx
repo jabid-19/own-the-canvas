@@ -133,7 +133,7 @@ const charset: MatrixCharset = 'katakana';`}
         <h2 className="page-h2" id="baseprops-h">Shared props</h2>
         <p className="page-p">
           Every component extends <InlineCode>BaseCanvasProps</InlineCode>.
-          These props are available on all 20+ components.
+          These props are available on all 30+ components.
         </p>
         <PropsTable props={BASE_PROPS} />
       </section>

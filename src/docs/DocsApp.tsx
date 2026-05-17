@@ -30,6 +30,11 @@ const LightningPage        = lazy(() => import("./pages/components/LightningPage
 const GameOfLifePage       = lazy(() => import("./pages/components/GameOfLifePage").then((m) => ({ default: m.GameOfLifePage })));
 const WormholePage         = lazy(() => import("./pages/components/WormholePage").then((m) => ({ default: m.WormholePage })));
 const BoidsPage            = lazy(() => import("./pages/components/BoidsPage").then((m) => ({ default: m.BoidsPage })));
+const ReactionDiffusionPage = lazy(() => import("./pages/components/ReactionDiffusionPage").then((m) => ({ default: m.ReactionDiffusionPage })));
+const AuroraBorealisPage   = lazy(() => import("./pages/components/AuroraBorealisPage").then((m) => ({ default: m.AuroraBorealisPage })));
+const SpirographPage       = lazy(() => import("./pages/components/SpirographPage").then((m) => ({ default: m.SpirographPage })));
+const SandSimulationPage   = lazy(() => import("./pages/components/SandSimulationPage").then((m) => ({ default: m.SandSimulationPage })));
+const WaveInterferencePage = lazy(() => import("./pages/components/WaveInterferencePage").then((m) => ({ default: m.WaveInterferencePage })));
 
 function Loading() {
   return (
@@ -80,6 +85,11 @@ export function DocsApp() {
           <Route path="/components/game-of-life"     element={<GameOfLifePage />} />
           <Route path="/components/wormhole"         element={<WormholePage />} />
           <Route path="/components/boids"            element={<BoidsPage />} />
+          <Route path="/components/reaction-diffusion" element={<ReactionDiffusionPage />} />
+          <Route path="/components/aurora-borealis"    element={<AuroraBorealisPage />} />
+          <Route path="/components/spirograph"         element={<SpirographPage />} />
+          <Route path="/components/sand-simulation"    element={<SandSimulationPage />} />
+          <Route path="/components/wave-interference"  element={<WaveInterferencePage />} />
         </Routes>
       </Suspense>
     </Layout>

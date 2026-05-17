@@ -72,3 +72,18 @@ export type { WormholeProps } from "./components/Wormhole";
 
 export { Boids } from "./components/Boids";
 export type { BoidsProps } from "./components/Boids";
+
+export { ReactionDiffusion } from "./components/ReactionDiffusion";
+export type { ReactionDiffusionProps } from "./components/ReactionDiffusion";
+
+export { AuroraBorealis } from "./components/AuroraBorealis";
+export type { AuroraBorealisProps } from "./components/AuroraBorealis";
+
+export { Spirograph } from "./components/Spirograph";
+export type { SpirographProps } from "./components/Spirograph";
+
+export { SandSimulation } from "./components/SandSimulation";
+export type { SandSimulationProps, SandMaterial } from "./components/SandSimulation";
+
+export { WaveInterference } from "./components/WaveInterference";
+export type { WaveInterferenceProps } from "./components/WaveInterference";

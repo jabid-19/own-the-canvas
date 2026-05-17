@@ -27,6 +27,11 @@ const COMPONENT_LINKS = [
   { name: "FireEffect", path: "/components/fire-effect" },
   { name: "LiveChart", path: "/components/live-chart" },
   { name: "ParticleField", path: "/components/particle-field" },
+  { name: "ReactionDiffusion", path: "/components/reaction-diffusion" },
+  { name: "AuroraBorealis", path: "/components/aurora-borealis" },
+  { name: "Spirograph", path: "/components/spirograph" },
+  { name: "SandSimulation", path: "/components/sand-simulation" },
+  { name: "WaveInterference", path: "/components/wave-interference" },
 ];
 
 const CSS = `
