@@ -20,9 +20,9 @@ interface RainPresetValues {
 
 const PRESETS: Record<RainPreset, RainPresetValues> = {
   default: {
-    dropColor: "#ffffff",
-    splashColor: "#6b7280",
-    backgroundColor: "#111111",
+    dropColor: "#000000",
+    splashColor: "#000000",
+    backgroundColor: "#ffffff",
   },
   storm: {
     dropCount: 500,
@@ -76,13 +76,13 @@ export interface RainProps extends BaseCanvasProps {
   dropWidth?: number;
   /** Drop opacity 0–1. (default: 0.6) */
   dropOpacity?: number;
-  /** Drop color. (default: "#7C3AED") */
+  /** Drop color. (default: "#2563eb") */
   dropColor?: string;
-  /** Splash particle color. (default: "#0891B2") */
+  /** Splash particle color. (default: "#1e40af") */
   splashColor?: string;
   /** Show splash particles when drops hit bottom. (default: true) */
   showSplashes?: boolean;
-  /** Canvas background color. (default: "#111111") */
+  /** Canvas background color. (default: "#ffffff") */
   backgroundColor?: string;
   /** Named preset. */
   preset?: RainPreset | string;
@@ -106,13 +106,13 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
     speed:        speed        ?? p.speed        ?? 15,
     wind:         wind         ?? p.wind         ?? 0.3,
     windSpeed:    windSpeed    ?? p.windSpeed    ?? 0.5,
-    dropLength:   dropLength   ?? p.dropLength   ?? 20,
-    dropWidth:    dropWidth    ?? p.dropWidth    ?? 1,
-    dropOpacity:  dropOpacity  ?? p.dropOpacity  ?? 0.6,
-    dropColor:    dropColor    ?? p.dropColor    ?? "#a8c8e8",
-    splashColor:  splashColor  ?? p.splashColor  ?? "#7aaec8",
+    dropLength:   dropLength   ?? p.dropLength   ?? 28,
+    dropWidth:    dropWidth    ?? p.dropWidth    ?? 1.5,
+    dropOpacity:  dropOpacity  ?? p.dropOpacity  ?? 0.85,
+    dropColor:    dropColor    ?? p.dropColor    ?? "#000000",
+    splashColor:  splashColor  ?? p.splashColor  ?? "#000000",
     showSplashes: showSplashes ?? p.showSplashes ?? true,
-    backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
+    backgroundColor: backgroundColor ?? p.backgroundColor ?? "#ffffff",
   });
 
   return (

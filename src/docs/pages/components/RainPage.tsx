@@ -12,10 +12,10 @@ const PROPS = [
   { name: "dropLength",      type: "number",  default: "20",        description: "Drop streak length in px." },
   { name: "dropWidth",       type: "number",  default: "1",         description: "Drop stroke width in px." },
   { name: "dropOpacity",     type: "number",  default: "0.6",       description: "Drop opacity 0–1." },
-  { name: "dropColor",       type: "string",  default: '"#ffffff"', description: "Drop streak color." },
-  { name: "splashColor",     type: "string",  default: '"#6b7280"', description: "Splash particle color." },
+  { name: "dropColor",       type: "string",  default: '"#000000"', description: "Drop streak color." },
+  { name: "splashColor",     type: "string",  default: '"#000000"', description: "Splash particle color." },
   { name: "showSplashes",    type: "boolean", default: "true",      description: "Show splash particles when drops hit bottom." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: 'Canvas background color. Use "transparent" to overlay on another element.' },
+  { name: "backgroundColor", type: "string",  default: '"#ffffff"', description: 'Canvas background color. Use "transparent" to overlay on another element.' },
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "storm" | "drizzle" | "neon" | "golden"' },
 ];
 
@@ -24,9 +24,9 @@ function RainPlayground() {
   const [dropCount, setDropCount] = useState(200);
   const [speed, setSpeed] = useState(15);
   const [wind, setWind] = useState(0.3);
-  const [dropColor, setDropColor] = useState("#ffffff");
-  const [splashColor, setSplashColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [dropColor, setDropColor] = useState("#000000");
+  const [splashColor, setSplashColor] = useState("#000000");
+  const [bg, setBg] = useState("#ffffff");
   const [showSplashes, setShowSplashes] = useState(true);
 
   const code = [

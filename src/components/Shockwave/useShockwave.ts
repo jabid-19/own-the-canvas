@@ -35,7 +35,7 @@ export function useShockwave(
   optionsRef.current = options;
   const wavesRef = useRef<Wave[]>([]);
   const rafRef = useRef<number>(0);
-  const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sizeRef = useRef({ w: 0, h: 0 });
 
   const fire = (x: number, y: number) => {
     const { color, secondaryColor, ringCount, ringSpacing, speed, maxRadius, lineWidth } = optionsRef.current;
@@ -53,13 +53,23 @@ export function useShockwave(
     }
   };
 
+  // Separate effect for auto-fire — reruns whenever autoFire or autoInterval changes
+  useEffect(() => {
+    if (!options.autoFire) return;
+    const id = setInterval(() => {
+      const { w, h } = sizeRef.current;
+      if (w === 0 || h === 0) return;
+      fire(w * (0.3 + Math.random() * 0.4), h * (0.3 + Math.random() * 0.4));
+    }, options.autoInterval);
+    return () => clearInterval(id);
+  }, [options.autoFire, options.autoInterval]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const parent = canvas.parentElement;
     if (!parent) return;
     const ctx = canvas.getContext("2d")!;
-    let w = 0, h = 0;
 
     function applyDpr(width: number, height: number) {
       const cvs = canvasRef.current!;
@@ -69,7 +79,7 @@ export function useShockwave(
       cvs.style.width = `${width}px`;
       cvs.style.height = `${height}px`;
       ctx.scale(dpr, dpr);
-      w = width; h = height;
+      sizeRef.current = { w: width, h: height };
     }
 
     const ro = new ResizeObserver(entries => {
@@ -86,18 +96,9 @@ export function useShockwave(
     }
     parent.addEventListener("click", onClick);
 
-    function scheduleAuto() {
-      const { autoFire, autoInterval } = optionsRef.current;
-      if (!autoFire) return;
-      autoTimerRef.current = setTimeout(() => {
-        fire(w * (0.3 + Math.random() * 0.4), h * (0.3 + Math.random() * 0.4));
-        scheduleAuto();
-      }, autoInterval);
-    }
-    scheduleAuto();
-
     function draw() {
       const { backgroundColor, glowEffect, glowBlur, fadeSpeed } = optionsRef.current;
+      const { w, h } = sizeRef.current;
 
       ctx.clearRect(0, 0, w, h);
       if (backgroundColor && backgroundColor !== "transparent") {
@@ -137,7 +138,6 @@ export function useShockwave(
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
       parent.removeEventListener("click", onClick);
-      if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
     };
   }, [canvasRef]);
 

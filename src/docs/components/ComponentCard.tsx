@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const CSS = `
@@ -36,6 +36,91 @@ const CSS = `
   height: 100% !important;
 }
 
+.component-card-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 200ms var(--ease);
+}
+.component-card-canvas.visible {
+  opacity: 1;
+}
+
+/* Placeholder */
+.component-card-placeholder {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg-subtle);
+  transition: opacity 200ms var(--ease);
+}
+.component-card-placeholder.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Animated diagonal stripe layer */
+.component-card-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0px,
+    transparent 16px,
+    rgba(128, 128, 128, 0.055) 16px,
+    rgba(128, 128, 128, 0.055) 17px
+  );
+  background-size: 24px 24px;
+  animation: card-stripe-drift 10s linear infinite;
+}
+
+@keyframes card-stripe-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 24px 24px; }
+}
+
+/* Faint centre vignette to frame the initial letter */
+.component-card-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, rgba(0,0,0,0.18) 100%);
+  pointer-events: none;
+}
+
+.component-card-placeholder-initial {
+  font-size: 80px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--text-1);
+  opacity: 0.06;
+  font-family: system-ui, sans-serif;
+  position: relative;
+  z-index: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.component-card-placeholder-hint {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+  opacity: 0.7;
+}
+
 .component-card-preview-badge {
   position: absolute;
   bottom: 8px;
@@ -46,6 +131,7 @@ const CSS = `
   font-family: var(--mono);
   letter-spacing: 0.04em;
   pointer-events: none;
+  z-index: 2;
 }
 
 .component-card-body {
@@ -77,24 +163,6 @@ const CSS = `
 }
 `;
 
-function LazyPreview({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { setVisible(entry.isIntersecting); },
-      { rootMargin: "100px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return <div ref={ref} style={{ width: "100%", height: "100%" }}>{visible ? children : null}</div>;
-}
-
 interface ComponentCardProps {
   name: string;
   description: string;
@@ -104,12 +172,26 @@ interface ComponentCardProps {
 }
 
 export function ComponentCard({ name, description, path, accent, preview }: ComponentCardProps) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <Link to={path} className="component-card" data-testid="component-card">
+      <Link
+        to={path}
+        className="component-card"
+        data-testid="component-card"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <div className="component-card-preview" aria-hidden="true">
-          <LazyPreview>{preview}</LazyPreview>
+          <div className={`component-card-placeholder${hovered ? " hidden" : ""}`}>
+            <span className="component-card-placeholder-initial">{name[0]}</span>
+            <span className="component-card-placeholder-hint">hover to preview</span>
+          </div>
+          <div className={`component-card-canvas${hovered ? " visible" : ""}`}>
+            {hovered ? preview : null}
+          </div>
           <div className="component-card-preview-badge">live</div>
         </div>
         <div className="component-card-body">

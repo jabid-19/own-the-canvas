@@ -16,8 +16,6 @@ export type { AudioVisualizerProps, VisualizerMode } from "./components/AudioVis
 export { Confetti } from "./components/Confetti";
 export type { ConfettiProps, ConfettiShape } from "./components/Confetti";
 
-export { RippleEffect } from "./components/RippleEffect";
-export type { RippleEffectProps } from "./components/RippleEffect";
 
 export { NoiseGradient } from "./components/NoiseGradient";
 export type { NoiseGradientProps } from "./components/NoiseGradient";
@@ -80,10 +78,28 @@ export { AuroraBorealis } from "./components/AuroraBorealis";
 export type { AuroraBorealisProps } from "./components/AuroraBorealis";
 
 export { Spirograph } from "./components/Spirograph";
-export type { SpirographProps } from "./components/Spirograph";
+export type { SpirographProps, SpirographColorMode } from "./components/Spirograph";
 
 export { SandSimulation } from "./components/SandSimulation";
 export type { SandSimulationProps, SandMaterial } from "./components/SandSimulation";
 
 export { WaveInterference } from "./components/WaveInterference";
 export type { WaveInterferenceProps } from "./components/WaveInterference";
+
+export { DiffusionAggregation } from "./components/DiffusionAggregation";
+export type { DiffusionAggregationProps, DLASeedMode } from "./components/DiffusionAggregation";
+
+export { Lissajous } from "./components/Lissajous";
+export type { LissajousProps, LissajousColorMode } from "./components/Lissajous";
+
+export { LSystem } from "./components/LSystem";
+export type { LSystemProps } from "./components/LSystem";
+
+export { Kaleidoscope } from "./components/Kaleidoscope";
+export type { KaleidoscopeProps } from "./components/Kaleidoscope";
+
+export { VoronoiCells } from "./components/VoronoiCells";
+export type { VoronoiCellsProps, VoronoiColorMode } from "./components/VoronoiCells";
+
+export { SlimeMold } from "./components/SlimeMold";
+export type { SlimeMoldProps } from "./components/SlimeMold";

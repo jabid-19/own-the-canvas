@@ -88,7 +88,7 @@ export interface ShockwaveProps extends BaseCanvasProps {
   lineWidth?: number;
   /** Opacity decrease per frame (default: 0.02) */
   fadeSpeed?: number;
-  /** Auto-fire shockwaves without clicks (default: false) */
+  /** Auto-fire shockwaves without clicks (default: true) */
   autoFire?: boolean;
   /** Interval between auto-fires in ms (default: 2000) */
   autoInterval?: number;
@@ -125,7 +125,7 @@ export const Shockwave = forwardRef<HTMLCanvasElement, ShockwaveProps>(
       maxRadius: maxRadius ?? p.maxRadius ?? 200,
       lineWidth: lineWidth ?? p.lineWidth ?? 2,
       fadeSpeed: fadeSpeed ?? p.fadeSpeed ?? 0.02,
-      autoFire: autoFire ?? false,
+      autoFire: autoFire ?? true,
       autoInterval: autoInterval ?? 2000,
       glowEffect: glowEffect ?? p.glowEffect ?? true,
       glowBlur: glowBlur ?? p.glowBlur ?? 15,

@@ -52,7 +52,7 @@ export interface FireEffectProps extends BaseCanvasProps {
   windStrength?: number;
   /** Wind direction: 1 = right, -1 = left (default: 1) */
   windDirection?: number;
-  /** Flame spread 0–1 (default: 0.7) */
+  /** Flame spread 0–1 (default: 0) */
   spread?: number;
   /** Cooling rate 0–1 — higher = shorter flames (default: 0.3) */
   cooling?: number;
@@ -95,7 +95,7 @@ export const FireEffect = forwardRef<HTMLCanvasElement, FireEffectProps>(
       intensity: intensity ?? p.intensity ?? 0.95,
       windStrength: windStrength ?? p.windStrength ?? 0.3,
       windDirection: windDirection ?? p.windDirection ?? 1,
-      spread: spread ?? p.spread ?? 0.7,
+      spread: spread ?? p.spread ?? 0,
       cooling: cooling ?? p.cooling ?? 0.3,
       noiseStrength: noiseStrength ?? 60,
       coolingScale: coolingScale ?? 3,

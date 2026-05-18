@@ -11,7 +11,6 @@ const StarfieldPage      = lazy(() => import("./pages/components/StarfieldPage")
 const FireEffectPage     = lazy(() => import("./pages/components/FireEffectPage").then((m) => ({ default: m.FireEffectPage })));
 const AudioVisualizerPage = lazy(() => import("./pages/components/AudioVisualizerPage").then((m) => ({ default: m.AudioVisualizerPage })));
 const ConfettiPage       = lazy(() => import("./pages/components/ConfettiPage").then((m) => ({ default: m.ConfettiPage })));
-const RippleEffectPage   = lazy(() => import("./pages/components/RippleEffectPage").then((m) => ({ default: m.RippleEffectPage })));
 const NoiseGradientPage  = lazy(() => import("./pages/components/NoiseGradientPage").then((m) => ({ default: m.NoiseGradientPage })));
 const PixelDissolvePage  = lazy(() => import("./pages/components/PixelDissolvePage").then((m) => ({ default: m.PixelDissolvePage })));
 const ConstellationMapPage = lazy(() => import("./pages/components/ConstellationMapPage").then((m) => ({ default: m.ConstellationMapPage })));
@@ -35,6 +34,12 @@ const AuroraBorealisPage   = lazy(() => import("./pages/components/AuroraBoreali
 const SpirographPage       = lazy(() => import("./pages/components/SpirographPage").then((m) => ({ default: m.SpirographPage })));
 const SandSimulationPage   = lazy(() => import("./pages/components/SandSimulationPage").then((m) => ({ default: m.SandSimulationPage })));
 const WaveInterferencePage = lazy(() => import("./pages/components/WaveInterferencePage").then((m) => ({ default: m.WaveInterferencePage })));
+const DiffusionAggregationPage = lazy(() => import("./pages/components/DiffusionAggregationPage").then((m) => ({ default: m.DiffusionAggregationPage })));
+const LissajousPage      = lazy(() => import("./pages/components/LissajousPage").then((m) => ({ default: m.LissajousPage })));
+const LSystemPage        = lazy(() => import("./pages/components/LSystemPage").then((m) => ({ default: m.LSystemPage })));
+const KaleidoscopePage   = lazy(() => import("./pages/components/KaleidoscopePage").then((m) => ({ default: m.KaleidoscopePage })));
+const VoronoiCellsPage   = lazy(() => import("./pages/components/VoronoiCellsPage").then((m) => ({ default: m.VoronoiCellsPage })));
+const SlimeMoldPage      = lazy(() => import("./pages/components/SlimeMoldPage").then((m) => ({ default: m.SlimeMoldPage })));
 
 function Loading() {
   return (
@@ -66,7 +71,6 @@ export function DocsApp() {
           <Route path="/components/fire-effect" element={<FireEffectPage />} />
           <Route path="/components/audio-visualizer" element={<AudioVisualizerPage />} />
           <Route path="/components/confetti" element={<ConfettiPage />} />
-          <Route path="/components/ripple-effect" element={<RippleEffectPage />} />
           <Route path="/components/noise-gradient" element={<NoiseGradientPage />} />
           <Route path="/components/pixel-dissolve" element={<PixelDissolvePage />} />
           <Route path="/components/constellation-map" element={<ConstellationMapPage />} />
@@ -90,6 +94,12 @@ export function DocsApp() {
           <Route path="/components/spirograph"         element={<SpirographPage />} />
           <Route path="/components/sand-simulation"    element={<SandSimulationPage />} />
           <Route path="/components/wave-interference"  element={<WaveInterferencePage />} />
+          <Route path="/components/diffusion-aggregation" element={<DiffusionAggregationPage />} />
+          <Route path="/components/lissajous"            element={<LissajousPage />} />
+          <Route path="/components/l-system"             element={<LSystemPage />} />
+          <Route path="/components/kaleidoscope"         element={<KaleidoscopePage />} />
+          <Route path="/components/voronoi-cells"        element={<VoronoiCellsPage />} />
+          <Route path="/components/slime-mold"           element={<SlimeMoldPage />} />
         </Routes>
       </Suspense>
     </Layout>

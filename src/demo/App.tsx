@@ -6,7 +6,6 @@ import { Starfield } from "../components/Starfield";
 import { FireEffect } from "../components/FireEffect";
 import { AudioVisualizer } from "../components/AudioVisualizer";
 import { Confetti } from "../components/Confetti";
-import { RippleEffect } from "../components/RippleEffect";
 import { NoiseGradient } from "../components/NoiseGradient";
 import { PixelDissolve } from "../components/PixelDissolve";
 import { ConstellationMap } from "../components/ConstellationMap";
@@ -521,13 +520,6 @@ const icons: Record<string, React.ReactNode> = {
       <rect x="8" y="10" width="2" height="3" rx="0.5" fill="currentColor" opacity=".6" transform="rotate(15 8 10)" />
     </svg>
   ),
-  RippleEffect: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="8" cy="8" r="4.5" stroke="currentColor" strokeWidth="1" opacity=".5" />
-      <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="0.75" opacity=".25" />
-    </svg>
-  ),
   NoiseGradient: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <rect x="1" y="1" width="14" height="14" rx="3" fill="url(#ng-grad)" />
@@ -701,7 +693,6 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   FireEffect: { desc: "Pixel-level fire simulation with 4 palettes", accent: "#ff6b35" },
   AudioVisualizer: { desc: "Real-time Web Audio API visualizer, 4 modes", accent: "#9ca3af" },
   Confetti: { desc: "Physics-based celebration burst or continuous rain", accent: "#ffd700" },
-  RippleEffect: { desc: "Expanding ring animations from click or auto", accent: "#9ca3af" },
   NoiseGradient: { desc: "Animated Perlin noise color gradient", accent: "#38ef7d" },
   PixelDissolve: { desc: "Pixelated dissolve transition overlay for any content", accent: "#bf5fff" },
   ConstellationMap: { desc: "Draggable star map with dynamic constellation lines", accent: "#8888ff" },
@@ -725,14 +716,14 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
 type ComponentId =
   | "MatrixRain" | "ConstellationMap" | "FluidSimulation" | "FlowField" | "Boids"
   | "GlitchOverlay" | "PixelDissolve" | "Confetti" | "AudioVisualizer" | "Mandala"
-  | "Spotlight" | "Starfield" | "NoiseGradient" | "RippleEffect" | "Shockwave"
+  | "Spotlight" | "Starfield" | "NoiseGradient" | "Shockwave"
   | "Fireworks" | "Wormhole" | "ClothSimulation" | "MagneticBlob" | "GameOfLife"
   | "Rain" | "Lightning" | "FireEffect" | "LiveChart" | "ParticleField";
 
 const ALL_COMPONENTS: ComponentId[] = [
   "MatrixRain", "ConstellationMap", "FluidSimulation", "FlowField", "Boids",
   "GlitchOverlay", "PixelDissolve", "Confetti", "AudioVisualizer", "Mandala",
-  "Spotlight", "Starfield", "NoiseGradient", "RippleEffect", "Shockwave",
+  "Spotlight", "Starfield", "NoiseGradient", "Shockwave",
   "Fireworks", "Wormhole", "ClothSimulation", "MagneticBlob", "GameOfLife",
   "Rain", "Lightning", "FireEffect", "LiveChart", "ParticleField",
 ];
@@ -1230,56 +1221,6 @@ const [show, setShow] = useState(false);
   );
 }
 
-function RippleEffectPanel() {
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("transparent");
-  const [maxR, setMaxR] = useState(150);
-  const [speed, setSpeed] = useState(2);
-  const [lw, setLw] = useState(1.5);
-  const [decay, setDecay] = useState(0.8);
-  const [multi, setMulti] = useState(true);
-  const [interact, setInteract] = useState(true);
-
-  const code = `import { RippleEffect } from 'own-the-canvas';
-
-<RippleEffect
-  color="${color}"
-  maxRadius={${maxR}}
-  speed={${speed}}
-  interactive={${interact}}
-/>`;
-
-  return (
-    <>
-      <div className="canvas-wrap" style={{ background: "#04040a" }}>
-        <div className="canvas-wrap-inner">
-          <RippleEffect color={color} maxRadius={maxR} speed={speed}
-            lineWidth={lw} decay={decay} multiRipple={multi}
-            backgroundColor={bg} interactive={interact}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>{interact ? "Click canvas to ripple" : "Auto-ripple mode"}</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="RippleEffect" />
-        <div className="ctrl-body">
-          <div className="ctl-section">
-            <ColorPicker label="Color" value={color} onChange={setColor} />
-            <ColorPicker label="Background" value={bg} onChange={setBg} />
-            <Slider label="Max radius" value={maxR} min={30} max={400} step={10} onChange={setMaxR} />
-            <Slider label="Speed" value={speed} min={0.5} max={10} step={0.5} onChange={setSpeed} />
-            <Slider label="Line width" value={lw} min={0.5} max={5} step={0.5} onChange={setLw} />
-            <Slider label="Decay rate" value={decay} min={0.1} max={2} step={0.1} onChange={setDecay} />
-          </div>
-          <Divider />
-          <Toggle label="Multi ripple" value={multi} onChange={setMulti} />
-          <Toggle label="Click to ripple" value={interact} onChange={setInteract} />
-        </div>
-      </div>
-    </>
-  );
-}
 
 const NOISE_PRESETS: Record<string, string[]> = {
   "Monochrome": ["#0a0a0a", "#2d2d2d", "#6b7280", "#d1d5db", "#f5f5f5"],
@@ -2170,7 +2111,6 @@ const PANELS: Record<ComponentId, React.FC> = {
   FireEffect: FireEffectPanel,
   AudioVisualizer: AudioVisualizerPanel,
   Confetti: ConfettiPanel,
-  RippleEffect: RippleEffectPanel,
   NoiseGradient: NoiseGradientPanel,
   PixelDissolve: PixelDissolvePanel,
   ConstellationMap: ConstellationMapPanel,

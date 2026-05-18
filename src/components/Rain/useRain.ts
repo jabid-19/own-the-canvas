@@ -131,11 +131,10 @@ export function useRain(
           d.y += d.speed;
 
           // Gradient streak: transparent tail → opaque head
-          const angle = Math.atan2(d.speed, wOff);
-          const sinA = Math.sin(angle);
-          const cosA = Math.cos(angle);
-          const tailX = d.x - sinA * d.length;
-          const tailY = d.y - cosA * d.length;
+          // Velocity vector is (wOff, d.speed) in canvas coords (y-down)
+          const vLen = Math.sqrt(wOff * wOff + d.speed * d.speed) || 1;
+          const tailX = d.x - (wOff / vLen) * d.length;
+          const tailY = d.y - (d.speed / vLen) * d.length;
 
           const grad = ctx.createLinearGradient(tailX, tailY, d.x, d.y);
           grad.addColorStop(0, `rgba(${dropRgb},0)`);
@@ -155,9 +154,9 @@ export function useRain(
               ripplesRef.current.push({
                 x: d.x, y: h,
                 r: 0,
-                maxR: 4 + Math.random() * 7,
+                maxR: 8 + Math.random() * 12,
                 life: 0,
-                maxLife: 20 + Math.floor(Math.random() * 20),
+                maxLife: 25 + Math.floor(Math.random() * 25),
               });
             }
             drops[i] = makeDrop();
@@ -174,7 +173,7 @@ export function useRain(
         const rip = ripples[i];
         rip.life++;
         rip.r = (rip.life / rip.maxLife) * rip.maxR;
-        const alpha = (1 - rip.life / rip.maxLife) * 0.45;
+        const alpha = (1 - rip.life / rip.maxLife) * 0.75;
         if (alpha <= 0 || rip.life >= rip.maxLife) { ripples.splice(i, 1); continue; }
 
         ctx.save();
@@ -183,7 +182,7 @@ export function useRain(
         ctx.beginPath();
         ctx.arc(0, 0, rip.r, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(${splashRgb},${alpha})`;
-        ctx.lineWidth = 0.8;
+        ctx.lineWidth = 1.2;
         ctx.stroke();
         ctx.restore();
       }

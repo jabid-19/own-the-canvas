@@ -1,30 +1,65 @@
 import { useRef, useEffect, RefObject } from "react";
 
+export type SpirographColorMode = "solid" | "cycle" | "gradient";
+
 export interface UseSpirographOptions {
   outerRadius: number;
   innerRadius: number;
   penDistance: number;
   speed: number;
   color: string;
+  color2: string;
   backgroundColor: string;
   lineWidth: number;
   trailFade: number;
   animated: boolean;
   autoReset: boolean;
+  layerCount: number;
+  colorMode: SpirographColorMode;
+  symmetry: number;
+  glowEffect: boolean;
+  glowBlur: number;
 }
 
 function gcd(a: number, b: number): number {
   a = Math.abs(Math.round(a));
   b = Math.abs(Math.round(b));
-  while (b > 0) {
-    [a, b] = [b, a % b];
-  }
+  while (b > 0) [a, b] = [b, a % b];
   return a || 1;
 }
 
 function period(R: number, r: number): number {
   const g = gcd(R, r);
   return 2 * Math.PI * (r / g);
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  const clean = hex.replace("#", "");
+  const full = clean.length === 3
+    ? clean.split("").map(c => c + c).join("")
+    : clean;
+  const n = parseInt(full, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function lerpColor(a: string, b: string, t: number): string {
+  const [ar, ag, ab] = hexToRgb(a);
+  const [br, bg, bb] = hexToRgb(b);
+  const r = Math.round(ar + (br - ar) * t);
+  const g = Math.round(ag + (bg - ag) * t);
+  const bl = Math.round(ab + (bb - ab) * t);
+  return `rgb(${r},${g},${bl})`;
+}
+
+interface SpiroLayer {
+  t: number;
+  prevX: number;
+  prevY: number;
+  R: number;
+  r: number;
+  d: number;
+  fullPeriod: number;
+  hueOffset: number;
 }
 
 export function useSpirograph(
@@ -46,57 +81,69 @@ export function useSpirograph(
     let w = 0;
     let h = 0;
 
-    // curve state — recalculated whenever params change
-    let t = 0;
-    let prevX = 0;
-    let prevY = 0;
-    let R = 0;
-    let r = 0;
-    let d = 0;
-    let fullPeriod = 0;
+    let layers: SpiroLayer[] = [];
 
-    // track prev params to detect changes in draw loop
     let prevOuter = -1;
     let prevInner = -1;
     let prevPen = -1;
+    let prevLayerCount = -1;
     let isFirstDraw = true;
 
-    function computePoint(angle: number): [number, number] {
+    function computePoint(layer: SpiroLayer, angle: number): [number, number] {
       const cx = w / 2;
       const cy = h / 2;
-      const x = cx + (R - r) * Math.cos(angle) + d * Math.cos(((R - r) / r) * angle);
-      const y = cy + (R - r) * Math.sin(angle) - d * Math.sin(((R - r) / r) * angle);
+      const x = cx + (layer.R - layer.r) * Math.cos(angle) + layer.d * Math.cos(((layer.R - layer.r) / layer.r) * angle);
+      const y = cy + (layer.R - layer.r) * Math.sin(angle) - layer.d * Math.sin(((layer.R - layer.r) / layer.r) * angle);
       return [x, y];
     }
 
-    function applyParams(randomize: boolean) {
+    function buildLayer(index: number, total: number, randomize: boolean): SpiroLayer {
       const { outerRadius, innerRadius, penDistance } = optionsRef.current;
       const minDim = Math.min(w, h);
-      R = (minDim / 2) * outerRadius;
+      const R = (minDim / 2) * outerRadius;
 
+      const spread = 0.12;
+      const offset = total > 1 ? (index / (total - 1) - 0.5) * spread : 0;
+
+      let r: number;
+      let d: number;
       if (randomize) {
-        r = R * (innerRadius * (0.85 + Math.random() * 0.3));
-        d = r * (penDistance * (0.8 + Math.random() * 0.4));
+        r = R * Math.max(0.05, innerRadius + offset + (Math.random() - 0.5) * 0.08);
+        d = r * Math.max(0.05, penDistance * (0.85 + Math.random() * 0.3));
       } else {
-        r = R * innerRadius;
-        d = r * penDistance;
+        r = R * Math.max(0.05, innerRadius + offset);
+        d = r * Math.max(0.05, penDistance);
       }
+
       r = Math.max(1, r);
       d = Math.max(0.1, d);
-      fullPeriod = period(R, r);
-      t = 0;
 
+      const fp = period(R, r);
+      const hueOffset = (index / Math.max(1, total)) * 360;
+      const layer: SpiroLayer = { t: 0, prevX: 0, prevY: 0, R, r, d, fullPeriod: fp, hueOffset };
+      const [px, py] = computePoint(layer, 0);
+      layer.prevX = px;
+      layer.prevY = py;
+      return layer;
+    }
+
+    function applyParams(randomize: boolean) {
+      const { outerRadius, innerRadius, penDistance, layerCount } = optionsRef.current;
+      layers = [];
+      for (let i = 0; i < layerCount; i++) {
+        layers.push(buildLayer(i, layerCount, randomize));
+      }
       prevOuter = outerRadius;
       prevInner = innerRadius;
       prevPen = penDistance;
-
-      const [px, py] = computePoint(0);
-      prevX = px;
-      prevY = py;
+      prevLayerCount = layerCount;
     }
 
     function clearCanvas() {
-      ctx.fillStyle = optionsRef.current.backgroundColor;
+      const { backgroundColor } = optionsRef.current;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, w, h);
     }
 
@@ -109,7 +156,6 @@ export function useSpirograph(
       canvas!.style.width = `${w}px`;
       canvas!.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
       clearCanvas();
       isFirstDraw = true;
       applyParams(false);
@@ -125,14 +171,72 @@ export function useSpirograph(
 
     let lastTime = 0;
 
+    function strokeSegment(
+      x1: number, y1: number,
+      x2: number, y2: number,
+      strokeColor: string,
+      lw: number,
+      glow: boolean,
+      blur: number,
+    ) {
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = lw;
+      ctx.lineCap = "round";
+      if (glow) {
+        ctx.shadowColor = strokeColor;
+        ctx.shadowBlur = blur;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+
+    function rotateAround(cx: number, cy: number, x: number, y: number, angle: number): [number, number] {
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      const dx = x - cx;
+      const dy = y - cy;
+      return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
+    }
+
+    function getLayerColor(layer: SpiroLayer, layerIdx: number): string {
+      const { colorMode, color, color2 } = optionsRef.current;
+      if (colorMode === "cycle") {
+        const hue = (layer.hueOffset + (layer.t / layer.fullPeriod) * 360) % 360;
+        return `hsl(${hue}, 100%, 65%)`;
+      }
+      if (colorMode === "gradient") {
+        const t = Math.min(1, layer.t / layer.fullPeriod);
+        return lerpColor(color, color2, t);
+      }
+      // solid — per-layer hue shift if multiple layers
+      if (optionsRef.current.layerCount > 1 && colorMode === "solid") {
+        const hue = (layerIdx / optionsRef.current.layerCount) * 360;
+        return `hsl(${hue}, 80%, 70%)`;
+      }
+      return color;
+    }
+
     function draw(timestamp: number) {
       const dt = lastTime ? Math.min(timestamp - lastTime, 50) : 16;
       lastTime = timestamp;
 
-      const { outerRadius, innerRadius, penDistance, speed, color, backgroundColor, lineWidth, trailFade, animated, autoReset } = optionsRef.current;
+      const {
+        outerRadius, innerRadius, penDistance, layerCount,
+        speed, backgroundColor, lineWidth, trailFade,
+        animated, autoReset, symmetry, glowEffect, glowBlur,
+        colorMode,
+      } = optionsRef.current;
 
-      // detect curve param changes → reset drawing with new shape
-      if (!isFirstDraw && (outerRadius !== prevOuter || innerRadius !== prevInner || penDistance !== prevPen)) {
+      // detect curve param changes → rebuild layers
+      if (
+        !isFirstDraw &&
+        (outerRadius !== prevOuter || innerRadius !== prevInner ||
+          penDistance !== prevPen || layerCount !== prevLayerCount)
+      ) {
         applyParams(false);
         clearCanvas();
       }
@@ -145,34 +249,55 @@ export function useSpirograph(
 
       // fade trail
       if (trailFade > 0) {
-        ctx.fillStyle = backgroundColor;
+        ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = Math.min(1, trailFade * (dt / 16));
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, w, h);
         ctx.globalAlpha = 1;
       }
 
-      // advance angle
+      ctx.globalCompositeOperation = colorMode === "cycle" ? "screen" : "source-over";
+
       const step = (speed * Math.PI / 180) * (dt / 16);
       const subSteps = Math.max(1, Math.ceil(step / 0.02));
       const subStep = step / subSteps;
 
-      ctx.strokeStyle = color;
-      ctx.lineWidth = lineWidth;
-      ctx.lineCap = "round";
+      const cx = w / 2;
+      const cy = h / 2;
+      const symAngle = (2 * Math.PI) / symmetry;
 
-      for (let s = 0; s < subSteps; s++) {
-        t += subStep;
-        const [x, y] = computePoint(t);
-        ctx.beginPath();
-        ctx.moveTo(prevX, prevY);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        prevX = x;
-        prevY = y;
+      let anyComplete = false;
+
+      for (let li = 0; li < layers.length; li++) {
+        const layer = layers[li];
+        const strokeColor = getLayerColor(layer, li);
+
+        for (let s = 0; s < subSteps; s++) {
+          layer.t += subStep;
+          const [nx, ny] = computePoint(layer, layer.t);
+
+          for (let sym = 0; sym < symmetry; sym++) {
+            const angle = sym * symAngle;
+            const [rx1, ry1] = rotateAround(cx, cy, layer.prevX, layer.prevY, angle);
+            const [rx2, ry2] = rotateAround(cx, cy, nx, ny, angle);
+            strokeSegment(rx1, ry1, rx2, ry2, strokeColor, lineWidth, glowEffect, glowBlur);
+          }
+
+          layer.prevX = nx;
+          layer.prevY = ny;
+        }
+
+        if (layer.t >= layer.fullPeriod && autoReset) {
+          anyComplete = true;
+        }
       }
 
-      if (t >= fullPeriod && autoReset) {
-        applyParams(true); // slight randomization on cycle end
+      // reset glow for non-glow frames
+      if (!glowEffect) ctx.shadowBlur = 0;
+      ctx.globalCompositeOperation = "source-over";
+
+      if (anyComplete) {
+        applyParams(true);
         clearCanvas();
       }
 

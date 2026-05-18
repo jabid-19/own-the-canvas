@@ -4,7 +4,7 @@ const CSS = `
 .codeblock {
   background: var(--code-bg);
   border: 1px solid var(--code-border);
-  border-radius: var(--r);
+  border-radius: 0 0 var(--r) var(--r);
   overflow: hidden;
   font-family: var(--mono);
   font-size: 13.5px;
@@ -136,7 +136,7 @@ export function CodeBlock({ code, language = "tsx", showHeader = true }: CodeBlo
   const [copied, setCopied] = useState(false);
 
   function copy() {
-    navigator.clipboard.writeText(code).catch(() => {});
+    navigator.clipboard.writeText(code).catch(() => { });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }

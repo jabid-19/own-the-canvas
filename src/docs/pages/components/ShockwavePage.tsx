@@ -13,7 +13,7 @@ const PROPS = [
   { name: "maxRadius",       type: "number",  default: "200",           description: "Max radius before ring fades." },
   { name: "lineWidth",       type: "number",  default: "2",             description: "Stroke line width." },
   { name: "fadeSpeed",       type: "number",  default: "0.02",          description: "Opacity decrease per frame." },
-  { name: "autoFire",        type: "boolean", default: "false",         description: "Auto-fire shockwaves without clicks." },
+  { name: "autoFire",        type: "boolean", default: "true",          description: "Auto-fire shockwaves without clicks." },
   { name: "autoInterval",    type: "number",  default: "2000",          description: "Interval between auto-fires in ms." },
   { name: "glowEffect",      type: "boolean", default: "true",          description: "Glow effect on rings." },
   { name: "glowBlur",        type: "number",  default: "15",            description: "Shadow blur for glow." },
@@ -28,7 +28,7 @@ function ShockwavePlayground() {
   const [color, setColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
   const [glow, setGlow] = useState(true);
-  const [autoFire, setAutoFire] = useState(false);
+  const [autoFire, setAutoFire] = useState(true);
 
   const code = [
     `import { Shockwave } from 'own-the-canvas';`,

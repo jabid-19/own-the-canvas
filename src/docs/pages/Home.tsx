@@ -8,15 +8,12 @@ import { ConstellationMap } from "../../components/ConstellationMap";
 import { FluidSimulation } from "../../components/FluidSimulation";
 import { FlowField } from "../../components/FlowField";
 import { Boids } from "../../components/Boids";
-import { GlitchOverlay } from "../../components/GlitchOverlay";
-import { PixelDissolve } from "../../components/PixelDissolve";
 import { Confetti } from "../../components/Confetti";
 import { AudioVisualizer } from "../../components/AudioVisualizer";
 import { Mandala } from "../../components/Mandala";
 import { Spotlight } from "../../components/Spotlight";
 import { Starfield } from "../../components/Starfield";
 import { NoiseGradient } from "../../components/NoiseGradient";
-import { RippleEffect } from "../../components/RippleEffect";
 import { Shockwave } from "../../components/Shockwave";
 import { Fireworks } from "../../components/Fireworks";
 import { Wormhole } from "../../components/Wormhole";
@@ -28,6 +25,17 @@ import { Lightning } from "../../components/Lightning";
 import { FireEffect } from "../../components/FireEffect";
 import { LiveChart } from "../../components/LiveChart";
 import { ParticleField } from "../../components/ParticleField";
+import { AuroraBorealis } from "../../components/AuroraBorealis";
+import { DiffusionAggregation } from "../../components/DiffusionAggregation";
+import { Kaleidoscope } from "../../components/Kaleidoscope";
+import { LSystem } from "../../components/LSystem";
+import { Lissajous } from "../../components/Lissajous";
+import { ReactionDiffusion } from "../../components/ReactionDiffusion";
+import { SandSimulation } from "../../components/SandSimulation";
+import { SlimeMold } from "../../components/SlimeMold";
+import { Spirograph } from "../../components/Spirograph";
+import { VoronoiCells } from "../../components/VoronoiCells";
+import { WaveInterference } from "../../components/WaveInterference";
 
 const CSS = `
 .home {
@@ -269,15 +277,12 @@ const COMPONENTS = [
   { name: "FluidSimulation", path: "/components/fluid-simulation", accent: "#06b6d4", desc: "Navier-Stokes ink fluid reacting to mouse movement", preview: <FluidSimulation width="100%" height="100%" /> },
   { name: "FlowField", path: "/components/flow-field", accent: "#9ca3af", desc: "Perlin noise vector field with particle streams", preview: <FlowField width="100%" height="100%" /> },
   { name: "Boids", path: "/components/boids", accent: "#f59e0b", desc: "Craig Reynolds' flocking — separation, alignment, cohesion", preview: <Boids width="100%" height="100%" /> },
-  { name: "GlitchOverlay", path: "/components/glitch-overlay", accent: "#00ffff", desc: "CRT scanlines, RGB shift, and block glitch", preview: <GlitchOverlay width="100%" height="100%" /> },
-  { name: "PixelDissolve", path: "/components/pixel-dissolve", accent: "#bf5fff", desc: "Pixelated dissolve transition overlay for any content", preview: <div style={{ background: "#111111", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><PixelDissolve trigger={false} width={200} height={120}><div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#111111,#555555)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "var(--mono)", fontSize: 14 }}>DISSOLVE</div></PixelDissolve></div> },
   { name: "Confetti", path: "/components/confetti", accent: "#ffd700", desc: "Physics-based celebration burst or continuous rain", preview: <Confetti trigger={true} particleCount={60} width="100%" height="100%" /> },
   { name: "AudioVisualizer", path: "/components/audio-visualizer", accent: "#9ca3af", desc: "Real-time Web Audio API visualizer, 4 modes", preview: <AudioVisualizer mode="bars" width="100%" height="100%" /> },
   { name: "Mandala", path: "/components/mandala", accent: "#f43f5e", desc: "N-fold rotational symmetry with organic petal layers", preview: <Mandala width="100%" height="100%" /> },
   { name: "Spotlight", path: "/components/spotlight", accent: "#e0b0ff", desc: "Mouse-following light reveal over dark overlay", preview: <Spotlight width="100%" height="100%" /> },
   { name: "Starfield", path: "/components/starfield", accent: "#b8bfff", desc: "2D twinkle or 3D warp-speed star tunnel", preview: <Starfield starCount={150} width="100%" height="100%" /> },
   { name: "NoiseGradient", path: "/components/noise-gradient", accent: "#38ef7d", desc: "Animated Perlin noise color gradient", preview: <NoiseGradient colors={["#111111", "#6b7280", "#ffffff"]} width="100%" height="100%" /> },
-  { name: "RippleEffect", path: "/components/ripple-effect", accent: "#9ca3af", desc: "Expanding ring animations — click or auto-trigger", preview: <RippleEffect interactive={false} width="100%" height="100%" /> },
   { name: "Shockwave", path: "/components/shockwave", accent: "#9ca3af", desc: "Click-triggered radial ring blast with glow", preview: <Shockwave width="100%" height="100%" /> },
   { name: "Fireworks", path: "/components/fireworks", accent: "#f59e0b", desc: "Physics shells, burst particles, and gravity trails", preview: <Fireworks width="100%" height="100%" /> },
   { name: "Wormhole", path: "/components/wormhole", accent: "#9ca3af", desc: "3D perspective tunnel with twisting rings and star field", preview: <Wormhole width="100%" height="100%" /> },
@@ -289,6 +294,17 @@ const COMPONENTS = [
   { name: "FireEffect", path: "/components/fire-effect", accent: "#ff6b35", desc: "Pixel-level fire simulation with 4 palettes", preview: <FireEffect width="100%" height="100%" /> },
   { name: "LiveChart", path: "/components/live-chart", accent: "#4ade80", desc: "Real-time animated line and area chart", preview: <LiveChart width="100%" height="100%" /> },
   { name: "ParticleField", path: "/components/particle-field", accent: "#9ca3af", desc: "Floating particles with interactive mouse connections", preview: <ParticleField particleCount={80} width="100%" height="100%" /> },
+  { name: "AuroraBorealis", path: "/components/aurora-borealis", accent: "#88ccff", desc: "Layered aurora bands waving across a starlit sky", preview: <AuroraBorealis width="100%" height="100%" /> },
+  { name: "DiffusionAggregation", path: "/components/diffusion-aggregation", accent: "#9ca3af", desc: "Diffusion-limited aggregation — crystal growth from random walkers", preview: <DiffusionAggregation width="100%" height="100%" /> },
+  { name: "Kaleidoscope", path: "/components/kaleidoscope", accent: "#c084fc", desc: "N-fold mirror symmetry with noise-driven color morphing", preview: <Kaleidoscope width="100%" height="100%" /> },
+  { name: "LSystem", path: "/components/l-system", accent: "#86efac", desc: "Lindenmayer system — fractal plant and curve generator", preview: <LSystem width="100%" height="100%" /> },
+  { name: "Lissajous", path: "/components/lissajous", accent: "#67e8f9", desc: "Animated Lissajous figures with phase-shifting parametric curves", preview: <Lissajous width="100%" height="100%" /> },
+  { name: "ReactionDiffusion", path: "/components/reaction-diffusion", accent: "#a3e635", desc: "Gray-Scott reaction-diffusion — Turing patterns emerge over time", preview: <ReactionDiffusion width="100%" height="100%" /> },
+  { name: "SandSimulation", path: "/components/sand-simulation", accent: "#fbbf24", desc: "Cellular automata falling sand with water and fire materials", preview: <SandSimulation width="100%" height="100%" /> },
+  { name: "SlimeMold", path: "/components/slime-mold", accent: "#86efac", desc: "Physarum polycephalum slime mold network simulation", preview: <SlimeMold width="100%" height="100%" /> },
+  { name: "Spirograph", path: "/components/spirograph", accent: "#f0abfc", desc: "Hypotrochoid curves drawn by simulated rolling circles", preview: <Spirograph width="100%" height="100%" /> },
+  { name: "VoronoiCells", path: "/components/voronoi-cells", accent: "#94a3b8", desc: "Animated Voronoi diagram with drifting seed points", preview: <VoronoiCells width="100%" height="100%" /> },
+  { name: "WaveInterference", path: "/components/wave-interference", accent: "#7dd3fc", desc: "Multi-source wave interference with constructive and destructive patterns", preview: <WaveInterference width="100%" height="100%" /> },
 ];
 
 const INSTALL_CMD = "npm install own-the-canvas";

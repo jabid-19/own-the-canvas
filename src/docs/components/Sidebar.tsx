@@ -15,7 +15,6 @@ const COMPONENT_LINKS = [
   { name: "Spotlight", path: "/components/spotlight" },
   { name: "Starfield", path: "/components/starfield" },
   { name: "NoiseGradient", path: "/components/noise-gradient" },
-  { name: "RippleEffect", path: "/components/ripple-effect" },
   { name: "Shockwave", path: "/components/shockwave" },
   { name: "Fireworks", path: "/components/fireworks" },
   { name: "Wormhole", path: "/components/wormhole" },
@@ -32,6 +31,12 @@ const COMPONENT_LINKS = [
   { name: "Spirograph", path: "/components/spirograph" },
   { name: "SandSimulation", path: "/components/sand-simulation" },
   { name: "WaveInterference", path: "/components/wave-interference" },
+  { name: "DiffusionAggregation", path: "/components/diffusion-aggregation" },
+  { name: "Lissajous",            path: "/components/lissajous" },
+  { name: "LSystem",              path: "/components/l-system" },
+  { name: "Kaleidoscope",         path: "/components/kaleidoscope" },
+  { name: "VoronoiCells",         path: "/components/voronoi-cells" },
+  { name: "SlimeMold",            path: "/components/slime-mold" },
 ];
 
 const CSS = `

@@ -8,7 +8,7 @@ const PROPS = [
   { name: "palette",     type: '"smoke" | "inferno" | "toxic" | "ice" | "plasma"', default: '"smoke"', description: "Color palette for the fire simulation." },
   { name: "intensity",   type: "number", default: "0.95", description: "Fire intensity (0–1). Higher = taller flames." },
   { name: "windStrength",type: "number", default: "0.3",  description: "Horizontal wind drift strength." },
-  { name: "spread",      type: "number", default: "0.7",  description: "Horizontal spread of the flame base." },
+  { name: "spread",      type: "number", default: "0",    description: "Horizontal spread of the flame base." },
   { name: "cooling",     type: "number", default: "0.3",  description: "Cooling rate. Higher = shorter flames." },
 ];
 
@@ -18,7 +18,7 @@ function FireEffectPlayground() {
   const [palette, setPalette] = useState<FirePalette>("smoke");
   const [intensity, setIntensity] = useState(0.95);
   const [wind, setWind] = useState(0.3);
-  const [spread, setSpread] = useState(0.7);
+  const [spread, setSpread] = useState(0);
   const [cooling, setCooling] = useState(0.3);
 
   const code = [
