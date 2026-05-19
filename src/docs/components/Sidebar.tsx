@@ -140,22 +140,24 @@ const CSS = `
 .sidebar-playground-link:hover { background: var(--accent-soft); color: var(--text-1); }
 .sidebar-playground-link.active { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
 
-.sidebar-mobile-toggle {
+.sidebar-close {
   display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 60;
-  width: 36px;
-  height: 36px;
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
   border-radius: var(--r-sm);
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: transparent;
   cursor: pointer;
   align-items: center;
   justify-content: center;
   color: var(--text-2);
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 150ms var(--ease), color 150ms var(--ease);
 }
+.sidebar-close:hover { background: var(--accent-soft); color: var(--text-1); }
 
 .sidebar-overlay {
   display: none;
@@ -177,6 +179,7 @@ const CSS = `
     position: fixed;
     top: 0;
     left: 0;
+    width: min(var(--sidebar-w), 85vw);
     height: 100%;
     z-index: 50;
     transform: translateX(-100%);
@@ -184,7 +187,7 @@ const CSS = `
     box-shadow: 4px 0 24px rgba(0,0,0,0.08);
   }
   .sidebar.open { transform: translateX(0); }
-  .sidebar-mobile-toggle { display: flex; }
+  .sidebar-close { display: flex; }
   .sidebar-overlay.open { display: block; }
 }
 `;
@@ -227,10 +230,15 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         aria-label="Docs navigation"
       >
         <div className="sidebar-logo-area">
-          <Link to="/" className="sidebar-logo">
+          <Link to="/" className="sidebar-logo" onClick={onClose}>
             <img className="sidebar-logo-img" src="/logo.png" alt="own-the-canvas logo" />
             <span className="sidebar-logo-name">own-the-canvas</span>
           </Link>
+          {onClose && (
+            <button className="sidebar-close" onClick={onClose} aria-label="Close navigation">
+              ✕
+            </button>
+          )}
         </div>
 
         <div className="sidebar-section">
@@ -267,18 +275,3 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   );
 }
 
-export function MobileMenuButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      className="sidebar-mobile-toggle"
-      onClick={onClick}
-      aria-label="Open navigation menu"
-    >
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor" />
-        <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="currentColor" />
-        <rect x="2" y="10.5" width="12" height="1.5" rx="0.75" fill="currentColor" />
-      </svg>
-    </button>
-  );
-}

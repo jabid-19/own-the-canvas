@@ -24,7 +24,7 @@ export function PSlider({ label, value, min, max, step, onChange }: {
       <span style={labelStyle}>{label}<span style={valueStyle}>{display}</span></span>
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(+e.target.value)}
-        style={{ width: 130, accentColor: "var(--accent)", flexShrink: 0 }} />
+        style={{ width: "100%", maxWidth: 130, accentColor: "var(--accent)", flexShrink: 0 }} />
     </div>
   );
 }
@@ -127,6 +127,20 @@ export function PLiveLabel({ text = "Live preview" }: { text?: string }) {
   );
 }
 
+const PLAYGROUND_CSS = `
+.playground-controls {
+  padding: 14px 18px;
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+}
+@media (max-width: 640px) {
+  .playground-controls { grid-template-columns: 1fr; }
+}
+`;
+
 // ─── Playground shell ─────────────────────────────────────────────────────────
 interface PlaygroundShellProps {
   preview: React.ReactNode;
@@ -140,17 +154,14 @@ export function PlaygroundShell({ preview, controls, code }: PlaygroundShellProp
       border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
       overflow: "hidden", marginBottom: 20,
     }}>
+      <style dangerouslySetInnerHTML={{ __html: PLAYGROUND_CSS }} />
       {/* Preview */}
       <div style={{ height: 300, position: "relative", overflow: "hidden" }}>
         {preview}
       </div>
 
-      {/* Controls — two-column grid */}
-      <div style={{
-        padding: "14px 18px", background: "var(--bg-subtle)",
-        borderTop: "1px solid var(--border)",
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 32px",
-      }}>
+      {/* Controls — two-column grid, single on mobile */}
+      <div className="playground-controls">
         {controls}
       </div>
 

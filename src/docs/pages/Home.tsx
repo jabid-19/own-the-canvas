@@ -263,11 +263,14 @@ const CSS = `
 }
 
 @media (max-width: 600px) {
-  .home { padding: 0 20px 60px; }
-  .home-topbar { padding: 0 20px; }
+  .home { padding: 0 16px 60px; }
+  .home-topbar { padding: 10px 16px; height: auto; }
   .home-hero { padding: 48px 0 40px; }
+  .home-hero-sub { font-size: 16px; }
+  .home-install-block { font-size: 13px; padding: 8px 14px; }
   .home-grid { grid-template-columns: 1fr; }
-  .home-stats { gap: 24px; }
+  .home-stats { gap: 20px; }
+  .home-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
 `;
 

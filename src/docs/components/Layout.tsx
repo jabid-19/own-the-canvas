@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Sidebar, MobileMenuButton } from "./Sidebar";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Sidebar } from "./Sidebar";
 
 const CSS = `
 .docs-shell {
@@ -12,15 +12,33 @@ const CSS = `
 .docs-topbar {
   display: none;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  padding: 0 20px;
+  padding: 0 16px;
   height: var(--topbar-h);
   border-bottom: 1px solid var(--border);
   background: var(--bg);
   flex-shrink: 0;
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 30;
 }
+
+.docs-topbar-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-2);
+  flex-shrink: 0;
+  transition: background 150ms var(--ease), color 150ms var(--ease);
+}
+.docs-topbar-hamburger:hover { background: var(--accent-soft); color: var(--text-1); }
 
 .docs-main {
   flex: 1;
@@ -47,14 +65,11 @@ const CSS = `
   text-decoration: none;
 }
 
-.docs-topbar-logo-icon {
-  width: 26px;
-  height: 26px;
+.docs-topbar-logo-img {
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
-  background: #111111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -64,16 +79,6 @@ const CSS = `
 }
 `;
 
-const LogoIcon = () => (
-  <div className="docs-topbar-logo-icon" aria-hidden="true">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <rect x="1" y="1" width="5" height="5" rx="1" fill="white" fillOpacity=".9" />
-      <rect x="8" y="1" width="5" height="5" rx="1" fill="white" fillOpacity=".5" />
-      <rect x="1" y="8" width="5" height="5" rx="1" fill="white" fillOpacity=".5" />
-      <rect x="8" y="8" width="5" height="5" rx="1" fill="white" fillOpacity=".9" />
-    </svg>
-  </div>
-);
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -81,18 +86,33 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="docs-shell">
         <Sidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
-        <MobileMenuButton onClick={() => setMobileOpen(true)} />
 
         <div className="docs-main">
           <header className="docs-topbar">
+            <button
+              className="docs-topbar-hamburger"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation menu"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor" />
+                <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="currentColor" />
+                <rect x="2" y="10.5" width="12" height="1.5" rx="0.75" fill="currentColor" />
+              </svg>
+            </button>
             <Link to="/" className="docs-topbar-logo">
-              <LogoIcon />
+              <img className="docs-topbar-logo-img" src="/logo.png" alt="own-the-canvas logo" />
               own-the-canvas
             </Link>
           </header>

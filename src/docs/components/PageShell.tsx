@@ -151,6 +151,9 @@ const CSS = `
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .page-table th {
   background: var(--bg-subtle);
