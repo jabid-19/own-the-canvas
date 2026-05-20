@@ -110,6 +110,10 @@ const CSS = `
   padding: 4px 12px;
   border-radius: 20px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  max-width: 100%;
 }
 
 .home-hero-title {
@@ -285,6 +289,7 @@ const CSS = `
   .home-grid { grid-template-columns: 1fr; }
   .home-stats { gap: 20px; }
   .home-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .home-hero-eyebrow { font-size: 10px; padding: 4px 10px; gap: 4px; letter-spacing: 0.05em; }
 }
 `;
 
