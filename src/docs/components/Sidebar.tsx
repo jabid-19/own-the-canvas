@@ -2,8 +2,9 @@ import React from "react";
 import { Link, NavLink, useMatch } from "react-router-dom";
 
 const COMPONENT_LINKS = [
+  { name: "DragonCursor", path: "/components/dragon-cursor" },
+  { name: "KoiPond", path: "/components/koi-pond" },
   { name: "MatrixRain", path: "/components/matrix-rain" },
-  { name: "ConstellationMap", path: "/components/constellation-map" },
   { name: "FluidSimulation", path: "/components/fluid-simulation" },
   { name: "FlowField", path: "/components/flow-field" },
   { name: "Boids", path: "/components/boids" },
@@ -18,6 +19,8 @@ const COMPONENT_LINKS = [
   { name: "Shockwave", path: "/components/shockwave" },
   { name: "Fireworks", path: "/components/fireworks" },
   { name: "Wormhole", path: "/components/wormhole" },
+  { name: "BubbleUniverse", path: "/components/bubble-universe" },
+  { name: "SakuraBlossom", path: "/components/sakura-blossom" },
   { name: "ClothSimulation", path: "/components/cloth-simulation" },
   { name: "MagneticBlob", path: "/components/magnetic-blob" },
   { name: "GameOfLife", path: "/components/game-of-life" },
@@ -47,6 +50,10 @@ const COMPONENT_LINKS = [
   { name: "AntColony", path: "/components/ant-colony" },
   { name: "MagneticField", path: "/components/magnetic-field" },
   { name: "TerrainMesh", path: "/components/terrain-mesh" },
+  { name: "BlackHole", path: "/components/black-hole" },
+  { name: "GalaxySpiral", path: "/components/galaxy-spiral" },
+  { name: "TornadoVortex", path: "/components/tornado-vortex" },
+  { name: "SolarFlare", path: "/components/solar-flare" },
 ];
 
 const CSS = `

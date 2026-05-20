@@ -18,7 +18,7 @@ const valueStyle: React.CSSProperties = {
 export function PSlider({ label, value, min, max, step, onChange }: {
   label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void;
 }) {
-  const display = Number.isInteger(step) ? value.toFixed(0) : value.toFixed(2).replace(/\.?0+$/, "");
+  const display = Number.isInteger(step) ? value.toFixed(0) : String(+value.toPrecision(3));
   return (
     <div style={row}>
       <span style={labelStyle}>{label}<span style={valueStyle}>{display}</span></span>

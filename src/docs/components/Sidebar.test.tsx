@@ -18,10 +18,10 @@ const componentNames = [
   "FireEffect",
   "AudioVisualizer",
   "Confetti",
-  "RippleEffect",
+  "DragonCursor",
   "NoiseGradient",
   "PixelDissolve",
-  "ConstellationMap",
+  "KoiPond",
 ];
 
 describe("Sidebar", () => {

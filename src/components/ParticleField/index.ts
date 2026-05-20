@@ -1,2 +1,2 @@
 export { ParticleField } from "./ParticleField";
-export type { ParticleFieldProps } from "./ParticleField";
+export type { ParticleFieldProps, ParticleLineStyle } from "./ParticleField";

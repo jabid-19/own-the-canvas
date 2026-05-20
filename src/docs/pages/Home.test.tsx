@@ -1,13 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
+import { HelmetProvider } from "react-helmet-async";
 import { Home } from "./Home";
 
 function Wrapper() {
   return (
-    <MemoryRouter>
-      <Home />
-    </MemoryRouter>
+    <HelmetProvider>
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+    </HelmetProvider>
   );
 }
 
@@ -17,10 +20,10 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders 10 component cards", () => {
+  it("renders 48 component cards", () => {
     render(<Wrapper />);
     const cards = screen.getAllByTestId("component-card");
-    expect(cards).toHaveLength(10);
+    expect(cards).toHaveLength(48);
   });
 
   it("renders install command", () => {

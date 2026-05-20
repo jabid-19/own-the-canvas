@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-**own-the-canvas** is a React component library of 45 canvas-based visual effects and animations, built entirely on the HTML Canvas 2D API with zero runtime dependencies. Every component is optimized for performance, highly customizable through props, and ships with full TypeScript support.
+**own-the-canvas** is a React component library of 52 canvas-based visual effects and animations, built entirely on the HTML Canvas 2D API with zero runtime dependencies. Every component is optimized for performance, highly customizable through props, and ships with full TypeScript support.
 
 | Field | Value |
 |---|---|
@@ -73,7 +73,7 @@ Every component uses `forwardRef`, exposing the underlying `HTMLCanvasElement` (
 ```
 own-the-canvas/
 ├── src/
-│   ├── index.ts                      # Barrel export — all 45 components + types
+│   ├── index.ts                      # Barrel export — all 52 components + types
 │   ├── types/
 │   │   └── index.ts                  # BaseCanvasProps, CanvasSetupOptions, CanvasSetupResult
 │   ├── hooks/
@@ -92,7 +92,6 @@ own-the-canvas/
 │   │   ├── Confetti/
 │   │   ├── NoiseGradient/
 │   │   ├── PixelDissolve/
-│   │   ├── ConstellationMap/
 │   │   ├── FlowField/
 │   │   ├── Spotlight/
 │   │   ├── Shockwave/
@@ -128,7 +127,15 @@ own-the-canvas/
 │   │   ├── Metaballs/
 │   │   ├── AntColony/
 │   │   ├── MagneticField/
-│   │   └── TerrainMesh/
+│   │   ├── TerrainMesh/
+│   │   ├── DragonCursor/
+│   │   ├── SakuraBlossom/
+│   │   ├── KoiPond/
+│   │   ├── BlackHole/
+│   │   ├── GalaxySpiral/
+│   │   ├── TornadoVortex/
+│   │   ├── BubbleUniverse/
+│   │   └── SolarFlare/
 │   └── docs/                         # Documentation site (not in lib bundle)
 │       ├── DocsApp.tsx
 │       ├── main.tsx
@@ -137,7 +144,7 @@ own-the-canvas/
 │       │   ├── Home.tsx
 │       │   ├── Overview.tsx
 │       │   ├── Playground.tsx
-│       │   └── components/           # 45 component playground pages
+│       │   └── components/           # 52 component playground pages
 │       └── components/               # Docs UI building blocks
 │           ├── CodeBlock.tsx         # Syntax-highlighted code
 │           ├── PropsTable.tsx        # Props documentation table
@@ -287,9 +294,9 @@ Falling character rain with customizable character sets, trail opacity, and spee
 
 ### 2. ParticleField
 
-Floating particles with optional proximity-based connection lines and mouse repulsion. Particles move with Brownian motion and bounce off invisible walls.
+Floating particles with optional proximity-based connection lines, mouse repulsion, drag-to-reposition, twinkling, glow, and edge wrapping. Merges the former ConstellationMap component — use presets `cosmos`, `aurora`, or `gold` for a constellation-style star field.
 
-**Presets:** `default` · `galaxy` · `snow` · `minimal` · `ocean`
+**Presets:** `default` · `galaxy` · `snow` · `minimal` · `ocean` · `cosmos` · `aurora` · `gold`
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -300,7 +307,7 @@ Floating particles with optional proximity-based connection lines and mouse repu
 | `particleSize` | `number` | `2.5` | Max particle radius in px |
 | `speed` | `number` | `0.8` | Base movement speed |
 | `connectParticles` | `boolean` | `true` | Draw lines between nearby particles |
-| `interactive` | `boolean` | `true` | Repel particles from mouse |
+| `interactive` | `boolean` | `true` | Repel particles from mouse cursor |
 | `backgroundColor` | `string` | `"transparent"` | Canvas background |
 | `repelRadius` | `number` | `80` | Mouse repulsion radius in px |
 | `repelStrength` | `number` | `0.3` | Mouse repulsion force |
@@ -308,6 +315,16 @@ Floating particles with optional proximity-based connection lines and mouse repu
 | `maxVelocityMultiplier` | `number` | `3` | Max velocity as multiple of speed |
 | `lineWidth` | `number` | `0.8` | Connection line stroke width |
 | `lineOpacity` | `number` | `0.6` | Max connection line opacity |
+| `wrapEdges` | `boolean` | `false` | Wrap particles around edges instead of bouncing |
+| `twinkle` | `boolean` | `false` | Enable twinkling opacity animation |
+| `twinkleSpeed` | `number` | `0.03` | Twinkling animation speed |
+| `twinkleAmplitude` | `number` | `0.4` | Twinkling opacity amplitude 0–1 |
+| `glowParticles` | `boolean` | `false` | Enable glow shadow on particles |
+| `glowBlur` | `number` | `15` | Glow shadow blur in px |
+| `lineStyle` | `"solid" \| "dashed"` | `"solid"` | Connection line stroke style |
+| `dragParticles` | `boolean` | `false` | Enable drag-to-reposition individual particles |
+| `dragRadius` | `number` | `20` | Drag detection radius in px |
+| `velocityMultiplier` | `number` | `2` | Initial velocity multiplier — set `0.3` for slow constellation drift |
 
 ---
 
@@ -458,34 +475,7 @@ Pixel-block dissolve transition overlay that can reveal or hide content beneath 
 
 ---
 
-### 9. ConstellationMap
-
-Draggable star constellation with animated connections, twinkling, and smooth drift. Stars can be repositioned by dragging.
-
-**Presets:** `default` · `cosmos` · `minimal` · `aurora` · `gold`
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `starCount` | `number` | `80` | Number of stars |
-| `starColor` | `string` | `"#ffffff"` | Star color |
-| `lineColor` | `string` | `"#6b7280"` | Connection line color |
-| `backgroundColor` | `string` | `"#111111"` | Background color |
-| `speed` | `number` | `0.3` | Star drift speed |
-| `interactive` | `boolean` | `true` | Enable drag-to-move stars |
-| `lineStyle` | `"solid" \| "dashed"` | `"solid"` | Connection line style |
-| `glowStars` | `boolean` | `true` | Glow effect on stars |
-| `connectionDistance` | `number` | `100` | Max distance for connections |
-| `velocityMultiplier` | `number` | `0.3` | Initial star speed multiplier |
-| `dragRadius` | `number` | `20` | Drag detection radius in px |
-| `twinkleSpeed` | `number` | `0.03` | Twinkle animation speed |
-| `lineAlpha` | `number` | `0.5` | Max line opacity |
-| `lineWidth` | `number` | `0.8` | Line stroke width |
-| `glowMultiplier` | `number` | `4` | Glow blur as multiple of star size |
-| `twinkleAmplitude` | `number` | `0.4` | Twinkle opacity amplitude |
-
----
-
-### 10. FlowField
+### 9. FlowField
 
 Perlin noise vector field guiding particle streams with optional curl noise for more organic swirling motion.
 
@@ -509,7 +499,7 @@ Default colors (monochrome): `["#ffffff", "#6b7280", "#9ca3af"]`
 
 ---
 
-### 11. Spotlight
+### 10. Spotlight
 
 Mouse-following spotlight effect with soft-edged radial overlay, optional glow ring, and ellipse shape support. Canvas sits as an absolute overlay over its container.
 
@@ -534,7 +524,7 @@ Mouse-following spotlight effect with soft-edged radial overlay, optional glow r
 
 ---
 
-### 12. Shockwave
+### 11. Shockwave
 
 Expanding multi-ring shockwave effect, alternating between two colors per ring. Can auto-fire on interval or be triggered by click.
 
@@ -558,7 +548,7 @@ Expanding multi-ring shockwave effect, alternating between two colors per ring. 
 
 ---
 
-### 13. Fireworks
+### 12. Fireworks
 
 Launching shells that explode into particle bursts. Shells arc upward and burst with physics-based particle trails and glow. Can auto-launch or be triggered by click.
 
@@ -585,7 +575,7 @@ Default colors (monochrome): `["#ffffff", "#e2e8f0", "#6b7280", "#9ca3af"]`
 
 ---
 
-### 14. GlitchOverlay
+### 13. GlitchOverlay
 
 Digital glitch effect with RGB channel separation, CRT scanlines, block-slice artifacts, and film noise. Designed as an absolute-positioned overlay.
 
@@ -609,7 +599,7 @@ Digital glitch effect with RGB channel separation, CRT scanlines, block-slice ar
 
 ---
 
-### 15. LiveChart
+### 14. LiveChart
 
 Real-time animated multi-series line chart with auto-scrolling, smooth bezier curves, grid overlay, and optional fill areas.
 
@@ -640,7 +630,7 @@ Real-time animated multi-series line chart with auto-scrolling, smooth bezier cu
 
 ---
 
-### 16. Mandala
+### 15. Mandala
 
 Rotating symmetrical geometric mandala with configurable rotational arms, concentric layers, bilateral mirroring, and organic noise distortion.
 
@@ -666,7 +656,7 @@ Default colors (monochrome): `["#ffffff", "#6b7280"]`
 
 ---
 
-### 17. MagneticBlob
+### 16. MagneticBlob
 
 Metaball blobs that merge and separate organically. Mouse attracts blobs. Uses marching-squares-style implicit surface rendering.
 
@@ -692,7 +682,7 @@ Default colors (monochrome): `["#ffffff", "#6b7280"]`
 
 ---
 
-### 18. ClothSimulation
+### 17. ClothSimulation
 
 Verlet integration physics cloth simulation with grid topology, configurable gravity, wind, friction, and optional cloth tearing on mouse drag.
 
@@ -722,7 +712,7 @@ Verlet integration physics cloth simulation with grid topology, configurable gra
 
 ---
 
-### 19. FluidSimulation
+### 18. FluidSimulation
 
 Navier-Stokes fluid solver on a grid. Mouse movement injects velocity and ink; auto-ink bursts fire at intervals for continuous motion without interaction.
 
@@ -747,7 +737,7 @@ Default colors (monochrome): `["#ffffff", "#6b7280", "#9ca3af"]`
 
 ---
 
-### 20. Rain
+### 19. Rain
 
 Falling rain drops with optional splash particles on impact. Wind drift oscillates sinusoidally.
 
@@ -769,7 +759,7 @@ Falling rain drops with optional splash particles on impact. Wind drift oscillat
 
 ---
 
-### 21. Lightning
+### 20. Lightning
 
 Fractal lightning bolts using midpoint displacement. Branching, flicker, and glow are all configurable. Click to trigger at cursor position.
 
@@ -794,7 +784,7 @@ Fractal lightning bolts using midpoint displacement. Branching, flicker, and glo
 
 ---
 
-### 22. GameOfLife
+### 21. GameOfLife
 
 Conway's Game of Life with age-based cell coloring, edge wrapping, and click-to-toggle interaction. Exposes an imperative handle for `reset()` and `randomize()`.
 
@@ -817,7 +807,7 @@ Conway's Game of Life with age-based cell coloring, edge wrapping, and click-to-
 
 ---
 
-### 23. Wormhole
+### 22. Wormhole
 
 Perspective tunnel of rotating rings creating a wormhole/hyperspace effect. Mouse X position controls tunnel speed when interactive.
 
@@ -842,7 +832,7 @@ Default colors (monochrome): `["#ffffff", "#6b7280"]`
 
 ---
 
-### 24. Boids
+### 23. Boids
 
 Reynolds boids flocking simulation with separation, alignment, and cohesion rules. Triangular agents with trails flee from mouse cursor.
 
@@ -870,7 +860,7 @@ Reynolds boids flocking simulation with separation, alignment, and cohesion rule
 
 ---
 
-### 25. ReactionDiffusion
+### 24. ReactionDiffusion
 
 Gray-Scott reaction-diffusion simulation. Two virtual chemicals (U and V) interact via autocatalysis to spontaneously grow coral, spots, maze, and traveling-wave patterns from random seeds. Mouse click+drag disturbs the chemical field.
 
@@ -891,7 +881,7 @@ Gray-Scott reaction-diffusion simulation. Two virtual chemicals (U and V) intera
 
 ---
 
-### 26. AuroraBorealis
+### 25. AuroraBorealis
 
 Animated northern lights with layered sine-wave curtains, vertical light streaks, and a star field. Uses additive screen blending to build luminous, overlapping color bands.
 
@@ -911,7 +901,7 @@ Animated northern lights with layered sine-wave curtains, vertical light streaks
 
 ---
 
-### 27. Spirograph
+### 26. Spirograph
 
 Hypotrochoid parametric curves drawn incrementally in real time. Supports multiple overlapping layers, rotational symmetry, hue-cycling, gradient color mode, and glow effects — produces petals, mandalas, stars, and fractal-like rosettes.
 
@@ -938,7 +928,7 @@ Hypotrochoid parametric curves drawn incrementally in real time. Supports multip
 
 ---
 
-### 28. SandSimulation
+### 27. SandSimulation
 
 Falling-sand cellular automaton. Paint sand, water, fire, and walls with your mouse and watch physics unfold — sand piles, water flows laterally, fire rises and extinguishes on contact with water, sand sinks through water.
 
@@ -961,7 +951,7 @@ Falling-sand cellular automaton. Paint sand, water, fire, and walls with your mo
 
 ---
 
-### 29. WaveInterference
+### 28. WaveInterference
 
 Real-time wave superposition from multiple point sources. Click to add sources, click an existing source to remove it. Constructive and destructive interference fringes appear and animate instantly.
 
@@ -982,7 +972,7 @@ Real-time wave superposition from multiple point sources. Click to add sources, 
 
 ---
 
-### 30. DiffusionAggregation
+### 29. DiffusionAggregation
 
 Diffusion-limited aggregation (DLA) — random walkers wander the canvas until they touch the growing cluster and freeze in place, producing fractal coral, snowflake, and lightning-strike structures.
 
@@ -1004,7 +994,7 @@ Diffusion-limited aggregation (DLA) — random walkers wander the canvas until t
 
 ---
 
-### 31. Lissajous
+### 30. Lissajous
 
 Parametric Lissajous curves that morph continuously as their phase difference advances. Adjusting frequency ratios reveals entirely different curve topologies — from simple ellipses to intricate 12-petaled flowers.
 
@@ -1030,7 +1020,7 @@ Parametric Lissajous curves that morph continuously as their phase difference ad
 
 ---
 
-### 32. LSystem
+### 31. LSystem
 
 Lindenmayer system fractals drawn incrementally — watch fractal trees, ferns, snowflakes, and dragon curves grow stroke by stroke. Each preset is a different grammar producing a completely different visual species.
 
@@ -1053,7 +1043,7 @@ Lindenmayer system fractals drawn incrementally — watch fractal trees, ferns, 
 
 ---
 
-### 33. Kaleidoscope
+### 32. Kaleidoscope
 
 Animated fractal noise folded into rotationally symmetric kaleidoscope patterns. Segments, rotation speed, and color pairing transform the same underlying noise into infinite visual variations.
 
@@ -1074,7 +1064,7 @@ Animated fractal noise folded into rotationally symmetric kaleidoscope patterns.
 
 ---
 
-### 34. VoronoiCells
+### 33. VoronoiCells
 
 Animated Voronoi diagram where seed points drift and self-organize via Lloyd relaxation. Click to add seeds, drag to reposition them — each cell continuously reshapes to fill its territory.
 
@@ -1096,7 +1086,7 @@ Animated Voronoi diagram where seed points drift and self-organize via Lloyd rel
 
 ---
 
-### 35. SlimeMold
+### 34. SlimeMold
 
 Physarum polycephalum simulation — thousands of agents deposit pheromone trails, sense ahead, and turn toward stronger concentrations. The emergent result is a self-organizing network of branching veins that evolves in real time.
 
@@ -1121,7 +1111,7 @@ Physarum polycephalum simulation — thousands of agents deposit pheromone trail
 
 ---
 
-### 36. InkBleed
+### 35. InkBleed
 
 Reaction-diffusion ink bleed simulation on a virtual paper surface. Each ink drop diffuses outward with wet-edge darkening. Click or drag to drop ink; auto-ink fires on interval for continuous motion.
 
@@ -1146,7 +1136,7 @@ Reaction-diffusion ink bleed simulation on a virtual paper surface. Each ink dro
 
 ---
 
-### 37. WatercolorBloom
+### 36. WatercolorBloom
 
 Layered watercolor bloom effect — each bloom expands as concentric semi-transparent ellipses with wet-edge darkening and organic noise distortion. Click to spawn blooms; auto-spawn fires at intervals.
 
@@ -1172,7 +1162,7 @@ Layered watercolor bloom effect — each bloom expands as concentric semi-transp
 
 ---
 
-### 38. PendulaWave
+### 37. PendulaWave
 
 Harmonograph — three coupled pendulums trace Lissajous-like closed curves. The phase-shift pendulum makes the curve rotate slowly and morph through families of patterns. Supports trail fading, damping, and gradient/hue-cycle color modes.
 
@@ -1199,7 +1189,7 @@ Harmonograph — three coupled pendulums trace Lissajous-like closed curves. The
 
 ---
 
-### 39. CrystalGrowth
+### 38. CrystalGrowth
 
 Crystallization simulation using a breadth-first frontier that spreads from seed points with configurable rotational symmetry. Each frame a batch of frontier cells crystallize; clicking the canvas seeds a new growth site.
 
@@ -1224,7 +1214,7 @@ Crystallization simulation using a breadth-first frontier that spreads from seed
 
 ---
 
-### 40. NeuralWeb
+### 39. NeuralWeb
 
 Animated neural network visualization — nodes drift slowly, connect to nearby neighbors, and fire traveling signal pulses that propagate hop-by-hop through the graph. Hover highlights connected edges; click fires a signal from that node.
 
@@ -1252,7 +1242,7 @@ Animated neural network visualization — nodes drift slowly, connect to nearby 
 
 ---
 
-### 41. ParticleText
+### 40. ParticleText
 
 Text rendered from thousands of particles — each particle spring-snaps to its target position in the letterform. Mouse cursor repels particles that scatter and reform. Changing the text re-samples a new letterform and particles animate to their new targets.
 
@@ -1278,7 +1268,7 @@ Text rendered from thousands of particles — each particle spring-snaps to its 
 
 ---
 
-### 42. Metaballs
+### 41. Metaballs
 
 Implicit-surface metaball renderer — blobs wander the canvas and merge smoothly when close, producing organic liquid-like unions. The field is evaluated per pixel via an offscreen ImageData grid. Click to add blobs; drag to reposition them.
 
@@ -1301,7 +1291,7 @@ Implicit-surface metaball renderer — blobs wander the canvas and merge smoothl
 
 ---
 
-### 43. AntColony
+### 42. AntColony
 
 Ant Colony Optimization stigmergy simulation — ants deposit food and home pheromone trails on a grid; others sense ahead and follow the strongest trail. Click to place food sources; ants discover them and build highways back to the nest.
 
@@ -1329,7 +1319,7 @@ Ant Colony Optimization stigmergy simulation — ants deposit food and home pher
 
 ---
 
-### 44. MagneticField
+### 43. MagneticField
 
 Interactive 2D magnetic dipole field visualizer. Field lines are traced via Euler integration from each pole. Drag poles to reposition them; click empty space to add a new pole (up to `maxPoles`); right-click a pole to remove it.
 
@@ -1355,7 +1345,7 @@ Interactive 2D magnetic dipole field visualizer. Field lines are traced via Eule
 
 ---
 
-### 45. TerrainMesh
+### 44. TerrainMesh
 
 3D wireframe terrain mesh generated from octave Perlin noise. Drag to orbit; auto-rotate rotates continuously. Height cache is invalidated only when grid parameters change, giving stable 60fps even at high grid density.
 
@@ -1383,6 +1373,180 @@ Interactive 2D magnetic dipole field visualizer. Field lines are traced via Eule
 
 ---
 
+### 45. DragonCursor
+
+Skeleton dragon that follows the cursor. Built from vertebra joints, curved ribs, bone wings with membrane arcs, and a skull with animated jaws and hollow eye sockets. Optional fire emission from the mouth.
+
+**Presets:** `default` · `emerald` · `inferno` · `void` · `ice`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `segmentCount` | `number` | `20` | Number of body segments |
+| `segmentSize` | `number` | `18` | Segment joint radius in px |
+| `bodyColor` | `string` | `"#ffffff"` | Bone body color |
+| `eyeColor` | `string` | `"#111111"` | Eye socket fill color |
+| `fireColor` | `string` | `"#ffffff"` | Fire particle color |
+| `backgroundColor` | `string` | `"transparent"` | Canvas background |
+| `followSpeed` | `number` | `0.15` | Head tracking speed (0–1) |
+| `wingSpan` | `number` | `60` | Wing extent in px |
+| `showFire` | `boolean` | `false` | Enable fire emission from mouth |
+| `interactive` | `boolean` | `true` | Dragon follows the cursor |
+
+---
+
+### 46. SakuraBlossom
+
+Cherry blossom petals drifting in wind with optional ground accumulation. Petals rotate realistically, respond to wind gusts, and pile up along the bottom edge.
+
+**Presets:** `default` · `sakura` · `autumn` · `snow` · `neon`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `petalCount` | `number` | `80` | Number of petals |
+| `petalColor` | `string` | `"#ffffff"` | Petal fill color |
+| `petalSize` | `number` | `8` | Petal size in px |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `gravity` | `number` | `0.06` | Downward gravity force |
+| `windStrength` | `number` | `0.8` | Horizontal wind force |
+| `windGusts` | `boolean` | `true` | Random wind gusts |
+| `showAccumulation` | `boolean` | `true` | Petals pile up at the bottom |
+| `maxAccumulation` | `number` | `40` | Max petal pile height in px |
+
+---
+
+### 47. KoiPond
+
+Animated koi fish swimming in a tranquil pond with water ripples, lily pads, and caustic light effects. Fish respond to cursor proximity.
+
+**Presets:** `default` · `koi` · `night` · `lotus` · `neon`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `fishCount` | `number` | `6` | Number of koi fish |
+| `fishColor` | `string` | `"#ffffff"` | Fish body color |
+| `scaleColor` | `string` | `"#6b7280"` | Scale pattern color |
+| `waterColor` | `string` | `"#111111"` | Pond water color |
+| `rippleColor` | `string` | `"#6b7280"` | Water ripple color |
+| `lilyColor` | `string` | `"#ffffff"` | Lily pad color |
+| `speed` | `number` | `1` | Fish movement speed multiplier |
+| `interactive` | `boolean` | `true` | Fish react to cursor |
+| `showLilies` | `boolean` | `true` | Render lily pads |
+| `caustics` | `boolean` | `true` | Caustic light shimmer on water |
+
+---
+
+### 48. BlackHole
+
+Accretion disk with relativistic lensing distortion, polar jets, and orbiting particle stream. Cursor controls the viewing angle interactively.
+
+**Presets:** `default` · `cosmic` · `inferno` · `neon` · `void`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `diskColor` | `string` | `"#ffffff"` | Accretion disk particle color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `particleCount` | `number` | `300` | Orbiting particle count |
+| `gravity` | `number` | `200` | Gravitational pull strength |
+| `eventHorizonRadius` | `number` | `30` | Event horizon radius in px |
+| `diskWidth` | `number` | `120` | Accretion disk radial width in px |
+| `jetColor` | `string` | `"#6b7280"` | Polar jet color |
+| `showJets` | `boolean` | `true` | Render relativistic jets |
+| `lensing` | `boolean` | `true` | Gravitational lensing distortion |
+| `speed` | `number` | `1` | Animation speed multiplier |
+| `interactive` | `boolean` | `true` | Cursor tilts viewing angle |
+
+---
+
+### 49. GalaxySpiral
+
+Rotating spiral galaxy with logarithmic arms, a glowing core, depth-sorted halo stars, and interactive tilt. Move the cursor to orbit around the galactic disk.
+
+**Presets:** `default` · `andromeda` · `neon` · `void` · `golden`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `starCount` | `number` | `3000` | Total star particle count |
+| `armCount` | `number` | `2` | Number of spiral arms |
+| `armTightness` | `number` | `0.5` | Arm winding tightness |
+| `coreColor` | `string` | `"#ffffff"` | Galactic core color |
+| `diskColor` | `string` | `"#6b7280"` | Outer disk star color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `rotationSpeed` | `number` | `0.0003` | Rotation speed in radians/frame |
+| `tiltX` | `number` | `0.3` | Initial disk tilt in radians |
+| `interactive` | `boolean` | `true` | Cursor tilts the viewing angle |
+| `coreGlow` | `boolean` | `true` | Core radial glow overlay |
+| `glowBlur` | `number` | `30` | Core glow shadow blur radius |
+
+---
+
+### 50. TornadoVortex
+
+Depth-sorted vortex funnel with rotating particles, ground dust, and lightning. All particles are always visible — depth cues are achieved via alpha and size rather than layer culling.
+
+**Presets:** `default` · `storm` · `fire` · `neon` · `void`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `particleCount` | `number` | `600` | Vortex particle count |
+| `funnelColor` | `string` | `"#ffffff"` | Funnel particle color |
+| `debrisColor` | `string` | `"#6b7280"` | Debris particle color |
+| `lightningColor` | `string` | `"#ffffff"` | Lightning bolt color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `rotationSpeed` | `number` | `3` | Angular rotation speed |
+| `funnelHeight` | `number` | `0.8` | Funnel height as fraction of canvas height |
+| `showLightning` | `boolean` | `true` | Random lightning bolts inside funnel |
+| `showGroundDust` | `boolean` | `true` | Ground dust cloud at base |
+| `interactive` | `boolean` | `true` | Cursor sways the funnel |
+| `speed` | `number` | `1` | Overall animation speed multiplier |
+
+---
+
+### 51. BubbleUniverse
+
+Physics-based bubble simulation with collision detection, merge-on-contact, glow, and shimmer. Bubbles bounce off walls and each other; click to pop.
+
+**Presets:** `default` · `soap` · `neon` · `deep` · `minimal`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `bubbleCount` | `number` | `15` | Initial bubble count |
+| `minRadius` | `number` | `20` | Minimum bubble radius in px |
+| `maxRadius` | `number` | `50` | Maximum bubble radius in px |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `shimmerColor` | `string` | `"#ffffff"` | Bubble shimmer highlight color |
+| `popEffect` | `boolean` | `true` | Pop animation on click |
+| `gravity` | `number` | `0.02` | Downward gravity force |
+| `friction` | `number` | `0.995` | Velocity friction per frame |
+| `interactive` | `boolean` | `true` | Click to pop bubbles |
+| `mergeOnCollide` | `boolean` | `true` | Bubbles merge when they overlap |
+| `glowEffect` | `boolean` | `true` | Glow around bubble edges |
+
+---
+
+### 52. SolarFlare
+
+Animated sun with convection cell surface, corona, and arcing solar flare particles. Click to trigger manual flares; auto-flare fires on a configurable interval.
+
+**Presets:** `default` · `inferno` · `plasma` · `neon` · `white-dwarf`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `sunColor` | `string` | `"#ffffff"` | Sun disk color |
+| `coronaColor` | `string` | `"#6b7280"` | Corona glow color |
+| `flareColor` | `string` | `"#ffffff"` | Flare particle color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `sunRadius` | `number` | `0.35` | Sun radius as fraction of min(width, height) |
+| `convectionCells` | `number` | `20` | Surface convection cell count |
+| `flareCount` | `number` | `3` | Max simultaneous active flares |
+| `autoFlare` | `boolean` | `true` | Automatically emit flares |
+| `autoFlareInterval` | `number` | `3000` | Ms between auto flares |
+| `interactive` | `boolean` | `true` | Click to trigger manual flares |
+| `glowEffect` | `boolean` | `true` | Corona glow overlay |
+| `glowBlur` | `number` | `40` | Corona glow shadow blur |
+| `speed` | `number` | `1` | Animation speed multiplier |
+
+---
+
 ## Documentation Site
 
 The docs site lives in `src/docs/` and is built as a separate Vite app (not included in the library bundle). It is deployed to Vercel.
@@ -1395,7 +1559,7 @@ The docs site lives in `src/docs/` and is built as a separate Vite app (not incl
 /components/matrix-rain        → MatrixRain docs + interactive playground
 /components/particle-field
 /components/starfield
-... (one route per component, 45 total)
+... (one route per component, 52 total)
 ```
 
 ### Documentation Components (`src/docs/components/`)
@@ -1460,6 +1624,7 @@ Every component exports its props interface:
 
 ```ts
 import type { MatrixRainProps, ParticleFieldProps, LiveChartSeries } from 'own-the-canvas';
+import type { ParticleLineStyle } from 'own-the-canvas';  // union: "solid" | "dashed"
 import type { SandMaterial } from 'own-the-canvas'; // union: "sand" | "water" | "fire" | "wall" | "erase"
 import type { DLASeedMode } from 'own-the-canvas';  // union: "center" | "ring" | "bottom"
 import type { LissajousColorMode } from 'own-the-canvas'; // union: "solid" | "cycle"
@@ -1483,14 +1648,14 @@ import type { BaseCanvasProps } from 'own-the-canvas';
 |---|---|
 | **Character / Text** | MatrixRain, ParticleText |
 | **Particles** | ParticleField, Confetti, Fireworks, Boids |
-| **Space / Cosmic** | Starfield, ConstellationMap, Wormhole, AuroraBorealis |
-| **Nature / Weather** | Rain, Lightning, FireEffect |
-| **Physics Simulations** | ClothSimulation, FluidSimulation, FlowField, MagneticBlob, SandSimulation, TerrainMesh |
+| **Space / Cosmic** | Starfield, Wormhole, AuroraBorealis, BlackHole, GalaxySpiral, SolarFlare |
+| **Nature / Weather** | Rain, Lightning, FireEffect, SakuraBlossom, TornadoVortex, KoiPond |
+| **Physics Simulations** | ClothSimulation, FluidSimulation, FlowField, MagneticBlob, SandSimulation, TerrainMesh, BubbleUniverse |
 | **Cellular / Algorithmic** | GameOfLife, NoiseGradient, ReactionDiffusion, DiffusionAggregation, Metaballs |
 | **Geometric / Patterns** | Mandala, Shockwave, Spirograph, Lissajous, Kaleidoscope, VoronoiCells, PendulaWave |
 | **Fractal / Generative** | LSystem, CrystalGrowth |
 | **Biological Simulations** | SlimeMold, AntColony |
-| **Interactive Overlays** | Spotlight, GlitchOverlay, PixelDissolve |
+| **Interactive Overlays** | Spotlight, GlitchOverlay, PixelDissolve, DragonCursor |
 | **Data Visualization** | LiveChart, WaveInterference, MagneticField |
 | **Audio** | AudioVisualizer |
 | **Generative Art** | InkBleed, WatercolorBloom |

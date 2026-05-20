@@ -1,12 +1,20 @@
 <p align="left">
-  <img src="https://raw.githubusercontent.com/jabid-19/own-the-canvas/main/.github/assets/logo.png" alt="own-the-canvas logo" width="120" />
+  <img src="https://raw.githubusercontent.com/jabid-19/own-the-canvas/main/.github/assets/logo.png" alt="own-the-canvas logo" width="100" />
 </p>
 
 # own-the-canvas
 
-Beautiful, responsive, fully customizable HTML canvas–based React visual components. Zero dependencies. TypeScript.
+**52 canvas-based React visual components. Zero dependencies. TypeScript.**
+
+[![npm version](https://img.shields.io/npm/v/own-the-canvas?style=flat-square&color=555555)](https://www.npmjs.com/package/own-the-canvas)
+[![license](https://img.shields.io/npm/l/own-the-canvas?style=flat-square&color=555555)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-555555?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![zero deps](https://img.shields.io/badge/dependencies-0-555555?style=flat-square)](https://www.npmjs.com/package/own-the-canvas)
+[![React](https://img.shields.io/badge/React-18%2B-555555?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 
 ![own-the-canvas cover](https://raw.githubusercontent.com/jabid-19/own-the-canvas/main/.github/assets/cover.png)
+
+---
 
 ## Install
 
@@ -14,6 +22,8 @@ Beautiful, responsive, fully customizable HTML canvas–based React visual compo
 npm install own-the-canvas
 # or
 pnpm add own-the-canvas
+# or
+yarn add own-the-canvas
 ```
 
 > **Peer deps:** React 18+
@@ -22,300 +32,288 @@ pnpm add own-the-canvas
 
 ## Quick Start
 
+Every component fills its parent container by default. Drop it in and it works.
+
 ```tsx
-import { MatrixRain, ParticleField, Starfield } from "own-the-canvas";
+import { DragonCursor, MatrixRain, ParticleText } from "own-the-canvas";
 
 export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <MatrixRain color="#00ff41" glowEffect />
+      <MatrixRain preset="cyberpunk" />
     </div>
   );
 }
 ```
 
-All components default to `width: "100%"` and `height: "100%"` so they fill their parent.
+All components accept a `preset` prop for instant themed defaults — override any individual prop on top.
 
 ---
 
-## Components
+## Featured Components
+
+### DragonCursor
+
+A sinuous dragon body that trails your cursor in real time. Segments, wings, optional fire breath — all configurable.
+
+**Presets:** `default · emerald · inferno · void · ice`
+
+```tsx
+import { DragonCursor } from "own-the-canvas";
+
+<DragonCursor preset="inferno" segmentCount={24} showFire wingSpan={70} />
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `segmentCount` | `number` | `20` | Body segment count |
+| `bodyColor` | `string` | `"#ffffff"` | Dragon body color |
+| `wingSpan` | `number` | `60` | Wing span in px |
+| `showFire` | `boolean` | `false` | Enable fire breath |
+| `followSpeed` | `number` | `0.15` | Cursor follow lerp speed |
+
+---
 
 ### MatrixRain
 
-Classic falling character rain effect.
+Falling character rain — katakana, latin, or binary. Per-column trail fade, variable speed, neon green or any color.
+
+**Presets:** `default · cyberpunk · binary · minimal · blood`
 
 ```tsx
 import { MatrixRain } from "own-the-canvas";
 
-<MatrixRain
-  color="#00ff41"
-  fontSize={16}
-  speed={1}
-  charset="katakana"
-  glowEffect
-/>;
+<MatrixRain color="#00ff41" charset="katakana" fontSize={16} speed={20} />
 ```
 
-| Prop              | Type                                          | Default              | Description                            |
-| ----------------- | --------------------------------------------- | -------------------- | -------------------------------------- |
-| `color`           | `string`                                      | `"#00ff41"`          | Character color                        |
-| `backgroundColor` | `string`                                      | `"rgba(0,0,0,0.05)"` | Canvas background (use rgba for trail) |
-| `fontSize`        | `number`                                      | `16`                 | Character font size in px              |
-| `speed`           | `number`                                      | `1`                  | Fall speed multiplier                  |
-| `charset`         | `"katakana" \| "latin" \| "binary" \| string` | `"katakana"`         | Character set                          |
-| `density`         | `number`                                      | `0.85`               | Column density 0–1                     |
-| `fadeStrength`    | `number`                                      | `0.05`               | Trail fade 0–1                         |
-| `glowEffect`      | `boolean`                                     | `true`               | Neon glow                              |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `string` | `"#ffffff"` | Character color |
+| `charset` | `"latin" \| "binary" \| "katakana" \| string` | `"latin"` | Character set |
+| `fontSize` | `number` | `14` | Font size in px |
+| `speed` | `number` | `33` | Ms per frame — lower = faster |
+| `backgroundColor` | `string` | `"rgba(17,17,17,0.1)"` | Per-frame overlay — controls trail length |
 
 ---
 
-### ParticleField
+### KoiPond
 
-Floating particles with optional connections and mouse repulsion.
+Living koi pond on canvas — fish navigate with organic steering, ripple on hover, lily pads float, caustic light dances.
+
+**Presets:** `default · koi · night · lotus · neon`
 
 ```tsx
-import { ParticleField } from "own-the-canvas";
+import { KoiPond } from "own-the-canvas";
 
-<ParticleField
-  particleCount={120}
-  particleColor="#7eb8f7"
-  connectParticles
-  interactive
-/>;
+<KoiPond preset="koi" fishCount={8} interactive showLilies caustics />
 ```
 
-| Prop               | Type      | Default         | Description                        |
-| ------------------ | --------- | --------------- | ---------------------------------- |
-| `particleCount`    | `number`  | `120`           | Number of particles                |
-| `particleColor`    | `string`  | `"#7eb8f7"`     | Particle fill color                |
-| `lineColor`        | `string`  | `"#7eb8f7"`     | Connection line color              |
-| `lineDistance`     | `number`  | `120`           | Max distance for lines             |
-| `particleSize`     | `number`  | `2.5`           | Max particle radius                |
-| `speed`            | `number`  | `0.8`           | Movement speed                     |
-| `connectParticles` | `boolean` | `true`          | Draw lines between close particles |
-| `interactive`      | `boolean` | `true`          | Repel on mouse move                |
-| `backgroundColor`  | `string`  | `"transparent"` | Background color                   |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `fishCount` | `number` | `6` | Number of koi fish |
+| `fishColor` | `string` | `"#ffffff"` | Fish body color |
+| `showLilies` | `boolean` | `true` | Render floating lily pads |
+| `caustics` | `boolean` | `true` | Caustic light shimmer |
+| `interactive` | `boolean` | `true` | React to mouse movement |
 
 ---
 
-### Starfield
+### FluidSimulation
 
-2D twinkle or 3D warp tunnel starfield.
+Real-time Navier-Stokes fluid solver. Move your mouse to inject velocity and ink — auto-bursts fire at intervals for continuous motion.
+
+**Presets:** `default · ink · neon · lava · ocean · smoke`
 
 ```tsx
-import { Starfield } from "own-the-canvas";
+import { FluidSimulation } from "own-the-canvas";
 
-<Starfield starCount={200} perspective="3D" speed={2} shootingStars />;
+<FluidSimulation
+  preset="neon"
+  inkColors={["#ff00ff", "#00ffff", "#7700ff"]}
+  resolution={80}
+/>
 ```
 
-| Prop                   | Type           | Default     | Description               |
-| ---------------------- | -------------- | ----------- | ------------------------- |
-| `starCount`            | `number`       | `200`       | Number of stars           |
-| `starColor`            | `string`       | `"#ffffff"` | Star color                |
-| `backgroundColor`      | `string`       | `"#000010"` | Background                |
-| `speed`                | `number`       | `0.5`       | Movement speed            |
-| `twinkle`              | `boolean`      | `true`      | Twinkle effect            |
-| `shootingStars`        | `boolean`      | `true`      | Shooting stars            |
-| `shootingStarInterval` | `number`       | `3000`      | Ms between shooting stars |
-| `perspective`          | `"2D" \| "3D"` | `"2D"`      | Flat or warp tunnel       |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `resolution` | `number` | `128` | Grid resolution 32–128 |
+| `inkColors` | `string[]` | monochrome | Ink colors |
+| `viscosity` | `number` | `0.0001` | Fluid viscosity |
+| `autoInk` | `boolean` | `true` | Auto-inject ink bursts |
+| `mouseForce` | `number` | `5` | Mouse velocity force multiplier |
+
+---
+
+### FlowField
+
+Perlin noise vector field guiding 800 particle streams. Enable `curl` for swirling, organic motion. Builds layered ink-like compositions over time.
+
+**Presets:** `default · neon · ocean · lava · forest · monochrome`
+
+```tsx
+import { FlowField } from "own-the-canvas";
+
+<FlowField
+  preset="ocean"
+  particleCount={1200}
+  curl
+  noiseScale={0.003}
+/>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `particleCount` | `number` | `800` | Number of flow particles |
+| `colors` | `string[]` | monochrome | Particle stroke colors |
+| `noiseScale` | `number` | `0.004` | Noise scale — lower = larger structures |
+| `curl` | `boolean` | `false` | Add curl noise for swirling flow |
+| `speed` | `number` | `1` | Flow speed multiplier |
+
+---
+
+### GlitchOverlay
+
+Digital glitch effect with RGB channel separation, CRT scanlines, block-slice artifacts, and film noise. Designed as an absolute-positioned overlay — zero configuration required.
+
+**Presets:** `default · crt · cyberpunk · subtle · corrupt`
+
+```tsx
+import { GlitchOverlay } from "own-the-canvas";
+
+<div style={{ position: "relative" }}>
+  <YourContent />
+  <GlitchOverlay preset="cyberpunk" intensity={0.8} rgbShift={12} />
+</div>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `intensity` | `number` | `0.6` | Glitch probability 0–1 |
+| `rgbShift` | `number` | `8` | RGB color shift in px |
+| `scanlines` | `boolean` | `true` | CRT scanline overlay |
+| `blockGlitch` | `boolean` | `true` | Block-slice glitch artifacts |
+| `flickerRate` | `number` | `0.02` | Screen flicker rate 0–1 |
+
+---
+
+### BubbleUniverse
+
+Physics-based soap bubbles that float, collide, merge on contact, and pop on click. Iridescent shimmer and glow included.
+
+**Presets:** `default · soap · neon · deep · minimal`
+
+```tsx
+import { BubbleUniverse } from "own-the-canvas";
+
+<BubbleUniverse preset="soap" bubbleCount={20} mergeOnCollide glowEffect />
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `bubbleCount` | `number` | `15` | Number of bubbles |
+| `mergeOnCollide` | `boolean` | `true` | Bubbles merge on collision |
+| `popEffect` | `boolean` | `true` | Pop animation on click |
+| `glowEffect` | `boolean` | `true` | Glow on bubbles |
+| `gravity` | `number` | `0.02` | Gravity strength |
+
+---
+
+### Rain
+
+Falling rain streaks with sinusoidal wind drift and splash particles on ground impact. Great as a layered overlay.
+
+**Presets:** `default · storm · drizzle · neon · golden`
+
+```tsx
+import { Rain } from "own-the-canvas";
+
+<Rain preset="storm" dropCount={400} wind={0.6} showSplashes />
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `dropCount` | `number` | `200` | Number of rain drops |
+| `speed` | `number` | `15` | Drop fall speed px/frame |
+| `wind` | `number` | `0.3` | Horizontal wind drift |
+| `dropColor` | `string` | `"#000000"` | Drop stroke color |
+| `showSplashes` | `boolean` | `true` | Splash particles on impact |
 
 ---
 
 ### FireEffect
 
-Pixel-level fire simulation with multiple palettes.
+Pixel-level cellular automaton fire. Heat seeds at the bottom row, rises with cooling and wind drift, maps to a palette. Five color themes.
+
+**Presets:** `default · inferno · toxic · ice · plasma`
 
 ```tsx
 import { FireEffect } from "own-the-canvas";
 
-<FireEffect palette="inferno" intensity={0.95} />;
+<FireEffect palette="inferno" intensity={0.95} windStrength={0.4} />
 ```
 
-| Prop            | Type                                        | Default     | Description          |
-| --------------- | ------------------------------------------- | ----------- | -------------------- |
-| `palette`       | `"inferno" \| "toxic" \| "ice" \| "plasma"` | `"inferno"` | Color theme          |
-| `intensity`     | `number`                                    | `0.95`      | Flame intensity 0–1  |
-| `windStrength`  | `number`                                    | `0.3`       | Horizontal wind 0–1  |
-| `windDirection` | `number`                                    | `1`         | 1 = right, -1 = left |
-| `spread`        | `number`                                    | `0.7`       | Flame spread 0–1     |
-| `cooling`       | `number`                                    | `0.3`       | Cooling rate 0–1     |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `palette` | `"smoke" \| "inferno" \| "toxic" \| "ice" \| "plasma"` | `"smoke"` | Color theme |
+| `intensity` | `number` | `0.95` | Flame intensity 0–1 |
+| `windStrength` | `number` | `0.3` | Horizontal wind -1 to 1 |
+| `cooling` | `number` | `0.3` | Cooling rate — higher = shorter flames |
+| `spread` | `number` | `0.7` | Flame spread 0–1 |
 
 ---
 
-### AudioVisualizer
+### ParticleText
 
-Web Audio API visualizer with 4 modes.
+Text rendered from thousands of particles — each springs to its position in the letterform. Mouse cursor repels them; they reform when it leaves.
+
+**Presets:** `default · neon · fire · frost · gold · minimal`
 
 ```tsx
-import { AudioVisualizer } from "own-the-canvas";
+import { ParticleText } from "own-the-canvas";
 
-const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-<AudioVisualizer audioSource={stream} mode="bars" barCount={64} gradient />;
+<ParticleText
+  text="HELLO"
+  preset="neon"
+  fontSize={140}
+  repelRadius={100}
+  repelForce={8}
+/>
 ```
 
-| Prop             | Type                                         | Default     | Description                              |
-| ---------------- | -------------------------------------------- | ----------- | ---------------------------------------- |
-| `audioSource`    | `MediaStream \| null`                        | `null`      | Audio stream (shows idle anim when null) |
-| `barCount`       | `number`                                     | `64`        | Number of frequency bars                 |
-| `barColor`       | `string`                                     | `"#00cfff"` | Bar fill color                           |
-| `waveColor`      | `string`                                     | `"#00cfff"` | Wave stroke color                        |
-| `mode`           | `"bars" \| "wave" \| "circular" \| "mirror"` | `"bars"`    | Visualization mode                       |
-| `sensitivity`    | `number`                                     | `1`         | Amplitude multiplier                     |
-| `gapBetweenBars` | `number`                                     | `2`         | Gap between bars (px)                    |
-| `rounded`        | `boolean`                                    | `true`      | Rounded bar caps                         |
-| `gradient`       | `boolean`                                    | `true`      | Color gradient on bars                   |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `text` | `string` | `"hello"` | Text to render as particles |
+| `fontSize` | `number` | `120` | Font size in px |
+| `color` | `string` | `"#ffffff"` | Particle color |
+| `repelRadius` | `number` | `80` | Mouse repulsion radius in px |
+| `repelForce` | `number` | `5` | Mouse repulsion force |
+| `snapSpeed` | `number` | `0.12` | Spring constant for snap-to-target |
 
 ---
 
-### Confetti
+## Base Props
 
-Burst or continuous confetti cannon.
+Every component accepts these props:
 
-```tsx
-import { Confetti } from 'own-the-canvas';
-const [fire, setFire] = useState(false);
-
-<Confetti trigger={fire} particleCount={150} />
-<button onClick={() => { setFire(false); setTimeout(() => setFire(true), 50); }}>
-  🎉
-</button>
-```
-
-| Prop            | Type              | Default     | Description                   |
-| --------------- | ----------------- | ----------- | ----------------------------- |
-| `trigger`       | `boolean`         | `false`     | Rising edge fires a burst     |
-| `particleCount` | `number`          | `150`       | Pieces per burst              |
-| `spread`        | `number`          | `0.8`       | Spread angle 0–1              |
-| `gravity`       | `number`          | `0.5`       | Gravity strength              |
-| `colors`        | `string[]`        | multi-color | Confetti colors               |
-| `shapes`        | `ConfettiShape[]` | all shapes  | Shapes to include             |
-| `duration`      | `number`          | `4000`      | Piece lifetime (ms)           |
-| `continuous`    | `boolean`         | `false`     | Trickle while trigger is true |
-| `wind`          | `number`          | `0.5`       | Horizontal wind               |
-
----
-
-### RippleEffect
-
-Expanding ring ripples on click or auto.
-
-```tsx
-import { RippleEffect } from "own-the-canvas";
-
-<RippleEffect color="#00cfff" maxRadius={150} interactive />;
-```
-
-| Prop              | Type      | Default         | Description                         |
-| ----------------- | --------- | --------------- | ----------------------------------- |
-| `color`           | `string`  | `"#00cfff"`     | Ring stroke color                   |
-| `maxRadius`       | `number`  | `150`           | Max ring radius                     |
-| `speed`           | `number`  | `2`             | Expansion speed                     |
-| `lineWidth`       | `number`  | `1.5`           | Stroke width                        |
-| `decay`           | `number`  | `0.8`           | Opacity decay rate                  |
-| `multiRipple`     | `boolean` | `true`          | Allow multiple simultaneous ripples |
-| `backgroundColor` | `string`  | `"transparent"` | Canvas background                   |
-| `interactive`     | `boolean` | `true`          | Spawn ripple on click               |
-
----
-
-### NoiseGradient
-
-Animated Perlin noise–driven color gradient.
-
-```tsx
-import { NoiseGradient } from "own-the-canvas";
-
-<NoiseGradient
-  colors={["#0d0221", "#2d1b69", "#11998e", "#38ef7d"]}
-  speed={0.3}
-  octaves={3}
-  animated
-/>;
-```
-
-| Prop        | Type       | Default         | Description            |
-| ----------- | ---------- | --------------- | ---------------------- |
-| `colors`    | `string[]` | deep space      | 2–5 hex gradient stops |
-| `speed`     | `number`   | `0.3`           | Animation speed        |
-| `scale`     | `number`   | `1`             | Noise zoom level       |
-| `octaves`   | `number`   | `3`             | Fractal detail 1–6     |
-| `animated`  | `boolean`  | `true`          | Enable animation       |
-| `blendMode` | `string`   | `"source-over"` | Canvas composite mode  |
-
----
-
-### PixelDissolve
-
-Pixelated dissolve transition overlay for any React content.
-
-```tsx
-import { PixelDissolve } from "own-the-canvas";
-
-<PixelDissolve trigger={show} direction="out" pixelSize={8}>
-  <YourComponent />
-</PixelDissolve>;
-```
-
-| Prop         | Type                      | Default     | Description                    |
-| ------------ | ------------------------- | ----------- | ------------------------------ |
-| `children`   | `ReactNode`               | —           | Content to dissolve over       |
-| `pixelSize`  | `number`                  | `8`         | Block size in px               |
-| `speed`      | `number`                  | `0.5`       | Animation speed 0–2            |
-| `direction`  | `"in" \| "out" \| "both"` | `"out"`     | Dissolve direction             |
-| `trigger`    | `boolean`                 | `false`     | Rising edge triggers animation |
-| `color`      | `string`                  | `"#0a0a0a"` | Pixel fill color               |
-| `onComplete` | `() => void`              | —           | Called when animation finishes |
-
----
-
-### ConstellationMap
-
-Draggable star constellation with animated connections.
-
-```tsx
-import { ConstellationMap } from "own-the-canvas";
-
-<ConstellationMap starCount={80} lineColor="#8888ff" interactive glowStars />;
-```
-
-| Prop                 | Type                  | Default     | Description            |
-| -------------------- | --------------------- | ----------- | ---------------------- |
-| `starCount`          | `number`              | `80`        | Number of stars        |
-| `starColor`          | `string`              | `"#ffffff"` | Star color             |
-| `lineColor`          | `string`              | `"#8888ff"` | Connection line color  |
-| `backgroundColor`    | `string`              | `"#050510"` | Background             |
-| `speed`              | `number`              | `0.3`       | Star drift speed       |
-| `interactive`        | `boolean`             | `true`      | Drag stars with mouse  |
-| `lineStyle`          | `"solid" \| "dashed"` | `"solid"`   | Line style             |
-| `glowStars`          | `boolean`             | `true`      | Glow on stars          |
-| `connectionDistance` | `number`              | `100`       | Max distance for lines |
-
----
-
-## Base Props (all components)
-
-Every component accepts these:
-
-| Prop        | Type                  | Default  |
-| ----------- | --------------------- | -------- |
-| `width`     | `number \| string`    | `"100%"` |
-| `height`    | `number \| string`    | `"100%"` |
-| `className` | `string`              | —        |
-| `style`     | `React.CSSProperties` | —        |
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `width` | `number \| string` | `"100%"` | Container width |
+| `height` | `number \| string` | `"100%"` | Container height |
+| `className` | `string` | — | CSS class on wrapper `<div>` |
+| `style` | `React.CSSProperties` | — | Inline styles on wrapper `<div>` |
+| `preset` | `string` | `"default"` | Named preset — sets themed defaults |
 
 All components use `forwardRef` — the ref is forwarded to the underlying `<canvas>` element.
 
 ---
 
-## Tree-shaking
+## 42 More Components
 
-Import only what you use:
+> Starfield · Fireworks · Boids · SlimeMold · GameOfLife · Kaleidoscope · ReactionDiffusion · AuroraBorealis · Spirograph · Lightning · ClothSimulation · VoronoiCells · NeuralWeb · Metaballs · AntColony · Wormhole · Mandala · MagneticBlob · WatercolorBloom · InkBleed · CrystalGrowth · SandSimulation · WaveInterference · LSystem · Lissajous · PendulaWave · DiffusionAggregation · TerrainMesh · MagneticField · Spotlight · Shockwave · Confetti · RippleEffect · NoiseGradient · PixelDissolve · AudioVisualizer · ParticleField · LiveChart · GalaxySpiral · SolarFlare · TornadoVortex · SakuraBlossom
 
-```tsx
-import { MatrixRain } from "own-the-canvas"; // ✓ only MatrixRain bundled
-import { ParticleField } from "own-the-canvas"; // ✓ only ParticleField bundled
-```
+Full docs, live previews, and interactive playground:
+
+**[own-the-canvas.vercel.app](https://own-the-canvas.vercel.app)**
 
 ---
 

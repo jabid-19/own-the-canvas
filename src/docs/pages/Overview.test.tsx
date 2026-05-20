@@ -1,13 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
+import { HelmetProvider } from "react-helmet-async";
 import { Overview } from "./Overview";
 
 function Wrapper() {
   return (
-    <MemoryRouter>
-      <Overview />
-    </MemoryRouter>
+    <HelmetProvider>
+      <MemoryRouter>
+        <Overview />
+      </MemoryRouter>
+    </HelmetProvider>
   );
 }
 

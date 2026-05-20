@@ -38,6 +38,6 @@ describe("Layout", () => {
         </Layout>
       </Wrapper>
     );
-    expect(screen.getByText(/own-the-canvas/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/own-the-canvas/i).length).toBeGreaterThan(0);
   });
 });

@@ -8,6 +8,7 @@ interface Particle {
   vy: number;
   size: number;
   opacity: number;
+  twinklePhase?: number;
 }
 
 export interface UseParticleFieldOptions {
@@ -26,6 +27,16 @@ export interface UseParticleFieldOptions {
   maxVelocityMultiplier: number;
   lineWidth: number;
   lineOpacity: number;
+  wrapEdges: boolean;
+  twinkle: boolean;
+  twinkleSpeed: number;
+  twinkleAmplitude: number;
+  glowParticles: boolean;
+  glowBlur: number;
+  lineStyle: "solid" | "dashed";
+  dragParticles: boolean;
+  dragRadius: number;
+  velocityMultiplier: number;
 }
 
 export function useParticleField(
@@ -34,11 +45,11 @@ export function useParticleField(
 ) {
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef<{ x: number; y: number } | null>(null);
+  const dragRef = useRef<{ particleIndex: number; offsetX: number; offsetY: number } | null>(null);
   const optionsRef = useRef(options);
   optionsRef.current = options;
   const rafRef = useRef<number>(0);
 
-  // Cache RGB strings so we don't recompute every frame
   const particleRgbRef = useRef<string>("");
   const lineRgbRef = useRef<string>("");
   const lastParticleColorRef = useRef<string>("");
@@ -62,14 +73,15 @@ export function useParticleField(
     let h = 0;
 
     function initParticles(width: number, height: number) {
-      const { particleCount, particleSize, speed } = optionsRef.current;
+      const { particleCount, particleSize, speed, velocityMultiplier, twinkle } = optionsRef.current;
       particlesRef.current = Array.from({ length: particleCount }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * speed * 2,
-        vy: (Math.random() - 0.5) * speed * 2,
+        vx: (Math.random() - 0.5) * speed * velocityMultiplier,
+        vy: (Math.random() - 0.5) * speed * velocityMultiplier,
         size: Math.random() * particleSize + particleSize * 0.4,
         opacity: Math.random() * 0.5 + 0.5,
+        twinklePhase: twinkle ? Math.random() * Math.PI * 2 : undefined,
       }));
     }
 
@@ -95,24 +107,62 @@ export function useParticleField(
     const rect = parent.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
 
-    function onMouseMove(e: MouseEvent) {
-      if (!optionsRef.current.interactive) return;
+    function getPos(e: MouseEvent) {
       const bounding = canvas.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - bounding.left, y: e.clientY - bounding.top };
+      return { x: e.clientX - bounding.left, y: e.clientY - bounding.top };
     }
+
+    function onMouseDown(e: MouseEvent) {
+      if (!optionsRef.current.dragParticles) return;
+      const { x, y } = getPos(e);
+      const particles = particlesRef.current;
+      const { dragRadius } = optionsRef.current;
+      let closest = -1;
+      let minDist = dragRadius;
+      for (let i = 0; i < particles.length; i++) {
+        const dx = particles[i].x - x;
+        const dy = particles[i].y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      }
+      if (closest !== -1) {
+        dragRef.current = { particleIndex: closest, offsetX: particles[closest].x - x, offsetY: particles[closest].y - y };
+      }
+    }
+
+    function onMouseMove(e: MouseEvent) {
+      const { x, y } = getPos(e);
+      if (dragRef.current) {
+        const p = particlesRef.current[dragRef.current.particleIndex];
+        p.x = x + dragRef.current.offsetX;
+        p.y = y + dragRef.current.offsetY;
+        p.vx = 0;
+        p.vy = 0;
+      }
+      if (optionsRef.current.interactive) {
+        mouseRef.current = { x, y };
+      }
+    }
+
+    function onMouseUp() { dragRef.current = null; }
+
     function onMouseLeave() {
       mouseRef.current = null;
+      dragRef.current = null;
     }
+
+    canvas.addEventListener("mousedown", onMouseDown);
     canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mouseup", onMouseUp);
     canvas.addEventListener("mouseleave", onMouseLeave);
 
     function draw() {
       const {
         particleColor, lineColor, lineDistance, connectParticles, backgroundColor,
         speed, repelRadius, repelStrength, friction, maxVelocityMultiplier, lineWidth, lineOpacity,
+        wrapEdges, twinkle, twinkleSpeed, twinkleAmplitude, glowParticles, glowBlur, lineStyle,
       } = optionsRef.current;
 
-      // Recompute color strings only when color props change
       if (particleColor !== lastParticleColorRef.current) {
         particleRgbRef.current = hexToRgbString(particleColor);
         lastParticleColorRef.current = particleColor;
@@ -133,8 +183,12 @@ export function useParticleField(
         ctx.fillRect(0, 0, w, h);
       }
 
+      // Physics update
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
+
+        // Skip physics for actively dragged particle
+        if (dragRef.current && dragRef.current.particleIndex === i) continue;
 
         if (mouse) {
           const dx = p.x - mouse.x;
@@ -160,33 +214,66 @@ export function useParticleField(
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.x < 0) { p.x = 0; p.vx *= -1; }
-        if (p.x > w) { p.x = w; p.vx *= -1; }
-        if (p.y < 0) { p.y = 0; p.vy *= -1; }
-        if (p.y > h) { p.y = h; p.vy *= -1; }
+        if (wrapEdges) {
+          if (p.x < 0) p.x += w;
+          else if (p.x > w) p.x -= w;
+          if (p.y < 0) p.y += h;
+          else if (p.y > h) p.y -= h;
+        } else {
+          if (p.x < 0) { p.x = 0; p.vx *= -1; }
+          if (p.x > w) { p.x = w; p.vx *= -1; }
+          if (p.y < 0) { p.y = 0; p.vy *= -1; }
+          if (p.y > h) { p.y = h; p.vy *= -1; }
+        }
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${particleRgb},${p.opacity})`;
-        ctx.fill();
+        if (twinkle) {
+          if (p.twinklePhase === undefined) p.twinklePhase = Math.random() * Math.PI * 2;
+          p.twinklePhase += twinkleSpeed;
+        }
+      }
 
-        if (connectParticles) {
+      // Draw connection lines
+      if (connectParticles) {
+        if (lineStyle === "dashed") ctx.setLineDash([4, 6]);
+        else ctx.setLineDash([]);
+
+        for (let i = 0; i < particles.length; i++) {
           for (let j = i + 1; j < particles.length; j++) {
-            const q = particles[j];
-            const dx = p.x - q.x;
-            const dy = p.y - q.y;
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < lineDistance) {
               const alpha = (1 - dist / lineDistance) * lineOpacity;
               ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(q.x, q.y);
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
               ctx.strokeStyle = `rgba(${lineRgb},${alpha})`;
               ctx.lineWidth = lineWidth;
               ctx.stroke();
             }
           }
         }
+        ctx.setLineDash([]);
+      }
+
+      // Draw particles on top of lines
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const alpha = twinkle && p.twinklePhase !== undefined
+          ? (1 - twinkleAmplitude) + twinkleAmplitude * Math.sin(p.twinklePhase)
+          : p.opacity;
+
+        if (glowParticles) {
+          ctx.shadowColor = particleColor;
+          ctx.shadowBlur = glowBlur;
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${particleRgb},${alpha})`;
+        ctx.fill();
+
+        if (glowParticles) ctx.shadowBlur = 0;
       }
 
       rafRef.current = requestAnimationFrame(draw);
@@ -197,7 +284,9 @@ export function useParticleField(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
+      canvas.removeEventListener("mousedown", onMouseDown);
       canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseup", onMouseUp);
       canvas.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);

@@ -13,7 +13,6 @@ const AudioVisualizerPage = lazy(() => import("./pages/components/AudioVisualize
 const ConfettiPage       = lazy(() => import("./pages/components/ConfettiPage").then((m) => ({ default: m.ConfettiPage })));
 const NoiseGradientPage  = lazy(() => import("./pages/components/NoiseGradientPage").then((m) => ({ default: m.NoiseGradientPage })));
 const PixelDissolvePage  = lazy(() => import("./pages/components/PixelDissolvePage").then((m) => ({ default: m.PixelDissolvePage })));
-const ConstellationMapPage = lazy(() => import("./pages/components/ConstellationMapPage").then((m) => ({ default: m.ConstellationMapPage })));
 const FlowFieldPage        = lazy(() => import("./pages/components/FlowFieldPage").then((m) => ({ default: m.FlowFieldPage })));
 const SpotlightPage        = lazy(() => import("./pages/components/SpotlightPage").then((m) => ({ default: m.SpotlightPage })));
 const ShockwavePage        = lazy(() => import("./pages/components/ShockwavePage").then((m) => ({ default: m.ShockwavePage })));
@@ -50,6 +49,14 @@ const MetaballsPage      = lazy(() => import("./pages/components/MetaballsPage")
 const AntColonyPage      = lazy(() => import("./pages/components/AntColonyPage").then((m) => ({ default: m.AntColonyPage })));
 const MagneticFieldPage  = lazy(() => import("./pages/components/MagneticFieldPage").then((m) => ({ default: m.MagneticFieldPage })));
 const TerrainMeshPage    = lazy(() => import("./pages/components/TerrainMeshPage").then((m) => ({ default: m.TerrainMeshPage })));
+const DragonCursorPage   = lazy(() => import("./pages/components/DragonCursorPage").then((m) => ({ default: m.DragonCursorPage })));
+const SakuraBlossomPage  = lazy(() => import("./pages/components/SakuraBlossomPage").then((m) => ({ default: m.SakuraBlossomPage })));
+const KoiPondPage        = lazy(() => import("./pages/components/KoiPondPage").then((m) => ({ default: m.KoiPondPage })));
+const BlackHolePage      = lazy(() => import("./pages/components/BlackHolePage").then((m) => ({ default: m.BlackHolePage })));
+const GalaxySpiralPage   = lazy(() => import("./pages/components/GalaxySpiralPage").then((m) => ({ default: m.GalaxySpiralPage })));
+const TornadoVortexPage  = lazy(() => import("./pages/components/TornadoVortexPage").then((m) => ({ default: m.TornadoVortexPage })));
+const BubbleUniversePage = lazy(() => import("./pages/components/BubbleUniversePage").then((m) => ({ default: m.BubbleUniversePage })));
+const SolarFlarePage     = lazy(() => import("./pages/components/SolarFlarePage").then((m) => ({ default: m.SolarFlarePage })));
 
 function Loading() {
   return (
@@ -83,8 +90,7 @@ export function DocsApp() {
           <Route path="/components/confetti" element={<ConfettiPage />} />
           <Route path="/components/noise-gradient" element={<NoiseGradientPage />} />
           <Route path="/components/pixel-dissolve" element={<PixelDissolvePage />} />
-          <Route path="/components/constellation-map" element={<ConstellationMapPage />} />
-          <Route path="/components/flow-field"        element={<FlowFieldPage />} />
+<Route path="/components/flow-field"        element={<FlowFieldPage />} />
           <Route path="/components/spotlight"         element={<SpotlightPage />} />
           <Route path="/components/shockwave"         element={<ShockwavePage />} />
           <Route path="/components/fireworks"         element={<FireworksPage />} />
@@ -120,6 +126,14 @@ export function DocsApp() {
           <Route path="/components/ant-colony"           element={<AntColonyPage />} />
           <Route path="/components/magnetic-field"       element={<MagneticFieldPage />} />
           <Route path="/components/terrain-mesh"         element={<TerrainMeshPage />} />
+          <Route path="/components/dragon-cursor"        element={<DragonCursorPage />} />
+          <Route path="/components/sakura-blossom"       element={<SakuraBlossomPage />} />
+          <Route path="/components/koi-pond"             element={<KoiPondPage />} />
+          <Route path="/components/black-hole"           element={<BlackHolePage />} />
+          <Route path="/components/galaxy-spiral"        element={<GalaxySpiralPage />} />
+          <Route path="/components/tornado-vortex"       element={<TornadoVortexPage />} />
+          <Route path="/components/bubble-universe"      element={<BubbleUniversePage />} />
+          <Route path="/components/solar-flare"          element={<SolarFlarePage />} />
         </Routes>
       </Suspense>
     </Layout>

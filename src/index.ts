@@ -2,7 +2,7 @@ export { MatrixRain } from "./components/MatrixRain";
 export type { MatrixRainProps, MatrixCharset } from "./components/MatrixRain";
 
 export { ParticleField } from "./components/ParticleField";
-export type { ParticleFieldProps } from "./components/ParticleField";
+export type { ParticleFieldProps, ParticleLineStyle } from "./components/ParticleField";
 
 export { Starfield } from "./components/Starfield";
 export type { StarfieldProps, StarfieldPerspective } from "./components/Starfield";
@@ -23,8 +23,6 @@ export type { NoiseGradientProps } from "./components/NoiseGradient";
 export { PixelDissolve } from "./components/PixelDissolve";
 export type { PixelDissolveProps, DissolveDirection, DissolvePattern } from "./components/PixelDissolve";
 
-export { ConstellationMap } from "./components/ConstellationMap";
-export type { ConstellationMapProps, ConstellationLineStyle } from "./components/ConstellationMap";
 
 export { FlowField } from "./components/FlowField";
 export type { FlowFieldProps } from "./components/FlowField";
@@ -133,3 +131,27 @@ export type { MagneticFieldProps } from "./components/MagneticField";
 
 export { TerrainMesh } from "./components/TerrainMesh";
 export type { TerrainMeshProps } from "./components/TerrainMesh";
+
+export { DragonCursor } from "./components/DragonCursor";
+export type { DragonCursorProps } from "./components/DragonCursor";
+
+export { SakuraBlossom } from "./components/SakuraBlossom";
+export type { SakuraBlossomProps } from "./components/SakuraBlossom";
+
+export { KoiPond } from "./components/KoiPond";
+export type { KoiPondProps } from "./components/KoiPond";
+
+export { BlackHole } from "./components/BlackHole";
+export type { BlackHoleProps } from "./components/BlackHole";
+
+export { GalaxySpiral } from "./components/GalaxySpiral";
+export type { GalaxySpiralProps } from "./components/GalaxySpiral";
+
+export { TornadoVortex } from "./components/TornadoVortex";
+export type { TornadoVortexProps } from "./components/TornadoVortex";
+
+export { BubbleUniverse } from "./components/BubbleUniverse";
+export type { BubbleUniverseProps } from "./components/BubbleUniverse";
+
+export { SolarFlare } from "./components/SolarFlare";
+export type { SolarFlareProps } from "./components/SolarFlare";

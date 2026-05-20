@@ -8,7 +8,6 @@ import { AudioVisualizer } from "../components/AudioVisualizer";
 import { Confetti } from "../components/Confetti";
 import { NoiseGradient } from "../components/NoiseGradient";
 import { PixelDissolve } from "../components/PixelDissolve";
-import { ConstellationMap } from "../components/ConstellationMap";
 import { FlowField } from "../components/FlowField";
 import { Spotlight } from "../components/Spotlight";
 import { Shockwave } from "../components/Shockwave";
@@ -29,7 +28,7 @@ import type { FirePalette } from "../components/FireEffect";
 import type { ConfettiPalette } from "../components/Confetti";
 import type { VisualizerMode } from "../components/AudioVisualizer";
 import type { StarfieldPerspective } from "../components/Starfield";
-import type { ConstellationLineStyle } from "../components/ConstellationMap";
+import type { ParticleLineStyle } from "../components/ParticleField";
 import type { DissolveDirection } from "../components/PixelDissolve";
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -543,20 +542,6 @@ const icons: Record<string, React.ReactNode> = {
       <rect x="10" y="10" width="3" height="3" rx="0.5" fill="currentColor" opacity=".1" />
     </svg>
   ),
-  ConstellationMap: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="3" cy="3" r="1.5" fill="currentColor" />
-      <circle cx="13" cy="4" r="1.5" fill="currentColor" />
-      <circle cx="8" cy="9" r="1.5" fill="currentColor" />
-      <circle cx="4" cy="13" r="1.5" fill="currentColor" opacity=".7" />
-      <circle cx="13" cy="13" r="1" fill="currentColor" opacity=".6" />
-      <line x1="3" y1="3" x2="13" y2="4" stroke="currentColor" strokeWidth="0.75" opacity=".35" />
-      <line x1="13" y1="4" x2="8" y2="9" stroke="currentColor" strokeWidth="0.75" opacity=".35" />
-      <line x1="3" y1="3" x2="8" y2="9" stroke="currentColor" strokeWidth="0.75" opacity=".35" />
-      <line x1="8" y1="9" x2="4" y2="13" stroke="currentColor" strokeWidth="0.75" opacity=".35" />
-      <line x1="8" y1="9" x2="13" y2="13" stroke="currentColor" strokeWidth="0.75" opacity=".35" />
-    </svg>
-  ),
   FlowField: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M2 8c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
@@ -688,14 +673,13 @@ const icons: Record<string, React.ReactNode> = {
 
 const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   MatrixRain: { desc: "Falling character rain — Katakana, Latin, or binary", accent: "#00ff41" },
-  ParticleField: { desc: "Floating particles with interactive connections", accent: "#9ca3af" },
+  ParticleField: { desc: "Particles with connections, repulsion, drag-to-move, twinkling, and glow", accent: "#8888ff" },
   Starfield: { desc: "2D twinkle or 3D warp-speed star tunnel", accent: "#b8bfff" },
   FireEffect: { desc: "Pixel-level fire simulation with 4 palettes", accent: "#ff6b35" },
   AudioVisualizer: { desc: "Real-time Web Audio API visualizer, 4 modes", accent: "#9ca3af" },
   Confetti: { desc: "Physics-based celebration burst or continuous rain", accent: "#ffd700" },
   NoiseGradient: { desc: "Animated Perlin noise color gradient", accent: "#38ef7d" },
   PixelDissolve: { desc: "Pixelated dissolve transition overlay for any content", accent: "#bf5fff" },
-  ConstellationMap: { desc: "Draggable star map with dynamic constellation lines", accent: "#8888ff" },
   FlowField: { desc: "Perlin noise vector field with particle streams", accent: "#9ca3af" },
   Spotlight: { desc: "Mouse-following light reveal over dark overlay", accent: "#e0b0ff" },
   Shockwave: { desc: "Click-triggered radial ring blast with glow", accent: "#9ca3af" },
@@ -714,18 +698,18 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
 };
 
 type ComponentId =
-  | "MatrixRain" | "ConstellationMap" | "FluidSimulation" | "FlowField" | "Boids"
+  | "MatrixRain" | "FluidSimulation" | "FlowField" | "Boids"
   | "GlitchOverlay" | "PixelDissolve" | "Confetti" | "AudioVisualizer" | "Mandala"
   | "Spotlight" | "Starfield" | "NoiseGradient" | "Shockwave"
   | "Fireworks" | "Wormhole" | "ClothSimulation" | "MagneticBlob" | "GameOfLife"
   | "Rain" | "Lightning" | "FireEffect" | "LiveChart" | "ParticleField";
 
 const ALL_COMPONENTS: ComponentId[] = [
-  "MatrixRain", "ConstellationMap", "FluidSimulation", "FlowField", "Boids",
+  "MatrixRain", "ParticleField", "FluidSimulation", "FlowField", "Boids",
   "GlitchOverlay", "PixelDissolve", "Confetti", "AudioVisualizer", "Mandala",
   "Spotlight", "Starfield", "NoiseGradient", "Shockwave",
   "Fireworks", "Wormhole", "ClothSimulation", "MagneticBlob", "GameOfLife",
-  "Rain", "Lightning", "FireEffect", "LiveChart", "ParticleField",
+  "Rain", "Lightning", "FireEffect", "LiveChart",
 ];
 
 // ─── Control Widgets ─────────────────────────────────────────────────────────
@@ -938,6 +922,11 @@ function ParticleFieldPanel() {
   const [speed, setSpeed] = useState(0.8);
   const [connect, setConnect] = useState(true);
   const [interact, setInteract] = useState(true);
+  const [wrapEdges, setWrapEdges] = useState(false);
+  const [twinkle, setTwinkle] = useState(false);
+  const [glowParticles, setGlowParticles] = useState(false);
+  const [lineStyle, setLineStyle] = useState<ParticleLineStyle>("solid");
+  const [dragParticles, setDragParticles] = useState(false);
 
   const code = `import { ParticleField } from 'own-the-canvas';
 
@@ -946,7 +935,7 @@ function ParticleFieldPanel() {
   particleColor="${pc}"
   lineDistance={${dist}}
   connectParticles={${connect}}
-  interactive={${interact}}
+  interactive={${interact}}${wrapEdges ? `\n  wrapEdges={true}` : ""}${twinkle ? `\n  twinkle={true}` : ""}${glowParticles ? `\n  glowParticles={true}` : ""}${lineStyle !== "solid" ? `\n  lineStyle="${lineStyle}"` : ""}${dragParticles ? `\n  dragParticles={true}` : ""}
 />`;
 
   return (
@@ -956,9 +945,11 @@ function ParticleFieldPanel() {
           <ParticleField particleColor={pc} lineColor={lc}
             particleCount={count} lineDistance={dist} particleSize={size}
             speed={speed} connectParticles={connect} interactive={interact}
-            backgroundColor={bg} width="100%" height="100%" />
+            backgroundColor={bg} wrapEdges={wrapEdges} twinkle={twinkle}
+            glowParticles={glowParticles} lineStyle={lineStyle}
+            dragParticles={dragParticles} width="100%" height="100%" />
         </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to repel</span></div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>{dragParticles ? "Drag particles to reposition" : "Move cursor to repel"}</span></div>
         <CodeSnippet code={code} />
       </div>
       <div className="controls">
@@ -976,6 +967,12 @@ function ParticleFieldPanel() {
           <Divider />
           <Toggle label="Connect particles" value={connect} onChange={setConnect} />
           <Toggle label="Mouse repulsion" value={interact} onChange={setInteract} />
+          <Toggle label="Drag to move" value={dragParticles} onChange={setDragParticles} />
+          <Divider />
+          <Toggle label="Wrap edges" value={wrapEdges} onChange={setWrapEdges} />
+          <Toggle label="Twinkle" value={twinkle} onChange={setTwinkle} />
+          <Toggle label="Particle glow" value={glowParticles} onChange={setGlowParticles} />
+          <Sel label="Line style" value={lineStyle} options={["solid", "dashed"]} onChange={setLineStyle} />
         </div>
       </div>
     </>
@@ -1331,61 +1328,6 @@ function PixelDissolvePanel() {
             <Slider label="Pixel size" value={pixelSize} min={2} max={32} step={1} onChange={setPixelSize} />
             <Slider label="Speed" value={speed} min={0.1} max={2} step={0.1} onChange={setSpeed} />
           </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function ConstellationMapPanel() {
-  const [count, setCount] = useState(80);
-  const [sc, setSc] = useState("#ffffff");
-  const [lc, setLc] = useState("#8888ff");
-  const [bg, setBg] = useState("#050510");
-  const [speed, setSpeed] = useState(0.3);
-  const [interact, setInteract] = useState(true);
-  const [lineStyle, setLineStyle] = useState<ConstellationLineStyle>("solid");
-  const [glow, setGlow] = useState(true);
-  const [dist, setDist] = useState(100);
-
-  const code = `import { ConstellationMap } from 'own-the-canvas';
-
-<ConstellationMap
-  starCount={${count}}
-  lineColor="${lc}"
-  connectionDistance={${dist}}
-  interactive={${interact}}
-  glowStars={${glow}}
-/>`;
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <ConstellationMap starCount={count} starColor={sc}
-            lineColor={lc} backgroundColor={bg} speed={speed}
-            interactive={interact} lineStyle={lineStyle}
-            glowStars={glow} connectionDistance={dist}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>{interact ? "Drag stars to reposition" : "Auto-drift mode"}</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="ConstellationMap" />
-        <div className="ctrl-body">
-          <div className="ctl-section">
-            <ColorPicker label="Star color" value={sc} onChange={setSc} />
-            <ColorPicker label="Line color" value={lc} onChange={setLc} />
-            <ColorPicker label="Background" value={bg} onChange={setBg} />
-            <Slider label="Star count" value={count} min={20} max={300} step={10} onChange={setCount} />
-            <Slider label="Connection distance" value={dist} min={40} max={300} step={10} onChange={setDist} />
-            <Slider label="Drift speed" value={speed} min={0} max={3} step={0.1} onChange={setSpeed} />
-          </div>
-          <Divider />
-          <Sel label="Line style" value={lineStyle} options={["solid", "dashed"]} onChange={setLineStyle} />
-          <Toggle label="Drag to move stars" value={interact} onChange={setInteract} />
-          <Toggle label="Star glow" value={glow} onChange={setGlow} />
         </div>
       </div>
     </>
@@ -2113,7 +2055,6 @@ const PANELS: Record<ComponentId, React.FC> = {
   Confetti: ConfettiPanel,
   NoiseGradient: NoiseGradientPanel,
   PixelDissolve: PixelDissolvePanel,
-  ConstellationMap: ConstellationMapPanel,
   FlowField: FlowFieldPanel,
   Spotlight: SpotlightPanel,
   Shockwave: ShockwavePanel,

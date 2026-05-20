@@ -2,7 +2,9 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useParticleField } from "./useParticleField";
 
-type ParticlePreset = "default" | "galaxy" | "snow" | "minimal" | "ocean";
+export type ParticleLineStyle = "solid" | "dashed";
+
+type ParticlePreset = "default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold";
 
 interface ParticlePresetValues {
   particleColor?: string;
@@ -12,6 +14,12 @@ interface ParticlePresetValues {
   speed?: number;
   connectParticles?: boolean;
   lineDistance?: number;
+  lineOpacity?: number;
+  wrapEdges?: boolean;
+  twinkle?: boolean;
+  glowParticles?: boolean;
+  lineStyle?: ParticleLineStyle;
+  velocityMultiplier?: number;
 }
 
 const PRESETS: Record<ParticlePreset, ParticlePresetValues> = {
@@ -45,14 +53,51 @@ const PRESETS: Record<ParticlePreset, ParticlePresetValues> = {
     lineDistance: 110,
     speed: 0.5,
   },
+  cosmos: {
+    particleColor: "#e0e7ff",
+    lineColor: "#6366f1",
+    backgroundColor: "#030014",
+    particleCount: 80,
+    lineDistance: 120,
+    speed: 0.3,
+    wrapEdges: true,
+    twinkle: true,
+    glowParticles: true,
+    velocityMultiplier: 0.3,
+  },
+  aurora: {
+    particleColor: "#67e8f9",
+    lineColor: "#0891B2",
+    backgroundColor: "#020f1a",
+    particleCount: 80,
+    lineDistance: 110,
+    speed: 0.3,
+    wrapEdges: true,
+    twinkle: true,
+    glowParticles: true,
+    lineStyle: "dashed",
+    velocityMultiplier: 0.3,
+  },
+  gold: {
+    particleColor: "#fbbf24",
+    lineColor: "#d97706",
+    backgroundColor: "#0c0800",
+    particleCount: 80,
+    speed: 0.3,
+    wrapEdges: true,
+    twinkle: true,
+    glowParticles: true,
+    lineOpacity: 0.4,
+    velocityMultiplier: 0.3,
+  },
 };
 
 export interface ParticleFieldProps extends BaseCanvasProps {
   /** Number of particles (default: 120) */
   particleCount?: number;
-  /** Particle fill color (default: "#7eb8f7") */
+  /** Particle fill color (default: "#ffffff") */
   particleColor?: string;
-  /** Connection line color (default: "#7eb8f7") */
+  /** Connection line color (default: "#6b7280") */
   lineColor?: string;
   /** Max distance for drawing lines (default: 120) */
   lineDistance?: number;
@@ -78,7 +123,27 @@ export interface ParticleFieldProps extends BaseCanvasProps {
   lineWidth?: number;
   /** Connection line max opacity (default: 0.6) */
   lineOpacity?: number;
-  /** Named preset: "default" | "galaxy" | "snow" | "minimal" | "ocean" */
+  /** Wrap particles around edges instead of bouncing (default: false) */
+  wrapEdges?: boolean;
+  /** Enable twinkling opacity animation (default: false) */
+  twinkle?: boolean;
+  /** Twinkling animation speed (default: 0.03) */
+  twinkleSpeed?: number;
+  /** Twinkling opacity amplitude 0–1 (default: 0.4) */
+  twinkleAmplitude?: number;
+  /** Enable glow shadow on particles (default: false) */
+  glowParticles?: boolean;
+  /** Glow shadow blur in px (default: 15) */
+  glowBlur?: number;
+  /** Connection line stroke style (default: "solid") */
+  lineStyle?: ParticleLineStyle;
+  /** Enable drag-to-reposition individual particles (default: false) */
+  dragParticles?: boolean;
+  /** Drag detection radius in px (default: 20) */
+  dragRadius?: number;
+  /** Initial velocity multiplier — scales vx/vy at spawn (default: 2) */
+  velocityMultiplier?: number;
+  /** Named preset: "default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold" */
   preset?: ParticlePreset | string;
 }
 
@@ -101,6 +166,16 @@ export const ParticleField = forwardRef<HTMLCanvasElement, ParticleFieldProps>(
       maxVelocityMultiplier,
       lineWidth,
       lineOpacity,
+      wrapEdges,
+      twinkle,
+      twinkleSpeed,
+      twinkleAmplitude,
+      glowParticles,
+      glowBlur,
+      lineStyle,
+      dragParticles,
+      dragRadius,
+      velocityMultiplier,
       width,
       height,
       className,
@@ -109,14 +184,12 @@ export const ParticleField = forwardRef<HTMLCanvasElement, ParticleFieldProps>(
 
     const p = (preset && PRESETS[preset as ParticlePreset]) || {};
 
-    const resolvedParticleColor = particleColor ?? p.particleColor ?? "#ffffff";
-
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useParticleField(internalRef, {
       particleCount: particleCount ?? p.particleCount ?? 120,
-      particleColor: resolvedParticleColor,
+      particleColor: particleColor ?? p.particleColor ?? "#ffffff",
       lineColor: lineColor ?? p.lineColor ?? "#6b7280",
       lineDistance: lineDistance ?? p.lineDistance ?? 120,
       particleSize: particleSize ?? 2.5,
@@ -129,13 +202,32 @@ export const ParticleField = forwardRef<HTMLCanvasElement, ParticleFieldProps>(
       friction: friction ?? 0.99,
       maxVelocityMultiplier: maxVelocityMultiplier ?? 3,
       lineWidth: lineWidth ?? 0.8,
-      lineOpacity: lineOpacity ?? 0.6,
+      lineOpacity: lineOpacity ?? p.lineOpacity ?? 0.6,
+      wrapEdges: wrapEdges ?? p.wrapEdges ?? false,
+      twinkle: twinkle ?? p.twinkle ?? false,
+      twinkleSpeed: twinkleSpeed ?? 0.03,
+      twinkleAmplitude: twinkleAmplitude ?? 0.4,
+      glowParticles: glowParticles ?? p.glowParticles ?? false,
+      glowBlur: glowBlur ?? 15,
+      lineStyle: lineStyle ?? p.lineStyle ?? "solid",
+      dragParticles: dragParticles ?? false,
+      dragRadius: dragRadius ?? 20,
+      velocityMultiplier: velocityMultiplier ?? p.velocityMultiplier ?? 2,
     });
+
+    const isDraggable = dragParticles ?? false;
 
     return (
       <div
         className={className}
-        style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", ...style }}
+        style={{
+          width: width ?? "100%",
+          height: height ?? "100%",
+          display: "block",
+          overflow: "hidden",
+          cursor: isDraggable ? "grab" : "default",
+          ...style,
+        }}
       >
         <canvas ref={internalRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
       </div>

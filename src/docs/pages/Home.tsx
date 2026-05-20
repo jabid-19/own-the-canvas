@@ -3,20 +3,22 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ComponentCard } from "../components/ComponentCard";
 import { CodeBlock } from "../components/CodeBlock";
+import { DragonCursor } from "../../components/DragonCursor";
+import { KoiPond } from "../../components/KoiPond";
 import { MatrixRain } from "../../components/MatrixRain";
-import { ConstellationMap } from "../../components/ConstellationMap";
 import { FluidSimulation } from "../../components/FluidSimulation";
 import { FlowField } from "../../components/FlowField";
 import { Boids } from "../../components/Boids";
 import { Confetti } from "../../components/Confetti";
 import { AudioVisualizer } from "../../components/AudioVisualizer";
 import { Mandala } from "../../components/Mandala";
-import { Spotlight } from "../../components/Spotlight";
 import { Starfield } from "../../components/Starfield";
 import { NoiseGradient } from "../../components/NoiseGradient";
 import { Shockwave } from "../../components/Shockwave";
 import { Fireworks } from "../../components/Fireworks";
 import { Wormhole } from "../../components/Wormhole";
+import { BubbleUniverse } from "../../components/BubbleUniverse";
+import { SakuraBlossom } from "../../components/SakuraBlossom";
 import { ClothSimulation } from "../../components/ClothSimulation";
 import { MagneticBlob } from "../../components/MagneticBlob";
 import { GameOfLife } from "../../components/GameOfLife";
@@ -25,17 +27,30 @@ import { Lightning } from "../../components/Lightning";
 import { FireEffect } from "../../components/FireEffect";
 import { LiveChart } from "../../components/LiveChart";
 import { ParticleField } from "../../components/ParticleField";
-import { AuroraBorealis } from "../../components/AuroraBorealis";
-import { DiffusionAggregation } from "../../components/DiffusionAggregation";
-import { Kaleidoscope } from "../../components/Kaleidoscope";
-import { LSystem } from "../../components/LSystem";
-import { Lissajous } from "../../components/Lissajous";
 import { ReactionDiffusion } from "../../components/ReactionDiffusion";
-import { SandSimulation } from "../../components/SandSimulation";
-import { SlimeMold } from "../../components/SlimeMold";
+import { AuroraBorealis } from "../../components/AuroraBorealis";
 import { Spirograph } from "../../components/Spirograph";
-import { VoronoiCells } from "../../components/VoronoiCells";
+import { SandSimulation } from "../../components/SandSimulation";
 import { WaveInterference } from "../../components/WaveInterference";
+import { DiffusionAggregation } from "../../components/DiffusionAggregation";
+import { Lissajous } from "../../components/Lissajous";
+import { LSystem } from "../../components/LSystem";
+import { Kaleidoscope } from "../../components/Kaleidoscope";
+import { VoronoiCells } from "../../components/VoronoiCells";
+import { SlimeMold } from "../../components/SlimeMold";
+import { WatercolorBloom } from "../../components/WatercolorBloom";
+import { PendulaWave } from "../../components/PendulaWave";
+import { CrystalGrowth } from "../../components/CrystalGrowth";
+import { NeuralWeb } from "../../components/NeuralWeb";
+import { ParticleText } from "../../components/ParticleText";
+import { Metaballs } from "../../components/Metaballs";
+import { AntColony } from "../../components/AntColony";
+import { MagneticField } from "../../components/MagneticField";
+import { TerrainMesh } from "../../components/TerrainMesh";
+import { BlackHole } from "../../components/BlackHole";
+import { GalaxySpiral } from "../../components/GalaxySpiral";
+import { TornadoVortex } from "../../components/TornadoVortex";
+import { SolarFlare } from "../../components/SolarFlare";
 
 const CSS = `
 .home {
@@ -142,7 +157,6 @@ const CSS = `
   font-weight: 600;
   text-decoration: none;
   transition: background 150ms var(--ease), transform 150ms var(--ease), box-shadow 150ms var(--ease);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
 }
 .btn-primary:hover {
   background: var(--accent-hover);
@@ -275,40 +289,56 @@ const CSS = `
 `;
 
 const COMPONENTS = [
-  { name: "MatrixRain", path: "/components/matrix-rain", accent: "#00ff41", desc: "Falling character rain — Katakana, Latin, or binary", preview: <MatrixRain fontSize={14} speed={1} width="100%" height="100%" /> },
-  { name: "ConstellationMap", path: "/components/constellation-map", accent: "#8888ff", desc: "Draggable star map with dynamic constellation lines", preview: <ConstellationMap starCount={60} width="100%" height="100%" /> },
-  { name: "FluidSimulation", path: "/components/fluid-simulation", accent: "#06b6d4", desc: "Navier-Stokes ink fluid reacting to mouse movement", preview: <FluidSimulation width="100%" height="100%" /> },
-  { name: "FlowField", path: "/components/flow-field", accent: "#9ca3af", desc: "Perlin noise vector field with particle streams", preview: <FlowField width="100%" height="100%" /> },
-  { name: "Boids", path: "/components/boids", accent: "#f59e0b", desc: "Craig Reynolds' flocking — separation, alignment, cohesion", preview: <Boids width="100%" height="100%" /> },
-  { name: "Confetti", path: "/components/confetti", accent: "#ffd700", desc: "Physics-based celebration burst or continuous rain", preview: <Confetti trigger={true} particleCount={60} width="100%" height="100%" /> },
-  { name: "AudioVisualizer", path: "/components/audio-visualizer", accent: "#9ca3af", desc: "Real-time Web Audio API visualizer, 4 modes", preview: <AudioVisualizer mode="bars" width="100%" height="100%" /> },
-  { name: "Mandala", path: "/components/mandala", accent: "#f43f5e", desc: "N-fold rotational symmetry with organic petal layers", preview: <Mandala width="100%" height="100%" /> },
-  { name: "Spotlight", path: "/components/spotlight", accent: "#e0b0ff", desc: "Mouse-following light reveal over dark overlay", preview: <Spotlight width="100%" height="100%" /> },
-  { name: "Starfield", path: "/components/starfield", accent: "#b8bfff", desc: "2D twinkle or 3D warp-speed star tunnel", preview: <Starfield starCount={150} width="100%" height="100%" /> },
-  { name: "NoiseGradient", path: "/components/noise-gradient", accent: "#38ef7d", desc: "Animated Perlin noise color gradient", preview: <NoiseGradient colors={["#111111", "#6b7280", "#ffffff"]} width="100%" height="100%" /> },
-  { name: "Shockwave", path: "/components/shockwave", accent: "#9ca3af", desc: "Click-triggered radial ring blast with glow", preview: <Shockwave width="100%" height="100%" /> },
-  { name: "Fireworks", path: "/components/fireworks", accent: "#f59e0b", desc: "Physics shells, burst particles, and gravity trails", preview: <Fireworks width="100%" height="100%" /> },
-  { name: "Wormhole", path: "/components/wormhole", accent: "#9ca3af", desc: "3D perspective tunnel with twisting rings and star field", preview: <Wormhole width="100%" height="100%" /> },
-  { name: "ClothSimulation", path: "/components/cloth-simulation", accent: "#67e8f9", desc: "Verlet spring-mass fabric with wind and tearing", preview: <ClothSimulation width="100%" height="100%" /> },
-  { name: "MagneticBlob", path: "/components/magnetic-blob", accent: "#a78bfa", desc: "Metaballs that merge and follow the cursor", preview: <MagneticBlob width="100%" height="100%" /> },
-  { name: "GameOfLife", path: "/components/game-of-life", accent: "#00ff41", desc: "Conway's cellular automata — emergent life from simple rules", preview: <GameOfLife width="100%" height="100%" /> },
+  { name: "DragonCursor", path: "/components/dragon-cursor", accent: "#ff007f", desc: "Interactive skeleton dragon that follows the cursor and breathes fire", preview: <DragonCursor segmentCount={16} segmentSize={14} backgroundColor="#000000" width="100%" height="100%" /> },
+  { name: "KoiPond", path: "/components/koi-pond", accent: "#f97316", desc: "Tranquil pond with swimming koi fish, interactive water ripples, and lilies", preview: <KoiPond fishCount={5} width="100%" height="100%" /> },
+  { name: "MatrixRain", path: "/components/matrix-rain", accent: "#00ff41", desc: "Falling digital character rain with trails, speed control, and custom charsets", preview: <MatrixRain fontSize={14} speed={1} width="100%" height="100%" /> },
+  { name: "FluidSimulation", path: "/components/fluid-simulation", accent: "#06b6d4", desc: "Navier-Stokes grid fluid simulation reacting dynamically to mouse movement", preview: <FluidSimulation resolution={64} width="100%" height="100%" /> },
+  { name: "FlowField", path: "/components/flow-field", accent: "#9ca3af", desc: "Perlin noise-guided particle vector streams with swirling curl noise", preview: <FlowField width="100%" height="100%" /> },
+  { name: "Boids", path: "/components/boids", accent: "#f59e0b", desc: "Autonomous flocking simulation demonstrating separation, alignment, and cohesion physics", preview: <Boids width="100%" height="100%" /> },
+  { name: "Confetti", path: "/components/confetti", accent: "#ffd700", desc: "Physics-based celebration particle bursts and continuous streams", preview: <Confetti trigger={true} particleCount={60} width="100%" height="100%" /> },
+  { name: "AudioVisualizer", path: "/components/audio-visualizer", accent: "#9ca3af", desc: "Real-time frequency and waveform visualizer with multiple modes", preview: <AudioVisualizer mode="bars" width="100%" height="100%" /> },
+  { name: "Mandala", path: "/components/mandala", accent: "#f43f5e", desc: "Hypnotic rotational symmetry pattern with configurable layers and noise distortion", preview: <Mandala width="100%" height="100%" /> },
+  { name: "Starfield", path: "/components/starfield", accent: "#b8bfff", desc: "Twinkling 2D star field or high-speed 3D warp tunnel with shooting stars", preview: <Starfield starCount={150} width="100%" height="100%" /> },
+  { name: "NoiseGradient", path: "/components/noise-gradient", accent: "#38ef7d", desc: "Smoothed multi-color Perlin noise color gradients with adjustable scaling", preview: <NoiseGradient colors={["#111111", "#6b7280", "#ffffff"]} width="100%" height="100%" /> },
+  { name: "Shockwave", path: "/components/shockwave", accent: "#9ca3af", desc: "Click-triggered radial shockwave ring expansions with blur and glow", preview: <Shockwave width="100%" height="100%" /> },
+  { name: "Fireworks", path: "/components/fireworks", accent: "#f59e0b", desc: "Shell launches exploding into colorful gravity-affected trails", preview: <Fireworks width="100%" height="100%" /> },
+  { name: "Wormhole", path: "/components/wormhole", accent: "#9ca3af", desc: "Hypnotic 3D perspective tunnel with rotating ellipse rings and star backgrounds", preview: <Wormhole width="100%" height="100%" /> },
+  { name: "BubbleUniverse", path: "/components/bubble-universe", accent: "#67e8f9", desc: "Physics-based bubble system with merge-on-contact and click-to-pop", preview: <BubbleUniverse bubbleCount={12} width="100%" height="100%" /> },
+  { name: "SakuraBlossom", path: "/components/sakura-blossom", accent: "#fda4af", desc: "Falling cherry blossom petals with wind drift, gusts, and floor accumulation", preview: <SakuraBlossom petalCount={60} width="100%" height="100%" /> },
+  { name: "ClothSimulation", path: "/components/cloth-simulation", accent: "#67e8f9", desc: "Verlet integration spring-mass fabric mesh supporting tearing and wind", preview: <ClothSimulation width="100%" height="100%" /> },
+  { name: "MagneticBlob", path: "/components/magnetic-blob", accent: "#a78bfa", desc: "Wandering metaball liquid blobs that merge and attract to mouse", preview: <MagneticBlob width="100%" height="100%" /> },
+  { name: "GameOfLife", path: "/components/game-of-life", accent: "#00ff41", desc: "Conway's cellular automata displaying emergent life based on simple rules", preview: <GameOfLife width="100%" height="100%" /> },
   { name: "Rain", path: "/components/rain", accent: "#9ca3af", desc: "Rainfall with wind drift, drop streaks, and splash particles", preview: <Rain width="100%" height="100%" /> },
-  { name: "Lightning", path: "/components/lightning", accent: "#c084fc", desc: "Recursive fractal bolts with glow, flicker, and branches", preview: <Lightning width="100%" height="100%" /> },
-  { name: "FireEffect", path: "/components/fire-effect", accent: "#ff6b35", desc: "Pixel-level fire simulation with 4 palettes", preview: <FireEffect width="100%" height="100%" /> },
-  { name: "LiveChart", path: "/components/live-chart", accent: "#4ade80", desc: "Real-time animated line and area chart", preview: <LiveChart width="100%" height="100%" /> },
-  { name: "ParticleField", path: "/components/particle-field", accent: "#9ca3af", desc: "Floating particles with interactive mouse connections", preview: <ParticleField particleCount={80} width="100%" height="100%" /> },
-  { name: "AuroraBorealis", path: "/components/aurora-borealis", accent: "#88ccff", desc: "Layered aurora bands waving across a starlit sky", preview: <AuroraBorealis width="100%" height="100%" /> },
-  { name: "DiffusionAggregation", path: "/components/diffusion-aggregation", accent: "#9ca3af", desc: "Diffusion-limited aggregation — crystal growth from random walkers", preview: <DiffusionAggregation width="100%" height="100%" /> },
-  { name: "Kaleidoscope", path: "/components/kaleidoscope", accent: "#c084fc", desc: "N-fold mirror symmetry with noise-driven color morphing", preview: <Kaleidoscope width="100%" height="100%" /> },
-  { name: "LSystem", path: "/components/l-system", accent: "#86efac", desc: "Lindenmayer system — fractal plant and curve generator", preview: <LSystem width="100%" height="100%" /> },
-  { name: "Lissajous", path: "/components/lissajous", accent: "#67e8f9", desc: "Animated Lissajous figures with phase-shifting parametric curves", preview: <Lissajous width="100%" height="100%" /> },
-  { name: "ReactionDiffusion", path: "/components/reaction-diffusion", accent: "#a3e635", desc: "Gray-Scott reaction-diffusion — Turing patterns emerge over time", preview: <ReactionDiffusion width="100%" height="100%" /> },
-  { name: "SandSimulation", path: "/components/sand-simulation", accent: "#fbbf24", desc: "Cellular automata falling sand with water and fire materials", preview: <SandSimulation width="100%" height="100%" /> },
-  { name: "SlimeMold", path: "/components/slime-mold", accent: "#86efac", desc: "Physarum polycephalum slime mold network simulation", preview: <SlimeMold width="100%" height="100%" /> },
-  { name: "Spirograph", path: "/components/spirograph", accent: "#f0abfc", desc: "Hypotrochoid curves drawn by simulated rolling circles", preview: <Spirograph width="100%" height="100%" /> },
-  { name: "VoronoiCells", path: "/components/voronoi-cells", accent: "#94a3b8", desc: "Animated Voronoi diagram with drifting seed points", preview: <VoronoiCells width="100%" height="100%" /> },
-  { name: "WaveInterference", path: "/components/wave-interference", accent: "#7dd3fc", desc: "Multi-source wave interference with constructive and destructive patterns", preview: <WaveInterference width="100%" height="100%" /> },
+  { name: "Lightning", path: "/components/lightning", accent: "#c084fc", desc: "Recursive fractal bolts with glow, flicker, and branching paths", preview: <Lightning width="100%" height="100%" /> },
+  { name: "FireEffect", path: "/components/fire-effect", accent: "#ff6b35", desc: "Pixel-level cellular automata heat simulation with wind drift and cooling", preview: <FireEffect width="100%" height="100%" /> },
+  { name: "LiveChart", path: "/components/live-chart", accent: "#4ade80", desc: "Real-time scrolling multi-series data graph with bezier curves and fill options", preview: <LiveChart width="100%" height="100%" /> },
+  { name: "ParticleField", path: "/components/particle-field", accent: "#8888ff", desc: "Twinkling particle network with interactive proximity lines and mouse repulsion", preview: <ParticleField preset="cosmos" particleCount={60} width="100%" height="100%" /> },
+  { name: "ReactionDiffusion", path: "/components/reaction-diffusion", accent: "#a3e635", desc: "Gray-Scott model simulating chemical reaction-diffusion and labyrinthine Turing structures", preview: <ReactionDiffusion width="100%" height="100%" /> },
+  { name: "AuroraBorealis", path: "/components/aurora-borealis", accent: "#88ccff", desc: "Layered northern light curtain ribbons moving across a starry backdrop", preview: <AuroraBorealis width="100%" height="100%" /> },
+  { name: "Spirograph", path: "/components/spirograph", accent: "#f0abfc", desc: "Hypotrochoid geometric curves traced by planetary gear rolling circles", preview: <Spirograph width="100%" height="100%" /> },
+  { name: "SandSimulation", path: "/components/sand-simulation", accent: "#fbbf24", desc: "Falling sand cellular automata with sand, water, wall, and fire logic", preview: <SandSimulation width="100%" height="100%" /> },
+  { name: "WaveInterference", path: "/components/wave-interference", accent: "#7dd3fc", desc: "Concentric waves radiating from multiple sources forming interference patterns", preview: <WaveInterference width="100%" height="100%" /> },
+  { name: "DiffusionAggregation", path: "/components/diffusion-aggregation", accent: "#9ca3af", desc: "Diffusion-limited aggregation showing organic tree-like branch crystallization", preview: <DiffusionAggregation width="100%" height="100%" /> },
+  { name: "Lissajous", path: "/components/lissajous", accent: "#67e8f9", desc: "Parametric curves generated by phase-shifting coupled harmonic oscillators", preview: <Lissajous width="100%" height="100%" /> },
+  { name: "LSystem", path: "/components/l-system", accent: "#86efac", desc: "Lindenmayer system grammar tree rendering fractal ferns and plants", preview: <LSystem width="100%" height="100%" /> },
+  { name: "Kaleidoscope", path: "/components/kaleidoscope", accent: "#c084fc", desc: "Reflective mirror wedge kaleidoscope morphing with noise-sampled color cycles", preview: <Kaleidoscope width="100%" height="100%" /> },
+  { name: "VoronoiCells", path: "/components/voronoi-cells", accent: "#94a3b8", desc: "Dynamic Voronoi tessellation diagram with moving cell seeds and distance shading", preview: <VoronoiCells width="100%" height="100%" /> },
+  { name: "SlimeMold", path: "/components/slime-mold", accent: "#86efac", desc: "Physarum polycephalum biological mould trail simulation spreading on grid", preview: <SlimeMold width="100%" height="100%" /> },
+  { name: "WatercolorBloom", path: "/components/watercolor-bloom", accent: "#ec4899", desc: "Spreading concentric watercolor rings with wet-edge shading and noise borders", preview: <WatercolorBloom bloomRadius={60} width="100%" height="100%" /> },
+  { name: "PendulaWave", path: "/components/pendula-wave", accent: "#6366f1", desc: "Harmonograph using coupled pendulums to trace rotating parametric curves", preview: <PendulaWave width="100%" height="100%" /> },
+  { name: "CrystalGrowth", path: "/components/crystal-growth", accent: "#38bdf8", desc: "BFS frontier crystal growth simulation with user-defined rotational symmetry", preview: <CrystalGrowth growthSpeed={2} width="100%" height="100%" /> },
+  { name: "NeuralWeb", path: "/components/neural-web", accent: "#10b981", desc: "Interconnected neural nodes firing signal pulses that propagate along edges", preview: <NeuralWeb nodeCount={30} width="100%" height="100%" /> },
+  { name: "ParticleText", path: "/components/particle-text", accent: "#f43f5e", desc: "Spring-connected particles forming custom letterforms that scatter on hover", preview: <ParticleText text="CANVAS" fontSize={90} width="100%" height="100%" /> },
+  { name: "Metaballs", path: "/components/metaballs", accent: "#a855f7", desc: "Implicit surface liquid metaballs melting and splitting organically", preview: <Metaballs blobCount={4} width="100%" height="100%" /> },
+  { name: "AntColony", path: "/components/ant-colony", accent: "#d97706", desc: "Ant colony pathfinder optimizing food trails with pheromone evaporation", preview: <AntColony antCount={100} width="100%" height="100%" /> },
+  { name: "MagneticField", path: "/components/magnetic-field", accent: "#ef4444", desc: "Euler integration tracer visualising forces around movable magnetic dipoles", preview: <MagneticField fieldLineCount={12} width="100%" height="100%" /> },
+  { name: "TerrainMesh", path: "/components/terrain-mesh", accent: "#14b8a6", desc: "3D wireframe mountains rendering Perlin noise displacement with height coloring", preview: <TerrainMesh width="100%" height="100%" /> },
+  { name: "BlackHole", path: "/components/black-hole", accent: "#f43f5e", desc: "Gravitational lensing and accretion disk simulation around event horizon", preview: <BlackHole eventHorizonRadius={25} width="100%" height="100%" /> },
+  { name: "GalaxySpiral", path: "/components/galaxy-spiral", accent: "#818cf8", desc: "Spiral galaxy with depth-sorted stellar particles and logarithmic arm math", preview: <GalaxySpiral armCount={2} starCount={1500} width="100%" height="100%" /> },
+  { name: "TornadoVortex", path: "/components/tornado-vortex", accent: "#6b7280", desc: "Winding funnel vortex of debris particles with random internal lightning", preview: <TornadoVortex particleCount={400} width="100%" height="100%" /> },
+  { name: "SolarFlare", path: "/components/solar-flare", accent: "#f97316", desc: "Glow-enhanced solar mass with convection cells and arcing flare loops", preview: <SolarFlare sunRadius={0.3} width="100%" height="100%" /> },
 ];
+
 
 const INSTALL_CMD = "npm install own-the-canvas";
 
@@ -317,7 +347,7 @@ export function Home() {
     <>
       <Helmet>
         <title>Own The Canvas — React Canvas Component Library</title>
-        <meta name="description" content="30+ beautiful, responsive canvas-based React components. MatrixRain, FluidSimulation, Boids, Fireworks, and more. Zero dependencies, TypeScript, MIT license." />
+        <meta name="description" content="50+ beautiful, responsive canvas-based React components. MatrixRain, FluidSimulation, Boids, Fireworks, and more. Zero dependencies, TypeScript, MIT license." />
       </Helmet>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
@@ -353,7 +383,7 @@ export function Home() {
             <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
               <circle cx="6" cy="6" r="5" />
             </svg>
-            30+ components · Zero dependencies · TypeScript
+            50+ components · Zero dependencies · TypeScript
           </div>
           <h1 className="home-hero-title">
             Canvas arts <span>for React</span>
@@ -389,7 +419,7 @@ export function Home() {
         {/* Stats */}
         <div className="home-stats" role="list" aria-label="Library stats">
           {[
-            { n: "30+", l: "Components" },
+            { n: "50+", l: "Components" },
             { n: "0", l: "Dependencies" },
             { n: "TS", l: "TypeScript" },
             { n: "MIT", l: "License" },

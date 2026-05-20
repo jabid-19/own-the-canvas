@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { ComponentIcon } from "./ComponentIcon";
 
 const CSS = `
 .component-card {
@@ -94,14 +95,11 @@ const CSS = `
   pointer-events: none;
 }
 
-.component-card-placeholder-initial {
-  font-size: 80px;
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1;
+.component-card-placeholder-icon {
+  width: 80px;
+  height: 80px;
   color: var(--text-1);
   opacity: 0.06;
-  font-family: system-ui, sans-serif;
   position: relative;
   z-index: 1;
   user-select: none;
@@ -186,7 +184,7 @@ export function ComponentCard({ name, description, path, accent, preview }: Comp
       >
         <div className="component-card-preview" aria-hidden="true">
           <div className={`component-card-placeholder${hovered ? " hidden" : ""}`}>
-            <span className="component-card-placeholder-initial">{name[0]}</span>
+            <ComponentIcon name={name} className="component-card-placeholder-icon" />
             <span className="component-card-placeholder-hint">hover to preview</span>
           </div>
           <div className={`component-card-canvas${hovered ? " visible" : ""}`}>
