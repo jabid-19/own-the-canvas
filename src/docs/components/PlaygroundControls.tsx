@@ -139,6 +139,32 @@ const PLAYGROUND_CSS = `
 @media (max-width: 640px) {
   .playground-controls { grid-template-columns: 1fr; }
 }
+.playground-controls-header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.playground-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.playground-reset-btn:hover {
+  color: var(--text-1);
+  border-color: var(--text-3);
+}
 `;
 
 // ─── Playground shell ─────────────────────────────────────────────────────────
@@ -146,9 +172,10 @@ interface PlaygroundShellProps {
   preview: React.ReactNode;
   controls: React.ReactNode;
   code: string;
+  onReset?: () => void;
 }
 
-export function PlaygroundShell({ preview, controls, code }: PlaygroundShellProps) {
+export function PlaygroundShell({ preview, controls, code, onReset }: PlaygroundShellProps) {
   return (
     <div style={{
       border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
@@ -162,6 +189,13 @@ export function PlaygroundShell({ preview, controls, code }: PlaygroundShellProp
 
       {/* Controls — two-column grid, single on mobile */}
       <div className="playground-controls">
+        {onReset && (
+          <div className="playground-controls-header">
+            <button className="playground-reset-btn" onClick={onReset}>
+              ↺ Reset
+            </button>
+          </div>
+        )}
         {controls}
       </div>
 

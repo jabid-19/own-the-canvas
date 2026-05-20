@@ -32,11 +32,21 @@ const COMPONENT_LINKS = [
   { name: "SandSimulation", path: "/components/sand-simulation" },
   { name: "WaveInterference", path: "/components/wave-interference" },
   { name: "DiffusionAggregation", path: "/components/diffusion-aggregation" },
-  { name: "Lissajous",            path: "/components/lissajous" },
-  { name: "LSystem",              path: "/components/l-system" },
-  { name: "Kaleidoscope",         path: "/components/kaleidoscope" },
-  { name: "VoronoiCells",         path: "/components/voronoi-cells" },
-  { name: "SlimeMold",            path: "/components/slime-mold" },
+  { name: "Lissajous", path: "/components/lissajous" },
+  { name: "LSystem", path: "/components/l-system" },
+  { name: "Kaleidoscope", path: "/components/kaleidoscope" },
+  { name: "VoronoiCells", path: "/components/voronoi-cells" },
+  { name: "SlimeMold", path: "/components/slime-mold" },
+  { name: "InkBleed", path: "/components/ink-bleed" },
+  { name: "WatercolorBloom", path: "/components/watercolor-bloom" },
+  { name: "PendulaWave", path: "/components/pendula-wave" },
+  { name: "CrystalGrowth", path: "/components/crystal-growth" },
+  { name: "NeuralWeb", path: "/components/neural-web" },
+  { name: "ParticleText", path: "/components/particle-text" },
+  { name: "Metaballs", path: "/components/metaballs" },
+  { name: "AntColony", path: "/components/ant-colony" },
+  { name: "MagneticField", path: "/components/magnetic-field" },
+  { name: "TerrainMesh", path: "/components/terrain-mesh" },
 ];
 
 const CSS = `
@@ -114,8 +124,8 @@ const CSS = `
 }
 .sidebar-link:hover { background: var(--accent-soft); color: var(--text-1); }
 .sidebar-link.active {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: #bababaff;
+  color: #ffffff;
   font-weight: 500;
 }
 

@@ -224,16 +224,17 @@ export function useLSystem(
       // waiting between cycles
       if (stateRef.waitTimer > 0) {
         stateRef.waitTimer -= dt;
+        if (trailFade > 0) {
+          // fade every frame during the wait so old drawing ghosts out smoothly
+          ctx.globalAlpha = Math.min(1, trailFade * (dt / 16));
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = backgroundColor;
+          ctx.fillRect(0, 0, w, h);
+          ctx.globalAlpha = 1;
+        }
         if (stateRef.waitTimer <= 0) {
           stateRef.waitTimer = -1;
-          if (trailFade > 0) {
-            ctx.globalAlpha = 1;
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, w, h);
-          } else {
-            clearCanvas();
-          }
+          if (trailFade === 0) clearCanvas();
           stateRef.drawnSegments = 0;
         }
         rafRef.current = requestAnimationFrame(draw);

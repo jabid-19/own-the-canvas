@@ -21,7 +21,7 @@ const NOISE_PRESETS: Record<string, string[]> = {
   "Forest":      ["#0a1628", "#1a5276", "#27ae60", "#f9e51b"],
 };
 
-function NoiseGradientPlayground() {
+function NoiseGradientPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("Monochrome");
   const [speed, setSpeed] = useState(0.3);
   const [scale, setScale] = useState(1);
@@ -67,17 +67,18 @@ function NoiseGradientPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function NoiseGradientPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="NoiseGradient"
       lead="Animated Perlin noise-driven color gradient. Pass any set of hex colors and they'll blend fluidly across the canvas."
     >
-      <NoiseGradientPlayground />
+      <NoiseGradientPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

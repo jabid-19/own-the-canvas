@@ -18,7 +18,7 @@ export interface ShockwaveProps extends BaseCanvasProps {
     lineWidth?: number;
     /** Opacity decrease per frame (default: 0.02) */
     fadeSpeed?: number;
-    /** Auto-fire shockwaves without clicks (default: false) */
+    /** Auto-fire shockwaves without clicks (default: true) */
     autoFire?: boolean;
     /** Interval between auto-fires in ms (default: 2000) */
     autoInterval?: number;

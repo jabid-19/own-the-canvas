@@ -120,7 +120,7 @@ export const ConstellationMap = forwardRef<HTMLCanvasElement, ConstellationMapPr
     useConstellationMap(internalRef, {
       starCount: starCount ?? p.starCount ?? 80,
       starColor: starColor ?? p.starColor ?? "#ffffff",
-      lineColor: lineColor ?? p.lineColor ?? "#6b7280",
+      lineColor: lineColor ?? p.lineColor ?? "rgba(255,255,255,0.25)",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       speed: speed ?? 0.3,
       interactive: interactive ?? true,

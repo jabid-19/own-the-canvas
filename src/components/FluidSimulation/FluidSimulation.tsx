@@ -138,7 +138,7 @@ export const FluidSimulation = forwardRef<HTMLCanvasElement, FluidSimulationProp
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useFluidSimulation(internalRef, {
-      resolution: resolution ?? p.resolution ?? 80,
+      resolution: resolution ?? p.resolution ?? 128,
       viscosity: viscosity ?? p.viscosity ?? 0.0001,
       diffusion: diffusion ?? p.diffusion ?? 0.0001,
       dissipation: dissipation ?? p.dissipation ?? 0.995,

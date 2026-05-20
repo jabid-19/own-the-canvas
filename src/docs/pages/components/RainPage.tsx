@@ -19,7 +19,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "storm" | "drizzle" | "neon" | "golden"' },
 ];
 
-function RainPlayground() {
+function RainPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [dropCount, setDropCount] = useState(200);
   const [speed, setSpeed] = useState(15);
@@ -74,17 +74,18 @@ function RainPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function RainPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Rain"
       lead="Animated rainfall with wind drift, variable drop length, and splash particles. Perfect for atmospheric hero sections and mood-setting backgrounds."
     >
-      <RainPlayground />
+      <RainPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

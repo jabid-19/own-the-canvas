@@ -5,6 +5,7 @@ import { useFlowField } from "./useFlowField";
 type FlowFieldPreset = "default" | "neon" | "ocean" | "lava" | "forest" | "monochrome";
 
 interface FlowFieldPresetValues {
+  particleCount?: number;
   colors?: string[];
   backgroundColor?: string;
   noiseScale?: number;
@@ -90,7 +91,7 @@ export const FlowField = forwardRef<HTMLCanvasElement, FlowFieldProps>(
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useFlowField(internalRef, {
-      particleCount: particleCount ?? 800,
+      particleCount: particleCount ?? p.particleCount ?? 800,
       colors: colors ?? p.colors ?? ["#ffffff", "#6b7280", "#9ca3af"],
       speed: speed ?? p.speed ?? 1,
       noiseScale: noiseScale ?? p.noiseScale ?? 0.004,

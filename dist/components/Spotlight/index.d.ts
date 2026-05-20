@@ -1,2 +1,2 @@
-export { Spotlight } from './Spotlight';
+export { Spotlight, PRESETS } from './Spotlight';
 export type { SpotlightProps } from './Spotlight';

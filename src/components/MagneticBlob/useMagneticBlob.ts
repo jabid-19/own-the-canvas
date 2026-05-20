@@ -88,31 +88,61 @@ export function useMagneticBlob(
     parent.addEventListener("mousemove", onMouseMove);
     parent.addEventListener("mouseleave", onMouseLeave);
 
-    // Marching squares lookup — draw metaballs using canvas radial gradients composited
+    function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+      const m = hex.replace("#", "").match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+      return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+    }
+
     function drawMetaballs(colors: string[], threshold: number, glowEffect: boolean, glowBlur: number) {
       const blobs = blobsRef.current;
       if (!blobs.length) return;
 
-      // Use an offscreen approach: draw each blob as a radial gradient, then composite
-      // For performance, draw additive glow circles using screen blend
       ctx.globalCompositeOperation = "source-over";
 
       for (let i = 0; i < blobs.length; i++) {
         const blob = blobs[i];
         const color = colors[i % colors.length];
-        const r = blob.radius;
-
-        const grad = ctx.createRadialGradient(blob.x, blob.y, 0, blob.x, blob.y, r * threshold);
-        grad.addColorStop(0, color);
-        grad.addColorStop(0.5, color + "88");
-        grad.addColorStop(1, color + "00");
+        const r = blob.radius * threshold;
+        const rgb = hexToRgb(color);
 
         if (glowEffect) { ctx.shadowColor = color; ctx.shadowBlur = glowBlur; }
         ctx.globalCompositeOperation = "screen";
-        ctx.fillStyle = grad;
+
+        // Outer soft halo
+        const outerGrad = ctx.createRadialGradient(blob.x, blob.y, r * 0.5, blob.x, blob.y, r * 1.4);
+        outerGrad.addColorStop(0, rgb ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.18)` : color + "30");
+        outerGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = outerGrad;
         ctx.beginPath();
-        ctx.arc(blob.x, blob.y, r * threshold, 0, Math.PI * 2);
+        ctx.arc(blob.x, blob.y, r * 1.4, 0, Math.PI * 2);
         ctx.fill();
+
+        // Main blob body — rich radial gradient with 4 stops
+        const bodyGrad = ctx.createRadialGradient(
+          blob.x - r * 0.25, blob.y - r * 0.25, 0,  // offset center for 3D feel
+          blob.x, blob.y, r
+        );
+        bodyGrad.addColorStop(0,   rgb ? `rgba(${Math.min(255, rgb.r + 80)},${Math.min(255, rgb.g + 80)},${Math.min(255, rgb.b + 80)},0.95)` : color);
+        bodyGrad.addColorStop(0.35, rgb ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.85)` : color + "d9");
+        bodyGrad.addColorStop(0.7,  rgb ? `rgba(${Math.max(0,rgb.r-40)},${Math.max(0,rgb.g-40)},${Math.max(0,rgb.b-40)},0.6)` : color + "99");
+        bodyGrad.addColorStop(1,    "rgba(0,0,0,0)");
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.arc(blob.x, blob.y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Specular highlight — small bright spot
+        const specX = blob.x - r * 0.28;
+        const specY = blob.y - r * 0.28;
+        const specR = r * 0.35;
+        const specGrad = ctx.createRadialGradient(specX, specY, 0, specX, specY, specR);
+        specGrad.addColorStop(0, "rgba(255,255,255,0.45)");
+        specGrad.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = specGrad;
+        ctx.beginPath();
+        ctx.arc(specX, specY, specR, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.shadowBlur = 0;
       }
       ctx.globalCompositeOperation = "source-over";

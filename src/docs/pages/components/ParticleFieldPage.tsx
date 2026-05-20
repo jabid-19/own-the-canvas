@@ -16,7 +16,7 @@ const PROPS = [
   { name: "backgroundColor",  type: "string",  default: '"transparent"', description: "Canvas background color." },
 ];
 
-function ParticleFieldPlayground() {
+function ParticleFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [pc, setPc] = useState("#ffffff");
   const [lc, setLc] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
@@ -74,17 +74,18 @@ function ParticleFieldPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function ParticleFieldPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="ParticleField"
       lead="Floating particles with optional connection lines. Move your cursor over the canvas to activate the mouse repulsion interaction."
     >
-      <ParticleFieldPlayground />
+      <ParticleFieldPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

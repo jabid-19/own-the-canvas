@@ -68,6 +68,12 @@ export function useFlowField(
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.particleCount]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -105,6 +111,8 @@ export function useFlowField(
       w = width; h = height;
       initParticles();
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) initParticles(); };
 
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;

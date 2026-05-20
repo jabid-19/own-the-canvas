@@ -38,6 +38,12 @@ export function useBoids(
   const boidsRef = useRef<Boid[]>([]);
   const rafRef = useRef<number>(0);
   const mouseRef = useRef<{ x: number; y: number } | null>(null);
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.count]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -75,6 +81,8 @@ export function useBoids(
       w = width; h = height;
       initBoids();
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) initBoids(); };
 
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;

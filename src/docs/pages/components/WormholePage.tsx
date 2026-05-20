@@ -20,7 +20,7 @@ const PROPS = [
   { name: "preset",          type: "string",   default: "—",                     description: '"default" | "hyperspace" | "neon" | "vortex" | "minimal"' },
 ];
 
-function WormholePlayground() {
+function WormholePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [speed, setSpeed] = useState(1);
   const [twist, setTwist] = useState(0.3);
@@ -68,17 +68,18 @@ function WormholePlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function WormholePage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Wormhole"
       lead="3D perspective tunnel rushing toward the camera with twisting rings and star particles. Move the mouse to control speed. A classic hyperspace hero section effect."
     >
-      <WormholePlayground />
+      <WormholePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

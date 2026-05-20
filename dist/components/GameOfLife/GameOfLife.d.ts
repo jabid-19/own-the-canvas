@@ -3,6 +3,19 @@ import { GameOfLifeHandle } from './useGameOfLife';
 
 export type { GameOfLifeHandle };
 type GameOfLifePreset = "default" | "neon" | "matrix" | "minimal" | "fire";
+interface GameOfLifePresetValues {
+    cellSize?: number;
+    speed?: number;
+    initialDensity?: number;
+    aliveColor?: string;
+    oldColor?: string;
+    deadColor?: string;
+    showAge?: boolean;
+    wrapEdges?: boolean;
+    interactive?: boolean;
+    backgroundColor?: string;
+}
+export declare const PRESETS: Record<GameOfLifePreset, GameOfLifePresetValues>;
 export interface GameOfLifeProps extends BaseCanvasProps {
     /** Cell size in px. (default: 8) */
     cellSize?: number;

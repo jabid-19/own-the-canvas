@@ -25,7 +25,7 @@ const PROPS = [
   { name: "preset",           type: "string",  default: "—",         description: '"default" | "birds" | "fish" | "swarm" | "neon"' },
 ];
 
-function BoidsPlayground() {
+function BoidsPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [count, setCount] = useState(80);
   const [maxSpeed, setMaxSpeed] = useState(3);
@@ -76,17 +76,18 @@ function BoidsPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function BoidsPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Boids"
       lead="Craig Reynolds' emergent flocking algorithm — separation, alignment, and cohesion produce lifelike murmuration. Move your cursor to scatter the flock."
     >
-      <BoidsPlayground />
+      <BoidsPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

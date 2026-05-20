@@ -1,10 +1,24 @@
 import { BaseCanvasProps } from '../../types';
 
 type SpotlightPreset = "default" | "soft" | "dramatic" | "neon" | "ellipse";
+interface SpotlightPresetValues {
+    radius?: number;
+    color?: string;
+    overlayColor?: string;
+    overlayOpacity?: number;
+    edgeSoftness?: number;
+    followSpeed?: number;
+    glowColor?: string;
+    glowSize?: number;
+    showGlow?: boolean;
+    shape?: "circle" | "ellipse";
+    ellipseRatio?: number;
+}
+export declare const PRESETS: Record<SpotlightPreset, SpotlightPresetValues>;
 export interface SpotlightProps extends BaseCanvasProps {
     /** Spotlight radius in px (default: 120) */
     radius?: number;
-    /** Spotlight light color — currently unused visually but reserved for future tinting */
+    /** Spotlight inner tint color — drawn as a radial gradient inside the reveal area (default: "#ffffff", tint only visible for non-white colors) */
     color?: string;
     /** Overlay fill color (default: "#000000") */
     overlayColor?: string;

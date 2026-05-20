@@ -13,7 +13,7 @@ const PROPS = [
   { name: "children",   type: "React.ReactNode",           default: "—",          description: "Content to wrap with the dissolve effect.", required: true },
 ];
 
-function PixelDissolvePlayground() {
+function PixelDissolvePlayground({ onReset }: { onReset?: () => void }) {
   const [trigger, setTrigger] = useState(false);
   const [direction, setDirection] = useState<"in" | "out" | "both">("out");
   const [pixelSize, setPixelSize] = useState(8);
@@ -76,17 +76,18 @@ function PixelDissolvePlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function PixelDissolvePage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="PixelDissolve"
       lead="A wrapper component that applies a pixelated dissolve transition to any content. Trigger it with a boolean prop."
     >
-      <PixelDissolvePlayground />
+      <PixelDissolvePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

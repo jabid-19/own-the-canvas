@@ -26,7 +26,7 @@ const PROPS = [
 ];
 
 const PRESET_PARAMS = {
-  default:   { colorMode: "solid" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 1,   layerCount: 1, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
+  default:   { colorMode: "solid" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
   neon:      { colorMode: "cycle" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#000000", lineWidth: 1.5, layerCount: 1, symmetry: 1, glowEffect: true,  glowBlur: 15, trailFade: 0.005, speed: 2   },
   prismatic: { colorMode: "cycle" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#050005", lineWidth: 1,   layerCount: 3, symmetry: 2, glowEffect: false, glowBlur: 10, trailFade: 0.004, speed: 2   },
   mandala:   { colorMode: "gradient" as SpirographColorMode, color: "#ff00ff", color2: "#00ffff", bg: "#000000", lineWidth: 1, layerCount: 2, symmetry: 6, glowEffect: true, glowBlur: 12, trailFade: 0.002, speed: 2   },
@@ -34,7 +34,7 @@ const PRESET_PARAMS = {
   minimal:   { colorMode: "solid" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 0.5, layerCount: 1, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.001, speed: 0.5 },
 };
 
-function SpirographPlayground() {
+function SpirographPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]           = useState("default");
   const [innerRadius, setInnerRadius] = useState(0.4);
   const [penDistance, setPenDistance] = useState(0.9);
@@ -46,7 +46,7 @@ function SpirographPlayground() {
   const [trailFade, setTrailFade]     = useState(0.003);
   const [animated, setAnimated]       = useState(true);
   const [autoReset, setAutoReset]     = useState(true);
-  const [layerCount, setLayerCount]   = useState(1);
+  const [layerCount, setLayerCount]   = useState(2);
   const [colorMode, setColorMode]     = useState<SpirographColorMode>("solid");
   const [symmetry, setSymmetry]       = useState(1);
   const [glowEffect, setGlowEffect]   = useState(false);
@@ -148,17 +148,18 @@ function SpirographPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function SpirographPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Spirograph"
       lead="Hypotrochoid parametric curves drawn incrementally in real time. Layer multiple curves, cycle hues, add rotational symmetry and glow — produces petals, mandalas, stars, and fractal-like rosettes."
     >
-      <SpirographPlayground />
+      <SpirographPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

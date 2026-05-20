@@ -27,7 +27,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "silk" | "net" | "heavy" | "spider"' },
 ];
 
-function ClothSimulationPlayground() {
+function ClothSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [cols, setCols] = useState(25);
   const [gravity, setGravity] = useState(0.4);
@@ -79,17 +79,18 @@ function ClothSimulationPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function ClothSimulationPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="ClothSimulation"
       lead="Verlet integration spring-mass fabric simulation. Wind, gravity, mouse interaction, and optional tearing. Pinned at the top edge, fully interactive."
     >
-      <ClothSimulationPlayground />
+      <ClothSimulationPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

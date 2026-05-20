@@ -22,11 +22,11 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "storm" | "plasma" | "subtle"' },
 ];
 
-function LightningPlayground() {
+function LightningPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [color, setColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
-  const [branchChance, setBranchChance] = useState(0.3);
+  const [branchChance, setBranchChance] = useState(0.1);
   const [glowBlur, setGlowBlur] = useState(20);
   const [autoInterval, setAutoInterval] = useState(2000);
 
@@ -70,17 +70,18 @@ function LightningPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function LightningPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Lightning"
       lead="Recursive fractal branching lightning bolts with glow, flicker, and auto-strike. Click anywhere to trigger a strike — or let it fire automatically."
     >
-      <LightningPlayground />
+      <LightningPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

@@ -18,7 +18,7 @@ interface SpotlightPresetValues {
   ellipseRatio?: number;
 }
 
-const PRESETS: Record<SpotlightPreset, SpotlightPresetValues> = {
+export const PRESETS: Record<SpotlightPreset, SpotlightPresetValues> = {
   default: {
     radius: 120,
     overlayColor: "#000000",

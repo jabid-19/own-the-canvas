@@ -52,6 +52,12 @@ export function useRain(
   const ripplesRef = useRef<Ripple[]>([]);
   const rafRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.dropCount]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -92,6 +98,8 @@ export function useRain(
       w = width; h = height;
       initDrops();
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) initDrops(); };
 
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;

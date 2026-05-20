@@ -48,6 +48,12 @@ export function useClothSimulation(
   const mouseRef = useRef<{ x: number; y: number } | null>(null);
   const mouseDownRef = useRef<boolean>(false);
   const timeRef = useRef<number>(0);
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.cols, options.rows]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -99,6 +105,8 @@ export function useClothSimulation(
       w = width; h = height;
       buildCloth(w, h);
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) buildCloth(w, h); };
 
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;

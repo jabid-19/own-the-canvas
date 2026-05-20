@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { MatrixRain } from "../../../components/MatrixRain";
+import { MatrixRain, PRESETS as MATRIX_PRESETS } from "../../../components/MatrixRain";
 
 const PROPS = [
   { name: "color", type: "string", default: '"#ffffff"', description: "Color of the falling characters." },
@@ -14,7 +14,7 @@ const PROPS = [
   { name: "preset", type: '"default" | "cyberpunk" | "binary" | "minimal" | "blood"', default: '"default"', description: "Named preset shorthand." },
 ];
 
-function MatrixRainPlayground() {
+function MatrixRainPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [color, setColor] = useState("#ffffff");
   const [trailOpacity, setTrailOpacity] = useState(0.1);
@@ -23,6 +23,15 @@ function MatrixRainPlayground() {
   const [charset, setCharset] = useState<"latin" | "binary" | "katakana">("latin");
   const [resetThreshold, setResetThreshold] = useState(0.95);
   const [bgColor, setBgColor] = useState("#111111");
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = MATRIX_PRESETS[p as keyof typeof MATRIX_PRESETS] ?? {};
+    if (v.color) setColor(v.color);
+    if (v.charset) setCharset(v.charset as "latin" | "binary" | "katakana");
+    if (v.fontSize) setFontSize(v.fontSize);
+    if (v.speed) setSpeed(v.speed);
+  }
 
   function hexToRgb(hex: string) {
     const h = hex.replace("#", "");
@@ -62,7 +71,7 @@ function MatrixRainPlayground() {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "cyberpunk", "binary", "minimal", "blood"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "cyberpunk", "binary", "minimal", "blood"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Color" value={color} onChange={setColor} />
         <PColor label="Background" value={bgColor} onChange={setBgColor} />
@@ -77,17 +86,18 @@ function MatrixRainPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function MatrixRainPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="MatrixRain"
       lead="Classic falling-character rain effect. Faithful to the original Matrix algorithm — optimized with requestAnimationFrame and DPR-aware canvas rendering."
     >
-      <MatrixRainPlayground />
+      <MatrixRainPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

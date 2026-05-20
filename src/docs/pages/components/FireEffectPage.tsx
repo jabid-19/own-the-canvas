@@ -14,7 +14,7 @@ const PROPS = [
 
 type FirePalette = "smoke" | "inferno" | "toxic" | "ice" | "plasma";
 
-function FireEffectPlayground() {
+function FireEffectPlayground({ onReset }: { onReset?: () => void }) {
   const [palette, setPalette] = useState<FirePalette>("smoke");
   const [intensity, setIntensity] = useState(0.95);
   const [wind, setWind] = useState(0.3);
@@ -58,17 +58,18 @@ function FireEffectPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function FireEffectPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="FireEffect"
       lead="Pixel-level fire simulation using a cellular automaton approach. Choose from four distinct color palettes."
     >
-      <FireEffectPlayground />
+      <FireEffectPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

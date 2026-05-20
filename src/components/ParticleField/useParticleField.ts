@@ -43,6 +43,12 @@ export function useParticleField(
   const lineRgbRef = useRef<string>("");
   const lastParticleColorRef = useRef<string>("");
   const lastLineColorRef = useRef<string>("");
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.particleCount, options.particleSize]);
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
@@ -78,6 +84,8 @@ export function useParticleField(
       h = height;
       initParticles(width, height);
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) initParticles(w, h); };
 
     const ro = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;

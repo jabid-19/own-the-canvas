@@ -16,7 +16,7 @@ const PROPS = [
   { name: "gapBetweenBars", type: "number",           default: "2",         description: "Gap between bars in pixels." },
 ];
 
-function AudioVisualizerPlayground() {
+function AudioVisualizerPlayground({ onReset }: { onReset?: () => void }) {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [micActive, setMicActive] = useState(false);
   const [mode, setMode] = useState<"bars" | "wave" | "circular" | "mirror">("bars");
@@ -75,7 +75,7 @@ function AudioVisualizerPlayground() {
   ].filter(Boolean).join("\n");
 
   const preview = (
-    <div style={{ width: "100%", height: "100%", background: bg, position: "relative" }}>
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <AudioVisualizer
         audioSource={stream}
         mode={mode}
@@ -84,6 +84,7 @@ function AudioVisualizerPlayground() {
         sensitivity={sensitivity}
         rounded={rounded}
         gradient={gradient}
+        backgroundColor={bg}
         width="100%"
         height="100%"
       />
@@ -111,17 +112,18 @@ function AudioVisualizerPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function AudioVisualizerPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="AudioVisualizer"
       lead="Real-time Web Audio API visualizer with four distinct modes. Connect a MediaStream from the user's microphone or any audio source."
     >
-      <AudioVisualizerPlayground />
+      <AudioVisualizerPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

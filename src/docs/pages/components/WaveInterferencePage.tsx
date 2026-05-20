@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { WaveInterference } from "../../../components/WaveInterference";
+import { WaveInterference, PRESETS as WAVE_PRESETS } from "../../../components/WaveInterference";
 
 const PROPS = [
   { name: "maxSources",      type: "number",  default: "6",        description: "Maximum number of wave sources that can be placed." },
@@ -18,7 +18,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",        description: '"default" | "ripple" | "plasma" | "neon" | "cosmic"' },
 ];
 
-function WaveInterferencePlayground() {
+function WaveInterferencePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [wavelength, setWavelength] = useState(80);
   const [speed, setSpeed] = useState(1);
@@ -26,8 +26,17 @@ function WaveInterferencePlayground() {
   const [resolution, setResolution] = useState(0.4);
   const [colorHigh, setColorHigh] = useState("#ffffff");
   const [colorLow, setColorLow] = useState("#111111");
-  const [showSources, setShowSources] = useState(true);
+  const [showSources, setShowSources] = useState(false);
   const [animated, setAnimated] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = WAVE_PRESETS[p as keyof typeof WAVE_PRESETS] ?? {};
+    if (v.colorHigh) setColorHigh(v.colorHigh);
+    if (v.colorLow) setColorLow(v.colorLow);
+    if (v.wavelength) setWavelength(v.wavelength);
+    if (v.decay !== undefined) setDecay(v.decay);
+  }
 
   const code = [
     `import { WaveInterference } from 'own-the-canvas';`,
@@ -40,7 +49,7 @@ function WaveInterferencePlayground() {
     `  resolution={${resolution}}`,
     `  colorHigh="${colorHigh}"`,
     `  colorLow="${colorLow}"`,
-    !showSources ? `  showSources={false}` : null,
+    showSources ? `  showSources` : null,
     !animated ? `  animated={false}` : null,
     `  width="100%"`,
     `  height="100%"`,
@@ -69,7 +78,7 @@ function WaveInterferencePlayground() {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "ripple", "plasma", "neon", "cosmic"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "ripple", "plasma", "neon", "cosmic"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="High color" value={colorHigh} onChange={setColorHigh} />
         <PColor label="Low color" value={colorLow} onChange={setColorLow} />
@@ -86,17 +95,18 @@ function WaveInterferencePlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function WaveInterferencePage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="WaveInterference"
       lead="Real-time wave superposition from multiple point sources. Click anywhere to add a source, click an existing source to remove it. Constructive and destructive interference fringes appear instantly."
     >
-      <WaveInterferencePlayground />
+      <WaveInterferencePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

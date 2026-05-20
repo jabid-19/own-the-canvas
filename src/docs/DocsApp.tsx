@@ -40,6 +40,16 @@ const LSystemPage        = lazy(() => import("./pages/components/LSystemPage").t
 const KaleidoscopePage   = lazy(() => import("./pages/components/KaleidoscopePage").then((m) => ({ default: m.KaleidoscopePage })));
 const VoronoiCellsPage   = lazy(() => import("./pages/components/VoronoiCellsPage").then((m) => ({ default: m.VoronoiCellsPage })));
 const SlimeMoldPage      = lazy(() => import("./pages/components/SlimeMoldPage").then((m) => ({ default: m.SlimeMoldPage })));
+const InkBleedPage       = lazy(() => import("./pages/components/InkBleedPage").then((m) => ({ default: m.InkBleedPage })));
+const WatercolorBloomPage = lazy(() => import("./pages/components/WatercolorBloomPage").then((m) => ({ default: m.WatercolorBloomPage })));
+const PendulaWavePage    = lazy(() => import("./pages/components/PendulaWavePage").then((m) => ({ default: m.PendulaWavePage })));
+const CrystalGrowthPage  = lazy(() => import("./pages/components/CrystalGrowthPage").then((m) => ({ default: m.CrystalGrowthPage })));
+const NeuralWebPage      = lazy(() => import("./pages/components/NeuralWebPage").then((m) => ({ default: m.NeuralWebPage })));
+const ParticleTextPage   = lazy(() => import("./pages/components/ParticleTextPage").then((m) => ({ default: m.ParticleTextPage })));
+const MetaballsPage      = lazy(() => import("./pages/components/MetaballsPage").then((m) => ({ default: m.MetaballsPage })));
+const AntColonyPage      = lazy(() => import("./pages/components/AntColonyPage").then((m) => ({ default: m.AntColonyPage })));
+const MagneticFieldPage  = lazy(() => import("./pages/components/MagneticFieldPage").then((m) => ({ default: m.MagneticFieldPage })));
+const TerrainMeshPage    = lazy(() => import("./pages/components/TerrainMeshPage").then((m) => ({ default: m.TerrainMeshPage })));
 
 function Loading() {
   return (
@@ -100,6 +110,16 @@ export function DocsApp() {
           <Route path="/components/kaleidoscope"         element={<KaleidoscopePage />} />
           <Route path="/components/voronoi-cells"        element={<VoronoiCellsPage />} />
           <Route path="/components/slime-mold"           element={<SlimeMoldPage />} />
+          <Route path="/components/ink-bleed"            element={<InkBleedPage />} />
+          <Route path="/components/watercolor-bloom"     element={<WatercolorBloomPage />} />
+          <Route path="/components/pendula-wave"         element={<PendulaWavePage />} />
+          <Route path="/components/crystal-growth"       element={<CrystalGrowthPage />} />
+          <Route path="/components/neural-web"           element={<NeuralWebPage />} />
+          <Route path="/components/particle-text"        element={<ParticleTextPage />} />
+          <Route path="/components/metaballs"            element={<MetaballsPage />} />
+          <Route path="/components/ant-colony"           element={<AntColonyPage />} />
+          <Route path="/components/magnetic-field"       element={<MagneticFieldPage />} />
+          <Route path="/components/terrain-mesh"         element={<TerrainMeshPage />} />
         </Routes>
       </Suspense>
     </Layout>

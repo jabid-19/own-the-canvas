@@ -35,6 +35,7 @@ export function useLiveChart(
   const optionsRef = useRef(options);
   optionsRef.current = options;
   const rafRef = useRef<number>(0);
+  const pulseRef = useRef<number>(0);
 
   const push = (values: number | number[]) => {
     const arr = Array.isArray(values) ? values : [values];
@@ -80,15 +81,21 @@ export function useLiveChart(
         yMin, yMax, smooth, glowEffect, glowBlur,
       } = optionsRef.current;
 
+      pulseRef.current += 0.06;
+
       ctx.clearRect(0, 0, w, h);
       if (backgroundColor && backgroundColor !== "transparent") {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, w, h);
       }
 
+      // Extra padding on left for axis labels
+      const labelW = 36;
       const pad = padding;
-      const chartW = w - pad * 2;
-      const chartH = h - pad * 2;
+      const chartX = pad + labelW;
+      const chartW = w - chartX - pad;
+      const chartH = h - pad * 2 - 20; // bottom room for axis labels
+      const chartY = pad;
 
       // Compute y range across all series
       let dataMin = yMin ?? Infinity;
@@ -109,24 +116,49 @@ export function useLiveChart(
       }
       const range = dataMax - dataMin || 1;
 
-      const toX = (i: number, total: number) => pad + (i / Math.max(total - 1, 1)) * chartW;
-      const toY = (v: number) => pad + chartH - ((v - dataMin) / range) * chartH;
+      const toX = (i: number, total: number) => chartX + (i / Math.max(total - 1, 1)) * chartW;
+      const toY = (v: number) => chartY + chartH - ((v - dataMin) / range) * chartH;
 
-      // Grid
+      // Grid with labels
       if (showGrid) {
         const gridLines = 5;
-        ctx.strokeStyle = gridColor;
-        ctx.globalAlpha = gridOpacity;
+        ctx.setLineDash([3, 5]);
         ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
+
         for (let i = 0; i <= gridLines; i++) {
-          const gy = pad + (i / gridLines) * chartH;
+          const gy = chartY + (i / gridLines) * chartH;
+          const val = dataMax - (i / gridLines) * range;
+
+          ctx.strokeStyle = gridColor;
+          ctx.globalAlpha = gridOpacity;
           ctx.beginPath();
-          ctx.moveTo(pad, gy);
-          ctx.lineTo(w - pad, gy);
+          ctx.moveTo(chartX, gy);
+          ctx.lineTo(chartX + chartW, gy);
           ctx.stroke();
+
+          // Y-axis labels
+          ctx.globalAlpha = 0.6;
+          ctx.fillStyle = gridColor;
+          ctx.font = `10px system-ui, sans-serif`;
+          ctx.textAlign = "right";
+          ctx.textBaseline = "middle";
+          const label = Math.abs(val) >= 1000
+            ? (val / 1000).toFixed(1) + "k"
+            : val.toFixed(Math.abs(val) < 10 ? 1 : 0);
+          ctx.fillText(label, chartX - 4, gy);
         }
         ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+
+        // Axis border line
+        ctx.strokeStyle = gridColor;
+        ctx.globalAlpha = gridOpacity * 1.5;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(chartX, chartY);
+        ctx.lineTo(chartX, chartY + chartH);
+        ctx.lineTo(chartX + chartW, chartY + chartH);
+        ctx.stroke();
         ctx.globalAlpha = 1;
       }
 
@@ -135,6 +167,7 @@ export function useLiveChart(
         if (s.data.length < 2) continue;
         const n = s.data.length;
 
+        // Build path
         ctx.beginPath();
         if (smooth) {
           ctx.moveTo(toX(0, n), toY(s.data[0]));
@@ -153,33 +186,95 @@ export function useLiveChart(
         ctx.strokeStyle = s.color;
         ctx.lineWidth = lineWidth;
         ctx.lineJoin = "round";
+        ctx.lineCap = "round";
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Fill
+        // Gradient area fill — more pronounced with multi-stop gradient
         if (s.filled !== false) {
-          ctx.lineTo(toX(n - 1, n), pad + chartH);
-          ctx.lineTo(toX(0, n), pad + chartH);
-          ctx.closePath();
-          const grad = ctx.createLinearGradient(0, pad, 0, pad + chartH);
-          grad.addColorStop(0, s.color + "55");
-          grad.addColorStop(1, s.color + "00");
+          const fillPath = new Path2D();
+          if (smooth) {
+            fillPath.moveTo(toX(0, n), toY(s.data[0]));
+            for (let i = 1; i < n - 1; i++) {
+              const cpx = (toX(i - 1, n) + toX(i, n)) / 2;
+              const cpy = (toY(s.data[i - 1]) + toY(s.data[i])) / 2;
+              fillPath.quadraticCurveTo(toX(i - 1, n), toY(s.data[i - 1]), cpx, cpy);
+            }
+            fillPath.lineTo(toX(n - 1, n), toY(s.data[n - 1]));
+          } else {
+            fillPath.moveTo(toX(0, n), toY(s.data[0]));
+            for (let i = 1; i < n; i++) fillPath.lineTo(toX(i, n), toY(s.data[i]));
+          }
+          fillPath.lineTo(toX(n - 1, n), chartY + chartH);
+          fillPath.lineTo(toX(0, n), chartY + chartH);
+          fillPath.closePath();
+
+          // Clip fill to chart area
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(chartX, chartY, chartW, chartH);
+          ctx.clip();
+
+          const grad = ctx.createLinearGradient(0, chartY, 0, chartY + chartH);
+          grad.addColorStop(0,   s.color + "88");
+          grad.addColorStop(0.5, s.color + "33");
+          grad.addColorStop(1,   s.color + "00");
           ctx.fillStyle = grad;
           ctx.globalAlpha = fillOpacity;
-          ctx.fill();
+          ctx.fill(fillPath);
+          ctx.globalAlpha = 1;
+          ctx.restore();
+        }
+
+        // Regular dots
+        if (showDots && n > 1) {
+          for (let i = 0; i < n - 1; i++) {
+            ctx.beginPath();
+            ctx.arc(toX(i, n), toY(s.data[i]), dotRadius * 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = s.color;
+            ctx.globalAlpha = 0.4;
+            ctx.fill();
+          }
           ctx.globalAlpha = 1;
         }
 
-        // Dots
-        if (showDots) {
-          for (let i = 0; i < n; i++) {
-            ctx.beginPath();
-            ctx.arc(toX(i, n), toY(s.data[i]), dotRadius, 0, Math.PI * 2);
-            ctx.fillStyle = s.color;
-            ctx.globalAlpha = i === n - 1 ? 1 : 0.5;
-            ctx.fill();
-            ctx.globalAlpha = 1;
-          }
+        // Animated pulsing dot on latest point
+        const lx = toX(n - 1, n);
+        const ly = toY(s.data[n - 1]);
+        const pulse = Math.sin(pulseRef.current) * 0.5 + 0.5; // 0..1
+
+        // Outer ring pulse
+        if (glowEffect) { ctx.shadowColor = s.color; ctx.shadowBlur = glowBlur * 0.8; }
+        ctx.beginPath();
+        ctx.arc(lx, ly, dotRadius * (1.5 + pulse * 1.5), 0, Math.PI * 2);
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.6 * (1 - pulse);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+
+        // Solid core dot
+        ctx.beginPath();
+        ctx.arc(lx, ly, dotRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.globalAlpha = 0.9;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(lx, ly, dotRadius * 0.6, 0, Math.PI * 2);
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = 1;
+        ctx.fill();
+
+        // Series label at latest point
+        if (s.label) {
+          ctx.font = `bold 11px system-ui, sans-serif`;
+          ctx.fillStyle = s.color;
+          ctx.textAlign = "left";
+          ctx.textBaseline = "bottom";
+          ctx.globalAlpha = 0.85;
+          ctx.fillText(s.label, lx + dotRadius + 3, ly - 2);
+          ctx.globalAlpha = 1;
         }
       }
 

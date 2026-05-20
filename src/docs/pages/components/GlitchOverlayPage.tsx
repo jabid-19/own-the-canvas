@@ -20,7 +20,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",            description: '"default" | "crt" | "cyberpunk" | "subtle" | "corrupt"' },
 ];
 
-function GlitchOverlayPlayground() {
+function GlitchOverlayPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [intensity, setIntensity] = useState(0.6);
   const [speed, setSpeed] = useState(1);
@@ -92,17 +92,18 @@ function GlitchOverlayPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function GlitchOverlayPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="GlitchOverlay"
       lead="CRT-style overlay with scanlines, RGB channel shift, block glitch, and film noise. Composited as an absolute overlay over any content beneath it."
     >
-      <GlitchOverlayPlayground />
+      <GlitchOverlayPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

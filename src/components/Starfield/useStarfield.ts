@@ -58,6 +58,12 @@ export function useStarfield(
   optionsRef.current = options;
   const rafRef = useRef<number>(0);
   const lastShootingRef = useRef<number>(0);
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.starCount]);
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
@@ -105,6 +111,8 @@ export function useStarfield(
       init2D(width, height);
       init3D(width, height);
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) { init2D(w, h); init3D(w, h); } };
 
     const ro = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;

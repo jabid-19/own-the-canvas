@@ -29,7 +29,7 @@ const PRESET_PARAMS = {
   "void":          { colorMode: "solid"    as VoronoiColorMode, cellColor: "#ffffff", bg: "#000000", edgeColor: "#333333", showEdges: false, cellCount: 20 },
 };
 
-function VoronoiCellsPlayground() {
+function VoronoiCellsPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]         = useState("default");
   const [cellCount, setCellCount]   = useState(20);
   const [speed, setSpeed]           = useState(1);
@@ -38,7 +38,7 @@ function VoronoiCellsPlayground() {
   const [bg, setBg]                 = useState("#111111");
   const [showEdges, setShowEdges]   = useState(true);
   const [edgeColor, setEdgeColor]   = useState("#333333");
-  const [resolution, setRes]        = useState(0.25);
+  const [resolution, setRes]        = useState(1.0);
   const [relaxation, setRelax]      = useState(0.05);
   const [interactive, setInteract]  = useState(true);
   const [animated, setAnimated]     = useState(true);
@@ -122,17 +122,18 @@ function VoronoiCellsPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function VoronoiCellsPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="VoronoiCells"
       lead="Animated Voronoi diagram where seed points drift and self-organize via Lloyd relaxation. Click to add seeds, drag to reposition them — each cell continuously reshapes to fill its territory."
     >
-      <VoronoiCellsPlayground />
+      <VoronoiCellsPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

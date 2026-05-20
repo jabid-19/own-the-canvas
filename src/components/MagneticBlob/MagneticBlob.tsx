@@ -10,10 +10,13 @@ interface MagneticBlobPresetValues {
   radius?: number;
   speed?: number;
   magnetStrength?: number;
+  magnetRadius?: number;
   threshold?: number;
   glowEffect?: boolean;
   glowBlur?: number;
   backgroundColor?: string;
+  animated?: boolean;
+  followMouse?: boolean;
   wanderStrength?: number;
 }
 
@@ -130,13 +133,13 @@ export const MagneticBlob = forwardRef<HTMLCanvasElement, MagneticBlobProps>(
       radius: radius ?? p.radius ?? 80,
       speed: speed ?? p.speed ?? 1,
       magnetStrength: magnetStrength ?? p.magnetStrength ?? 0.08,
-      magnetRadius: magnetRadius ?? 150,
+      magnetRadius: magnetRadius ?? p.magnetRadius ?? 150,
       threshold: threshold ?? p.threshold ?? 1.8,
       glowEffect: glowEffect ?? p.glowEffect ?? true,
       glowBlur: glowBlur ?? p.glowBlur ?? 20,
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
-      animated: animated ?? true,
-      followMouse: followMouse ?? true,
+      animated: animated ?? p.animated ?? true,
+      followMouse: followMouse ?? p.followMouse ?? true,
       wanderStrength: wanderStrength ?? p.wanderStrength ?? 0.4,
     });
 

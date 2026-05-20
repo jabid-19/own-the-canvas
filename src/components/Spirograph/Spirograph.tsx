@@ -144,7 +144,7 @@ export const Spirograph = forwardRef<HTMLCanvasElement, SpirographProps>(
       trailFade:       trailFade       ?? p.trailFade     ?? 0.003,
       animated:        animated        ?? true,
       autoReset:       autoReset       ?? true,
-      layerCount:      layerCount      ?? p.layerCount    ?? 1,
+      layerCount:      layerCount      ?? p.layerCount    ?? 2,
       colorMode:       colorMode       ?? p.colorMode     ?? "solid",
       symmetry:        symmetry        ?? p.symmetry      ?? 1,
       glowEffect:      glowEffect      ?? p.glowEffect    ?? false,

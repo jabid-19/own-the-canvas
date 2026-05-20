@@ -5,12 +5,12 @@ import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel }
 import { Kaleidoscope } from "../../../components/Kaleidoscope";
 
 const PROPS = [
-  { name: "segments",       type: "number",  default: "6",          description: "Number of mirror segments / symmetry (2–16)." },
+  { name: "segments",       type: "number",  default: "8",          description: "Number of mirror segments / symmetry (2–16)." },
   { name: "speed",          type: "number",  default: "1",          description: "Animation speed multiplier." },
-  { name: "colorA",         type: "string",  default: '"#ffffff"',  description: "Color at noise peak." },
-  { name: "colorB",         type: "string",  default: '"#333333"',  description: "Color at noise trough." },
+  { name: "colorA",         type: "string",  default: '"#e0e0ff"',  description: "Color at noise peak." },
+  { name: "colorB",         type: "string",  default: '"#1a0a2e"',  description: "Color at noise trough." },
   { name: "backgroundColor",type: "string",  default: '"#111111"',  description: "Background color outside the pattern radius." },
-  { name: "noiseScale",     type: "number",  default: "3",          description: "Noise spatial frequency — higher = finer detail." },
+  { name: "noiseScale",     type: "number",  default: "2.5",        description: "Noise spatial frequency — higher = finer detail." },
   { name: "zoomSpeed",      type: "number",  default: "0.3",        description: "Radial zoom/pulse animation speed." },
   { name: "rotation",       type: "number",  default: "0.2",        description: "Whole-pattern rotation speed in degrees per frame." },
   { name: "resolution",     type: "number",  default: "0.5",        description: "Render resolution fraction — lower is faster." },
@@ -19,7 +19,7 @@ const PROPS = [
 ];
 
 const PRESET_PARAMS = {
-  default: { segments: 6,  colorA: "#ffffff", colorB: "#333333", bg: "#111111", noiseScale: 3, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
+  default: { segments: 8,  colorA: "#e0e0ff", colorB: "#1a0a2e", bg: "#111111", noiseScale: 2.5, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
   neon:    { segments: 8,  colorA: "#00ffff", colorB: "#ff00ff", bg: "#000000", noiseScale: 3, zoomSpeed: 0.3, rotation: 0.2, speed: 1.5 },
   crystal: { segments: 12, colorA: "#88ccff", colorB: "#002244", bg: "#000510", noiseScale: 4, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
   void:    { segments: 6,  colorA: "#cc00ff", colorB: "#000000", bg: "#000000", noiseScale: 3, zoomSpeed: 0.3, rotation: 0.4, speed: 1   },
@@ -27,14 +27,14 @@ const PRESET_PARAMS = {
   ice:     { segments: 10, colorA: "#ffffff", colorB: "#002255", bg: "#000510", noiseScale: 2, zoomSpeed: 0.5, rotation: 0.2, speed: 1   },
 };
 
-function KaleidoscopePlayground() {
+function KaleidoscopePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]       = useState("default");
-  const [segments, setSegments]   = useState(6);
+  const [segments, setSegments]   = useState(8);
   const [speed, setSpeed]         = useState(1);
-  const [colorA, setColorA]       = useState("#ffffff");
-  const [colorB, setColorB]       = useState("#333333");
+  const [colorA, setColorA]       = useState("#e0e0ff");
+  const [colorB, setColorB]       = useState("#1a0a2e");
   const [bg, setBg]               = useState("#111111");
-  const [noiseScale, setNoise]    = useState(3);
+  const [noiseScale, setNoise]    = useState(2.5);
   const [zoomSpeed, setZoom]      = useState(0.3);
   const [rotation, setRotation]   = useState(0.2);
   const [resolution, setRes]      = useState(0.5);
@@ -117,17 +117,18 @@ function KaleidoscopePlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function KaleidoscopePage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Kaleidoscope"
       lead="Animated fractal noise folded into rotationally symmetric kaleidoscope patterns. Segments, rotation speed, and color pairing transform the same underlying noise into infinite visual variations."
     >
-      <KaleidoscopePlayground />
+      <KaleidoscopePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

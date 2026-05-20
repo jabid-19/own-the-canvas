@@ -27,7 +27,7 @@ const PRESET_PARAMS: Record<string, { feedRate: number; killRate: number; colorA
   neon:    { feedRate: 0.055, killRate: 0.062, colorA: "#0a0a0a", colorB: "#00ffff", backgroundColor: "#0a0a0a" },
 };
 
-function ReactionDiffusionPlayground() {
+function ReactionDiffusionPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [feedRate, setFeedRate] = useState(0.055);
   const [killRate, setKillRate] = useState(0.062);
@@ -106,17 +106,18 @@ function ReactionDiffusionPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function ReactionDiffusionPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="ReactionDiffusion"
       lead="Gray-Scott reaction-diffusion simulation. Two virtual chemicals interact to spontaneously grow coral, spots, mazes, and traveling waves from random seeds. Click and drag to disturb the field."
     >
-      <ReactionDiffusionPlayground />
+      <ReactionDiffusionPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

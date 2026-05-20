@@ -17,7 +17,7 @@ const PROPS = [
   { name: "preset",          type: "string",   default: "—",        description: '"default" | "arctic" | "solar" | "tropical" | "neon" | "midnight"' },
 ];
 
-function AuroraBorealisPlayground() {
+function AuroraBorealisPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [speed, setSpeed] = useState(1);
   const [intensity, setIntensity] = useState(0.8);
@@ -85,17 +85,18 @@ function AuroraBorealisPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function AuroraBorealisPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="AuroraBorealis"
       lead="Animated northern lights with layered sine-wave curtains, vertical streaks, and a star field. Uses additive screen blending to build luminous, overlapping color bands."
     >
-      <AuroraBorealisPlayground />
+      <AuroraBorealisPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

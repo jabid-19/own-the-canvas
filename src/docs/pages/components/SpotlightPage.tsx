@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSlider, PColor, PToggle, PSel, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { Spotlight } from "../../../components/Spotlight";
+import { Spotlight, PRESETS as SPOTLIGHT_PRESETS } from "../../../components/Spotlight";
 
 const PROPS = [
   { name: "radius", type: "number", default: "120", description: "Spotlight radius in px." },
@@ -22,7 +22,7 @@ const PROPS = [
   { name: "preset", type: "string", default: "—", description: '"default" | "soft" | "dramatic" | "neon" | "ellipse"' },
 ];
 
-function SpotlightPlayground() {
+function SpotlightPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState<"default" | "soft" | "dramatic" | "neon" | "ellipse">("default");
   const [radius, setRadius] = useState(120);
   const [opacity, setOpacity] = useState(0.75);
@@ -35,6 +35,20 @@ function SpotlightPlayground() {
   const [shape, setShape] = useState<"circle" | "ellipse">("circle");
   const [ellipseRatio, setEllipseRatio] = useState(0.6);
   const [interactive, setInteractive] = useState(true);
+
+  function handlePreset(p: "default" | "soft" | "dramatic" | "neon" | "ellipse") {
+    setPreset(p);
+    const v = SPOTLIGHT_PRESETS[p] ?? {};
+    if (v.radius !== undefined) setRadius(v.radius);
+    if (v.overlayOpacity !== undefined) setOpacity(v.overlayOpacity);
+    if (v.edgeSoftness !== undefined) setSoftness(v.edgeSoftness);
+    if (v.followSpeed !== undefined) setFollowSpeed(v.followSpeed);
+    if (v.showGlow !== undefined) setGlow(v.showGlow);
+    if (v.glowColor) setGlowColor(v.glowColor);
+    if (v.overlayColor) setOverlayColor(v.overlayColor);
+    if (v.shape) setShape(v.shape);
+    if (v.ellipseRatio !== undefined) setEllipseRatio(v.ellipseRatio);
+  }
 
   const code = [
     `import { Spotlight } from 'own-the-canvas';`,
@@ -75,7 +89,7 @@ function SpotlightPlayground() {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "soft", "dramatic", "neon", "ellipse"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "soft", "dramatic", "neon", "ellipse"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Overlay color" value={overlayColor} onChange={setOverlayColor} />
         <PColor label="Glow color" value={glowColor} onChange={setGlowColor} />
@@ -94,17 +108,18 @@ function SpotlightPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function SpotlightPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Spotlight"
       lead="A mouse-following spotlight that cuts through a dark overlay to reveal content beneath. Perfect for hero sections, interactive reveals, and theater-style presentations."
     >
-      <SpotlightPlayground />
+      <SpotlightPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

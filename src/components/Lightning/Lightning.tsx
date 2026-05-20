@@ -114,7 +114,7 @@ export const Lightning = forwardRef<HTMLCanvasElement, LightningProps>((props, r
   useLightning(internalRef, {
     segments:      segments      ?? p.segments      ?? 8,
     roughness:     roughness     ?? p.roughness     ?? 0.5,
-    branchChance:  branchChance  ?? p.branchChance  ?? 0.3,
+    branchChance:  branchChance  ?? p.branchChance  ?? 0.1,
     branchDecay:   branchDecay   ?? p.branchDecay   ?? 0.6,
     flickerCount:  flickerCount  ?? p.flickerCount  ?? 3,
     glowBlur:      glowBlur      ?? p.glowBlur      ?? 20,

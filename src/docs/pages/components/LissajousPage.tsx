@@ -33,7 +33,7 @@ const PRESET_PARAMS = {
   crystal:   { freqX: 5, freqY: 3, phaseSpeed: 0.5, lineWidth: 2,   glowEffect: true,  colorMode: "cycle" as LissajousColorMode, bg: "#000510" },
 };
 
-function LissajousPlayground() {
+function LissajousPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]         = useState("default");
   const [freqX, setFreqX]           = useState(3);
   const [freqY, setFreqY]           = useState(2);
@@ -135,17 +135,18 @@ function LissajousPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function LissajousPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Lissajous"
       lead="Parametric Lissajous curves that morph continuously as their phase difference advances. Adjust frequency ratios to reveal entirely different curve topologies — from simple ellipses to intricate 12-petaled flowers."
     >
-      <LissajousPlayground />
+      <LissajousPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

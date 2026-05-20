@@ -25,7 +25,7 @@ const PROPS = [
   { name: "preset",           type: "string",  default: "—",         description: '"default" | "neon" | "minimal" | "ocean" | "fire"' },
 ];
 
-function LiveChartPlayground() {
+function LiveChartPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [smooth, setSmooth] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
@@ -85,17 +85,18 @@ function LiveChartPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function LiveChartPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="LiveChart"
       lead="Real-time animated line and area chart. Push data points dynamically and the chart scrolls automatically. Supports multiple series, smooth bezier curves, and glow."
     >
-      <LiveChartPlayground />
+      <LiveChartPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

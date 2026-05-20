@@ -37,6 +37,12 @@ export function useWormhole(
   const starsRef = useRef<Star[]>([]);
   const rafRef = useRef<number>(0);
   const mouseSpeedRef = useRef<number>(1);
+  const reinitRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    reinitRef.current?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.ringCount]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -71,6 +77,8 @@ export function useWormhole(
       w = width; h = height;
       initRings();
     }
+
+    reinitRef.current = () => { if (w > 0 && h > 0) initRings(); };
 
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;

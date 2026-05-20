@@ -62,12 +62,12 @@ export const Kaleidoscope = forwardRef<HTMLCanvasElement, KaleidoscopeProps>(
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useKaleidoscope(internalRef, {
-      segments:        segments        ?? p.segments        ?? 6,
+      segments:        segments        ?? p.segments        ?? 8,
       speed:           speed           ?? p.speed           ?? 1,
-      colorA:          colorA          ?? p.colorA          ?? "#ffffff",
-      colorB:          colorB          ?? p.colorB          ?? "#333333",
+      colorA:          colorA          ?? p.colorA          ?? "#e0e0ff",
+      colorB:          colorB          ?? p.colorB          ?? "#1a0a2e",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
-      noiseScale:      noiseScale      ?? p.noiseScale      ?? 3,
+      noiseScale:      noiseScale      ?? p.noiseScale      ?? 2.5,
       zoomSpeed:       zoomSpeed       ?? p.zoomSpeed       ?? 0.3,
       rotation:        rotation        ?? p.rotation        ?? 0.2,
       resolution:      resolution      ?? 0.5,

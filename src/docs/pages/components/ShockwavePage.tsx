@@ -21,7 +21,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",             description: '"default" | "neon" | "explosion" | "ripple" | "minimal"' },
 ];
 
-function ShockwavePlayground() {
+function ShockwavePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [ringCount, setRingCount] = useState(3);
   const [speed, setSpeed] = useState(4);
@@ -73,17 +73,18 @@ function ShockwavePlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function ShockwavePage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Shockwave"
       lead="Click-triggered expanding ring blast with glow. Each click spawns a set of concentric rings that expand and fade — great for click feedback and game effects."
     >
-      <ShockwavePlayground />
+      <ShockwavePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

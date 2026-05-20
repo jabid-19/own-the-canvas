@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { DiffusionAggregation } from "../../../components/DiffusionAggregation";
+import { DiffusionAggregation, PRESETS as DLA_PRESETS } from "../../../components/DiffusionAggregation";
 import type { DLASeedMode } from "../../../components/DiffusionAggregation";
 
 const PROPS = [
@@ -20,7 +20,7 @@ const PROPS = [
   { name: "preset",          type: "string",     default: "—",          description: '"default" | "coral" | "snowflake" | "lightning" | "neon" | "frost"' },
 ];
 
-function DiffusionAggregationPlayground() {
+function DiffusionAggregationPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [particleColor, setParticleColor] = useState("#ffffff");
   const [walkerColor, setWalkerColor] = useState("#6b7280");
@@ -32,6 +32,18 @@ function DiffusionAggregationPlayground() {
   const [showWalkers, setShowWalkers] = useState(false);
   const [glowEffect, setGlowEffect] = useState(true);
   const [glowBlur, setGlowBlur] = useState(8);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = DLA_PRESETS[p as keyof typeof DLA_PRESETS] ?? {};
+    if (v.particleColor) setParticleColor(v.particleColor);
+    if (v.walkerColor) setWalkerColor(v.walkerColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+    if (v.seedMode) setSeedMode(v.seedMode);
+    if (v.particleSize) setParticleSize(v.particleSize);
+    if (v.glowEffect !== undefined) setGlowEffect(v.glowEffect);
+    if (v.glowBlur !== undefined) setGlowBlur(v.glowBlur);
+  }
 
   const code = [
     `import { DiffusionAggregation } from 'own-the-canvas';`,
@@ -76,7 +88,7 @@ function DiffusionAggregationPlayground() {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "coral", "snowflake", "lightning", "neon", "frost"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "coral", "snowflake", "lightning", "neon", "frost"]} onChange={handlePreset} />
         <PDivider />
         <PSel label="Seed mode" value={seedMode} options={["center", "ring", "bottom"]} onChange={(v) => setSeedMode(v as DLASeedMode)} />
         <PDivider />
@@ -96,17 +108,18 @@ function DiffusionAggregationPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function DiffusionAggregationPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="DiffusionAggregation"
       lead="Diffusion-limited aggregation — particles random-walk until they touch the growing fractal cluster and permanently stick. Produces coral branches, snowflakes, lightning trees, and frost crystals depending on seed mode and color."
     >
-      <DiffusionAggregationPlayground />
+      <DiffusionAggregationPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

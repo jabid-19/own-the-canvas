@@ -18,10 +18,10 @@ const PROPS = [
 
 type LineStyle = "solid" | "dashed";
 
-function ConstellationMapPlayground() {
+function ConstellationMapPlayground({ onReset }: { onReset?: () => void }) {
   const [count, setCount] = useState(80);
   const [sc, setSc] = useState("#ffffff");
-  const [lc, setLc] = useState("#8888ff");
+  const [lc, setLc] = useState("rgba(255,255,255,0.25)");
   const [bg, setBg] = useState("#050510");
   const [speed, setSpeed] = useState(0.3);
   const [interact, setInteract] = useState(true);
@@ -76,17 +76,18 @@ function ConstellationMapPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function ConstellationMapPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="ConstellationMap"
       lead="An interactive star map with dynamic constellation lines. Drag stars to reposition them and watch the connection lines update in real time."
     >
-      <ConstellationMapPlayground />
+      <ConstellationMapPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { GameOfLife } from "../../../components/GameOfLife";
+import { GameOfLife, PRESETS as GOL_PRESETS } from "../../../components/GameOfLife";
 
 const PROPS = [
   { name: "cellSize",        type: "number",  default: "8",         description: "Cell size in px." },
@@ -18,7 +18,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "matrix" | "minimal" | "fire"' },
 ];
 
-function GameOfLifePlayground() {
+function GameOfLifePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [cellSize, setCellSize] = useState(8);
   const [speed, setSpeed] = useState(10);
@@ -26,6 +26,17 @@ function GameOfLifePlayground() {
   const [oldColor, setOldColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
   const [showAge, setShowAge] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = GOL_PRESETS[p as keyof typeof GOL_PRESETS] ?? {};
+    if (v.aliveColor) setAliveColor(v.aliveColor);
+    if (v.oldColor) setOldColor(v.oldColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+    if (v.cellSize) setCellSize(v.cellSize);
+    if (v.speed) setSpeed(v.speed);
+    if (v.showAge !== undefined) setShowAge(v.showAge);
+  }
 
   const code = [
     `import { GameOfLife } from 'own-the-canvas';`,
@@ -55,7 +66,7 @@ function GameOfLifePlayground() {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "matrix", "minimal", "fire"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "matrix", "minimal", "fire"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Alive color" value={aliveColor} onChange={setAliveColor} />
         <PColor label="Old cell color" value={oldColor} onChange={setOldColor} />
@@ -70,17 +81,18 @@ function GameOfLifePlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function GameOfLifePage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="GameOfLife"
       lead="Conway's Game of Life — emergent cellular automata where simple rules produce complex living patterns. Click cells to draw. Age-based color gradients reveal generation history."
     >
-      <GameOfLifePlayground />
+      <GameOfLifePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

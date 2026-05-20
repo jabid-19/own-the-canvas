@@ -21,7 +21,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "plasma" | "ocean" | "lava" | "minimal"' },
 ];
 
-function MagneticBlobPlayground() {
+function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [count, setCount] = useState(5);
   const [radius, setRadius] = useState(80);
@@ -73,17 +73,18 @@ function MagneticBlobPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function MagneticBlobPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="MagneticBlob"
       lead="Metaballs that organically wander and merge. Blobs are attracted to the cursor and naturally merge into each other using additive screen-blend radial gradients."
     >
-      <MagneticBlobPlayground />
+      <MagneticBlobPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

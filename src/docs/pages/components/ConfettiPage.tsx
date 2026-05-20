@@ -14,7 +14,7 @@ const PROPS = [
   { name: "continuous",    type: "boolean", default: "false",  description: "Continuous rain instead of burst." },
 ];
 
-function ConfettiPlayground() {
+function ConfettiPlayground({ onReset }: { onReset?: () => void }) {
   const [trigger, setTrigger] = useState(false);
   const [palette, setPalette] = useState<"monochrome" | "colorful">("monochrome");
   const [particleCount, setParticleCount] = useState(150);
@@ -90,17 +90,18 @@ function ConfettiPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function ConfettiPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Confetti"
       lead="Physics-based celebration confetti. Fire a burst on a rising trigger edge, or run as continuous particle rain."
     >
-      <ConfettiPlayground />
+      <ConfettiPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

@@ -18,9 +18,9 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "ink" | "neon" | "lava" | "ocean" | "smoke"' },
 ];
 
-function FluidSimulationPlayground() {
+function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [resolution, setResolution] = useState(80);
+  const [resolution, setResolution] = useState(128);
   const [dissipation, setDissipation] = useState(0.995);
   const [autoInk, setAutoInk] = useState(true);
   const [mouseForce, setMouseForce] = useState(5);
@@ -67,17 +67,18 @@ function FluidSimulationPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function FluidSimulationPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="FluidSimulation"
       lead="Grid-based Navier-Stokes fluid simulation with per-channel RGB ink. Move the cursor to paint — velocity carries ink through the fluid field, diffusing and advecting each frame."
     >
-      <FluidSimulationPlayground />
+      <FluidSimulationPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

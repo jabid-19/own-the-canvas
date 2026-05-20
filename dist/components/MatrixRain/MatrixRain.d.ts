@@ -2,6 +2,15 @@ import { BaseCanvasProps } from '../../types';
 import { MatrixCharset } from './useMatrixRain';
 
 type MatrixRainPreset = "default" | "cyberpunk" | "binary" | "minimal" | "blood";
+interface MatrixRainPresetValues {
+    color?: string;
+    backgroundColor?: string;
+    fontSize?: number;
+    speed?: number;
+    charset?: MatrixCharset;
+    resetThreshold?: number;
+}
+export declare const PRESETS: Record<MatrixRainPreset, MatrixRainPresetValues>;
 export interface MatrixRainProps extends BaseCanvasProps {
     /** Character color (default: "#fff") */
     color?: string;

@@ -19,7 +19,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",        description: '"default" | "desert" | "ocean" | "inferno" | "neon"' },
 ];
 
-function SandSimulationPlayground() {
+function SandSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [cellSize, setCellSize] = useState(4);
   const [brushSize, setBrushSize] = useState(3);
@@ -92,17 +92,18 @@ function SandSimulationPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function SandSimulationPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="SandSimulation"
       lead="Falling-sand cellular automaton. Paint sand, water, fire, and walls with your mouse and watch physics unfold — sand piles, water flows, fire rises and extinguishes on contact with water."
     >
-      <SandSimulationPlayground />
+      <SandSimulationPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

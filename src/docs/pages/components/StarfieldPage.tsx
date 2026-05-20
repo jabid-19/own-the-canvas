@@ -13,7 +13,7 @@ const PROPS = [
   { name: "shootingStars",  type: "boolean",      default: "false",     description: "Enable random shooting star events." },
 ];
 
-function StarfieldPlayground() {
+function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
   const [persp, setPersp] = useState<"2D" | "3D">("2D");
   const [count, setCount] = useState(200);
   const [speed, setSpeed] = useState(0.5);
@@ -62,17 +62,18 @@ function StarfieldPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function StarfieldPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Starfield"
       lead="2D twinkle field or 3D warp-speed star tunnel. Switch perspectives with the perspective prop."
     >
-      <StarfieldPlayground />
+      <StarfieldPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

@@ -14,7 +14,7 @@ interface DiffusionAggregationPresetValues {
   glowBlur?: number;
 }
 
-const PRESETS: Record<DiffusionAggregationPreset, DiffusionAggregationPresetValues> = {
+export const PRESETS: Record<DiffusionAggregationPreset, DiffusionAggregationPresetValues> = {
   default: {},
   coral: {
     particleColor: "#ff7043",

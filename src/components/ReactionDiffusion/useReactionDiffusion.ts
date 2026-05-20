@@ -201,7 +201,7 @@ export function useReactionDiffusion(
       const state = stateRef.current;
       if (!state) return;
       const { u, v, gw, gh, imageData, offscreen, offCtx } = state;
-      const { colorA, colorB } = optionsRef.current;
+      const { colorA, colorB, backgroundColor } = optionsRef.current;
 
       const [ar, ag, ab] = parseHexToRgb(colorA);
       const [br, bg, bb] = parseHexToRgb(colorB);
@@ -219,6 +219,10 @@ export function useReactionDiffusion(
       }
 
       offCtx.putImageData(imageData, 0, 0);
+      if (backgroundColor && backgroundColor !== "transparent") {
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, w, h);
+      }
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "low";
       ctx.drawImage(offscreen, 0, 0, w, h);

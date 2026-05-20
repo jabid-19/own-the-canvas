@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://own-the-canvas.vercel.app/sitemap.xml

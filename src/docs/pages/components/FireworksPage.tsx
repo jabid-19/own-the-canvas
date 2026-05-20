@@ -22,7 +22,7 @@ const PROPS = [
   { name: "preset",          type: "string",   default: "—",         description: '"default" | "celebration" | "subtle" | "neon" | "golden"' },
 ];
 
-function FireworksPlayground() {
+function FireworksPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [count, setCount] = useState(80);
   const [gravity, setGravity] = useState(0.08);
@@ -74,17 +74,18 @@ function FireworksPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function FireworksPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Fireworks"
       lead="Physics-based fireworks with launching shells, particle bursts, gravity trails, and glow. Click to launch a shell, or let auto-launch handle it."
     >
-      <FireworksPlayground />
+      <FireworksPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

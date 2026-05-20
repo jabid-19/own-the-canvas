@@ -103,3 +103,33 @@ export type { VoronoiCellsProps, VoronoiColorMode } from "./components/VoronoiCe
 
 export { SlimeMold } from "./components/SlimeMold";
 export type { SlimeMoldProps } from "./components/SlimeMold";
+
+export { InkBleed } from "./components/InkBleed";
+export type { InkBleedProps } from "./components/InkBleed";
+
+export { WatercolorBloom } from "./components/WatercolorBloom";
+export type { WatercolorBloomProps } from "./components/WatercolorBloom";
+
+export { PendulaWave } from "./components/PendulaWave";
+export type { PendulaWaveProps, PendulaWaveColorMode } from "./components/PendulaWave";
+
+export { CrystalGrowth } from "./components/CrystalGrowth";
+export type { CrystalGrowthProps, CrystalGrowthColorMode } from "./components/CrystalGrowth";
+
+export { NeuralWeb } from "./components/NeuralWeb";
+export type { NeuralWebProps } from "./components/NeuralWeb";
+
+export { ParticleText } from "./components/ParticleText";
+export type { ParticleTextProps } from "./components/ParticleText";
+
+export { Metaballs } from "./components/Metaballs";
+export type { MetaballsProps } from "./components/Metaballs";
+
+export { AntColony } from "./components/AntColony";
+export type { AntColonyProps } from "./components/AntColony";
+
+export { MagneticField } from "./components/MagneticField";
+export type { MagneticFieldProps } from "./components/MagneticField";
+
+export { TerrainMesh } from "./components/TerrainMesh";
+export type { TerrainMeshProps } from "./components/TerrainMesh";

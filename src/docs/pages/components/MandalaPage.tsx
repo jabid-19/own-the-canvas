@@ -21,7 +21,7 @@ const PROPS = [
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "lotus" | "cosmic" | "minimal"' },
 ];
 
-function MandalaPlayground() {
+function MandalaPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [symmetry, setSymmetry] = useState(8);
   const [layers, setLayers] = useState(5);
@@ -73,17 +73,18 @@ function MandalaPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function MandalaPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="Mandala"
       lead="Animated N-fold rotational symmetry with layered organic petal shapes. Controllable symmetry arms, bilateral mirroring, and noise distortion for natural-looking geometry."
     >
-      <MandalaPlayground />
+      <MandalaPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

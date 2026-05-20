@@ -19,7 +19,7 @@ const PROPS = [
   { name: "preset",          type: "string",   default: "—",         description: '"default" | "neon" | "ocean" | "lava" | "forest" | "monochrome"' },
 ];
 
-function FlowFieldPlayground() {
+function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [count, setCount] = useState(800);
   const [speed, setSpeed] = useState(1);
@@ -68,17 +68,18 @@ function FlowFieldPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function FlowFieldPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="FlowField"
       lead="Perlin noise vector field that guides particle streams. Particles follow smooth, evolving flow directions — add curl noise for extra swirling character."
     >
-      <FlowFieldPlayground />
+      <FlowFieldPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

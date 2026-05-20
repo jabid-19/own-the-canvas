@@ -2,11 +2,11 @@
 
 ## Project Summary
 
-**own-the-canvas** is a React component library of 35 canvas-based visual effects and animations, built entirely on the HTML Canvas 2D API with zero runtime dependencies. Every component is optimized for performance, highly customizable through props, and ships with full TypeScript support.
+**own-the-canvas** is a React component library of 45 canvas-based visual effects and animations, built entirely on the HTML Canvas 2D API with zero runtime dependencies. Every component is optimized for performance, highly customizable through props, and ships with full TypeScript support.
 
 | Field | Value |
 |---|---|
-| **Version** | 1.0.3 |
+| **Version** | 1.0.4 |
 | **Author** | Jabid Hasan |
 | **License** | MIT |
 | **npm** | `own-the-canvas` |
@@ -73,7 +73,7 @@ Every component uses `forwardRef`, exposing the underlying `HTMLCanvasElement` (
 ```
 own-the-canvas/
 ├── src/
-│   ├── index.ts                      # Barrel export — all 35 components + types
+│   ├── index.ts                      # Barrel export — all 45 components + types
 │   ├── types/
 │   │   └── index.ts                  # BaseCanvasProps, CanvasSetupOptions, CanvasSetupResult
 │   ├── hooks/
@@ -118,7 +118,17 @@ own-the-canvas/
 │   │   ├── LSystem/
 │   │   ├── Kaleidoscope/
 │   │   ├── VoronoiCells/
-│   │   └── SlimeMold/
+│   │   ├── SlimeMold/
+│   │   ├── InkBleed/
+│   │   ├── WatercolorBloom/
+│   │   ├── PendulaWave/
+│   │   ├── CrystalGrowth/
+│   │   ├── NeuralWeb/
+│   │   ├── ParticleText/
+│   │   ├── Metaballs/
+│   │   ├── AntColony/
+│   │   ├── MagneticField/
+│   │   └── TerrainMesh/
 │   └── docs/                         # Documentation site (not in lib bundle)
 │       ├── DocsApp.tsx
 │       ├── main.tsx
@@ -127,7 +137,7 @@ own-the-canvas/
 │       │   ├── Home.tsx
 │       │   ├── Overview.tsx
 │       │   ├── Playground.tsx
-│       │   └── components/           # 35 component playground pages
+│       │   └── components/           # 45 component playground pages
 │       └── components/               # Docs UI building blocks
 │           ├── CodeBlock.tsx         # Syntax-highlighted code
 │           ├── PropsTable.tsx        # Props documentation table
@@ -1111,6 +1121,268 @@ Physarum polycephalum simulation — thousands of agents deposit pheromone trail
 
 ---
 
+### 36. InkBleed
+
+Reaction-diffusion ink bleed simulation on a virtual paper surface. Each ink drop diffuses outward with wet-edge darkening. Click or drag to drop ink; auto-ink fires on interval for continuous motion.
+
+**Presets:** `default` · `midnight` · `sepia` · `toxic` · `neon` · `frost`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `inkColor` | `string` | `"#ffffff"` | Primary ink color |
+| `paperColor` | `string` | `"#111111"` | Background paper color |
+| `diffusionRate` | `number` | `0.3` | Speed ink spreads outward 0–1 |
+| `viscosity` | `number` | `0.8` | Ink thickness — higher = slower bleed |
+| `evaporationRate` | `number` | `0.002` | How fast ink fades per frame |
+| `inkRadius` | `number` | `8` | Drop radius on click in px |
+| `inkStrength` | `number` | `1` | Initial ink concentration 0–1 |
+| `interactive` | `boolean` | `true` | Click/drag to drop ink |
+| `autoInk` | `boolean` | `true` | Auto-drop ink at intervals |
+| `autoInkInterval` | `number` | `2000` | Ms between auto drops |
+| `resolution` | `number` | `0.5` | Render resolution fraction |
+| `glowEffect` | `boolean` | `false` | Glow on ink |
+| `glowBlur` | `number` | `8` | Shadow blur for glow |
+| `animated` | `boolean` | `true` | Enable animation |
+
+---
+
+### 37. WatercolorBloom
+
+Layered watercolor bloom effect — each bloom expands as concentric semi-transparent ellipses with wet-edge darkening and organic noise distortion. Click to spawn blooms; auto-spawn fires at intervals.
+
+**Presets:** `default` · `sunset` · `ocean` · `spring` · `monochrome` · `neon`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `colors` | `string[]` | `["#ffffff","#6b7280","#9ca3af"]` | Bloom color palette |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `bloomRadius` | `number` | `80` | Max bloom radius in px |
+| `bloomSpeed` | `number` | `0.5` | Bloom expansion speed 0–2 |
+| `opacity` | `number` | `0.15` | Per-layer opacity 0–1 |
+| `wetEdge` | `number` | `0.4` | Wet-edge darkening strength 0–1 |
+| `layerCount` | `number` | `6` | Concentric layers per bloom |
+| `noiseAmount` | `number` | `0.5` | Edge noise/organic distortion 0–1 |
+| `fadeSpeed` | `number` | `0.001` | Bloom fade rate per frame |
+| `interactive` | `boolean` | `true` | Click to spawn blooms |
+| `autoBloom` | `boolean` | `true` | Auto-spawn blooms at intervals |
+| `autoBloomInterval` | `number` | `1500` | Ms between auto blooms |
+| `resolution` | `number` | `0.5` | Render resolution fraction |
+| `animated` | `boolean` | `true` | Enable animation |
+| `maxBlooms` | `number` | `12` | Max concurrent blooms |
+
+---
+
+### 38. PendulaWave
+
+Harmonograph — three coupled pendulums trace Lissajous-like closed curves. The phase-shift pendulum makes the curve rotate slowly and morph through families of patterns. Supports trail fading, damping, and gradient/hue-cycle color modes.
+
+**Presets:** `default` · `neon` · `crystal` · `sand` · `minimal` · `cosmic`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `color` | `string` | `"#ffffff"` | Stroke color |
+| `color2` | `string` | `"#6b7280"` | Secondary color used in gradient colorMode |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `lineWidth` | `number` | `1` | Stroke line width |
+| `trailFade` | `number` | `0.01` | Background fade per frame — lower = longer trails |
+| `speed` | `number` | `1` | Animation speed multiplier |
+| `damping` | `number` | `0.9995` | Energy decay per step 0.999–1 |
+| `freq1` | `number` | `2` | Frequency of pendulum 1 (x-axis) |
+| `freq2` | `number` | `3` | Frequency of pendulum 2 (y-axis) |
+| `freq3` | `number` | `0.01` | Frequency of phase-shift pendulum |
+| `amplitude` | `number` | `0.9` | Max swing as fraction of canvas half-size |
+| `colorMode` | `PendulaWaveColorMode` | `"solid"` | `"solid"` \| `"cycle"` \| `"gradient"` |
+| `glowEffect` | `boolean` | `false` | Enable glow |
+| `glowBlur` | `number` | `10` | Shadow blur for glow |
+| `animated` | `boolean` | `true` | Enable animation |
+| `autoReset` | `boolean` | `true` | Restart after damping decays to near-zero |
+
+---
+
+### 39. CrystalGrowth
+
+Crystallization simulation using a breadth-first frontier that spreads from seed points with configurable rotational symmetry. Each frame a batch of frontier cells crystallize; clicking the canvas seeds a new growth site.
+
+**Presets:** `default` · `snowflake` · `gem` · `neon` · `frost` · `gold`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `crystalColor` | `string` | `"#ffffff"` | Color of crystallized cells |
+| `activeColor` | `string` | `"#6b7280"` | Color of actively growing frontier |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `growthSpeed` | `number` | `3` | Cells crystallized per frame |
+| `symmetry` | `number` | `6` | Rotational symmetry arms 2–12 |
+| `branchProbability` | `number` | `0.3` | Probability a frontier cell spawns a branch |
+| `noiseAmount` | `number` | `0.2` | Random noise in growth direction 0–1 |
+| `cellSize` | `number` | `3` | Cell size in px |
+| `glowEffect` | `boolean` | `true` | Glow on crystal |
+| `glowBlur` | `number` | `12` | Shadow blur for glow |
+| `interactive` | `boolean` | `true` | Click to seed new growth |
+| `autoReset` | `boolean` | `true` | Restart after growth completes |
+| `colorMode` | `CrystalGrowthColorMode` | `"solid"` | `"solid"` \| `"age"` \| `"cycle"` |
+| `animated` | `boolean` | `true` | Enable animation |
+
+---
+
+### 40. NeuralWeb
+
+Animated neural network visualization — nodes drift slowly, connect to nearby neighbors, and fire traveling signal pulses that propagate hop-by-hop through the graph. Hover highlights connected edges; click fires a signal from that node.
+
+**Presets:** `default` · `neon` · `brain` · `minimal` · `plasma` · `circuit`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `nodeCount` | `number` | `40` | Number of network nodes |
+| `nodeColor` | `string` | `"#ffffff"` | Resting node color |
+| `edgeColor` | `string` | `"#6b7280"` | Edge line color |
+| `signalColor` | `string` | `"#ffffff"` | Traveling signal color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `connectionRadius` | `number` | `150` | Max px distance to draw edges |
+| `nodeRadius` | `number` | `4` | Node circle radius in px |
+| `lineWidth` | `number` | `1` | Edge stroke width |
+| `speed` | `number` | `1` | Signal travel speed multiplier |
+| `pulseInterval` | `number` | `2000` | Ms between auto-pulses |
+| `pulseDecay` | `number` | `0.85` | Signal strength multiplier per hop |
+| `glowEffect` | `boolean` | `true` | Glow on active nodes/signals |
+| `glowBlur` | `number` | `15` | Shadow blur for glow |
+| `interactive` | `boolean` | `true` | Hover to highlight; click to fire signal |
+| `animated` | `boolean` | `true` | Enable animation |
+| `wander` | `boolean` | `true` | Nodes drift slowly |
+| `wanderSpeed` | `number` | `0.3` | Node drift speed |
+
+---
+
+### 41. ParticleText
+
+Text rendered from thousands of particles — each particle spring-snaps to its target position in the letterform. Mouse cursor repels particles that scatter and reform. Changing the text re-samples a new letterform and particles animate to their new targets.
+
+**Presets:** `default` · `neon` · `fire` · `frost` · `gold` · `minimal`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `text` | `string` | `"HELLO"` | Text to render as particles |
+| `fontSize` | `number` | `120` | Font size in px (clamped to canvas size) |
+| `fontFamily` | `string` | `"sans-serif"` | Font family |
+| `color` | `string` | `"#ffffff"` | Particle color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `particleSize` | `number` | `2` | Particle radius in px |
+| `particleGap` | `number` | `4` | Px between sampled particle targets |
+| `repelRadius` | `number` | `80` | Mouse repulsion radius in px |
+| `repelForce` | `number` | `6` | Mouse repulsion force multiplier |
+| `snapSpeed` | `number` | `0.05` | Spring constant for snap-to-target |
+| `friction` | `number` | `0.92` | Velocity friction per frame |
+| `glowEffect` | `boolean` | `false` | Glow on particles |
+| `glowBlur` | `number` | `10` | Shadow blur for glow |
+| `animated` | `boolean` | `true` | Enable animation |
+| `interactive` | `boolean` | `true` | Mouse repels particles |
+
+---
+
+### 42. Metaballs
+
+Implicit-surface metaball renderer — blobs wander the canvas and merge smoothly when close, producing organic liquid-like unions. The field is evaluated per pixel via an offscreen ImageData grid. Click to add blobs; drag to reposition them.
+
+**Presets:** `default` · `neon` · `plasma` · `lava` · `frost` · `minimal`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `blobCount` | `number` | `5` | Number of metaball blobs |
+| `color` | `string` | `"#ffffff"` | Blob fill color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `threshold` | `number` | `1` | Merge threshold — lower = blobs merge sooner |
+| `speed` | `number` | `1` | Blob wander speed multiplier |
+| `minRadius` | `number` | `40` | Minimum blob radius in px |
+| `maxRadius` | `number` | `80` | Maximum blob radius in px |
+| `glowEffect` | `boolean` | `false` | Glow on blobs |
+| `glowBlur` | `number` | `20` | Shadow blur for glow |
+| `resolution` | `number` | `0.25` | Field grid resolution fraction — lower = faster |
+| `animated` | `boolean` | `true` | Enable animation |
+| `interactive` | `boolean` | `true` | Click to add blobs; drag to move them |
+
+---
+
+### 43. AntColony
+
+Ant Colony Optimization stigmergy simulation — ants deposit food and home pheromone trails on a grid; others sense ahead and follow the strongest trail. Click to place food sources; ants discover them and build highways back to the nest.
+
+**Presets:** `default` · `neon` · `desert` · `midnight` · `tropical` · `minimal`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `antCount` | `number` | `150` | Number of ants |
+| `evaporationRate` | `number` | `0.003` | Pheromone decay multiplier per frame |
+| `diffusionRate` | `number` | `0.1` | Pheromone spatial blur per frame |
+| `pheromoneStrength` | `number` | `5` | Pheromone deposited per ant per frame |
+| `antSpeed` | `number` | `1.5` | Ant movement in px/frame |
+| `sensorAngle` | `number` | `0.4` | Radians between left/center/right sensors |
+| `sensorDistance` | `number` | `9` | Px ahead each sensor samples |
+| `turnSpeed` | `number` | `0.4` | Max rotation toward strongest sensor |
+| `antColor` | `string` | `"#ffffff"` | Ant dot color |
+| `pheromoneColor` | `string` | `"#6b7280"` | Pheromone trail color |
+| `foodColor` | `string` | `"#ffffff"` | Food source color |
+| `nestColor` | `string` | `"#6b7280"` | Nest circle color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `resolution` | `number` | `0.25` | Pheromone grid resolution fraction |
+| `animated` | `boolean` | `true` | Enable animation |
+| `interactive` | `boolean` | `true` | Click to place food sources |
+| `maxFood` | `number` | `5` | Max simultaneous food sources |
+
+---
+
+### 44. MagneticField
+
+Interactive 2D magnetic dipole field visualizer. Field lines are traced via Euler integration from each pole. Drag poles to reposition them; click empty space to add a new pole (up to `maxPoles`); right-click a pole to remove it.
+
+**Presets:** `default` · `neon` · `warm` · `cool` · `minimal` · `aurora`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `fieldLineCount` | `number` | `16` | Lines seeded per pole |
+| `stepSize` | `number` | `5` | Euler integration step in px |
+| `maxSteps` | `number` | `300` | Max steps per field line |
+| `positiveColor` | `string` | `"#ffffff"` | N pole fill color |
+| `negativeColor` | `string` | `"#6b7280"` | S pole fill color |
+| `lineColor` | `string` | `"#ffffff"` | Field line stroke color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `lineWidth` | `number` | `1` | Field line stroke width |
+| `lineOpacity` | `number` | `0.6` | Field line opacity 0–1 |
+| `poleRadius` | `number` | `18` | Pole circle radius in px |
+| `glowEffect` | `boolean` | `false` | Glow on poles |
+| `glowBlur` | `number` | `15` | Shadow blur for glow |
+| `animated` | `boolean` | `false` | Redraw every frame (for animated bg) |
+| `interactive` | `boolean` | `true` | Drag/click/right-click poles |
+| `maxPoles` | `number` | `6` | Maximum number of poles |
+
+---
+
+### 45. TerrainMesh
+
+3D wireframe terrain mesh generated from octave Perlin noise. Drag to orbit; auto-rotate rotates continuously. Height cache is invalidated only when grid parameters change, giving stable 60fps even at high grid density.
+
+**Presets:** `default` · `neon` · `topo` · `arctic` · `lava` · `minimal`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `gridCols` | `number` | `40` | Grid column count |
+| `gridRows` | `number` | `30` | Grid row count |
+| `noiseScale` | `number` | `0.15` | Perlin noise spatial frequency |
+| `heightScale` | `number` | `120` | Vertical exaggeration in px |
+| `wireColor` | `string` | `"#ffffff"` | Wireframe stroke color |
+| `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `fov` | `number` | `500` | Perspective field of view |
+| `rotateX` | `number` | `0.5` | Initial X rotation in radians |
+| `rotateY` | `number` | `0` | Initial Y rotation in radians |
+| `autoRotate` | `boolean` | `true` | Auto-rotate around Y axis |
+| `autoRotateSpeed` | `number` | `0.004` | Auto-rotate speed in radians/frame |
+| `glowEffect` | `boolean` | `false` | Glow on wireframe |
+| `glowBlur` | `number` | `10` | Shadow blur for glow |
+| `interactive` | `boolean` | `true` | Drag to orbit |
+| `animated` | `boolean` | `true` | Enable animation |
+| `lineWidth` | `number` | `0.8` | Wireframe stroke width |
+| `colorByHeight` | `boolean` | `true` | Vary line alpha by terrain height |
+
+---
+
 ## Documentation Site
 
 The docs site lives in `src/docs/` and is built as a separate Vite app (not included in the library bundle). It is deployed to Vercel.
@@ -1123,7 +1395,7 @@ The docs site lives in `src/docs/` and is built as a separate Vite app (not incl
 /components/matrix-rain        → MatrixRain docs + interactive playground
 /components/particle-field
 /components/starfield
-... (one route per component, 36 total)
+... (one route per component, 45 total)
 ```
 
 ### Documentation Components (`src/docs/components/`)
@@ -1193,6 +1465,8 @@ import type { DLASeedMode } from 'own-the-canvas';  // union: "center" | "ring" 
 import type { LissajousColorMode } from 'own-the-canvas'; // union: "solid" | "cycle"
 import type { VoronoiColorMode } from 'own-the-canvas';   // union: "solid" | "gradient" | "cycle"
 import type { SpirographColorMode } from 'own-the-canvas'; // union: "solid" | "cycle" | "gradient"
+import type { PendulaWaveColorMode } from 'own-the-canvas'; // union: "solid" | "cycle" | "gradient"
+import type { CrystalGrowthColorMode } from 'own-the-canvas'; // union: "solid" | "age" | "cycle"
 ```
 
 Shared base types are also exported:
@@ -1207,15 +1481,17 @@ import type { BaseCanvasProps } from 'own-the-canvas';
 
 | Category | Components |
 |---|---|
-| **Character / Text** | MatrixRain |
+| **Character / Text** | MatrixRain, ParticleText |
 | **Particles** | ParticleField, Confetti, Fireworks, Boids |
 | **Space / Cosmic** | Starfield, ConstellationMap, Wormhole, AuroraBorealis |
 | **Nature / Weather** | Rain, Lightning, FireEffect |
-| **Physics Simulations** | ClothSimulation, FluidSimulation, FlowField, MagneticBlob, SandSimulation |
-| **Cellular / Algorithmic** | GameOfLife, NoiseGradient, ReactionDiffusion, DiffusionAggregation |
-| **Geometric / Patterns** | Mandala, Shockwave, Spirograph, Lissajous, Kaleidoscope, VoronoiCells |
-| **Fractal / Generative** | LSystem |
-| **Biological Simulations** | SlimeMold |
+| **Physics Simulations** | ClothSimulation, FluidSimulation, FlowField, MagneticBlob, SandSimulation, TerrainMesh |
+| **Cellular / Algorithmic** | GameOfLife, NoiseGradient, ReactionDiffusion, DiffusionAggregation, Metaballs |
+| **Geometric / Patterns** | Mandala, Shockwave, Spirograph, Lissajous, Kaleidoscope, VoronoiCells, PendulaWave |
+| **Fractal / Generative** | LSystem, CrystalGrowth |
+| **Biological Simulations** | SlimeMold, AntColony |
 | **Interactive Overlays** | Spotlight, GlitchOverlay, PixelDissolve |
-| **Data Visualization** | LiveChart, WaveInterference |
+| **Data Visualization** | LiveChart, WaveInterference, MagneticField |
 | **Audio** | AudioVisualizer |
+| **Generative Art** | InkBleed, WatercolorBloom |
+| **Neural / Network** | NeuralWeb |

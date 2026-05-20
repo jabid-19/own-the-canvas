@@ -31,7 +31,7 @@ const PRESET_PARAMS = {
   gold:    { trailColor: "#ffcc44", bg: "#0a0800", trailDecay: 0.92, agentCount: 1800 },
 };
 
-function SlimeMoldPlayground() {
+function SlimeMoldPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]           = useState("default");
   const [agentCount, setAgentCount]   = useState(1800);
   const [sensorAngle, setSensorAngle] = useState(45);
@@ -132,17 +132,18 @@ function SlimeMoldPlayground() {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function SlimeMoldPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="SlimeMold"
       lead="Physarum polycephalum simulation — thousands of agents deposit pheromone trails, sense ahead, and turn toward stronger concentrations. The emergent result is a self-organizing network of branching veins that evolves in real time."
     >
-      <SlimeMoldPlayground />
+      <SlimeMoldPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

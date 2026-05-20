@@ -70,7 +70,7 @@ export const VoronoiCells = forwardRef<HTMLCanvasElement, VoronoiCellsProps>(
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       showEdges:       showEdges       ?? p.showEdges       ?? true,
       edgeColor:       edgeColor       ?? p.edgeColor       ?? "#333333",
-      resolution:      resolution      ?? 0.25,
+      resolution:      resolution      ?? 1.0,
       relaxation:      relaxation      ?? 0.05,
       interactive:     interactive     ?? true,
       animated:        animated        ?? true,

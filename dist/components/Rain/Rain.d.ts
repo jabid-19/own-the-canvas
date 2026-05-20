@@ -16,13 +16,13 @@ export interface RainProps extends BaseCanvasProps {
     dropWidth?: number;
     /** Drop opacity 0–1. (default: 0.6) */
     dropOpacity?: number;
-    /** Drop color. (default: "#7C3AED") */
+    /** Drop color. (default: "#2563eb") */
     dropColor?: string;
-    /** Splash particle color. (default: "#0891B2") */
+    /** Splash particle color. (default: "#1e40af") */
     splashColor?: string;
     /** Show splash particles when drops hit bottom. (default: true) */
     showSplashes?: boolean;
-    /** Canvas background color. (default: "#111111") */
+    /** Canvas background color. (default: "#ffffff") */
     backgroundColor?: string;
     /** Named preset. */
     preset?: RainPreset | string;

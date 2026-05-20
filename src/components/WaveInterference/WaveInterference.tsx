@@ -12,7 +12,7 @@ interface WaveInterferencePresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<WaveInterferencePreset, WaveInterferencePresetValues> = {
+export const PRESETS: Record<WaveInterferencePreset, WaveInterferencePresetValues> = {
   default: {},
   ripple: { colorHigh: "#88ccff", colorLow: "#001133", wavelength: 100 },
   plasma: { colorHigh: "#ff4400", colorLow: "#000033", wavelength: 60, decay: 0.001 },
@@ -76,7 +76,7 @@ export const WaveInterference = forwardRef<HTMLCanvasElement, WaveInterferencePr
       colorHigh:       colorHigh       ?? p.colorHigh      ?? "#ffffff",
       colorLow:        colorLow        ?? p.colorLow       ?? "#111111",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
-      showSources:     showSources     ?? true,
+      showSources:     showSources     ?? false,
       resolution:      resolution      ?? 0.4,
       animated:        animated        ?? true,
       decay:           decay           ?? p.decay          ?? 0.003,

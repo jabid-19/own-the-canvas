@@ -29,7 +29,7 @@ const PRESET_PARAMS = {
   snowflake:  { angle: 60 },
 };
 
-function LSystemPlayground() {
+function LSystemPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]         = useState("default");
   const [angle, setAngle]           = useState(25);
   const [lineWidth, setLineWidth]   = useState(1);
@@ -101,23 +101,24 @@ function LSystemPlayground() {
         <PSlider label="Angle"      value={angle}     min={10}  max={90}   step={1}   onChange={setAngle} />
         <PSlider label="Line width" value={lineWidth} min={0.5} max={4}    step={0.1} onChange={setLineWidth} />
         <PSlider label="Speed"      value={speed}     min={1}   max={10}   step={1}   onChange={setSpeed} />
-        <PSlider label="Trail fade" value={trailFade} min={0}   max={0.05} step={0.002} onChange={setTrailFade} />
+        <PSlider label="Trail fade" value={trailFade} min={0}   max={0.3}  step={0.01}  onChange={setTrailFade} />
         {glowEffect && <PSlider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />}
       </div>
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
 }
 
 export function LSystemPage() {
+  const [resetKey, setResetKey] = useState(0);
   return (
     <PageShell
       eyebrow="Component"
       title="LSystem"
       lead="Lindenmayer system fractals drawn incrementally — watch fractal trees, ferns, snowflakes, and dragon curves grow stroke by stroke. Each preset is a different grammar producing a completely different visual species."
     >
-      <LSystemPlayground />
+      <LSystemPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>

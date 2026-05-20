@@ -13,7 +13,7 @@ interface MatrixRainPresetValues {
   resetThreshold?: number;
 }
 
-const PRESETS: Record<MatrixRainPreset, MatrixRainPresetValues> = {
+export const PRESETS: Record<MatrixRainPreset, MatrixRainPresetValues> = {
   default: {},
   cyberpunk: {
     color: "#bf5fff",

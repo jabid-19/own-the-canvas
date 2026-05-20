@@ -19,7 +19,7 @@ interface GameOfLifePresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<GameOfLifePreset, GameOfLifePresetValues> = {
+export const PRESETS: Record<GameOfLifePreset, GameOfLifePresetValues> = {
   default: {
     aliveColor: "#ffffff",
     oldColor: "#6b7280",
