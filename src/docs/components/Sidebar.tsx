@@ -112,21 +112,63 @@ const CSS = `
 .sidebar-label:first-child { margin-top: 8px; }
 
 .sidebar-link {
-  display: block;
-  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  padding: 7px 12px;
+  margin: 2px 0;
   border-radius: var(--r-sm);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 450;
   color: var(--text-2);
   text-decoration: none;
-  transition: background 150ms var(--ease), color 150ms var(--ease);
+  position: relative;
+  transition: all 250ms var(--ease);
   line-height: 1.4;
 }
-.sidebar-link:hover { background: var(--accent-soft); color: var(--text-1); }
+.sidebar-link:hover {
+  background: var(--accent-soft);
+  color: var(--text-1);
+  padding-left: 16px;
+}
 .sidebar-link.active {
-  background: #bababaff;
-  color: #ffffff;
-  font-weight: 500;
+  background: linear-gradient(90deg, var(--accent-soft) 0%, rgba(244, 244, 244, 0.1) 100%);
+  color: var(--accent);
+  font-weight: 600;
+  padding-left: 18px;
+}
+.sidebar-link::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  height: 14px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 99px;
+  opacity: 0;
+  transition: transform 250ms var(--ease), opacity 200ms ease;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+.sidebar-link.active::before {
+  transform: translateY(-50%) scaleY(1);
+  opacity: 1;
+}
+.sidebar-link::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 250ms var(--ease), opacity 200ms ease;
+}
+.sidebar-link.active::after {
+  opacity: 0.6;
+  transform: scale(1);
 }
 
 .sidebar-divider {
@@ -138,17 +180,61 @@ const CSS = `
 .sidebar-playground-link {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 6px 10px;
+  gap: 8px;
+  padding: 7px 12px;
   border-radius: var(--r-sm);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 450;
   color: var(--text-2);
   text-decoration: none;
-  transition: background 150ms var(--ease), color 150ms var(--ease);
+  position: relative;
+  transition: all 250ms var(--ease);
 }
-.sidebar-playground-link:hover { background: var(--accent-soft); color: var(--text-1); }
-.sidebar-playground-link.active { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.sidebar-playground-link:hover {
+  background: var(--accent-soft);
+  color: var(--text-1);
+  padding-left: 16px;
+}
+.sidebar-playground-link.active {
+  background: linear-gradient(90deg, var(--accent-soft) 0%, rgba(244, 244, 244, 0.1) 100%);
+  color: var(--accent);
+  font-weight: 600;
+  padding-left: 18px;
+}
+.sidebar-playground-link::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  height: 14px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 99px;
+  opacity: 0;
+  transition: transform 250ms var(--ease), opacity 200ms ease;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+.sidebar-playground-link.active::before {
+  transform: translateY(-50%) scaleY(1);
+  opacity: 1;
+}
+.sidebar-playground-link::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 250ms var(--ease), opacity 200ms ease;
+}
+.sidebar-playground-link.active::after {
+  opacity: 0.6;
+  transform: scale(1);
+}
 
 .sidebar-close {
   display: none;
