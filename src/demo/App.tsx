@@ -2106,7 +2106,7 @@ export default function App() {
           <div className="header-divider" aria-hidden="true" />
           <span className="header-tag">25 components</span>
           <div className="header-spacer" />
-          <span className="header-badge">v1.0.0</span>
+          <span className="header-badge">5</span>
         </header>
 
         {/* Component tabs */}
