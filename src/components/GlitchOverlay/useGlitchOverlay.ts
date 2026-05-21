@@ -1,4 +1,5 @@
 import { useRef, useEffect, RefObject } from "react";
+import { hexToRgbString } from "../../utils/color";
 
 export interface UseGlitchOverlayOptions {
   intensity: number;
@@ -12,6 +13,7 @@ export interface UseGlitchOverlayOptions {
   noiseOpacity: number;
   flickerRate: number;
   color: string;
+  rgbShiftColor: string;
   animated: boolean;
   backgroundColor: string;
 }
@@ -63,8 +65,12 @@ export function useGlitchOverlay(
     function draw() {
       const {
         animated, intensity, speed, rgbShift, scanlines, scanlineOpacity, scanlineSpacing,
-        blockGlitch, blockCount, noiseOpacity, flickerRate, color, backgroundColor,
+        blockGlitch, blockCount, noiseOpacity, flickerRate, color, rgbShiftColor, backgroundColor,
       } = optionsRef.current;
+
+      const shiftRgb = hexToRgbString(rgbShiftColor);
+      const [sr, sg, sb] = shiftRgb.split(",").map(Number);
+      const compRgb = `${255 - sr},${255 - sg},${255 - sb}`;
 
       ctx.clearRect(0, 0, w, h);
       if (backgroundColor && backgroundColor !== "transparent") {
@@ -167,23 +173,23 @@ export function useGlitchOverlay(
 
           ctx.globalCompositeOperation = "screen";
 
-          // Red channel — shift right
-          ctx.fillStyle = `rgba(255,0,0,0.06)`;
+          // Primary channel — shift right
+          ctx.fillStyle = `rgba(${shiftRgb},0.06)`;
           ctx.globalAlpha = 0.5 + glitchPower * 0.4;
           ctx.fillRect(shift + waveShift, 0, w, h);
 
-          // Cyan (green+blue) channel — shift left
-          ctx.fillStyle = `rgba(0,255,255,0.06)`;
+          // Complementary channel — shift left
+          ctx.fillStyle = `rgba(${compRgb},0.06)`;
           ctx.fillRect(-(shift + waveShift), 0, w, h);
 
           // Additional horizontal band with stronger shift
           const bandY = Math.random() * h;
           const bandH = 5 + Math.random() * 40;
           const bandShift = shift * (1 + Math.random() * 3);
-          ctx.fillStyle = `rgba(255,0,0,0.12)`;
+          ctx.fillStyle = `rgba(${shiftRgb},0.12)`;
           ctx.globalAlpha = 0.7;
           ctx.fillRect(bandShift, bandY, w, bandH);
-          ctx.fillStyle = `rgba(0,255,255,0.12)`;
+          ctx.fillStyle = `rgba(${compRgb},0.12)`;
           ctx.fillRect(-bandShift, bandY + 1, w, bandH);
 
           ctx.globalCompositeOperation = "source-over";

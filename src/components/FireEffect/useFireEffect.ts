@@ -1,9 +1,11 @@
 import { useRef, useEffect, RefObject } from "react";
+import { sampleGradient } from "../../utils/color";
 
 export type FirePalette = "inferno" | "toxic" | "ice" | "plasma" | "smoke";
 
 export interface UseFireEffectOptions {
   palette: FirePalette;
+  customColors?: string[];
   intensity: number;
   windStrength: number;
   windDirection: number;
@@ -12,6 +14,19 @@ export interface UseFireEffectOptions {
   noiseStrength: number;
   coolingScale: number;
   resolution: number;
+}
+
+function buildCustomPalette(colors: string[]): Uint32Array {
+  const palette = new Uint32Array(256);
+  for (let i = 1; i < 256; i++) {
+    const t = i / 255;
+    const [r, g, b] = sampleGradient(colors, t);
+    const ri = Math.round(r), gi = Math.round(g), bi = Math.round(b);
+    const alpha = Math.min(255, i * 8);
+    palette[i] = (alpha << 24) | (bi << 16) | (gi << 8) | ri;
+  }
+  palette[0] = 0;
+  return palette;
 }
 
 function buildPalette(type: FirePalette): Uint32Array {
@@ -88,8 +103,13 @@ export function useFireEffect(
   optionsRef.current = options;
   const rafRef = useRef<number>(0);
   const fireBufferRef = useRef<Uint8Array | null>(null);
-  const paletteRef = useRef<Uint32Array>(buildPalette(options.palette));
+  const paletteRef = useRef<Uint32Array>(
+    options.customColors && options.customColors.length >= 2
+      ? buildCustomPalette(options.customColors)
+      : buildPalette(options.palette)
+  );
   const lastPaletteRef = useRef<FirePalette>(options.palette);
+  const lastCustomColorsRef = useRef<string>(JSON.stringify(options.customColors ?? []));
 
   // Cached offscreen canvas — reused every frame, rebuilt only on resize
   const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -141,11 +161,19 @@ export function useFireEffect(
     if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
 
     function draw() {
-      const { palette, intensity, windStrength, windDirection, spread, cooling, noiseStrength, coolingScale } =
+      const { palette, customColors, intensity, windStrength, windDirection, spread, cooling, noiseStrength, coolingScale } =
         optionsRef.current;
 
-      if (palette !== lastPaletteRef.current) {
+      const hasCustom = customColors && customColors.length >= 2;
+      const customKey = JSON.stringify(customColors ?? []);
+      if (hasCustom) {
+        if (customKey !== lastCustomColorsRef.current) {
+          lastCustomColorsRef.current = customKey;
+          paletteRef.current = buildCustomPalette(customColors!);
+        }
+      } else if (palette !== lastPaletteRef.current || lastCustomColorsRef.current !== "[]") {
         lastPaletteRef.current = palette;
+        lastCustomColorsRef.current = "[]";
         paletteRef.current = buildPalette(palette);
       }
 

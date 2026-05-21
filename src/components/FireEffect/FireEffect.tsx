@@ -46,6 +46,8 @@ const PRESETS: Record<FirePreset, FirePresetValues> = {
 export interface FireEffectProps extends BaseCanvasProps {
   /** Color theme (default: "smoke") */
   palette?: FirePalette;
+  /** Custom gradient colors — overrides palette when ≥2 colors provided (default: undefined) */
+  customColors?: string[];
   /** Flame intensity 0–1 (default: 0.95) */
   intensity?: number;
   /** Wind horizontal strength -1 to 1 (default: 0.3) */
@@ -71,6 +73,7 @@ export const FireEffect = forwardRef<HTMLCanvasElement, FireEffectProps>(
     const {
       preset,
       palette,
+      customColors,
       intensity,
       windStrength,
       windDirection,
@@ -92,6 +95,7 @@ export const FireEffect = forwardRef<HTMLCanvasElement, FireEffectProps>(
 
     useFireEffect(internalRef, {
       palette: palette ?? p.palette ?? "smoke",
+      customColors,
       intensity: intensity ?? p.intensity ?? 0.95,
       windStrength: windStrength ?? p.windStrength ?? 0.3,
       windDirection: windDirection ?? p.windDirection ?? 1,

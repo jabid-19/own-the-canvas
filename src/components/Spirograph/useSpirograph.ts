@@ -1,21 +1,17 @@
 import { useRef, useEffect, RefObject } from "react";
 
-export type SpirographColorMode = "solid" | "cycle" | "gradient";
-
 export interface UseSpirographOptions {
   outerRadius: number;
   innerRadius: number;
   penDistance: number;
   speed: number;
-  color: string;
-  color2: string;
+  colors: string[];
   backgroundColor: string;
   lineWidth: number;
   trailFade: number;
   animated: boolean;
   autoReset: boolean;
   layerCount: number;
-  colorMode: SpirographColorMode;
   symmetry: number;
   glowEffect: boolean;
   glowBlur: number;
@@ -33,24 +29,6 @@ function period(R: number, r: number): number {
   return 2 * Math.PI * (r / g);
 }
 
-function hexToRgb(hex: string): [number, number, number] {
-  const clean = hex.replace("#", "");
-  const full = clean.length === 3
-    ? clean.split("").map(c => c + c).join("")
-    : clean;
-  const n = parseInt(full, 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
-function lerpColor(a: string, b: string, t: number): string {
-  const [ar, ag, ab] = hexToRgb(a);
-  const [br, bg, bb] = hexToRgb(b);
-  const r = Math.round(ar + (br - ar) * t);
-  const g = Math.round(ag + (bg - ag) * t);
-  const bl = Math.round(ab + (bb - ab) * t);
-  return `rgb(${r},${g},${bl})`;
-}
-
 interface SpiroLayer {
   t: number;
   prevX: number;
@@ -59,7 +37,6 @@ interface SpiroLayer {
   r: number;
   d: number;
   fullPeriod: number;
-  hueOffset: number;
 }
 
 export function useSpirograph(
@@ -119,8 +96,7 @@ export function useSpirograph(
       d = Math.max(0.1, d);
 
       const fp = period(R, r);
-      const hueOffset = (index / Math.max(1, total)) * 360;
-      const layer: SpiroLayer = { t: 0, prevX: 0, prevY: 0, R, r, d, fullPeriod: fp, hueOffset };
+      const layer: SpiroLayer = { t: 0, prevX: 0, prevY: 0, R, r, d, fullPeriod: fp };
       const [px, py] = computePoint(layer, 0);
       layer.prevX = px;
       layer.prevY = py;
@@ -202,22 +178,10 @@ export function useSpirograph(
       return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
     }
 
-    function getLayerColor(layer: SpiroLayer, layerIdx: number): string {
-      const { colorMode, color, color2 } = optionsRef.current;
-      if (colorMode === "cycle") {
-        const hue = (layer.hueOffset + (layer.t / layer.fullPeriod) * 360) % 360;
-        return `hsl(${hue}, 100%, 65%)`;
-      }
-      if (colorMode === "gradient") {
-        const t = Math.min(1, layer.t / layer.fullPeriod);
-        return lerpColor(color, color2, t);
-      }
-      // solid — per-layer hue shift if multiple layers
-      if (optionsRef.current.layerCount > 1 && colorMode === "solid") {
-        const hue = (layerIdx / optionsRef.current.layerCount) * 360;
-        return `hsl(${hue}, 80%, 70%)`;
-      }
-      return color;
+    function getLayerColor(_layer: SpiroLayer, layerIdx: number): string {
+      const { colors } = optionsRef.current;
+      const palette = colors.length > 0 ? colors : ["#ffffff"];
+      return palette[layerIdx % palette.length];
     }
 
     function draw(timestamp: number) {
@@ -228,7 +192,6 @@ export function useSpirograph(
         outerRadius, innerRadius, penDistance, layerCount,
         speed, backgroundColor, lineWidth, trailFade,
         animated, autoReset, symmetry, glowEffect, glowBlur,
-        colorMode,
       } = optionsRef.current;
 
       // detect curve param changes → rebuild layers
@@ -256,7 +219,7 @@ export function useSpirograph(
         ctx.globalAlpha = 1;
       }
 
-      ctx.globalCompositeOperation = colorMode === "cycle" ? "screen" : "source-over";
+      ctx.globalCompositeOperation = "source-over";
 
       const step = (speed * Math.PI / 180) * (dt / 16);
       const subSteps = Math.max(1, Math.ceil(step / 0.02));

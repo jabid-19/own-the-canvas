@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
-import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
+import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { FlowField } from "../../../components/FlowField";
 
 const PROPS = [
@@ -26,6 +26,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [curl, setCurl] = useState(false);
   const [lineWidth, setLineWidth] = useState(1);
   const [bg, setBg] = useState("#111111");
+  const [colors, setColors] = useState(["#ffffff"]);
 
   const code = [
     `import { FlowField } from 'own-the-canvas';`,
@@ -36,6 +37,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
     `  speed={${speed}}`,
     `  lineWidth={${lineWidth}}`,
     curl ? `  curl` : null,
+    `  colors={${JSON.stringify(colors)}}`,
     `  backgroundColor="${bg}"`,
     `  width="100%"`,
     `  height="100%"`,
@@ -45,7 +47,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <FlowField preset={preset} particleCount={count} speed={speed}
-        curl={curl} lineWidth={lineWidth} backgroundColor={bg}
+        curl={curl} lineWidth={lineWidth} colors={colors} backgroundColor={bg}
         width="100%" height="100%" />
       <PLiveLabel />
     </div>
@@ -57,6 +59,9 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PDivider />
+        <PColorArray label="Colors" value={colors} onChange={setColors} />
+        <PDivider />
         <PSlider label="Particle count" value={count} min={100} max={2000} step={50} onChange={setCount} />
       </div>
       <div>

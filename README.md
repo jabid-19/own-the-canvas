@@ -190,6 +190,7 @@ import { GlitchOverlay } from "own-the-canvas";
 | --- | --- | --- | --- |
 | `intensity` | `number` | `0.6` | Glitch probability 0–1 |
 | `rgbShift` | `number` | `8` | RGB color shift in px |
+| `rgbShiftColor` | `string` | `"#ff0000"` | RGB split primary color — complement used for opposing channel |
 | `scanlines` | `boolean` | `true` | CRT scanline overlay |
 | `blockGlitch` | `boolean` | `true` | Block-slice glitch artifacts |
 | `flickerRate` | `number` | `0.02` | Screen flicker rate 0–1 |
@@ -255,6 +256,7 @@ import { FireEffect } from "own-the-canvas";
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `palette` | `"smoke" \| "inferno" \| "toxic" \| "ice" \| "plasma"` | `"smoke"` | Color theme |
+| `customColors` | `string[]` | `undefined` | Custom gradient — overrides palette when ≥2 colors |
 | `intensity` | `number` | `0.95` | Flame intensity 0–1 |
 | `windStrength` | `number` | `0.3` | Horizontal wind -1 to 1 |
 | `cooling` | `number` | `0.3` | Cooling rate — higher = shorter flames |

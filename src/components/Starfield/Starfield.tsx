@@ -6,6 +6,7 @@ type StarfieldPreset = "default" | "warp" | "peaceful" | "minimal" | "nebula";
 
 interface StarfieldPresetValues {
   starColor?: string;
+  shootingStarColor?: string;
   backgroundColor?: string;
   perspective?: StarfieldPerspective;
   speed?: number;
@@ -54,6 +55,8 @@ export interface StarfieldProps extends BaseCanvasProps {
   starCount?: number;
   /** Star color (default: "#ffffff") */
   starColor?: string;
+  /** Shooting star trail color (default: "#ffffff") */
+  shootingStarColor?: string;
   /** Background color (default: "#000010") */
   backgroundColor?: string;
   /** Movement speed (default: 0.5) */
@@ -90,6 +93,7 @@ export const Starfield = forwardRef<HTMLCanvasElement, StarfieldProps>(
       preset,
       starCount,
       starColor,
+      shootingStarColor,
       backgroundColor,
       speed,
       twinkle,
@@ -117,6 +121,7 @@ export const Starfield = forwardRef<HTMLCanvasElement, StarfieldProps>(
     useStarfield(internalRef, {
       starCount: starCount ?? p.starCount ?? 200,
       starColor: starColor ?? p.starColor ?? "#ffffff",
+      shootingStarColor: shootingStarColor ?? p.shootingStarColor ?? "#ffffff",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       speed: speed ?? p.speed ?? 0.5,
       twinkle: twinkle ?? p.twinkle ?? true,

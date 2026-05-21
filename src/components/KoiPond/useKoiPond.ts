@@ -278,31 +278,6 @@ export function useKoiPond(
         }
       }
 
-      // Lily pads
-      if (showLilies) {
-        const lilyRgb = hexToRgbString(lilyColor);
-        for (const lily of liliesRef.current) {
-          ctx.save();
-          ctx.translate(lily.x, lily.y);
-          ctx.rotate(lily.rotation + t * 0.05);
-          ctx.beginPath();
-          ctx.arc(0, 0, lily.radius, lily.gapAngle, Math.PI * 2 - lily.gapAngle);
-          ctx.lineTo(0, 0);
-          ctx.closePath();
-          ctx.fillStyle = `rgba(${lilyRgb},0.55)`;
-          ctx.fill();
-          ctx.strokeStyle = `rgba(${lilyRgb},0.3)`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-          // Flower dot
-          ctx.beginPath();
-          ctx.arc(0, 0, lily.radius * 0.15, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${lilyRgb},0.8)`;
-          ctx.fill();
-          ctx.restore();
-        }
-      }
-
       // Update fish
       while (fishRef.current.length < fishCount) fishRef.current.push(makeFish(fishColor, scaleColor));
       if (fishRef.current.length > fishCount) fishRef.current.length = fishCount;
@@ -376,6 +351,31 @@ export function useKoiPond(
         }
 
         drawFish(fish, t);
+      }
+
+      // Lily pads (drawn on top of fish)
+      if (showLilies) {
+        const lilyRgb = hexToRgbString(lilyColor);
+        for (const lily of liliesRef.current) {
+          ctx.save();
+          ctx.translate(lily.x, lily.y);
+          ctx.rotate(lily.rotation + t * 0.05);
+          ctx.beginPath();
+          ctx.arc(0, 0, lily.radius, lily.gapAngle, Math.PI * 2 - lily.gapAngle);
+          ctx.lineTo(0, 0);
+          ctx.closePath();
+          ctx.fillStyle = `rgba(${lilyRgb},0.55)`;
+          ctx.fill();
+          ctx.strokeStyle = `rgba(${lilyRgb},0.3)`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          // Flower dot
+          ctx.beginPath();
+          ctx.arc(0, 0, lily.radius * 0.15, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${lilyRgb},0.8)`;
+          ctx.fill();
+          ctx.restore();
+        }
       }
 
       // Ripples

@@ -16,6 +16,7 @@ interface GlitchPresetValues {
   noiseOpacity?: number;
   flickerRate?: number;
   color?: string;
+  rgbShiftColor?: string;
   backgroundColor?: string;
 }
 
@@ -104,8 +105,10 @@ export interface GlitchOverlayProps extends BaseCanvasProps {
   noiseOpacity?: number;
   /** Screen flicker rate 0–1 (default: 0.02) */
   flickerRate?: number;
-  /** Glitch bar color (default: "#7C3AED") */
+  /** Glitch bar color (default: "#ffffff") */
   color?: string;
+  /** RGB channel split color — complement is used for the opposing channel (default: "#ff0000") */
+  rgbShiftColor?: string;
   /** Enable animation (default: true) */
   animated?: boolean;
   /** Canvas background (default: "transparent") */
@@ -119,7 +122,7 @@ export const GlitchOverlay = forwardRef<HTMLCanvasElement, GlitchOverlayProps>(
     const {
       preset, intensity, speed, rgbShift, scanlines, scanlineOpacity,
       scanlineSpacing, blockGlitch, blockCount, noiseOpacity, flickerRate,
-      color, animated, backgroundColor,
+      color, rgbShiftColor, animated, backgroundColor,
       width, height, className, style,
     } = props;
 
@@ -140,6 +143,7 @@ export const GlitchOverlay = forwardRef<HTMLCanvasElement, GlitchOverlayProps>(
       noiseOpacity: noiseOpacity ?? p.noiseOpacity ?? 0.02,
       flickerRate: flickerRate ?? p.flickerRate ?? 0.02,
       color: color ?? p.color ?? "#ffffff",
+      rgbShiftColor: rgbShiftColor ?? p.rgbShiftColor ?? "#ff0000",
       animated: animated ?? true,
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "transparent",
     });

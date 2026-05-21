@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
-import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
+import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { MagneticBlob } from "../../../components/MagneticBlob";
 
 const PROPS = [
@@ -27,6 +27,7 @@ function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
   const [radius, setRadius] = useState(80);
   const [threshold, setThreshold] = useState(1.8);
   const [bg, setBg] = useState("#111111");
+  const [colors, setColors] = useState(["#ffffff"]);
   const [followMouse, setFollowMouse] = useState(true);
   const [glow, setGlow] = useState(true);
 
@@ -38,6 +39,7 @@ function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
     `  count={${count}}`,
     `  radius={${radius}}`,
     `  threshold={${threshold}}`,
+    `  colors={${JSON.stringify(colors)}}`,
     followMouse ? null : `  followMouse={false}`,
     glow ? null : `  glowEffect={false}`,
     `  backgroundColor="${bg}"`,
@@ -49,7 +51,7 @@ function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <MagneticBlob preset={preset} count={count} radius={radius}
-        threshold={threshold} followMouse={followMouse} glowEffect={glow}
+        threshold={threshold} colors={colors} followMouse={followMouse} glowEffect={glow}
         backgroundColor={bg} width="100%" height="100%" />
       <PLiveLabel text="Move cursor to attract blobs" />
     </div>
@@ -61,6 +63,9 @@ function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PDivider />
+        <PColorArray label="Blob Colors" value={colors} onChange={setColors} />
+        <PDivider />
         <PSlider label="Blob count" value={count} min={2} max={10} step={1} onChange={setCount} />
       </div>
       <div>

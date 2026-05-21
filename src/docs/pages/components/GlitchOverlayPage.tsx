@@ -16,6 +16,7 @@ const PROPS = [
   { name: "noiseOpacity",    type: "number",  default: "0.02",         description: "Film grain noise opacity." },
   { name: "flickerRate",     type: "number",  default: "0.02",         description: "Screen flicker rate 0–1." },
   { name: "color",           type: "string",  default: '"#ffffff"',    description: "Glitch bar accent color." },
+  { name: "rgbShiftColor",   type: "string",  default: '"#ff0000"',    description: "RGB channel split primary color — complement used for opposing channel." },
   { name: "backgroundColor", type: "string",  default: '"transparent"',description: "Canvas background." },
   { name: "preset",          type: "string",  default: "—",            description: '"default" | "crt" | "cyberpunk" | "subtle" | "corrupt"' },
 ];
@@ -26,6 +27,7 @@ function GlitchOverlayPlayground({ onReset }: { onReset?: () => void }) {
   const [speed, setSpeed] = useState(1);
   const [rgbShift, setRgbShift] = useState(8);
   const [color, setColor] = useState("#ffffff");
+  const [rgbShiftColor, setRgbShiftColor] = useState("#ff0000");
   const [scanlines, setScanlines] = useState(true);
   const [blockGlitch, setBlockGlitch] = useState(true);
   const [animated, setAnimated] = useState(true);
@@ -42,6 +44,7 @@ function GlitchOverlayPlayground({ onReset }: { onReset?: () => void }) {
     `    speed={${speed}}`,
     `    rgbShift={${rgbShift}}`,
     `    color="${color}"`,
+    `    rgbShiftColor="${rgbShiftColor}"`,
     !scanlines ? `    scanlines={false}` : null,
     !blockGlitch ? `    blockGlitch={false}` : null,
     !animated ? `    animated={false}` : null,
@@ -64,6 +67,7 @@ function GlitchOverlayPlayground({ onReset }: { onReset?: () => void }) {
         speed={speed}
         rgbShift={rgbShift}
         color={color}
+        rgbShiftColor={rgbShiftColor}
         scanlines={scanlines}
         blockGlitch={blockGlitch}
         animated={animated}
@@ -79,6 +83,7 @@ function GlitchOverlayPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Accent color" value={color} onChange={setColor} />
+        <PColor label="RGB Shift Color" value={rgbShiftColor} onChange={setRgbShiftColor} />
         <PSlider label="Intensity" value={intensity} min={0} max={1} step={0.05} onChange={setIntensity} />
         <PSlider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
       </div>

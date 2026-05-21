@@ -1,4 +1,5 @@
 import { useRef, useEffect, RefObject } from "react";
+import { hexToRgba } from "../../utils/color";
 
 export type StarfieldPerspective = "2D" | "3D";
 
@@ -32,6 +33,7 @@ interface ShootingStar {
 export interface UseStarfieldOptions {
   starCount: number;
   starColor: string;
+  shootingStarColor: string;
   backgroundColor: string;
   speed: number;
   twinkle: boolean;
@@ -124,7 +126,7 @@ export function useStarfield(
 
     function draw(timestamp: number) {
       const {
-        starColor, backgroundColor, speed, twinkle, shootingStars,
+        starColor, shootingStarColor, backgroundColor, speed, twinkle, shootingStars,
         shootingStarInterval, perspective, shootingStarLength, shootingStarLifetime,
       } = optionsRef.current;
 
@@ -160,7 +162,7 @@ export function useStarfield(
           ctx.beginPath();
           ctx.moveTo(px, py);
           ctx.lineTo(sx, sy);
-          ctx.strokeStyle = `rgba(255,255,255,${opacity})`;
+          ctx.strokeStyle = hexToRgba(starColor, opacity);
           ctx.lineWidth = size;
           ctx.stroke();
         }
@@ -179,9 +181,7 @@ export function useStarfield(
 
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-          ctx.fillStyle = starColor.startsWith("#")
-            ? `rgba(255,255,255,${alpha})`
-            : `rgba(255,255,255,${alpha})`;
+          ctx.fillStyle = hexToRgba(starColor, alpha);
           ctx.fill();
         }
 
@@ -212,8 +212,8 @@ export function useStarfield(
 
             const tailLen = s.length / Math.sqrt(s.vx * s.vx + s.vy * s.vy);
             const gradient = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * tailLen, s.y - s.vy * tailLen);
-            gradient.addColorStop(0, `rgba(255,255,255,${s.opacity})`);
-            gradient.addColorStop(1, "rgba(255,255,255,0)");
+            gradient.addColorStop(0, hexToRgba(shootingStarColor, s.opacity));
+            gradient.addColorStop(1, hexToRgba(shootingStarColor, 0));
 
             ctx.beginPath();
             ctx.moveTo(s.x, s.y);

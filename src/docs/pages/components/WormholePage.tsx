@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
-import { PlaygroundShell, PSel, PSlider, PColor, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
+import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { Wormhole } from "../../../components/Wormhole";
 
 const PROPS = [
@@ -26,6 +26,8 @@ function WormholePlayground({ onReset }: { onReset?: () => void }) {
   const [twist, setTwist] = useState(0.3);
   const [ringCount, setRingCount] = useState(30);
   const [starCount, setStarCount] = useState(100);
+  const [colors, setColors] = useState(["#ffffff", "#6b7280"]);
+  const [starColor, setStarColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
 
   const code = [
@@ -37,6 +39,8 @@ function WormholePlayground({ onReset }: { onReset?: () => void }) {
     `  twist={${twist}}`,
     `  ringCount={${ringCount}}`,
     `  starCount={${starCount}}`,
+    `  colors={${JSON.stringify(colors)}}`,
+    `  starColor="${starColor}"`,
     `  backgroundColor="${bg}"`,
     `  width="100%"`,
     `  height="100%"`,
@@ -47,6 +51,7 @@ function WormholePlayground({ onReset }: { onReset?: () => void }) {
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Wormhole preset={preset} speed={speed} twist={twist}
         ringCount={ringCount} starCount={starCount}
+        colors={colors} starColor={starColor}
         backgroundColor={bg} width="100%" height="100%" />
       <PLiveLabel text="Move cursor to control speed" />
     </div>
@@ -58,6 +63,10 @@ function WormholePlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "hyperspace", "neon", "vortex", "minimal"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PColor label="Star color" value={starColor} onChange={setStarColor} />
+        <PDivider />
+        <PColorArray label="Ring Colors" value={colors} onChange={setColors} />
+        <PDivider />
         <PSlider label="Ring count" value={ringCount} min={10} max={60} step={5} onChange={setRingCount} />
       </div>
       <div>

@@ -5,12 +5,14 @@ import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel }
 import { Starfield } from "../../../components/Starfield";
 
 const PROPS = [
-  { name: "starCount",      type: "number",       default: "200",       description: "Number of stars to render." },
-  { name: "speed",          type: "number",       default: "0.5",       description: "Star movement speed." },
-  { name: "backgroundColor",type: "string",       default: '"#111111"', description: "Sky background color." },
-  { name: "perspective",    type: '"2D" | "3D"',  default: '"2D"',      description: "2D twinkle field or 3D warp tunnel." },
-  { name: "twinkle",        type: "boolean",      default: "true",      description: "Enable star twinkle animation." },
-  { name: "shootingStars",  type: "boolean",      default: "false",     description: "Enable random shooting star events." },
+  { name: "starCount",         type: "number",       default: "200",       description: "Number of stars to render." },
+  { name: "starColor",         type: "string",       default: '"#ffffff"', description: "Star color." },
+  { name: "shootingStarColor", type: "string",       default: '"#ffffff"', description: "Shooting star trail color." },
+  { name: "speed",             type: "number",       default: "0.5",       description: "Star movement speed." },
+  { name: "backgroundColor",   type: "string",       default: '"#111111"', description: "Sky background color." },
+  { name: "perspective",       type: '"2D" | "3D"',  default: '"2D"',      description: "2D twinkle field or 3D warp tunnel." },
+  { name: "twinkle",           type: "boolean",      default: "true",      description: "Enable star twinkle animation." },
+  { name: "shootingStars",     type: "boolean",      default: "false",     description: "Enable random shooting star events." },
 ];
 
 function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
@@ -18,6 +20,8 @@ function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
   const [count, setCount] = useState(200);
   const [speed, setSpeed] = useState(0.5);
   const [bg, setBg] = useState("#111111");
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [shootingStarColor, setShootingStarColor] = useState("#ffffff");
   const [twinkle, setTwinkle] = useState(true);
   const [shooting, setShooting] = useState(true);
 
@@ -28,6 +32,8 @@ function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
     `  perspective="${persp}"`,
     `  starCount={${count}}`,
     `  speed={${speed}}`,
+    `  starColor="${starColor}"`,
+    `  shootingStarColor="${shootingStarColor}"`,
     `  backgroundColor="${bg}"`,
     twinkle ? null : `  twinkle={false}`,
     shooting ? `  shootingStars` : null,
@@ -39,6 +45,7 @@ function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Starfield perspective={persp} starCount={count} speed={speed}
+        starColor={starColor} shootingStarColor={shootingStarColor}
         backgroundColor={bg} twinkle={twinkle} shootingStars={shooting}
         width="100%" height="100%" />
       <PLiveLabel />
@@ -51,6 +58,8 @@ function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Perspective" value={persp} options={["2D", "3D"]} onChange={setPersp} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PColor label="Star color" value={starColor} onChange={setStarColor} />
+        <PColor label="Shooting star color" value={shootingStarColor} onChange={setShootingStarColor} />
         <PSlider label="Star count" value={count} min={50} max={800} step={10} onChange={setCount} />
       </div>
       <div>

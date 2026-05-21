@@ -1,37 +1,34 @@
 import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
-import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
+import { PlaygroundShell, PSel, PSlider, PColorArray, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { Spirograph } from "../../../components/Spirograph";
-import type { SpirographColorMode } from "../../../components/Spirograph/useSpirograph";
 
 const PROPS = [
-  { name: "outerRadius",     type: "number",             default: "0.85",      description: "Outer circle R as fraction of min(width,height)/2." },
-  { name: "innerRadius",     type: "number",             default: "0.4",       description: "Inner circle r as fraction of outerRadius." },
-  { name: "penDistance",     type: "number",             default: "0.9",       description: "Pen arm d as fraction of innerRadius." },
-  { name: "speed",           type: "number",             default: "2",         description: "Degrees of angle drawn per frame." },
-  { name: "color",           type: "string",             default: '"#ffffff"', description: "Primary curve stroke color." },
-  { name: "color2",          type: "string",             default: '"#6b7280"', description: "Secondary color used in gradient colorMode." },
-  { name: "backgroundColor", type: "string",             default: '"#111111"', description: "Canvas background fill color." },
-  { name: "lineWidth",       type: "number",             default: "1",         description: "Stroke line width." },
-  { name: "trailFade",       type: "number",             default: "0.003",     description: "Background fade opacity per frame — lower = longer trails." },
-  { name: "animated",        type: "boolean",            default: "true",      description: "Enable animation." },
-  { name: "autoReset",       type: "boolean",            default: "true",      description: "Randomize and restart after each full cycle." },
-  { name: "layerCount",      type: "number",             default: "1",         description: "Overlapping curve layers with slight radius offsets." },
-  { name: "colorMode",       type: "SpirographColorMode",default: '"solid"',   description: '"solid" | "cycle" | "gradient" — how the stroke color is computed.' },
-  { name: "symmetry",        type: "number",             default: "1",         description: "Draw N rotationally symmetric copies around center." },
-  { name: "glowEffect",      type: "boolean",            default: "false",     description: "Enable glow / shadow blur on strokes." },
-  { name: "glowBlur",        type: "number",             default: "10",        description: "Shadow blur radius when glowEffect is enabled." },
-  { name: "preset",          type: "string",             default: "—",         description: '"default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal"' },
+  { name: "outerRadius",     type: "number",   default: "0.85",      description: "Outer circle R as fraction of min(width,height)/2." },
+  { name: "innerRadius",     type: "number",   default: "0.4",       description: "Inner circle r as fraction of outerRadius." },
+  { name: "penDistance",     type: "number",   default: "0.9",       description: "Pen arm d as fraction of innerRadius." },
+  { name: "speed",           type: "number",   default: "2",         description: "Degrees of angle drawn per frame." },
+  { name: "colors",          type: "string[]", default: '["#ffffff"]', description: "Stroke colors — each layer picks cyclically." },
+  { name: "backgroundColor", type: "string",   default: '"#111111"', description: "Canvas background fill color." },
+  { name: "lineWidth",       type: "number",   default: "1",         description: "Stroke line width." },
+  { name: "trailFade",       type: "number",   default: "0.003",     description: "Background fade opacity per frame — lower = longer trails." },
+  { name: "animated",        type: "boolean",  default: "true",      description: "Enable animation." },
+  { name: "autoReset",       type: "boolean",  default: "true",      description: "Randomize and restart after each full cycle." },
+  { name: "layerCount",      type: "number",   default: "2",         description: "Overlapping curve layers with slight radius offsets." },
+  { name: "symmetry",        type: "number",   default: "1",         description: "Draw N rotationally symmetric copies around center." },
+  { name: "glowEffect",      type: "boolean",  default: "false",     description: "Enable glow / shadow blur on strokes." },
+  { name: "glowBlur",        type: "number",   default: "10",        description: "Shadow blur radius when glowEffect is enabled." },
+  { name: "preset",          type: "string",   default: "—",         description: '"default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal"' },
 ];
 
 const PRESET_PARAMS = {
-  default:   { colorMode: "solid" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
-  neon:      { colorMode: "cycle" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#000000", lineWidth: 1.5, layerCount: 1, symmetry: 1, glowEffect: true,  glowBlur: 15, trailFade: 0.005, speed: 2   },
-  prismatic: { colorMode: "cycle" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#050005", lineWidth: 1,   layerCount: 3, symmetry: 2, glowEffect: false, glowBlur: 10, trailFade: 0.004, speed: 2   },
-  mandala:   { colorMode: "gradient" as SpirographColorMode, color: "#ff00ff", color2: "#00ffff", bg: "#000000", lineWidth: 1, layerCount: 2, symmetry: 6, glowEffect: true, glowBlur: 12, trailFade: 0.002, speed: 2   },
-  cosmic:    { colorMode: "cycle" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#020008", lineWidth: 1,   layerCount: 4, symmetry: 1, glowEffect: true,  glowBlur: 10, trailFade: 0.002, speed: 2   },
-  minimal:   { colorMode: "solid" as SpirographColorMode, color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 0.5, layerCount: 1, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.001, speed: 0.5 },
+  default:   { colors: ["#ffffff"],                              bg: "#111111", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
+  neon:      { colors: ["#00ffff", "#ff00ff"],                   bg: "#000000", lineWidth: 1.5, layerCount: 1, symmetry: 1, glowEffect: true,  glowBlur: 15, trailFade: 0.005, speed: 2   },
+  prismatic: { colors: ["#ff2244", "#22aaff", "#44ff88"],        bg: "#050005", lineWidth: 1,   layerCount: 3, symmetry: 2, glowEffect: false, glowBlur: 10, trailFade: 0.004, speed: 2   },
+  mandala:   { colors: ["#ff00ff", "#00ffff"],                   bg: "#000000", lineWidth: 1,   layerCount: 2, symmetry: 6, glowEffect: true,  glowBlur: 12, trailFade: 0.002, speed: 2   },
+  cosmic:    { colors: ["#ff4488", "#44ffff", "#ffff44", "#44ff88"], bg: "#020008", lineWidth: 1, layerCount: 4, symmetry: 1, glowEffect: true, glowBlur: 10, trailFade: 0.002, speed: 2 },
+  minimal:   { colors: ["#ffffff"],                              bg: "#111111", lineWidth: 0.5, layerCount: 1, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.001, speed: 0.5 },
 };
 
 function SpirographPlayground({ onReset }: { onReset?: () => void }) {
@@ -39,15 +36,13 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
   const [innerRadius, setInnerRadius] = useState(0.4);
   const [penDistance, setPenDistance] = useState(0.9);
   const [speed, setSpeed]             = useState(2);
-  const [color, setColor]             = useState("#ffffff");
-  const [color2, setColor2]           = useState("#6b7280");
+  const [colors, setColors]           = useState(["#ffffff"]);
   const [bg, setBg]                   = useState("#111111");
   const [lineWidth, setLineWidth]     = useState(1);
   const [trailFade, setTrailFade]     = useState(0.003);
   const [animated, setAnimated]       = useState(true);
   const [autoReset, setAutoReset]     = useState(true);
   const [layerCount, setLayerCount]   = useState(2);
-  const [colorMode, setColorMode]     = useState<SpirographColorMode>("solid");
   const [symmetry, setSymmetry]       = useState(1);
   const [glowEffect, setGlowEffect]   = useState(false);
   const [glowBlur, setGlowBlur]       = useState(10);
@@ -56,9 +51,7 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
     setPreset(p);
     const pp = PRESET_PARAMS[p as keyof typeof PRESET_PARAMS];
     if (!pp) return;
-    setColorMode(pp.colorMode);
-    setColor(pp.color);
-    setColor2(pp.color2);
+    setColors(pp.colors);
     setBg(pp.bg);
     setLineWidth(pp.lineWidth);
     setLayerCount(pp.layerCount);
@@ -77,13 +70,11 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
     `  innerRadius={${innerRadius}}`,
     `  penDistance={${penDistance}}`,
     `  speed={${speed}}`,
-    `  color="${color}"`,
-    colorMode === "gradient" ? `  color2="${color2}"` : null,
+    `  colors={${JSON.stringify(colors)}}`,
     `  backgroundColor="${bg}"`,
     `  lineWidth={${lineWidth}}`,
     `  trailFade={${trailFade}}`,
-    colorMode !== "solid" ? `  colorMode="${colorMode}"` : null,
-    layerCount !== 1 ? `  layerCount={${layerCount}}` : null,
+    layerCount !== 2 ? `  layerCount={${layerCount}}` : null,
     symmetry !== 1 ? `  symmetry={${symmetry}}` : null,
     glowEffect ? `  glowEffect` : null,
     glowEffect && glowBlur !== 10 ? `  glowBlur={${glowBlur}}` : null,
@@ -101,15 +92,13 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
         innerRadius={innerRadius}
         penDistance={penDistance}
         speed={speed}
-        color={color}
-        color2={color2}
+        colors={colors}
         backgroundColor={bg}
         lineWidth={lineWidth}
         trailFade={trailFade}
         animated={animated}
         autoReset={autoReset}
         layerCount={layerCount}
-        colorMode={colorMode}
         symmetry={symmetry}
         glowEffect={glowEffect}
         glowBlur={glowBlur}
@@ -125,10 +114,8 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
       <div>
         <PSel label="Preset" value={preset} options={["default", "neon", "prismatic", "mandala", "cosmic", "minimal"]} onChange={handlePreset} />
         <PDivider />
-        <PSel label="Color mode" value={colorMode} options={["solid", "cycle", "gradient"]} onChange={(v) => setColorMode(v as SpirographColorMode)} />
+        <PColorArray label="Colors" value={colors} onChange={setColors} />
         <PDivider />
-        <PColor label="Color" value={color} onChange={setColor} />
-        {colorMode === "gradient" && <PColor label="Color 2" value={color2} onChange={setColor2} />}
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />
         <PToggle label="Glow effect"  value={glowEffect}  onChange={setGlowEffect} />
@@ -157,13 +144,13 @@ export function SpirographPage() {
     <PageShell
       eyebrow="Component"
       title="Spirograph"
-      lead="Hypotrochoid parametric curves drawn incrementally in real time. Layer multiple curves, cycle hues, add rotational symmetry and glow — produces petals, mandalas, stars, and fractal-like rosettes."
+      lead="Hypotrochoid parametric curves drawn incrementally in real time. Layer multiple curves, add rotational symmetry and glow — produces petals, mandalas, stars, and fractal-like rosettes."
     >
       <SpirographPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 
       <section className="page-section" aria-labelledby="usage-h">
         <h2 className="page-h2" id="usage-h">Usage</h2>
-        <p className="page-p">Try the <strong>mandala</strong> preset for 6-fold symmetry with a gradient, or <strong>prismatic</strong> for layered hue-cycling curves. Drag inner radius slowly — each rational value produces a fundamentally different closed curve. Enable <strong>glow effect</strong> on a dark background for a neon laser look.</p>
+        <p className="page-p">Try the <strong>mandala</strong> preset for 6-fold symmetry, or <strong>prismatic</strong> for layered multi-color curves. Drag inner radius slowly — each rational value produces a fundamentally different closed curve. Enable <strong>glow effect</strong> on a dark background for a neon laser look.</p>
       </section>
 
       <section aria-labelledby="props-h">

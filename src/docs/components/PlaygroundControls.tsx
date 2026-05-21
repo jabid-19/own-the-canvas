@@ -89,6 +89,52 @@ export function PSel<T extends string>({ label, value, options, onChange }: {
   );
 }
 
+export function PColorArray({ label, value, onChange }: {
+  label: string; value: string[]; onChange: (v: string[]) => void;
+}) {
+  const add = () => onChange([...value, "#ffffff"]);
+  const remove = () => { if (value.length > 1) onChange(value.slice(0, -1)); };
+  const update = (i: number, c: string) => {
+    const next = [...value];
+    next[i] = c;
+    onChange(next);
+  };
+  const btnBase: React.CSSProperties = {
+    width: 18, height: 18, borderRadius: 4, border: "1px solid var(--border)",
+    background: "var(--bg)", color: "var(--text-2)", cursor: "pointer",
+    display: "inline-flex", alignItems: "center", justifyContent: "center",
+    flexShrink: 0, padding: 0,
+  };
+  return (
+    <div style={{ padding: "7px 0" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+        <span style={{ ...labelStyle, flex: "none" }}>{label}</span>
+        <button onClick={remove} disabled={value.length <= 1} aria-label="Remove color"
+          style={{ ...btnBase, opacity: value.length <= 1 ? 0.35 : 1, cursor: value.length <= 1 ? "not-allowed" : "pointer" }}>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </button>
+        <button onClick={add} aria-label="Add color" style={btnBase}>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {value.map((c, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="color" value={c} onChange={(e) => update(i, e.target.value)}
+              style={{ width: 28, height: 24, border: "1px solid var(--border)", borderRadius: 5, cursor: "pointer", padding: 2, background: "var(--bg-subtle)" }} />
+            <span style={{ ...valueStyle, marginLeft: 0, fontSize: 11 }}>{c.toUpperCase()}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function PDivider() {
   return <div style={{ height: 1, background: "var(--border)", margin: "6px 0" }} />;
 }
@@ -173,9 +219,10 @@ interface PlaygroundShellProps {
   controls: React.ReactNode;
   code: string;
   onReset?: () => void;
+  previewActions?: React.ReactNode;
 }
 
-export function PlaygroundShell({ preview, controls, code, onReset }: PlaygroundShellProps) {
+export function PlaygroundShell({ preview, controls, code, onReset, previewActions }: PlaygroundShellProps) {
   return (
     <div style={{
       border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
@@ -186,6 +233,17 @@ export function PlaygroundShell({ preview, controls, code, onReset }: Playground
       <div style={{ height: 300, position: "relative", overflow: "hidden" }}>
         {preview}
       </div>
+
+      {/* Action bar directly under canvas */}
+      {previewActions && (
+        <div style={{
+          display: "flex", justifyContent: "center", alignItems: "center", gap: 10,
+          padding: "12px 18px", borderTop: "1px solid var(--border)",
+          background: "var(--bg)",
+        }}>
+          {previewActions}
+        </div>
+      )}
 
       {/* Controls — two-column grid, single on mobile */}
       <div className="playground-controls">

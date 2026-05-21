@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
-import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
+import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { FluidSimulation } from "../../../components/FluidSimulation";
 
 const PROPS = [
@@ -25,6 +25,7 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [autoInk, setAutoInk] = useState(true);
   const [mouseForce, setMouseForce] = useState(5);
   const [bg, setBg] = useState("#111111");
+  const [inkColors, setInkColors] = useState(["#ffffff", "#6b7280"]);
 
   const code = [
     `import { FluidSimulation } from 'own-the-canvas';`,
@@ -35,6 +36,7 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
     `  dissipation={${dissipation}}`,
     `  mouseForce={${mouseForce}}`,
     autoInk ? null : `  autoInk={false}`,
+    `  inkColors={${JSON.stringify(inkColors)}}`,
     `  backgroundColor="${bg}"`,
     `  width="100%"`,
     `  height="100%"`,
@@ -45,7 +47,7 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <FluidSimulation preset={preset} resolution={resolution}
         dissipation={dissipation} autoInk={autoInk} mouseForce={mouseForce}
-        backgroundColor={bg} width="100%" height="100%" />
+        inkColors={inkColors} backgroundColor={bg} width="100%" height="100%" />
       <PLiveLabel text="Move cursor to paint fluid" />
     </div>
   );
@@ -56,6 +58,8 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PDivider />
+        <PColorArray label="Ink Colors" value={inkColors} onChange={setInkColors} />
         <PSlider label="Resolution" value={resolution} min={32} max={128} step={8} onChange={setResolution} />
       </div>
       <div>

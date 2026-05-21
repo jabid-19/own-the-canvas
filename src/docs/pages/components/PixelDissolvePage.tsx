@@ -65,8 +65,6 @@ function PixelDissolvePlayground({ onReset }: { onReset?: () => void }) {
       <div>
         <PSel label="Direction" value={direction} options={["out", "in", "both"]} onChange={(v) => setDirection(v as "in" | "out" | "both")} />
         <PDivider />
-        <PButton label="Trigger dissolve" onClick={fire} />
-        <PDivider />
         <PColor label="Pixel color" value={color} onChange={setColor} />
       </div>
       <div>
@@ -76,7 +74,7 @@ function PixelDissolvePlayground({ onReset }: { onReset?: () => void }) {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} previewActions={<PButton label="Trigger dissolve" onClick={fire} />} />;
 }
 
 export function PixelDissolvePage() {

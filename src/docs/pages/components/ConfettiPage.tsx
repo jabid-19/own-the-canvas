@@ -76,8 +76,6 @@ function ConfettiPlayground({ onReset }: { onReset?: () => void }) {
       <div>
         <PSel label="Palette" value={palette} options={["monochrome", "colorful"]} onChange={(v) => setPalette(v as "monochrome" | "colorful")} />
         <PDivider />
-        <PButton label="Launch confetti" onClick={fire} />
-        <PDivider />
         <PSlider label="Particle count" value={particleCount} min={20} max={400} step={10} onChange={setParticleCount} />
       </div>
       <div>
@@ -90,7 +88,7 @@ function ConfettiPlayground({ onReset }: { onReset?: () => void }) {
     </>
   );
 
-  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} />;
+  return <PlaygroundShell preview={preview} controls={controls} code={code} onReset={onReset} previewActions={<PButton label="Launch confetti" onClick={fire} />} />;
 }
 
 export function ConfettiPage() {

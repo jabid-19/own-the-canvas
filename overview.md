@@ -351,6 +351,7 @@ Floating particles with optional proximity-based connection lines, mouse repulsi
 | `twinkleSpeed` | `number` | `0.03` | Twinkle animation speed |
 | `shootingStarLength` | `number` | `80` | Shooting star trail length in px |
 | `shootingStarLifetime` | `number` | `60` | Shooting star lifetime in frames |
+| `shootingStarColor` | `string` | `"#ffffff"` | Shooting star trail color |
 
 ---
 
@@ -363,6 +364,7 @@ Pixel-level fire simulation using a cellular automaton algorithm. Heat propagate
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `palette` | `"smoke" \| "inferno" \| "toxic" \| "ice" \| "plasma"` | `"smoke"` | Color theme |
+| `customColors` | `string[]` | `undefined` | Custom gradient colors — overrides palette when ≥2 colors provided |
 | `intensity` | `number` | `0.95` | Flame intensity 0–1 |
 | `windStrength` | `number` | `0.3` | Horizontal wind strength -1 to 1 |
 | `windDirection` | `number` | `1` | Wind direction: 1 = right, -1 = left |
@@ -594,6 +596,7 @@ Digital glitch effect with RGB channel separation, CRT scanlines, block-slice ar
 | `noiseOpacity` | `number` | `0.02` | Film noise opacity |
 | `flickerRate` | `number` | `0.02` | Screen flicker rate 0–1 |
 | `color` | `string` | `"#ffffff"` | Glitch bar color |
+| `rgbShiftColor` | `string` | `"#ff0000"` | RGB channel split primary color — complement used for opposing channel |
 | `animated` | `boolean` | `true` | Enable animation |
 | `backgroundColor` | `string` | `"transparent"` | Canvas background |
 
@@ -903,9 +906,11 @@ Animated northern lights with layered sine-wave curtains, vertical light streaks
 
 ### 26. Spirograph
 
-Hypotrochoid parametric curves drawn incrementally in real time. Supports multiple overlapping layers, rotational symmetry, hue-cycling, gradient color mode, and glow effects — produces petals, mandalas, stars, and fractal-like rosettes.
+Hypotrochoid parametric curves drawn incrementally in real time. Supports multiple overlapping layers, rotational symmetry, and glow effects — produces petals, mandalas, stars, and fractal-like rosettes. Each layer cycles through the `colors` array.
 
 **Presets:** `default` · `neon` · `prismatic` · `mandala` · `cosmic` · `minimal`
+
+Default colors (monochrome): `["#ffffff"]`
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -913,15 +918,13 @@ Hypotrochoid parametric curves drawn incrementally in real time. Supports multip
 | `innerRadius` | `number` | `0.4` | Inner circle r as fraction of outerRadius |
 | `penDistance` | `number` | `0.9` | Pen arm d as fraction of innerRadius |
 | `speed` | `number` | `2` | Degrees of angle drawn per frame |
-| `color` | `string` | `"#ffffff"` | Primary curve stroke color |
-| `color2` | `string` | `"#6b7280"` | Secondary color used in gradient colorMode |
+| `colors` | `string[]` | `["#ffffff"]` | Stroke colors — each layer picks cyclically |
 | `backgroundColor` | `string` | `"#111111"` | Canvas background fill color |
 | `lineWidth` | `number` | `1` | Stroke line width |
 | `trailFade` | `number` | `0.003` | Background fade opacity per frame — lower = longer trails |
 | `animated` | `boolean` | `true` | Enable animation |
 | `autoReset` | `boolean` | `true` | Randomize and restart after each full cycle |
 | `layerCount` | `number` | `1` | Overlapping curve layers with slight radius offsets |
-| `colorMode` | `SpirographColorMode` | `"solid"` | `"solid"` \| `"cycle"` \| `"gradient"` — how stroke color is computed |
 | `symmetry` | `number` | `1` | Draw N rotationally symmetric copies around center |
 | `glowEffect` | `boolean` | `false` | Enable glow / shadow blur on strokes |
 | `glowBlur` | `number` | `10` | Shadow blur radius when glowEffect is enabled |
@@ -1416,7 +1419,7 @@ Cherry blossom petals drifting in wind with optional ground accumulation. Petals
 
 ### 47. KoiPond
 
-Animated koi fish swimming in a tranquil pond with water ripples, lily pads, and caustic light effects. Fish respond to cursor proximity.
+Animated koi fish swimming in a tranquil pond with water ripples, lily pads, and caustic light effects. Fish render beneath lily pads; draw order is caustics → fish → lilies. Fish respond to cursor proximity.
 
 **Presets:** `default` · `koi` · `night` · `lotus` · `neon`
 
@@ -1570,7 +1573,7 @@ The docs site lives in `src/docs/` and is built as a separate Vite app (not incl
 | `Sidebar.tsx` | Navigation sidebar listing all components |
 | `CodeBlock.tsx` | Syntax-highlighted code display |
 | `PropsTable.tsx` | Rendered props documentation table |
-| `PlaygroundControls.tsx` | Control widgets: sliders, color pickers, toggles, selectors |
+| `PlaygroundControls.tsx` | Control widgets: sliders, color pickers, toggles, selectors, color arrays (`PColorArray`) |
 | `LazyPreview.tsx` | Lazy-loaded canvas preview with visibility toggling |
 
 ### Per-Component Playground Pages
@@ -1629,7 +1632,6 @@ import type { SandMaterial } from 'own-the-canvas'; // union: "sand" | "water" |
 import type { DLASeedMode } from 'own-the-canvas';  // union: "center" | "ring" | "bottom"
 import type { LissajousColorMode } from 'own-the-canvas'; // union: "solid" | "cycle"
 import type { VoronoiColorMode } from 'own-the-canvas';   // union: "solid" | "gradient" | "cycle"
-import type { SpirographColorMode } from 'own-the-canvas'; // union: "solid" | "cycle" | "gradient"
 import type { PendulaWaveColorMode } from 'own-the-canvas'; // union: "solid" | "cycle" | "gradient"
 import type { CrystalGrowthColorMode } from 'own-the-canvas'; // union: "solid" | "age" | "cycle"
 ```

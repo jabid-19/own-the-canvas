@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
-import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
+import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
 import { Mandala } from "../../../components/Mandala";
 
 const PROPS = [
@@ -27,6 +27,7 @@ function MandalaPlayground({ onReset }: { onReset?: () => void }) {
   const [layers, setLayers] = useState(5);
   const [speed, setSpeed] = useState(1);
   const [bg, setBg] = useState("#111111");
+  const [colors, setColors] = useState(["#ffffff"]);
   const [mirror, setMirror] = useState(true);
   const [glow, setGlow] = useState(true);
 
@@ -38,6 +39,7 @@ function MandalaPlayground({ onReset }: { onReset?: () => void }) {
     `  symmetry={${symmetry}}`,
     `  layers={${layers}}`,
     `  speed={${speed}}`,
+    `  colors={${JSON.stringify(colors)}}`,
     mirror ? null : `  mirror={false}`,
     glow ? null : `  glowEffect={false}`,
     `  backgroundColor="${bg}"`,
@@ -49,7 +51,7 @@ function MandalaPlayground({ onReset }: { onReset?: () => void }) {
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Mandala preset={preset} symmetry={symmetry} layers={layers} speed={speed}
-        mirror={mirror} glowEffect={glow} backgroundColor={bg}
+        colors={colors} mirror={mirror} glowEffect={glow} backgroundColor={bg}
         width="100%" height="100%" />
       <PLiveLabel />
     </div>
@@ -61,6 +63,9 @@ function MandalaPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PDivider />
+        <PColorArray label="Colors" value={colors} onChange={setColors} />
+        <PDivider />
         <PSlider label="Symmetry arms" value={symmetry} min={3} max={24} step={1} onChange={setSymmetry} />
       </div>
       <div>

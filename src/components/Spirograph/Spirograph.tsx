@@ -1,12 +1,11 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
-import { useSpirograph, SpirographColorMode } from "./useSpirograph";
+import { useSpirograph } from "./useSpirograph";
 
 type SpirographPreset = "default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal";
 
 interface SpirographPresetValues {
-  color?: string;
-  color2?: string;
+  colors?: string[];
   backgroundColor?: string;
   lineWidth?: number;
   speed?: number;
@@ -14,7 +13,6 @@ interface SpirographPresetValues {
   innerRadius?: number;
   penDistance?: number;
   layerCount?: number;
-  colorMode?: SpirographColorMode;
   symmetry?: number;
   glowEffect?: boolean;
   glowBlur?: number;
@@ -23,7 +21,7 @@ interface SpirographPresetValues {
 const PRESETS: Record<SpirographPreset, SpirographPresetValues> = {
   default: {},
   neon: {
-    colorMode: "cycle",
+    colors: ["#00ffff", "#ff00ff"],
     backgroundColor: "#000000",
     lineWidth: 1.5,
     glowEffect: true,
@@ -31,7 +29,7 @@ const PRESETS: Record<SpirographPreset, SpirographPresetValues> = {
     trailFade: 0.005,
   },
   prismatic: {
-    colorMode: "cycle",
+    colors: ["#ff2244", "#22aaff", "#44ff88"],
     layerCount: 3,
     symmetry: 2,
     lineWidth: 1,
@@ -39,9 +37,7 @@ const PRESETS: Record<SpirographPreset, SpirographPresetValues> = {
     backgroundColor: "#050005",
   },
   mandala: {
-    colorMode: "gradient",
-    color: "#ff00ff",
-    color2: "#00ffff",
+    colors: ["#ff00ff", "#00ffff"],
     symmetry: 6,
     layerCount: 2,
     glowEffect: true,
@@ -50,8 +46,8 @@ const PRESETS: Record<SpirographPreset, SpirographPresetValues> = {
     backgroundColor: "#000000",
   },
   cosmic: {
+    colors: ["#ff4488", "#44ffff", "#ffff44", "#44ff88"],
     layerCount: 4,
-    colorMode: "cycle",
     glowEffect: true,
     glowBlur: 10,
     trailFade: 0.002,
@@ -59,6 +55,7 @@ const PRESETS: Record<SpirographPreset, SpirographPresetValues> = {
     lineWidth: 1,
   },
   minimal: {
+    colors: ["#ffffff"],
     speed: 0.5,
     lineWidth: 0.5,
     trailFade: 0.001,
@@ -74,10 +71,8 @@ export interface SpirographProps extends BaseCanvasProps {
   penDistance?: number;
   /** Degrees drawn per frame (default: 2) */
   speed?: number;
-  /** Primary curve color (default: "#ffffff") */
-  color?: string;
-  /** Secondary color for gradient colorMode (default: "#6b7280") */
-  color2?: string;
+  /** Stroke colors — each layer picks cyclically (default: ["#ffffff"]) */
+  colors?: string[];
   /** Background fill color (default: "#111111") */
   backgroundColor?: string;
   /** Stroke line width (default: 1) */
@@ -90,8 +85,6 @@ export interface SpirographProps extends BaseCanvasProps {
   autoReset?: boolean;
   /** Number of overlapping curve layers with slight radius offsets (default: 1) */
   layerCount?: number;
-  /** Color mode: "solid" | "cycle" | "gradient" (default: "solid") */
-  colorMode?: SpirographColorMode;
   /** Rotational symmetry — draw N copies around center (default: 1) */
   symmetry?: number;
   /** Enable glow/shadow effect (default: false) */
@@ -110,15 +103,13 @@ export const Spirograph = forwardRef<HTMLCanvasElement, SpirographProps>(
       innerRadius,
       penDistance,
       speed,
-      color,
-      color2,
+      colors,
       backgroundColor,
       lineWidth,
       trailFade,
       animated,
       autoReset,
       layerCount,
-      colorMode,
       symmetry,
       glowEffect,
       glowBlur,
@@ -137,15 +128,13 @@ export const Spirograph = forwardRef<HTMLCanvasElement, SpirographProps>(
       innerRadius:     innerRadius     ?? p.innerRadius   ?? 0.4,
       penDistance:     penDistance     ?? p.penDistance   ?? 0.9,
       speed:           speed           ?? p.speed         ?? 2,
-      color:           color           ?? p.color         ?? "#ffffff",
-      color2:          color2          ?? p.color2        ?? "#6b7280",
+      colors:          colors          ?? p.colors        ?? ["#ffffff"],
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       lineWidth:       lineWidth       ?? p.lineWidth     ?? 1,
       trailFade:       trailFade       ?? p.trailFade     ?? 0.003,
       animated:        animated        ?? true,
       autoReset:       autoReset       ?? true,
       layerCount:      layerCount      ?? p.layerCount    ?? 2,
-      colorMode:       colorMode       ?? p.colorMode     ?? "solid",
       symmetry:        symmetry        ?? p.symmetry      ?? 1,
       glowEffect:      glowEffect      ?? p.glowEffect    ?? false,
       glowBlur:        glowBlur        ?? p.glowBlur      ?? 10,

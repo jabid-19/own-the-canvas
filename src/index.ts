@@ -76,7 +76,7 @@ export { AuroraBorealis } from "./components/AuroraBorealis";
 export type { AuroraBorealisProps } from "./components/AuroraBorealis";
 
 export { Spirograph } from "./components/Spirograph";
-export type { SpirographProps, SpirographColorMode } from "./components/Spirograph";
+export type { SpirographProps } from "./components/Spirograph";
 
 export { SandSimulation } from "./components/SandSimulation";
 export type { SandSimulationProps, SandMaterial } from "./components/SandSimulation";
