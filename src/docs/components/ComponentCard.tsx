@@ -119,19 +119,30 @@ const CSS = `
   opacity: 0.7;
 }
 
-.component-card-preview-badge {
+.component-card-play {
   position: absolute;
-  bottom: 8px;
-  right: 10px;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text-3);
-  font-family: var(--mono);
-  letter-spacing: 0.04em;
-  pointer-events: none;
-  z-index: 2;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  font-size: 24px;
+  opacity: 0;
+  transition: opacity 200ms var(--ease);
+  cursor: pointer;
 }
-
+.component-card-preview:hover .component-card-play {
+  opacity: 1;
+}
+@media (max-width: 600px) {
+  .component-card-preview:hover .component-card-play {
+    opacity: 0;
+  }
+  .component-card-play {
+    opacity: 1;
+  }
+}
 .component-card-body {
   padding: 16px 18px 18px;
   border-top: 1px solid var(--border);
@@ -176,13 +187,14 @@ export function ComponentCard({ name, description, path, accent, preview }: Comp
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <Link
-        to={path}
-        className="component-card"
-        data-testid="component-card"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
+          to={path}
+          className="component-card"
+          data-testid="component-card"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
         <div className="component-card-preview" aria-hidden="true">
+          <div className="component-card-play" onClick={() => setHovered(true)} aria-label="Play preview">▶</div>
           <div className={`component-card-placeholder${hovered ? " hidden" : ""}`}>
             <ComponentIcon name={name} className="component-card-placeholder-icon" />
             <span className="component-card-placeholder-hint">hover to preview</span>
@@ -190,7 +202,6 @@ export function ComponentCard({ name, description, path, accent, preview }: Comp
           <div className={`component-card-canvas${hovered ? " visible" : ""}`}>
             {hovered ? preview : null}
           </div>
-          <div className="component-card-preview-badge">live</div>
         </div>
         <div className="component-card-body">
           <div className="component-card-name">

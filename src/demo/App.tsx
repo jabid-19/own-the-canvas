@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { MatrixRain } from "../components/MatrixRain";
+import { MatrixRain, PRESETS as MATRIX_PRESETS } from "../components/MatrixRain";
 import { ParticleField } from "../components/ParticleField";
 import { Starfield } from "../components/Starfield";
 import { FireEffect } from "../components/FireEffect";
@@ -21,7 +21,7 @@ import { ClothSimulation } from "../components/ClothSimulation";
 import { FluidSimulation } from "../components/FluidSimulation";
 import { Rain } from "../components/Rain";
 import { Lightning } from "../components/Lightning";
-import { GameOfLife } from "../components/GameOfLife";
+import { GameOfLife, PRESETS as GOL_PRESETS } from "../components/GameOfLife";
 import { Wormhole } from "../components/Wormhole";
 import { Boids } from "../components/Boids";
 import type { FirePalette } from "../components/FireEffect";
@@ -29,7 +29,7 @@ import type { ConfettiPalette } from "../components/Confetti";
 import type { VisualizerMode } from "../components/AudioVisualizer";
 import type { StarfieldPerspective } from "../components/Starfield";
 import type { ParticleLineStyle } from "../components/ParticleField";
-import type { DissolveDirection, DissolvePattern } from "../components/PixelDissolve";
+import type { DissolveDirection } from "../components/PixelDissolve";
 import { DragonCursor } from "../components/DragonCursor";
 import { KoiPond } from "../components/KoiPond";
 import { BubbleUniverse } from "../components/BubbleUniverse";
@@ -39,8 +39,8 @@ import { AuroraBorealis } from "../components/AuroraBorealis";
 import { Spirograph } from "../components/Spirograph";
 import { SandSimulation } from "../components/SandSimulation";
 import type { SandMaterial } from "../components/SandSimulation";
-import { WaveInterference } from "../components/WaveInterference";
-import { DiffusionAggregation } from "../components/DiffusionAggregation";
+import { WaveInterference, PRESETS as WAVE_PRESETS } from "../components/WaveInterference";
+import { DiffusionAggregation, PRESETS as DLA_PRESETS } from "../components/DiffusionAggregation";
 import type { DLASeedMode } from "../components/DiffusionAggregation";
 import { Lissajous } from "../components/Lissajous";
 import type { LissajousColorMode } from "../components/Lissajous";
@@ -1226,31 +1226,46 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 function MatrixRainPanel() {
-  const [color, setColor] = useState("#fff");
+  const [preset, setPreset] = useState("default");
+  const [color, setColor] = useState("#ffffff");
   const [bgColor, setBgColor] = useState("#111111");
   const [trailOpacity, setTrailOpacity] = useState(0.1);
   const [fontSize, setFontSize] = useState(14);
   const [speed, setSpeed] = useState(33);
-  const [charset, setCharset] = useState("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  const [charset, setCharset] = useState<"latin" | "binary" | "katakana">("latin");
   const [resetThreshold, setResetThreshold] = useState(0.95);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = MATRIX_PRESETS[p as keyof typeof MATRIX_PRESETS] ?? {};
+    if (v.color) setColor(v.color);
+    if (v.charset) setCharset(v.charset as "latin" | "binary" | "katakana");
+    if (v.fontSize) setFontSize(v.fontSize);
+    if (v.speed) setSpeed(v.speed);
+  }
+
+  const bg = `rgba(${parseInt(bgColor.slice(1,3),16)},${parseInt(bgColor.slice(3,5),16)},${parseInt(bgColor.slice(5,7),16)},${trailOpacity})`;
 
   const code = `import { MatrixRain } from 'own-the-canvas';
 
 <MatrixRain
+  preset="${preset}"
   color="${color}"
+  charset="${charset}"
   fontSize={${fontSize}}
   speed={${speed}}
-  charset="${charset}"
-  resetThreshold={${resetThreshold}}
+  backgroundColor="${bg}"
+  width="100%"
+  height="100%"
 />`;
 
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <MatrixRain color={color} fontSize={fontSize} speed={speed}
+          <MatrixRain preset={preset} color={color} fontSize={fontSize} speed={speed}
             charset={charset} resetThreshold={resetThreshold}
-            backgroundColor={hexToRgba(bgColor, trailOpacity)} width="100%" height="100%" />
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
         <CodeSnippet code={code} />
@@ -1258,23 +1273,16 @@ function MatrixRainPanel() {
       <div className="controls">
         <CtrlHeader id="MatrixRain" />
         <div className="ctrl-body">
+          <Sel label="Preset" value={preset} options={["default", "cyberpunk", "binary", "minimal", "blood"]} onChange={handlePreset} />
+          <Divider />
           <div className="ctl-section">
             <ColorPicker label="Color" value={color} onChange={setColor} />
             <ColorPicker label="Background" value={bgColor} onChange={setBgColor} />
-            <Slider label="Trail opacity" value={trailOpacity} min={0.02} max={0.5} step={0.01} onChange={setTrailOpacity} />
+            <Sel label="Charset" value={charset} options={["latin", "binary", "katakana"]} onChange={(v) => setCharset(v as "latin" | "binary" | "katakana")} />
             <Slider label="Font size" value={fontSize} min={8} max={36} step={1} onChange={setFontSize} />
-            <Slider label="Speed (ms/frame)" value={speed} min={10} max={200} step={1} onChange={setSpeed} />
+            <Slider label="Trail opacity" value={trailOpacity} min={0.02} max={0.5} step={0.01} onChange={setTrailOpacity} />
+            <Slider label="Speed (ms/frame)" value={speed} min={10} max={200} step={5} onChange={setSpeed} />
             <Slider label="Reset threshold" value={resetThreshold} min={0.5} max={0.99} step={0.01} onChange={setResetThreshold} />
-          </div>
-          <Divider />
-          <div className="ctrl-row">
-            <label className="ctrl-label">Characters</label>
-            <input
-              className="ctrl-text-input"
-              value={charset}
-              onChange={e => e.target.value.length > 0 && setCharset(e.target.value)}
-              spellCheck={false}
-            />
           </div>
         </div>
       </div>
@@ -1285,7 +1293,7 @@ function MatrixRainPanel() {
 function ParticleFieldPanel() {
   const [pc, setPc] = useState("#ffffff");
   const [lc, setLc] = useState("#6b7280");
-  const [bg, setBg] = useState("transparent");
+  const [bg, setBg] = useState("#111111");
   const [count, setCount] = useState(120);
   const [dist, setDist] = useState(120);
   const [size, setSize] = useState(2.5);
@@ -1297,33 +1305,40 @@ function ParticleFieldPanel() {
   const [glowParticles, setGlowParticles] = useState(false);
   const [lineStyle, setLineStyle] = useState<ParticleLineStyle>("solid");
   const [dragParticles, setDragParticles] = useState(false);
-  const [lineOpacity, setLineOpacity] = useState(0.5);
-  const [velocityMultiplier, setVelocityMultiplier] = useState(1);
-  const [preset, setPreset] = useState("default");
 
-  const code = `import { ParticleField } from 'own-the-canvas';
-
-<ParticleField
-  preset="${preset}"
-  particleCount={${count}}
-  particleColor="${pc}"
-  lineDistance={${dist}}
-  lineOpacity={${lineOpacity}}
-  connectParticles={${connect}}
-  interactive={${interact}}${wrapEdges ? `\n  wrapEdges={true}` : ""}${twinkle ? `\n  twinkle={true}` : ""}${glowParticles ? `\n  glowParticles={true}` : ""}${lineStyle !== "solid" ? `\n  lineStyle="${lineStyle}"` : ""}${dragParticles ? `\n  dragParticles={true}` : ""}
-/>`;
+  const code = [
+    `import { ParticleField } from 'own-the-canvas';`,
+    ``,
+    `<ParticleField`,
+    `  particleCount={${count}}`,
+    `  particleColor="${pc}"`,
+    `  lineColor="${lc}"`,
+    `  lineDistance={${dist}}`,
+    `  particleSize={${size}}`,
+    `  speed={${speed}}`,
+    connect ? null : `  connectParticles={false}`,
+    !interact ? `  interactive={false}` : null,
+    `  backgroundColor="${bg}"`,
+    wrapEdges ? `  wrapEdges={true}` : null,
+    twinkle ? `  twinkle={true}` : null,
+    glowParticles ? `  glowParticles={true}` : null,
+    lineStyle !== "solid" ? `  lineStyle="${lineStyle}"` : null,
+    dragParticles ? `  dragParticles={true}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
 
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <ParticleField preset={preset} particleColor={pc} lineColor={lc}
+          <ParticleField particleColor={pc} lineColor={lc}
             particleCount={count} lineDistance={dist} particleSize={size}
             speed={speed} connectParticles={connect} interactive={interact}
             backgroundColor={bg} wrapEdges={wrapEdges} twinkle={twinkle}
             glowParticles={glowParticles} lineStyle={lineStyle}
-            dragParticles={dragParticles} lineOpacity={lineOpacity}
-            velocityMultiplier={velocityMultiplier} width="100%" height="100%" />
+            dragParticles={dragParticles} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>{dragParticles ? "Drag particles to reposition" : "Move cursor to repel"}</span></div>
         <CodeSnippet code={code} />
@@ -1331,18 +1346,14 @@ function ParticleFieldPanel() {
       <div className="controls">
         <CtrlHeader id="ParticleField" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "network", "stars", "fireflies", "minimal"]} onChange={setPreset} />
-          <Divider />
           <div className="ctl-section">
             <ColorPicker label="Particle color" value={pc} onChange={setPc} />
             <ColorPicker label="Line color" value={lc} onChange={setLc} />
             <ColorPicker label="Background" value={bg} onChange={setBg} />
             <Slider label="Count" value={count} min={20} max={400} step={10} onChange={setCount} />
             <Slider label="Line distance" value={dist} min={40} max={250} step={5} onChange={setDist} />
-            <Slider label="Line opacity" value={lineOpacity} min={0} max={1} step={0.05} onChange={setLineOpacity} />
             <Slider label="Particle size" value={size} min={0.5} max={8} step={0.5} onChange={setSize} />
             <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
-            <Slider label="Velocity multiplier" value={velocityMultiplier} min={0.1} max={3} step={0.1} onChange={setVelocityMultiplier} />
           </div>
           <Divider />
           <Toggle label="Connect particles" value={connect} onChange={setConnect} />
@@ -1366,48 +1377,33 @@ function StarfieldPanel() {
   const [twinkle, setTwinkle] = useState(true);
   const [shooting, setShooting] = useState(true);
   const [persp, setPersp] = useState<StarfieldPerspective>("2D");
-  const [preset, setPreset] = useState("default");
   const [starColor, setStarColor] = useState("#ffffff");
   const [shootingStarColor, setShootingStarColor] = useState("#ffffff");
-  const [shootingStarInterval, setShootingStarInterval] = useState(3000);
-  const [starSizeMin, setStarSizeMin] = useState(0.3);
-  const [starSizeMax, setStarSizeMax] = useState(2.8);
-  const [starOpacityMin, setStarOpacityMin] = useState(0.3);
-  const [starOpacityMax, setStarOpacityMax] = useState(1);
-  const [twinkleSpeed, setTwinkleSpeed] = useState(0.03);
-  const [shootingStarLength, setShootingStarLength] = useState(80);
 
-  const code = `import { Starfield } from 'own-the-canvas';
-
-<Starfield
-  preset="${preset}"
-  starCount={${count}}
-  speed={${speed}}
-  perspective="${persp}"
-  twinkle={${twinkle}}
-  shootingStars={${shooting}}
-  starColor="${starColor}"
-  shootingStarColor="${shootingStarColor}"
-  shootingStarInterval={${shootingStarInterval}}
-  starSizeMin={${starSizeMin}}
-  starSizeMax={${starSizeMax}}
-  starOpacityMin={${starOpacityMin}}
-  starOpacityMax={${starOpacityMax}}
-  twinkleSpeed={${twinkleSpeed}}
-  shootingStarLength={${shootingStarLength}}
-/>`;
+  const code = [
+    `import { Starfield } from 'own-the-canvas';`,
+    ``,
+    `<Starfield`,
+    `  perspective="${persp}"`,
+    `  starCount={${count}}`,
+    `  speed={${speed}}`,
+    `  starColor="${starColor}"`,
+    `  shootingStarColor="${shootingStarColor}"`,
+    `  backgroundColor="${bg}"`,
+    twinkle ? null : `  twinkle={false}`,
+    shooting ? `  shootingStars` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
 
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Starfield preset={preset} starCount={count} backgroundColor={bg} speed={speed}
+          <Starfield starCount={count} backgroundColor={bg} speed={speed}
             twinkle={twinkle} shootingStars={shooting} perspective={persp}
             starColor={starColor} shootingStarColor={shootingStarColor}
-            shootingStarInterval={shootingStarInterval}
-            starSizeMin={starSizeMin} starSizeMax={starSizeMax}
-            starOpacityMin={starOpacityMin} starOpacityMax={starOpacityMax}
-            twinkleSpeed={twinkleSpeed} shootingStarLength={shootingStarLength}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -1416,22 +1412,14 @@ function StarfieldPanel() {
       <div className="controls">
         <CtrlHeader id="Starfield" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "warp", "peaceful", "minimal", "nebula"]} onChange={setPreset} />
           <Sel label="Perspective" value={persp} options={["2D", "3D"]} onChange={setPersp} />
           <Divider />
           <div className="ctl-section">
             <ColorPicker label="Background" value={bg} onChange={setBg} />
             <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
             <ColorPicker label="Shooting star color" value={shootingStarColor} onChange={setShootingStarColor} />
-            <Slider label="Star count" value={count} min={50} max={800} step={50} onChange={setCount} />
+            <Slider label="Star count" value={count} min={50} max={800} step={10} onChange={setCount} />
             <Slider label="Speed" value={speed} min={0.1} max={8} step={0.1} onChange={setSpeed} />
-            <Slider label="Shooting star interval (ms)" value={shootingStarInterval} min={500} max={8000} step={500} onChange={setShootingStarInterval} />
-            <Slider label="Star size min" value={starSizeMin} min={0.1} max={3} step={0.1} onChange={setStarSizeMin} />
-            <Slider label="Star size max" value={starSizeMax} min={0.5} max={8} step={0.1} onChange={setStarSizeMax} />
-            <Slider label="Star opacity min" value={starOpacityMin} min={0} max={1} step={0.05} onChange={setStarOpacityMin} />
-            <Slider label="Star opacity max" value={starOpacityMax} min={0} max={1} step={0.05} onChange={setStarOpacityMax} />
-            <Slider label="Twinkle speed" value={twinkleSpeed} min={0.01} max={0.1} step={0.005} onChange={setTwinkleSpeed} />
-            <Slider label="Shooting star length" value={shootingStarLength} min={50} max={300} step={10} onChange={setShootingStarLength} />
           </div>
           <Divider />
           <Toggle label="Twinkle" value={twinkle} onChange={setTwinkle} />
@@ -1444,39 +1432,35 @@ function StarfieldPanel() {
 
 function FireEffectPanel() {
   const [palette, setPalette] = useState<FirePalette>("smoke");
+  const [customColors, setCustomColors] = useState<string[]>([]);
   const [intensity, setIntensity] = useState(0.95);
   const [wind, setWind] = useState(0.3);
-  const [spread, setSpread] = useState(0.7);
+  const [spread, setSpread] = useState(0);
   const [cooling, setCooling] = useState(0.3);
-  const [preset, setPreset] = useState("default");
-  const [windDirection, setWindDirection] = useState(1);
-  const [noiseStrength, setNoiseStrength] = useState(60);
-  const [coolingScale, setCoolingScale] = useState(5);
-  const [resolution, setResolution] = useState(1);
 
-  const code = `import { FireEffect } from 'own-the-canvas';
-
-<FireEffect
-  preset="${preset}"
-  palette="${palette}"
-  intensity={${intensity}}
-  windStrength={${wind}}
-  spread={${spread}}
-  cooling={${cooling}}
-  windDirection={${windDirection}}
-  noiseStrength={${noiseStrength}}
-  coolingScale={${coolingScale}}
-  resolution={${resolution}}
-/>`;
+  const hasCustom = customColors.length >= 2;
+  const code = [
+    `import { FireEffect } from 'own-the-canvas';`,
+    ``,
+    `<FireEffect`,
+    `  palette="${palette}"`,
+    hasCustom ? `  customColors={${JSON.stringify(customColors)}}` : null,
+    `  intensity={${intensity}}`,
+    `  windStrength={${wind}}`,
+    `  spread={${spread}}`,
+    `  cooling={${cooling}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
 
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <FireEffect preset={preset} palette={palette} intensity={intensity}
-            windStrength={wind} spread={spread} cooling={cooling}
-            windDirection={windDirection} noiseStrength={noiseStrength}
-            coolingScale={coolingScale} resolution={resolution}
+          <FireEffect palette={palette} customColors={hasCustom ? customColors : undefined}
+            intensity={intensity} windStrength={wind}
+            spread={spread} cooling={cooling}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Pixel simulation</span></div>
@@ -1485,18 +1469,13 @@ function FireEffectPanel() {
       <div className="controls">
         <CtrlHeader id="FireEffect" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "inferno", "toxic", "ice", "plasma"]} onChange={setPreset} />
           <Sel label="Palette" value={palette} options={["smoke", "inferno", "toxic", "ice", "plasma"]} onChange={setPalette} />
           <Divider />
           <div className="ctl-section">
             <Slider label="Intensity" value={intensity} min={0.1} max={1} step={0.05} onChange={setIntensity} />
             <Slider label="Wind strength" value={wind} min={0} max={1} step={0.05} onChange={setWind} />
-            <Slider label="Wind direction" value={windDirection} min={-1} max={1} step={0.1} onChange={setWindDirection} />
             <Slider label="Spread" value={spread} min={0} max={1} step={0.05} onChange={setSpread} />
             <Slider label="Cooling" value={cooling} min={0.05} max={0.8} step={0.05} onChange={setCooling} />
-            <Slider label="Noise strength" value={noiseStrength} min={0} max={100} step={5} onChange={setNoiseStrength} />
-            <Slider label="Cooling scale" value={coolingScale} min={0.1} max={10} step={0.5} onChange={setCoolingScale} />
-            <Slider label="Resolution" value={resolution} min={0.25} max={1} step={0.05} onChange={setResolution} />
           </div>
         </div>
       </div>
@@ -1506,23 +1485,14 @@ function FireEffectPanel() {
 
 function AudioVisualizerPanel() {
   const [mode, setMode] = useState<VisualizerMode>("bars");
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#050010");
+  const [barColor, setBarColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
   const [barCount, setBarCount] = useState(64);
   const [sensitivity, setSensitivity] = useState(1);
-  const [gap, setGap] = useState(2);
   const [rounded, setRounded] = useState(true);
-  const [gradient, setGradient] = useState(true);
+  const [gradient, setGradient] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [micActive, setMicActive] = useState(false);
-  const [preset, setPreset] = useState("default");
-  const [gradientEndColor, setGradientEndColor] = useState("#6366f1");
-  const [glowEffect, setGlowEffect] = useState(false);
-  const [glowColor, setGlowColor] = useState("#ffffff");
-  const [glowBlur, setGlowBlur] = useState(20);
-  const [fftSizeStr, setFftSizeStr] = useState("1024");
-  const [idleAmplitude, setIdleAmplitude] = useState(0.15);
-  const [idleAnimationSpeed, setIdleAnimationSpeed] = useState(1);
 
   async function toggleMic() {
     if (micActive) {
@@ -1536,38 +1506,45 @@ function AudioVisualizerPanel() {
     }
   }
 
-  const code = `import { AudioVisualizer } from 'own-the-canvas';
-// const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-<AudioVisualizer
-  preset="${preset}"
-  audioSource={stream}
-  mode="${mode}"
-  barCount={${barCount}}
-  barColor="${color}"
-  sensitivity={${sensitivity}}
-  gradient={${gradient}}
-  gradientEndColor="${gradientEndColor}"
-  glowEffect={${glowEffect}}
-  glowColor="${glowColor}"
-  glowBlur={${glowBlur}}
-  fftSize={${fftSizeStr}}
-  idleAmplitude={${idleAmplitude}}
-  idleAnimationSpeed={${idleAnimationSpeed}}
-/>`;
+  const code = [
+    `import { AudioVisualizer } from 'own-the-canvas';`,
+    `import { useState } from 'react';`,
+    ``,
+    `function App() {`,
+    `  const [stream, setStream] = useState<MediaStream | null>(null);`,
+    ``,
+    `  async function startMic() {`,
+    `    const s = await navigator.mediaDevices.getUserMedia({ audio: true });`,
+    `    setStream(s);`,
+    `  }`,
+    ``,
+    `  return (`,
+    `    <>`,
+    `      <button onClick={startMic}>Start microphone</button>`,
+    `      <AudioVisualizer`,
+    `        audioSource={stream}`,
+    `        mode="${mode}"`,
+    `        barColor="${barColor}"`,
+    `        barCount={${barCount}}`,
+    `        sensitivity={${sensitivity}}`,
+    rounded ? null : `        rounded={false}`,
+    gradient ? `        gradient` : null,
+    `        width="100%"`,
+    `        height="100%"`,
+    `      />`,
+    `    </>`,
+    `  );`,
+    `}`,
+  ].filter(Boolean).join("\n");
 
   return (
     <>
       <div className="canvas-wrap" style={{ background: "#030305" }}>
         <div className="canvas-wrap-inner">
-          <AudioVisualizer preset={preset} audioSource={stream} mode={mode}
-            barColor={color} waveColor={color} barCount={barCount}
-            sensitivity={sensitivity} gapBetweenBars={gap}
+          <AudioVisualizer audioSource={stream} mode={mode}
+            barColor={barColor} waveColor={barColor} barCount={barCount}
+            sensitivity={sensitivity}
             rounded={rounded} gradient={gradient}
-            gradientEndColor={gradientEndColor}
-            glowEffect={glowEffect} glowColor={glowColor} glowBlur={glowBlur}
-            fftSize={Number(fftSizeStr)}
-            idleAmplitude={idleAmplitude} idleAnimationSpeed={idleAnimationSpeed}
             backgroundColor={bg}
             width="100%" height="100%" />
         </div>
@@ -1588,26 +1565,17 @@ function AudioVisualizerPanel() {
           >
             {micActive ? "Stop microphone" : "Start microphone"}
           </button>
-          <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "fire", "ocean"]} onChange={setPreset} />
           <Sel label="Mode" value={mode} options={["bars", "wave", "circular", "mirror"]} onChange={setMode} />
-          <Sel label="FFT size" value={fftSizeStr} options={["256", "512", "1024", "2048"]} onChange={setFftSizeStr} />
           <Divider />
           <div className="ctl-section">
-            <ColorPicker label="Color" value={color} onChange={setColor} />
-            <ColorPicker label="Gradient end color" value={gradientEndColor} onChange={setGradientEndColor} />
-            <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
+            <ColorPicker label="Bar color" value={barColor} onChange={setBarColor} />
             <ColorPicker label="Background" value={bg} onChange={setBg} />
-            <Slider label="Bar count" value={barCount} min={16} max={256} step={8} onChange={setBarCount} />
-            <Slider label="Sensitivity" value={sensitivity} min={0.2} max={3} step={0.1} onChange={setSensitivity} />
-            <Slider label="Bar gap" value={gap} min={0} max={8} step={1} onChange={setGap} />
-            <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
-            <Slider label="Idle amplitude" value={idleAmplitude} min={0} max={0.5} step={0.02} onChange={setIdleAmplitude} />
-            <Slider label="Idle animation speed" value={idleAnimationSpeed} min={0.1} max={3} step={0.1} onChange={setIdleAnimationSpeed} />
+            <Slider label="Bar count" value={barCount} min={8} max={128} step={8} onChange={setBarCount} />
+            <Slider label="Sensitivity" value={sensitivity} min={0.2} max={5} step={0.1} onChange={setSensitivity} />
           </div>
           <Divider />
-          <Toggle label="Rounded bars" value={rounded} onChange={setRounded} />
+          <Toggle label="Rounded caps" value={rounded} onChange={setRounded} />
           <Toggle label="Gradient fill" value={gradient} onChange={setGradient} />
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
         </div>
       </div>
     </>
@@ -1617,46 +1585,51 @@ function AudioVisualizerPanel() {
 function ConfettiPanel() {
   const [trigger, setTrigger] = useState(false);
   const [palette, setPalette] = useState<ConfettiPalette>("monochrome");
-  const [count, setCount] = useState(150);
+  const [particleCount, setParticleCount] = useState(150);
   const [spread, setSpread] = useState(0.8);
   const [gravity, setGravity] = useState(0.5);
   const [continuous, setContinuous] = useState(false);
   const [wind, setWind] = useState(0.5);
-  const [preset, setPreset] = useState("default");
-  const [duration, setDuration] = useState(3000);
-  const [speedMin, setSpeedMin] = useState(2);
-  const [speedMax, setSpeedMax] = useState(10);
-  const [sizeMin, setSizeMin] = useState(4);
-  const [sizeMax, setSizeMax] = useState(12);
 
   function fire() { setTrigger(false); setTimeout(() => setTrigger(true), 50); }
 
-  const code = `import { Confetti } from 'own-the-canvas';
-const [show, setShow] = useState(false);
-
-// rising edge fires a burst
-<Confetti
-  preset="${preset}"
-  trigger={show}
-  palette="${palette}"
-  particleCount={${count}}
-  spread={${spread}}
-  continuous={${continuous}}
-  duration={${duration}}
-  speedMin={${speedMin}}
-  speedMax={${speedMax}}
-  sizeMin={${sizeMin}}
-  sizeMax={${sizeMax}}
-/>`;
+  const code = [
+    `import { Confetti } from 'own-the-canvas';`,
+    `import { useState } from 'react';`,
+    ``,
+    `function App() {`,
+    `  const [trigger, setTrigger] = useState(false);`,
+    ``,
+    `  function fire() {`,
+    `    setTrigger(false);`,
+    `    setTimeout(() => setTrigger(true), 50);`,
+    `  }`,
+    ``,
+    `  return (`,
+    `    <>`,
+    `      <button onClick={fire}>Celebrate!</button>`,
+    `      <Confetti`,
+    `        trigger={trigger}`,
+    `        palette="${palette}"`,
+    `        particleCount={${particleCount}}`,
+    `        spread={${spread}}`,
+    `        gravity={${gravity}}`,
+    `        wind={${wind}}`,
+    continuous ? `        continuous` : null,
+    `        width="100%"`,
+    `        height="100%"`,
+    `      />`,
+    `    </>`,
+    `  );`,
+    `}`,
+  ].filter(Boolean).join("\n");
 
   return (
     <>
       <div className="canvas-wrap" style={{ position: "relative" }}>
         <div className="canvas-wrap-inner">
-          <Confetti preset={preset} trigger={trigger} palette={palette} particleCount={count} spread={spread}
+          <Confetti trigger={trigger} palette={palette} particleCount={particleCount} spread={spread}
             gravity={gravity} continuous={continuous} wind={wind}
-            duration={duration} speedMin={speedMin} speedMax={speedMax}
-            sizeMin={sizeMin} sizeMax={sizeMax}
             width="100%" height="100%" />
         </div>
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 3 }}>
@@ -1676,19 +1649,13 @@ const [show, setShow] = useState(false);
         <div className="ctrl-body">
           <button className="ctl-action-btn primary" onClick={fire}>Fire burst</button>
           <Divider />
-          <Sel label="Preset" value={preset} options={["default", "celebration", "pastel", "gold"]} onChange={setPreset} />
           <Sel label="Palette" value={palette} options={["monochrome", "colorful"]} onChange={setPalette} />
           <Divider />
           <div className="ctl-section">
-            <Slider label="Particle count" value={count} min={10} max={500} step={10} onChange={setCount} />
-            <Slider label="Spread" value={spread} min={0.1} max={1} step={0.05} onChange={setSpread} />
+            <Slider label="Particle count" value={particleCount} min={20} max={400} step={10} onChange={setParticleCount} />
+            <Slider label="Spread" value={spread} min={0} max={1} step={0.05} onChange={setSpread} />
             <Slider label="Gravity" value={gravity} min={0.1} max={2} step={0.1} onChange={setGravity} />
-            <Slider label="Wind" value={wind} min={-3} max={3} step={0.1} onChange={setWind} />
-            <Slider label="Duration (ms)" value={duration} min={1000} max={10000} step={500} onChange={setDuration} />
-            <Slider label="Speed min" value={speedMin} min={1} max={10} step={0.5} onChange={setSpeedMin} />
-            <Slider label="Speed max" value={speedMax} min={5} max={30} step={1} onChange={setSpeedMax} />
-            <Slider label="Size min" value={sizeMin} min={2} max={15} step={1} onChange={setSizeMin} />
-            <Slider label="Size max" value={sizeMax} min={5} max={30} step={1} onChange={setSizeMax} />
+            <Slider label="Wind" value={wind} min={0} max={3} step={0.1} onChange={setWind} />
           </div>
           <Divider />
           <Toggle label="Continuous rain" value={continuous} onChange={setContinuous} />
@@ -1714,8 +1681,6 @@ function NoiseGradientPanel() {
   const [scale, setScale] = useState(1);
   const [octaves, setOctaves] = useState(3);
   const [animated, setAnimated] = useState(true);
-  const [persistence, setPersistence] = useState(0.5);
-  const [resolution, setResolution] = useState(1);
   const colors = NOISE_PRESETS[preset];
 
   const code = `import { NoiseGradient } from 'own-the-canvas';
@@ -1726,8 +1691,6 @@ function NoiseGradientPanel() {
   scale={${scale}}
   octaves={${octaves}}
   animated={${animated}}
-  persistence={${persistence}}
-  resolution={${resolution}}
 />`;
 
   return (
@@ -1735,7 +1698,6 @@ function NoiseGradientPanel() {
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <NoiseGradient colors={colors} speed={speed} scale={scale}
-            persistence={persistence} resolution={resolution}
             octaves={octaves} animated={animated}
             width="100%" height="100%" />
         </div>
@@ -1753,8 +1715,6 @@ function NoiseGradientPanel() {
             <Slider label="Speed" value={speed} min={0} max={2} step={0.05} onChange={setSpeed} />
             <Slider label="Scale" value={scale} min={0.2} max={5} step={0.1} onChange={setScale} />
             <Slider label="Octaves" value={octaves} min={1} max={6} step={1} onChange={setOctaves} />
-            <Slider label="Persistence" value={persistence} min={0.1} max={1} step={0.05} onChange={setPersistence} />
-            <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setResolution} />
           </div>
           <Divider />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
@@ -1769,31 +1729,38 @@ function PixelDissolvePanel() {
   const [speed, setSpeed] = useState(0.5);
   const [dir, setDir] = useState<DissolveDirection>("out");
   const [trigger, setTrigger] = useState(false);
-  const [color, setColor] = useState("#060608");
-  const [progressMultiplier, setProgressMultiplier] = useState(1);
-  const [dissolvePattern, setDissolvePattern] = useState<DissolvePattern>("random");
+  const [color, setColor] = useState("#ffffff");
 
   function fire() { setTrigger(false); setTimeout(() => setTrigger(true), 50); }
 
-  const code = `import { PixelDissolve } from 'own-the-canvas';
-
-<PixelDissolve
-  pixelSize={${pixelSize}}
-  speed={${speed}}
-  direction="${dir}"
-  dissolvePattern="${dissolvePattern}"
-  progressMultiplier={${progressMultiplier}}
-  trigger={show}
->
-  <YourContent />
-</PixelDissolve>`;
+  const code = [
+    `import { PixelDissolve } from 'own-the-canvas';`,
+    `import { useState } from 'react';`,
+    ``,
+    `function App() {`,
+    `  const [show, setShow] = useState(false);`,
+    ``,
+    `  return (`,
+    `    <PixelDissolve`,
+    `      trigger={show}`,
+    `      direction="${dir}"`,
+    `      pixelSize={${pixelSize}}`,
+    `      speed={${speed}}`,
+    color !== "#ffffff" ? `      color="${color}"` : null,
+    `      width={400}`,
+    `      height={300}`,
+    `    >`,
+    `      <YourContent />`,
+    `    </PixelDissolve>`,
+    `  );`,
+    `}`,
+  ].filter(Boolean).join("\n");
 
   return (
     <>
       <div className="canvas-wrap" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#030308" }}>
         <PixelDissolve pixelSize={pixelSize} speed={speed}
           direction={dir} trigger={trigger} color={color}
-          progressMultiplier={progressMultiplier} dissolvePattern={dissolvePattern}
           width={440} height={280}>
           <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#374151 0%,#6b7280 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", gap: 10 }}>
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -1815,12 +1782,10 @@ function PixelDissolvePanel() {
           <button className="ctl-action-btn primary" onClick={fire}>Trigger dissolve</button>
           <Divider />
           <Sel label="Direction" value={dir} options={["out", "in", "both"]} onChange={setDir} />
-          <Sel label="Dissolve pattern" value={dissolvePattern} options={["random", "center", "edges", "horizontal"]} onChange={(v) => setDissolvePattern(v as DissolvePattern)} />
           <div className="ctl-section">
             <ColorPicker label="Pixel color" value={color} onChange={setColor} />
-            <Slider label="Pixel size" value={pixelSize} min={2} max={32} step={1} onChange={setPixelSize} />
-            <Slider label="Speed" value={speed} min={0.1} max={2} step={0.1} onChange={setSpeed} />
-            <Slider label="Progress multiplier" value={progressMultiplier} min={0.5} max={3} step={0.1} onChange={setProgressMultiplier} />
+            <Slider label="Pixel size" value={pixelSize} min={2} max={32} step={2} onChange={setPixelSize} />
+            <Slider label="Speed" value={speed} min={0.1} max={2} step={0.05} onChange={setSpeed} />
           </div>
         </div>
       </div>
@@ -1836,32 +1801,30 @@ function FlowFieldPanel() {
   const [curl, setCurl] = useState(false);
   const [lineWidth, setLineWidth] = useState(1);
   const [bg, setBg] = useState("#111111");
-  const [noiseScale, setNoiseScale] = useState(2);
-  const [trailLength, setTrailLength] = useState(40);
-  const [fadeStrength, setFadeStrength] = useState(0.05);
-  const [animated, setAnimated] = useState(true);
-  const [timeSpeed, setTimeSpeed] = useState(1);
-  const code = `import { FlowField } from 'own-the-canvas';
+  const [colors, setColors] = useState(["#ffffff"]);
 
-<FlowField
-  preset="${preset}"
-  particleCount={${count}}
-  speed={${speed}}
-  curl={${curl}}
-  lineWidth={${lineWidth}}
-  noiseScale={${noiseScale}}
-  trailLength={${trailLength}}
-  fadeStrength={${fadeStrength}}
-  animated={${animated}}
-  timeSpeed={${timeSpeed}}
-/>`;
+  const code = [
+    `import { FlowField } from 'own-the-canvas';`,
+    ``,
+    `<FlowField`,
+    `  preset="${preset}"`,
+    `  particleCount={${count}}`,
+    `  speed={${speed}}`,
+    `  lineWidth={${lineWidth}}`,
+    curl ? `  curl` : null,
+    `  colors={${JSON.stringify(colors)}}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <FlowField preset={preset} particleCount={count} speed={speed} curl={curl} lineWidth={lineWidth}
-            noiseScale={noiseScale} trailLength={trailLength} fadeStrength={fadeStrength}
-            animated={animated} timeSpeed={timeSpeed}
+            colors={colors}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -1873,15 +1836,10 @@ function FlowFieldPanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Particle count" value={count} min={100} max={2000} step={100} onChange={setCount} />
+          <Slider label="Particle count" value={count} min={100} max={2000} step={50} onChange={setCount} />
           <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
           <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
-          <Slider label="Noise scale" value={noiseScale} min={0.5} max={5} step={0.1} onChange={setNoiseScale} />
-          <Slider label="Trail length" value={trailLength} min={10} max={100} step={5} onChange={setTrailLength} />
-          <Slider label="Fade strength" value={fadeStrength} min={0.01} max={0.2} step={0.01} onChange={setFadeStrength} />
-          <Slider label="Time speed" value={timeSpeed} min={0.1} max={3} step={0.1} onChange={setTimeSpeed} />
           <Toggle label="Curl noise" value={curl} onChange={setCurl} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
     </>
@@ -1901,7 +1859,6 @@ function SpotlightPanel() {
   const [shape, setShape] = useState<"circle" | "ellipse">("circle");
   const [ellipseRatio, setEllipseRatio] = useState(0.6);
   const [interactive, setInteractive] = useState(true);
-  const [glowSize, setGlowSize] = useState(40);
   const code = `import { Spotlight } from 'own-the-canvas';
 
 <div style={{ position: "relative" }}>
@@ -1924,7 +1881,7 @@ function SpotlightPanel() {
             <div style={{ fontSize: 48, fontWeight: 700, letterSpacing: -2, marginBottom: 12 }}>Move cursor</div>
             <div style={{ fontSize: 18, opacity: 0.4 }}>The spotlight follows your mouse</div>
           </div>
-          <Spotlight preset={preset} radius={radius} overlayColor={overlayColor} overlayOpacity={opacity} edgeSoftness={softness} showGlow={glow} glowColor={glowColor} color={color} followSpeed={followSpeed} shape={shape} ellipseRatio={ellipseRatio} interactive={interactive} glowSize={glowSize} style={{ position: "absolute", inset: 0 }} />
+          <Spotlight preset={preset} radius={radius} overlayColor={overlayColor} overlayOpacity={opacity} edgeSoftness={softness} showGlow={glow} glowColor={glowColor} color={color} followSpeed={followSpeed} shape={shape} ellipseRatio={ellipseRatio} interactive={interactive} style={{ position: "absolute", inset: 0 }} />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor over canvas</span></div>
         <CodeSnippet code={code} />
@@ -1943,7 +1900,6 @@ function SpotlightPanel() {
           <Slider label="Follow speed" value={followSpeed} min={0.01} max={1} step={0.01} onChange={setFollowSpeed} />
           {shape === "ellipse" && <Slider label="Ellipse ratio" value={ellipseRatio} min={0.2} max={1} step={0.05} onChange={setEllipseRatio} />}
           <Sel label="Shape" value={shape} options={["circle", "ellipse"]} onChange={(v) => setShape(v as "circle" | "ellipse")} />
-          <Slider label="Glow size" value={glowSize} min={0} max={100} step={5} onChange={setGlowSize} />
           <Toggle label="Show glow ring" value={glow} onChange={setGlow} />
           <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
@@ -1959,36 +1915,30 @@ function ShockwavePanel() {
   const [color, setColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
   const [glow, setGlow] = useState(true);
-  const [autoFire, setAutoFire] = useState(false);
-  const [secondaryColor, setSecondaryColor] = useState("#6366f1");
-  const [ringSpacing, setRingSpacing] = useState(20);
-  const [maxRadius, setMaxRadius] = useState(200);
-  const [lineWidth, setLineWidth] = useState(2);
-  const [fadeSpeed, setFadeSpeed] = useState(0.03);
-  const [glowBlur, setGlowBlur] = useState(10);
-  const code = `import { Shockwave } from 'own-the-canvas';
+  const [autoFire, setAutoFire] = useState(true);
 
-<Shockwave
-  preset="${preset}"
-  ringCount={${ringCount}}
-  speed={${speed}}
-  color="${color}"
-  secondaryColor="${secondaryColor}"
-  ringSpacing={${ringSpacing}}
-  maxRadius={${maxRadius}}
-  lineWidth={${lineWidth}}
-  fadeSpeed={${fadeSpeed}}
-  glowEffect={${glow}}
-  glowBlur={${glowBlur}}
-/>`;
+  const code = [
+    `import { Shockwave } from 'own-the-canvas';`,
+    ``,
+    `<Shockwave`,
+    `  preset="${preset}"`,
+    `  color="${color}"`,
+    `  ringCount={${ringCount}}`,
+    `  speed={${speed}}`,
+    glow ? null : `  glowEffect={false}`,
+    autoFire ? `  autoFire` : null,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Shockwave preset={preset} ringCount={ringCount} speed={speed} color={color}
-            secondaryColor={secondaryColor} ringSpacing={ringSpacing} maxRadius={maxRadius}
-            lineWidth={lineWidth} fadeSpeed={fadeSpeed}
-            backgroundColor={bg} glowEffect={glow} glowBlur={glowBlur}
+            backgroundColor={bg} glowEffect={glow}
             autoFire={autoFire} autoInterval={1500} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click anywhere to fire</span></div>
@@ -2000,15 +1950,9 @@ function ShockwavePanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "explosion", "ripple", "minimal"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Ring color" value={color} onChange={setColor} />
-          <ColorPicker label="Secondary color" value={secondaryColor} onChange={setSecondaryColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Ring count" value={ringCount} min={1} max={8} step={1} onChange={setRingCount} />
           <Slider label="Speed" value={speed} min={1} max={12} step={0.5} onChange={setSpeed} />
-          <Slider label="Ring spacing" value={ringSpacing} min={5} max={50} step={5} onChange={setRingSpacing} />
-          <Slider label="Max radius" value={maxRadius} min={50} max={500} step={25} onChange={setMaxRadius} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={5} step={0.25} onChange={setLineWidth} />
-          <Slider label="Fade speed" value={fadeSpeed} min={0.01} max={0.1} step={0.005} onChange={setFadeSpeed} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
           <Toggle label="Auto-fire" value={autoFire} onChange={setAutoFire} />
         </div>
@@ -2025,36 +1969,28 @@ function FireworksPanel() {
   const [bg, setBg] = useState("#111111");
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [glow, setGlow] = useState(true);
-  const [friction, setFriction] = useState(0.98);
-  const [fadeSpeed, setFadeSpeed] = useState(0.008);
-  const [particleSize, setParticleSize] = useState(2.5);
-  const [trailLength, setTrailLength] = useState(15);
-  const [autoInterval, setAutoInterval] = useState(1500);
-  const [glowBlur, setGlowBlur] = useState(8);
-  const [shellSpeed, setShellSpeed] = useState(10);
-  const code = `import { Fireworks } from 'own-the-canvas';
 
-<Fireworks
-  preset="${preset}"
-  particleCount={${count}}
-  gravity={${gravity}}
-  autoLaunch={${autoLaunch}}
-  friction={${friction}}
-  fadeSpeed={${fadeSpeed}}
-  particleSize={${particleSize}}
-  trailLength={${trailLength}}
-  autoInterval={${autoInterval}}
-  glowBlur={${glowBlur}}
-  shellSpeed={${shellSpeed}}
-/>`;
+  const code = [
+    `import { Fireworks } from 'own-the-canvas';`,
+    ``,
+    `<Fireworks`,
+    `  preset="${preset}"`,
+    `  particleCount={${count}}`,
+    `  gravity={${gravity}}`,
+    `  spread={${spread}}`,
+    autoLaunch ? null : `  autoLaunch={false}`,
+    glow ? null : `  glowEffect={false}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Fireworks preset={preset} particleCount={count} gravity={gravity} spread={spread}
-            friction={friction} fadeSpeed={fadeSpeed} particleSize={particleSize}
-            trailLength={trailLength} autoInterval={autoInterval} glowBlur={glowBlur}
-            shellSpeed={shellSpeed}
             backgroundColor={bg} autoLaunch={autoLaunch} glowEffect={glow} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to launch a shell</span></div>
@@ -2069,13 +2005,6 @@ function FireworksPanel() {
           <Slider label="Particle count" value={count} min={20} max={200} step={10} onChange={setCount} />
           <Slider label="Gravity" value={gravity} min={0.01} max={0.3} step={0.01} onChange={setGravity} />
           <Slider label="Spread" value={spread} min={2} max={10} step={0.5} onChange={setSpread} />
-          <Slider label="Friction" value={friction} min={0.95} max={1.0} step={0.005} onChange={setFriction} />
-          <Slider label="Fade speed" value={fadeSpeed} min={0.001} max={0.02} step={0.001} onChange={setFadeSpeed} />
-          <Slider label="Particle size" value={particleSize} min={1} max={6} step={0.5} onChange={setParticleSize} />
-          <Slider label="Trail length" value={trailLength} min={5} max={30} step={1} onChange={setTrailLength} />
-          <Slider label="Auto interval (ms)" value={autoInterval} min={500} max={5000} step={250} onChange={setAutoInterval} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
-          <Slider label="Shell speed" value={shellSpeed} min={5} max={20} step={1} onChange={setShellSpeed} />
           <Toggle label="Auto-launch" value={autoLaunch} onChange={setAutoLaunch} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
         </div>
@@ -2089,30 +2018,33 @@ function GlitchOverlayPanel() {
   const [intensity, setIntensity] = useState(0.6);
   const [speed, setSpeed] = useState(1);
   const [rgbShift, setRgbShift] = useState(8);
-  const [bg, setBg] = useState("#111111");
   const [color, setColor] = useState("#ffffff");
+  const [rgbShiftColor, setRgbShiftColor] = useState("#ff0000");
   const [scanlines, setScanlines] = useState(true);
   const [blockGlitch, setBlockGlitch] = useState(true);
-  const [noiseOpacity, setNoiseOpacity] = useState(0.02);
-  const [flickerRate, setFlickerRate] = useState(0.02);
   const [animated, setAnimated] = useState(true);
-  const [scanlineOpacity, setScanlineOpacity] = useState(0.1);
-  const [scanlineSpacing, setScanlineSpacing] = useState(3);
-  const [blockCount, setBlockCount] = useState(6);
-  const [rgbShiftColor, setRgbShiftColor] = useState("#ff0000");
-  const code = `import { GlitchOverlay } from 'own-the-canvas';
 
-<div style={{ position: "relative" }}>
-  <YourContent />
-  <GlitchOverlay
-    preset="${preset}"
-    intensity={${intensity}}
-    speed={${speed}}
-    rgbShift={${rgbShift}}
-    animated={${animated}}
-    style={{ position: "absolute", inset: 0 }}
-  />
-</div>`;
+  const code = [
+    `import { GlitchOverlay } from 'own-the-canvas';`,
+    ``,
+    `// Overlay over any content`,
+    `<div style={{ position: "relative" }}>`,
+    `  <YourContent />`,
+    `  <GlitchOverlay`,
+    `    preset="${preset}"`,
+    `    intensity={${intensity}}`,
+    `    speed={${speed}}`,
+    `    rgbShift={${rgbShift}}`,
+    `    color="${color}"`,
+    `    rgbShiftColor="${rgbShiftColor}"`,
+    !scanlines ? `    scanlines={false}` : null,
+    !blockGlitch ? `    blockGlitch={false}` : null,
+    !animated ? `    animated={false}` : null,
+    `    style={{ position: "absolute", inset: 0 }}`,
+    `  />`,
+    `</div>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap" style={{ position: "relative" }}>
@@ -2121,7 +2053,7 @@ function GlitchOverlayPanel() {
             <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2, marginBottom: 8 }}>GLITCH</div>
             <div style={{ fontSize: 14, opacity: 0.4, letterSpacing: 6 }}>OVERLAY EFFECT</div>
           </div>
-          <GlitchOverlay preset={preset} intensity={intensity} speed={speed} rgbShift={rgbShift} color={color} scanlines={scanlines} scanlineOpacity={scanlineOpacity} scanlineSpacing={scanlineSpacing} blockGlitch={blockGlitch} blockCount={blockCount} noiseOpacity={noiseOpacity} flickerRate={flickerRate} rgbShiftColor={rgbShiftColor} animated={animated} backgroundColor={bg} style={{ position: "absolute", inset: 0 }} />
+          <GlitchOverlay preset={preset} intensity={intensity} speed={speed} rgbShift={rgbShift} color={color} scanlines={scanlines} blockGlitch={blockGlitch} rgbShiftColor={rgbShiftColor} animated={animated} style={{ position: "absolute", inset: 0 }} />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Overlay composited on content</span></div>
         <CodeSnippet code={code} />
@@ -2131,17 +2063,11 @@ function GlitchOverlayPanel() {
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={setPreset} />
           <Divider />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <ColorPicker label="Glitch color" value={color} onChange={setColor} />
+          <ColorPicker label="Accent color" value={color} onChange={setColor} />
+          <ColorPicker label="RGB Shift Color" value={rgbShiftColor} onChange={setRgbShiftColor} />
           <Slider label="Intensity" value={intensity} min={0} max={1} step={0.05} onChange={setIntensity} />
-          <Slider label="Speed" value={speed} min={0.1} max={3} step={0.1} onChange={setSpeed} />
-          <Slider label="RGB shift" value={rgbShift} min={0} max={40} step={1} onChange={setRgbShift} />
-          <Slider label="Noise opacity" value={noiseOpacity} min={0} max={0.1} step={0.005} onChange={setNoiseOpacity} />
-          <Slider label="Flicker rate" value={flickerRate} min={0} max={0.1} step={0.005} onChange={setFlickerRate} />
-          <Slider label="Scanline opacity" value={scanlineOpacity} min={0} max={0.5} step={0.02} onChange={setScanlineOpacity} />
-          <Slider label="Scanline spacing" value={scanlineSpacing} min={1} max={8} step={1} onChange={setScanlineSpacing} />
-          <Slider label="Block count" value={blockCount} min={1} max={20} step={1} onChange={setBlockCount} />
-          <ColorPicker label="RGB shift color" value={rgbShiftColor} onChange={setRgbShiftColor} />
+          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
+          <Slider label="RGB shift" value={rgbShift} min={0} max={30} step={1} onChange={setRgbShift} />
           <Toggle label="Scanlines" value={scanlines} onChange={setScanlines} />
           <Toggle label="Block glitch" value={blockGlitch} onChange={setBlockGlitch} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
@@ -2158,13 +2084,6 @@ function LiveChartPanel() {
   const [showDots, setShowDots] = useState(false);
   const [glow, setGlow] = useState(true);
   const [bg, setBg] = useState("#111111");
-  const [animated, setAnimated] = useState(true);
-  const [lineWidth, setLineWidth] = useState(2);
-  const [gridColor, setGridColor] = useState("#374151");
-  const [gridOpacity, setGridOpacity] = useState(0.2);
-  const [dotRadius, setDotRadius] = useState(4);
-  const [fillOpacity, setFillOpacity] = useState(0.15);
-  const [glowBlur, setGlowBlur] = useState(8);
 
   const series: LiveChartSeries[] = React.useMemo(() => [
     { data: Array.from({ length: 40 }, (_, i) => 50 + Math.sin(i * 0.4) * 30 + Math.random() * 10), color: "#ffffff", filled: true },
@@ -2188,8 +2107,6 @@ function LiveChartPanel() {
         <div className="canvas-wrap-inner">
           <LiveChart preset={preset} series={series} smooth={smooth} showGrid={showGrid} showDots={showDots}
             glowEffect={glow} backgroundColor={bg}
-            animated={animated} lineWidth={lineWidth} gridColor={gridColor} gridOpacity={gridOpacity}
-            dotRadius={dotRadius} fillOpacity={fillOpacity} glowBlur={glowBlur}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Static dataset — push data dynamically</span></div>
@@ -2201,17 +2118,10 @@ function LiveChartPanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "ocean", "fire"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <ColorPicker label="Grid color" value={gridColor} onChange={setGridColor} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.25} onChange={setLineWidth} />
-          <Slider label="Grid opacity" value={gridOpacity} min={0} max={0.5} step={0.05} onChange={setGridOpacity} />
-          <Slider label="Dot radius" value={dotRadius} min={1} max={8} step={0.5} onChange={setDotRadius} />
-          <Slider label="Fill opacity" value={fillOpacity} min={0} max={0.5} step={0.05} onChange={setFillOpacity} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={2} onChange={setGlowBlur} />
           <Toggle label="Smooth curves" value={smooth} onChange={setSmooth} />
           <Toggle label="Grid lines" value={showGrid} onChange={setShowGrid} />
           <Toggle label="Data dots" value={showDots} onChange={setShowDots} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
     </>
@@ -2224,30 +2134,33 @@ function MandalaPanel() {
   const [layers, setLayers] = useState(5);
   const [speed, setSpeed] = useState(1);
   const [bg, setBg] = useState("#111111");
+  const [colors, setColors] = useState(["#ffffff"]);
   const [mirror, setMirror] = useState(true);
   const [glow, setGlow] = useState(true);
-  const [lineWidth, setLineWidth] = useState(1);
-  const [radius, setRadius] = useState(150);
-  const [glowBlur, setGlowBlur] = useState(0);
-  const [strokeOpacity, setStrokeOpacity] = useState(0.8);
-  const [noiseAmount, setNoiseAmount] = useState(0);
-  const code = `import { Mandala } from 'own-the-canvas';
 
-<Mandala
-  preset="${preset}"
-  symmetry={${symmetry}}
-  layers={${layers}}
-  speed={${speed}}
-  mirror={${mirror}}
-/>`;
+  const code = [
+    `import { Mandala } from 'own-the-canvas';`,
+    ``,
+    `<Mandala`,
+    `  preset="${preset}"`,
+    `  symmetry={${symmetry}}`,
+    `  layers={${layers}}`,
+    `  speed={${speed}}`,
+    `  colors={${JSON.stringify(colors)}}`,
+    mirror ? null : `  mirror={false}`,
+    glow ? null : `  glowEffect={false}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Mandala preset={preset} symmetry={symmetry} layers={layers} speed={speed} mirror={mirror}
-            glowEffect={glow} backgroundColor={bg}
-            lineWidth={lineWidth} radius={radius} glowBlur={glowBlur}
-            strokeOpacity={strokeOpacity} noiseAmount={noiseAmount}
+          <Mandala preset={preset} symmetry={symmetry} layers={layers} speed={speed}
+            colors={colors} mirror={mirror} glowEffect={glow} backgroundColor={bg}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -2262,11 +2175,6 @@ function MandalaPanel() {
           <Slider label="Symmetry arms" value={symmetry} min={3} max={24} step={1} onChange={setSymmetry} />
           <Slider label="Layers" value={layers} min={1} max={8} step={1} onChange={setLayers} />
           <Slider label="Speed" value={speed} min={0} max={3} step={0.1} onChange={setSpeed} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.25} onChange={setLineWidth} />
-          <Slider label="Radius" value={radius} min={50} max={300} step={10} onChange={setRadius} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
-          <Slider label="Stroke opacity" value={strokeOpacity} min={0.1} max={1} step={0.05} onChange={setStrokeOpacity} />
-          <Slider label="Noise amount" value={noiseAmount} min={0} max={1} step={0.05} onChange={setNoiseAmount} />
           <Toggle label="Bilateral mirror" value={mirror} onChange={setMirror} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
         </div>
@@ -2281,32 +2189,34 @@ function MagneticBlobPanel() {
   const [radius, setRadius] = useState(80);
   const [threshold, setThreshold] = useState(1.8);
   const [bg, setBg] = useState("#111111");
+  const [colors, setColors] = useState(["#ffffff"]);
   const [followMouse, setFollowMouse] = useState(true);
   const [glow, setGlow] = useState(true);
-  const [speed, setSpeed] = useState(1);
-  const [magnetStrength, setMagnetStrength] = useState(0.5);
-  const [magnetRadius, setMagnetRadius] = useState(150);
-  const [glowBlur, setGlowBlur] = useState(20);
-  const [animated, setAnimated] = useState(true);
-  const [wanderStrength, setWanderStrength] = useState(0.3);
-  const code = `import { MagneticBlob } from 'own-the-canvas';
 
-<MagneticBlob
-  preset="${preset}"
-  count={${count}}
-  radius={${radius}}
-  threshold={${threshold}}
-  followMouse={${followMouse}}
-/>`;
+  const code = [
+    `import { MagneticBlob } from 'own-the-canvas';`,
+    ``,
+    `<MagneticBlob`,
+    `  preset="${preset}"`,
+    `  count={${count}}`,
+    `  radius={${radius}}`,
+    `  threshold={${threshold}}`,
+    `  colors={${JSON.stringify(colors)}}`,
+    followMouse ? null : `  followMouse={false}`,
+    glow ? null : `  glowEffect={false}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <MagneticBlob preset={preset} count={count} radius={radius} threshold={threshold} followMouse={followMouse}
-            glowEffect={glow} backgroundColor={bg}
-            speed={speed} magnetStrength={magnetStrength} magnetRadius={magnetRadius}
-            glowBlur={glowBlur} animated={animated} wanderStrength={wanderStrength}
-            width="100%" height="100%" />
+          <MagneticBlob preset={preset} count={count} radius={radius}
+            threshold={threshold} colors={colors} followMouse={followMouse} glowEffect={glow}
+            backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to attract blobs</span></div>
         <CodeSnippet code={code} />
@@ -2319,15 +2229,9 @@ function MagneticBlobPanel() {
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Blob count" value={count} min={2} max={10} step={1} onChange={setCount} />
           <Slider label="Radius" value={radius} min={30} max={150} step={5} onChange={setRadius} />
-          <Slider label="Merge threshold" value={threshold} min={1} max={3} step={0.1} onChange={setThreshold} />
-          <Slider label="Speed" value={speed} min={0.1} max={4} step={0.1} onChange={setSpeed} />
-          <Slider label="Magnet strength" value={magnetStrength} min={0.1} max={2} step={0.1} onChange={setMagnetStrength} />
-          <Slider label="Magnet radius" value={magnetRadius} min={50} max={300} step={10} onChange={setMagnetRadius} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
-          <Slider label="Wander strength" value={wanderStrength} min={0} max={1} step={0.05} onChange={setWanderStrength} />
+          <Slider label="Merge threshold" value={threshold} min={1} max={3} step={0.05} onChange={setThreshold} />
           <Toggle label="Follow mouse" value={followMouse} onChange={setFollowMouse} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
     </>
@@ -2342,31 +2246,29 @@ function ClothSimulationPanel() {
   const [tearable, setTearable] = useState(false);
   const [lineColor, setLineColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
-  const [rows, setRows] = useState(20);
-  const [spacing, setSpacing] = useState(18);
-  const [friction, setFriction] = useState(0.95);
-  const [stiffness, setStiffness] = useState(8);
-  const [iterations, setIterations] = useState(10);
-  const [lineWidth, setLineWidth] = useState(1);
-  const [windSpeed, setWindSpeed] = useState(1);
-  const [tearDistance, setTearDistance] = useState(100);
-  const code = `import { ClothSimulation } from 'own-the-canvas';
 
-<ClothSimulation
-  preset="${preset}"
-  cols={${cols}}
-  gravity={${gravity}}
-  wind={${wind}}
-  tearable={${tearable}}
-/>`;
+  const code = [
+    `import { ClothSimulation } from 'own-the-canvas';`,
+    ``,
+    `<ClothSimulation`,
+    `  preset="${preset}"`,
+    `  cols={${cols}}`,
+    `  gravity={${gravity}}`,
+    `  wind={${wind}}`,
+    tearable ? `  tearable` : null,
+    `  lineColor="${lineColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <ClothSimulation preset={preset} cols={cols} gravity={gravity} wind={wind} tearable={tearable}
             lineColor={lineColor} backgroundColor={bg}
-            rows={rows} spacing={spacing} friction={friction} stiffness={stiffness}
-            iterations={iterations} lineWidth={lineWidth} windSpeed={windSpeed} tearDistance={tearDistance}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>{tearable ? "Click to tear cloth" : "Hover to push cloth"}</span></div>
@@ -2380,16 +2282,8 @@ function ClothSimulationPanel() {
           <ColorPicker label="Cloth color" value={lineColor} onChange={setLineColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Columns" value={cols} min={10} max={40} step={1} onChange={setCols} />
-          <Slider label="Rows" value={rows} min={10} max={40} step={1} onChange={setRows} />
-          <Slider label="Spacing" value={spacing} min={10} max={30} step={1} onChange={setSpacing} />
           <Slider label="Gravity" value={gravity} min={0.05} max={1.5} step={0.05} onChange={setGravity} />
           <Slider label="Wind" value={wind} min={0} max={1} step={0.05} onChange={setWind} />
-          <Slider label="Friction" value={friction} min={0.8} max={0.99} step={0.01} onChange={setFriction} />
-          <Slider label="Stiffness" value={stiffness} min={1} max={20} step={1} onChange={setStiffness} />
-          <Slider label="Iterations" value={iterations} min={1} max={20} step={1} onChange={setIterations} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={3} step={0.25} onChange={setLineWidth} />
-          <Slider label="Wind speed" value={windSpeed} min={0} max={5} step={0.25} onChange={setWindSpeed} />
-          <Slider label="Tear distance" value={tearDistance} min={50} max={200} step={10} onChange={setTearDistance} />
           <Toggle label="Tearable" value={tearable} onChange={setTearable} />
         </div>
       </div>
@@ -2399,25 +2293,24 @@ function ClothSimulationPanel() {
 
 function FluidSimulationPanel() {
   const [preset, setPreset] = useState("default");
-  const [resolution, setResolution] = useState(80);
+  const [resolution, setResolution] = useState(128);
   const [dissipation, setDissipation] = useState(0.995);
   const [autoInk, setAutoInk] = useState(true);
   const [mouseForce, setMouseForce] = useState(5);
   const [bg, setBg] = useState("#111111");
-  const [viscosity, setViscosity] = useState(0);
-  const [diffusion, setDiffusion] = useState(0);
-  const [glowEffect, setGlowEffect] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(20);
-  const [autoInkInterval, setAutoInkInterval] = useState(2000);
-  const [inkRadius, setInkRadius] = useState(20);
+  const [inkColors, setInkColors] = useState(["#ffffff", "#6b7280"]);
+
   const code = `import { FluidSimulation } from 'own-the-canvas';
 
 <FluidSimulation
   preset="${preset}"
   resolution={${resolution}}
   dissipation={${dissipation}}
-  autoInk={${autoInk}}
-  mouseForce={${mouseForce}}
+  mouseForce={${mouseForce}}${autoInk ? "" : "\n  autoInk={false}"}
+  inkColors={${JSON.stringify(inkColors)}}
+  backgroundColor="${bg}"
+  width="100%"
+  height="100%"
 />`;
   return (
     <>
@@ -2425,9 +2318,7 @@ function FluidSimulationPanel() {
         <div className="canvas-wrap-inner">
           <FluidSimulation preset={preset} resolution={resolution} dissipation={dissipation} autoInk={autoInk}
             mouseForce={mouseForce} backgroundColor={bg}
-            viscosity={viscosity} diffusion={diffusion}
-            glowEffect={glowEffect} glowBlur={glowBlur}
-            autoInkInterval={autoInkInterval} inkRadius={inkRadius}
+            inkColors={inkColors}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to paint fluid</span></div>
@@ -2442,13 +2333,7 @@ function FluidSimulationPanel() {
           <Slider label="Resolution" value={resolution} min={32} max={128} step={8} onChange={setResolution} />
           <Slider label="Dissipation" value={dissipation} min={0.97} max={0.999} step={0.001} onChange={setDissipation} />
           <Slider label="Mouse force" value={mouseForce} min={1} max={15} step={1} onChange={setMouseForce} />
-          <Slider label="Viscosity" value={viscosity} min={0} max={0.01} step={0.001} onChange={setViscosity} />
-          <Slider label="Diffusion" value={diffusion} min={0} max={0.001} step={0.0001} onChange={setDiffusion} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
-          <Slider label="Auto ink interval (ms)" value={autoInkInterval} min={500} max={5000} step={250} onChange={setAutoInkInterval} />
-          <Slider label="Ink radius" value={inkRadius} min={5} max={50} step={5} onChange={setInkRadius} />
           <Toggle label="Auto-ink bursts" value={autoInk} onChange={setAutoInk} />
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
         </div>
       </div>
     </>
@@ -2460,30 +2345,34 @@ function RainPanel() {
   const [dropCount, setDropCount] = useState(200);
   const [speed, setSpeed] = useState(15);
   const [wind, setWind] = useState(0.3);
-  const [dropColor, setDropColor] = useState("#ffffff");
-  const [splashColor, setSplashColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [dropColor, setDropColor] = useState("#000000");
+  const [splashColor, setSplashColor] = useState("#000000");
+  const [bg, setBg] = useState("#ffffff");
   const [showSplashes, setShowSplashes] = useState(true);
-  const [dropLength, setDropLength] = useState(15);
-  const [dropWidth, setDropWidth] = useState(1);
-  const [dropOpacity, setDropOpacity] = useState(0.6);
-  const code = `import { Rain } from 'own-the-canvas';
 
-<Rain
-  preset="${preset}"
-  dropCount={${dropCount}}
-  speed={${speed}}
-  wind={${wind}}
-  dropColor="${dropColor}"
-  showSplashes={${showSplashes}}
-/>`;
+  const code = [
+    `import { Rain } from 'own-the-canvas';`,
+    ``,
+    `<Rain`,
+    `  preset="${preset}"`,
+    `  dropCount={${dropCount}}`,
+    `  speed={${speed}}`,
+    `  wind={${wind}}`,
+    `  dropColor="${dropColor}"`,
+    `  splashColor="${splashColor}"`,
+    showSplashes ? null : `  showSplashes={false}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Rain preset={preset} dropCount={dropCount} speed={speed} wind={wind}
             dropColor={dropColor} splashColor={splashColor} showSplashes={showSplashes}
-            dropLength={dropLength} dropWidth={dropWidth} dropOpacity={dropOpacity}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Rain with wind drift</span></div>
@@ -2497,12 +2386,9 @@ function RainPanel() {
           <ColorPicker label="Drop color" value={dropColor} onChange={setDropColor} />
           <ColorPicker label="Splash color" value={splashColor} onChange={setSplashColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Drop count" value={dropCount} min={20} max={800} step={10} onChange={setDropCount} />
+          <Slider label="Drop count" value={dropCount} min={20} max={800} step={20} onChange={setDropCount} />
           <Slider label="Speed" value={speed} min={2} max={40} step={1} onChange={setSpeed} />
-          <Slider label="Wind" value={wind} min={0} max={3} step={0.05} onChange={setWind} />
-          <Slider label="Drop length" value={dropLength} min={5} max={30} step={1} onChange={setDropLength} />
-          <Slider label="Drop width" value={dropWidth} min={0.5} max={3} step={0.25} onChange={setDropWidth} />
-          <Slider label="Drop opacity" value={dropOpacity} min={0.1} max={1} step={0.05} onChange={setDropOpacity} />
+          <Slider label="Wind" value={wind} min={0} max={3} step={0.1} onChange={setWind} />
           <Toggle label="Show splashes" value={showSplashes} onChange={setShowSplashes} />
         </div>
       </div>
@@ -2514,33 +2400,31 @@ function LightningPanel() {
   const [preset, setPreset] = useState("default");
   const [color, setColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
-  const [branchChance, setBranchChance] = useState(0.3);
+  const [branchChance, setBranchChance] = useState(0.1);
   const [glowBlur, setGlowBlur] = useState(20);
   const [autoInterval, setAutoInterval] = useState(2000);
-  const [segments, setSegments] = useState(12);
-  const [roughness, setRoughness] = useState(0.5);
-  const [branchDecay, setBranchDecay] = useState(0.8);
-  const [flickerCount, setFlickerCount] = useState(3);
-  const [coreColor, setCoreColor] = useState("#ffffff");
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { Lightning } from 'own-the-canvas';
 
-<Lightning
-  preset="${preset}"
-  color="${color}"
-  branchChance={${branchChance}}
-  glowBlur={${glowBlur}}
-  autoInterval={${autoInterval}}
-  interactive
-/>`;
+  const code = [
+    `import { Lightning } from 'own-the-canvas';`,
+    ``,
+    `<Lightning`,
+    `  preset="${preset}"`,
+    `  color="${color}"`,
+    `  branchChance={${branchChance}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  autoInterval={${autoInterval}}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Lightning preset={preset} color={color} branchChance={branchChance}
             glowBlur={glowBlur} autoInterval={autoInterval}
-            segments={segments} roughness={roughness} branchDecay={branchDecay}
-            flickerCount={flickerCount} coreColor={coreColor} interactive={interactive}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to strike</span></div>
@@ -2556,12 +2440,6 @@ function LightningPanel() {
           <Slider label="Branch chance" value={branchChance} min={0} max={0.8} step={0.05} onChange={setBranchChance} />
           <Slider label="Glow blur" value={glowBlur} min={0} max={60} step={2} onChange={setGlowBlur} />
           <Slider label="Auto interval (ms)" value={autoInterval} min={500} max={6000} step={100} onChange={setAutoInterval} />
-          <Slider label="Segments" value={segments} min={5} max={30} step={1} onChange={setSegments} />
-          <Slider label="Roughness" value={roughness} min={0.1} max={1} step={0.05} onChange={setRoughness} />
-          <Slider label="Branch decay" value={branchDecay} min={0.5} max={0.99} step={0.01} onChange={setBranchDecay} />
-          <Slider label="Flicker count" value={flickerCount} min={1} max={10} step={1} onChange={setFlickerCount} />
-          <ColorPicker label="Core color" value={coreColor} onChange={setCoreColor} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -2576,28 +2454,40 @@ function GameOfLifePanel() {
   const [oldColor, setOldColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
   const [showAge, setShowAge] = useState(true);
-  const [initialDensity, setInitialDensity] = useState(0.3);
-  const [deadColor, setDeadColor] = useState("#111111");
-  const [wrapEdges, setWrapEdges] = useState(true);
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { GameOfLife } from 'own-the-canvas';
 
-<GameOfLife
-  preset="${preset}"
-  cellSize={${cellSize}}
-  speed={${speed}}
-  aliveColor="${aliveColor}"
-  showAge={${showAge}}
-  interactive
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = GOL_PRESETS[p as keyof typeof GOL_PRESETS] ?? {};
+    if (v.aliveColor) setAliveColor(v.aliveColor);
+    if (v.oldColor) setOldColor(v.oldColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+    if (v.cellSize) setCellSize(v.cellSize);
+    if (v.speed) setSpeed(v.speed);
+    if (v.showAge !== undefined) setShowAge(v.showAge);
+  }
+
+  const code = [
+    `import { GameOfLife } from 'own-the-canvas';`,
+    ``,
+    `<GameOfLife`,
+    `  preset="${preset}"`,
+    `  cellSize={${cellSize}}`,
+    `  speed={${speed}}`,
+    `  aliveColor="${aliveColor}"`,
+    `  oldColor="${oldColor}"`,
+    showAge ? null : `  showAge={false}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <GameOfLife preset={preset} cellSize={cellSize} speed={speed}
             aliveColor={aliveColor} oldColor={oldColor} showAge={showAge}
-            initialDensity={initialDensity} deadColor={deadColor}
-            wrapEdges={wrapEdges} interactive={interactive}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click cells to draw • Conway's Game of Life</span></div>
@@ -2606,18 +2496,14 @@ function GameOfLifePanel() {
       <div className="controls">
         <CtrlHeader id="GameOfLife" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "matrix", "minimal", "fire"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "matrix", "minimal", "fire"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Alive color" value={aliveColor} onChange={setAliveColor} />
           <ColorPicker label="Old cell color" value={oldColor} onChange={setOldColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Cell size" value={cellSize} min={4} max={24} step={2} onChange={setCellSize} />
-          <Slider label="Speed (updates/s)" value={speed} min={1} max={30} step={1} onChange={setSpeed} />
-          <Slider label="Initial density" value={initialDensity} min={0.1} max={0.8} step={0.05} onChange={setInitialDensity} />
-          <ColorPicker label="Dead cell color" value={deadColor} onChange={setDeadColor} />
+          <Slider label="Speed (fps)" value={speed} min={1} max={30} step={1} onChange={setSpeed} />
           <Toggle label="Show age gradient" value={showAge} onChange={setShowAge} />
-          <Toggle label="Wrap edges" value={wrapEdges} onChange={setWrapEdges} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -2630,30 +2516,34 @@ function WormholePanel() {
   const [twist, setTwist] = useState(0.3);
   const [ringCount, setRingCount] = useState(30);
   const [starCount, setStarCount] = useState(100);
-  const [bg, setBg] = useState("#111111");
-  const [fov, setFov] = useState(600);
-  const [depth, setDepth] = useState(25);
-  const [lineWidth, setLineWidth] = useState(1);
-  const [opacity, setOpacity] = useState(0.8);
+  const [colors, setColors] = useState(["#ffffff", "#6b7280"]);
   const [starColor, setStarColor] = useState("#ffffff");
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { Wormhole } from 'own-the-canvas';
+  const [bg, setBg] = useState("#111111");
 
-<Wormhole
-  preset="${preset}"
-  speed={${speed}}
-  twist={${twist}}
-  ringCount={${ringCount}}
-  interactive
-/>`;
+  const code = [
+    `import { Wormhole } from 'own-the-canvas';`,
+    ``,
+    `<Wormhole`,
+    `  preset="${preset}"`,
+    `  speed={${speed}}`,
+    `  twist={${twist}}`,
+    `  ringCount={${ringCount}}`,
+    `  starCount={${starCount}}`,
+    `  colors={${JSON.stringify(colors)}}`,
+    `  starColor="${starColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Wormhole preset={preset} speed={speed} twist={twist}
             ringCount={ringCount} starCount={starCount}
-            fov={fov} depth={depth} lineWidth={lineWidth} opacity={opacity}
-            starColor={starColor} interactive={interactive}
+            colors={colors} starColor={starColor}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Mouse X controls speed</span></div>
@@ -2670,11 +2560,6 @@ function WormholePanel() {
           <Slider label="Twist" value={twist} min={0} max={2} step={0.05} onChange={setTwist} />
           <Slider label="Ring count" value={ringCount} min={10} max={60} step={5} onChange={setRingCount} />
           <Slider label="Star count" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
-          <Slider label="FOV" value={fov} min={200} max={1200} step={50} onChange={setFov} />
-          <Slider label="Depth" value={depth} min={10} max={50} step={2} onChange={setDepth} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.25} onChange={setLineWidth} />
-          <Slider label="Opacity" value={opacity} min={0.1} max={1} step={0.05} onChange={setOpacity} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -2689,38 +2574,29 @@ function BoidsPanel() {
   const [bg, setBg] = useState("#111111");
   const [trailLength, setTrailLength] = useState(8);
   const [sepForce, setSepForce] = useState(0.05);
-  const [separationRadius, setSeparationRadius] = useState(25);
-  const [alignmentRadius, setAlignmentRadius] = useState(50);
-  const [cohesionRadius, setCohesionRadius] = useState(60);
-  const [alignmentForce, setAlignmentForce] = useState(0.08);
-  const [cohesionForce, setCohesionForce] = useState(0.05);
-  const [trailOpacity, setTrailOpacity] = useState(0.5);
-  const [boidSize, setBoidSize] = useState(6);
-  const [interactive, setInteractive] = useState(true);
-  const [mouseRadius, setMouseRadius] = useState(80);
-  const [mouseForce, setMouseForce] = useState(2);
-  const [wrapEdges, setWrapEdges] = useState(true);
-  const code = `import { Boids } from 'own-the-canvas';
 
-<Boids
-  preset="${preset}"
-  count={${count}}
-  maxSpeed={${maxSpeed}}
-  color="${color}"
-  trailLength={${trailLength}}
-  interactive
-/>`;
+  const code = [
+    `import { Boids } from 'own-the-canvas';`,
+    ``,
+    `<Boids`,
+    `  preset="${preset}"`,
+    `  count={${count}}`,
+    `  maxSpeed={${maxSpeed}}`,
+    `  color="${color}"`,
+    `  trailLength={${trailLength}}`,
+    `  separationForce={${sepForce}}`,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Boids preset={preset} count={count} maxSpeed={maxSpeed}
-            color={color} trailLength={trailLength} separationForce={sepForce}
-            separationRadius={separationRadius} alignmentRadius={alignmentRadius}
-            cohesionRadius={cohesionRadius} alignmentForce={alignmentForce}
-            cohesionForce={cohesionForce} trailOpacity={trailOpacity}
-            boidSize={boidSize} interactive={interactive}
-            mouseRadius={mouseRadius} mouseForce={mouseForce} wrapEdges={wrapEdges}
+          <Boids preset={preset} count={count} maxSpeed={maxSpeed} color={color}
+            trailLength={trailLength} separationForce={sepForce}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to scatter the flock</span></div>
@@ -2736,50 +2612,65 @@ function BoidsPanel() {
           <Slider label="Count" value={count} min={10} max={300} step={10} onChange={setCount} />
           <Slider label="Max speed" value={maxSpeed} min={0.5} max={8} step={0.5} onChange={setMaxSpeed} />
           <Slider label="Trail length" value={trailLength} min={0} max={30} step={1} onChange={setTrailLength} />
-          <Slider label="Separation force" value={sepForce} min={0} max={0.2} step={0.005} onChange={setSepForce} />
-          <Slider label="Separation radius" value={separationRadius} min={5} max={60} step={5} onChange={setSeparationRadius} />
-          <Slider label="Alignment radius" value={alignmentRadius} min={20} max={100} step={5} onChange={setAlignmentRadius} />
-          <Slider label="Cohesion radius" value={cohesionRadius} min={20} max={120} step={5} onChange={setCohesionRadius} />
-          <Slider label="Alignment force" value={alignmentForce} min={0.01} max={0.2} step={0.01} onChange={setAlignmentForce} />
-          <Slider label="Cohesion force" value={cohesionForce} min={0.01} max={0.2} step={0.01} onChange={setCohesionForce} />
-          <Slider label="Trail opacity" value={trailOpacity} min={0.1} max={1} step={0.05} onChange={setTrailOpacity} />
-          <Slider label="Boid size" value={boidSize} min={3} max={15} step={1} onChange={setBoidSize} />
-          <Slider label="Mouse radius" value={mouseRadius} min={20} max={200} step={10} onChange={setMouseRadius} />
-          <Slider label="Mouse force" value={mouseForce} min={-5} max={5} step={0.5} onChange={setMouseForce} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
-          <Toggle label="Wrap edges" value={wrapEdges} onChange={setWrapEdges} />
+          <Slider label="Separation force" value={sepForce} min={0} max={0.2} step={0.01} onChange={setSepForce} />
         </div>
       </div>
     </>
   );
 }
 
+const DRAGON_PRESET_VALUES: Record<string, { bodyColor: string; eyeColor: string; fireColor: string; bg: string }> = {
+  default:  { bodyColor: "#ffffff", eyeColor: "#111111", fireColor: "#ffffff", bg: "#111111" },
+  emerald:  { bodyColor: "#00ff88", eyeColor: "#00ff00", fireColor: "#00ffaa", bg: "#0a1a0f" },
+  inferno:  { bodyColor: "#ff6600", eyeColor: "#ff0000", fireColor: "#ffaa00", bg: "#1a0500" },
+  void:     { bodyColor: "#9900ff", eyeColor: "#cc00ff", fireColor: "#6600cc", bg: "#050010" },
+  ice:      { bodyColor: "#88ddff", eyeColor: "#ffffff", fireColor: "#aaeeff", bg: "#050a14" },
+};
+
 function DragonCursorPanel() {
   const [preset, setPreset] = useState("default");
-  const [segmentCount, setSegmentCount] = useState(20);
-  const [segmentSize, setSegmentSize] = useState(18);
   const [bodyColor, setBodyColor] = useState("#ffffff");
+  const [eyeColor, setEyeColor] = useState("#111111");
   const [fireColor, setFireColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
+  const [segments, setSegments] = useState(20);
+  const [segSize, setSegSize] = useState(18);
   const [followSpeed, setFollowSpeed] = useState(0.15);
   const [wingSpan, setWingSpan] = useState(60);
-  const [showFire, setShowFire] = useState(true);
-  const [bg, setBg] = useState("#111111");
-  const [eyeColor, setEyeColor] = useState("#ff0000");
+  const [showFire, setShowFire] = useState(false);
   const [interactive, setInteractive] = useState(true);
-  const code = `import { DragonCursor } from 'own-the-canvas';
 
-<DragonCursor
-  preset="${preset}"
-  segmentCount={${segmentCount}}
-  bodyColor="${bodyColor}"
-  followSpeed={${followSpeed}}
-  showFire={${showFire}}
-/>`;
+  function onPresetChange(p: string) {
+    setPreset(p);
+    const v = DRAGON_PRESET_VALUES[p] ?? DRAGON_PRESET_VALUES.default;
+    setBodyColor(v.bodyColor);
+    setEyeColor(v.eyeColor);
+    setFireColor(v.fireColor);
+    setBg(v.bg);
+  }
+
+  const code = [
+    `import { DragonCursor } from 'own-the-canvas';`,
+    ``,
+    `<DragonCursor`,
+    `  preset="${preset}"`,
+    `  bodyColor="${bodyColor}"`,
+    `  fireColor="${fireColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  segmentCount={${segments}}`,
+    `  wingSpan={${wingSpan}}`,
+    `  followSpeed={${followSpeed}}`,
+    `  showFire={${showFire}}`,
+    `  interactive={${interactive}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <DragonCursor preset={preset} segmentCount={segmentCount} segmentSize={segmentSize}
+          <DragonCursor preset={preset} segmentCount={segments} segmentSize={segSize}
             bodyColor={bodyColor} fireColor={fireColor} followSpeed={followSpeed}
             wingSpan={wingSpan} showFire={showFire} backgroundColor={bg}
             eyeColor={eyeColor} interactive={interactive}
@@ -2791,45 +2682,69 @@ function DragonCursorPanel() {
       <div className="controls">
         <CtrlHeader id="DragonCursor" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "fire", "ice", "shadow", "neon"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "emerald", "inferno", "void", "ice"]} onChange={onPresetChange} />
           <Divider />
           <ColorPicker label="Body color" value={bodyColor} onChange={setBodyColor} />
           <ColorPicker label="Fire color" value={fireColor} onChange={setFireColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Segments" value={segmentCount} min={5} max={40} step={1} onChange={setSegmentCount} />
-          <Slider label="Segment size" value={segmentSize} min={8} max={36} step={1} onChange={setSegmentSize} />
+          <Slider label="Segments" value={segments} min={8} max={40} step={1} onChange={setSegments} />
+          <Slider label="Head size" value={segSize} min={8} max={36} step={1} onChange={setSegSize} />
           <Slider label="Follow speed" value={followSpeed} min={0.02} max={0.5} step={0.01} onChange={setFollowSpeed} />
-          <Slider label="Wing span" value={wingSpan} min={20} max={120} step={5} onChange={setWingSpan} />
-          <ColorPicker label="Eye color" value={eyeColor} onChange={setEyeColor} />
-          <Toggle label="Fire breath" value={showFire} onChange={setShowFire} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Slider label="Wing span" value={wingSpan} min={20} max={150} step={5} onChange={setWingSpan} />
+          <Toggle label="Show fire" value={showFire} onChange={setShowFire} />
+          <Toggle label="Follow cursor" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
   );
 }
 
+const KOIPOND_PRESET_VALUES: Record<string, {
+  fishColor: string; scaleColor: string; waterColor: string; lilyColor: string;
+}> = {
+  default: { fishColor: "#ffffff", scaleColor: "#6b7280", waterColor: "#111111", lilyColor: "#ffffff" },
+  koi:     { fishColor: "#ff6633", scaleColor: "#ffffff", waterColor: "#0a1a14", lilyColor: "#50aa50" },
+  night:   { fishColor: "#88aaff", scaleColor: "#4466aa", waterColor: "#050810", lilyColor: "#304030" },
+  lotus:   { fishColor: "#ffccdd", scaleColor: "#ff80a0", waterColor: "#0a0a14", lilyColor: "#ff80a0" },
+  neon:    { fishColor: "#00ffcc", scaleColor: "#ff00aa", waterColor: "#000a08", lilyColor: "#00ff44" },
+};
+
 function KoiPondPanel() {
   const [preset, setPreset] = useState("default");
+  const [fishColor, setFishColor] = useState("#ffffff");
+  const [scaleColor, setScaleColor] = useState("#6b7280");
+  const [waterColor, setWaterColor] = useState("#111111");
+  const [lilyColor, setLilyColor] = useState("#ffffff");
   const [fishCount, setFishCount] = useState(6);
   const [speed, setSpeed] = useState(1);
-  const [fishColor, setFishColor] = useState("#ffffff");
-  const [waterColor, setWaterColor] = useState("#111111");
   const [showLilies, setShowLilies] = useState(true);
   const [caustics, setCaustics] = useState(true);
-  const [scaleColor, setScaleColor] = useState("#ff6b35");
-  const [rippleColor, setRippleColor] = useState("#ffffff");
-  const [lilyColor, setLilyColor] = useState("#22c55e");
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { KoiPond } from 'own-the-canvas';
 
-<KoiPond
-  preset="${preset}"
-  fishCount={${fishCount}}
-  speed={${speed}}
-  showLilies={${showLilies}}
-  caustics={${caustics}}
-/>`;
+  function onPresetChange(p: string) {
+    setPreset(p);
+    const v = KOIPOND_PRESET_VALUES[p] ?? KOIPOND_PRESET_VALUES.default;
+    setFishColor(v.fishColor);
+    setScaleColor(v.scaleColor);
+    setWaterColor(v.waterColor);
+    setLilyColor(v.lilyColor);
+  }
+
+  const code = [
+    `import { KoiPond } from 'own-the-canvas';`,
+    ``,
+    `<KoiPond`,
+    `  preset="${preset}"`,
+    `  fishColor="${fishColor}"`,
+    `  waterColor="${waterColor}"`,
+    `  lilyColor="${lilyColor}"`,
+    `  fishCount={${fishCount}}`,
+    `  speed={${speed}}`,
+    `  showLilies={${showLilies}}`,
+    `  caustics={${caustics}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
   return (
     <>
       <div className="canvas-wrap">
@@ -2837,171 +2752,247 @@ function KoiPondPanel() {
           <KoiPond preset={preset} fishCount={fishCount} speed={speed}
             fishColor={fishColor} waterColor={waterColor}
             showLilies={showLilies} caustics={caustics}
-            scaleColor={scaleColor} rippleColor={rippleColor}
-            lilyColor={lilyColor} interactive={interactive}
+            scaleColor={scaleColor} lilyColor={lilyColor}
             width="100%" height="100%" />
         </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Click to create ripples</span></div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to create ripples</span></div>
         <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="KoiPond" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "golden", "night", "sakura", "zen"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "koi", "night", "lotus", "neon"]} onChange={onPresetChange} />
           <Divider />
           <ColorPicker label="Fish color" value={fishColor} onChange={setFishColor} />
-          <ColorPicker label="Water color" value={waterColor} onChange={setWaterColor} />
-          <Slider label="Fish count" value={fishCount} min={1} max={20} step={1} onChange={setFishCount} />
-          <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
           <ColorPicker label="Scale color" value={scaleColor} onChange={setScaleColor} />
-          <ColorPicker label="Ripple color" value={rippleColor} onChange={setRippleColor} />
+          <ColorPicker label="Water color" value={waterColor} onChange={setWaterColor} />
           <ColorPicker label="Lily color" value={lilyColor} onChange={setLilyColor} />
-          <Toggle label="Lily pads" value={showLilies} onChange={setShowLilies} />
-          <Toggle label="Caustic lighting" value={caustics} onChange={setCaustics} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Slider label="Fish count" value={fishCount} min={1} max={20} step={1} onChange={setFishCount} />
+          <Slider label="Speed" value={speed} min={0.2} max={3} step={0.1} onChange={setSpeed} />
+          <Toggle label="Show lilies" value={showLilies} onChange={setShowLilies} />
+          <Toggle label="Caustics" value={caustics} onChange={setCaustics} />
         </div>
       </div>
     </>
   );
 }
 
+const BUBBLE_PRESET_VALUES: Record<string, {
+  bg: string; shimmerColor: string; gravity: number; bubbleCount: number; minRadius: number; maxRadius: number;
+}> = {
+  default: { bg: "#111111", shimmerColor: "#ffffff", gravity: 0.02,  bubbleCount: 15, minRadius: 20, maxRadius: 50  },
+  soap:    { bg: "#050a12", shimmerColor: "#ffffff", gravity: 0.01,  bubbleCount: 15, minRadius: 25, maxRadius: 90  },
+  neon:    { bg: "#000008", shimmerColor: "#00ffff", gravity: 0.015, bubbleCount: 12, minRadius: 20, maxRadius: 80  },
+  deep:    { bg: "#010510", shimmerColor: "#88aaff", gravity: 0.008, bubbleCount: 20, minRadius: 15, maxRadius: 60  },
+  minimal: { bg: "#111111", shimmerColor: "#ffffff", gravity: 0.025, bubbleCount: 8,  minRadius: 30, maxRadius: 100 },
+};
+
 function BubbleUniversePanel() {
   const [preset, setPreset] = useState("default");
+  const [bg, setBg] = useState("#111111");
+  const [shimmerColor, setShimmerColor] = useState("#ffffff");
   const [bubbleCount, setBubbleCount] = useState(15);
   const [minRadius, setMinRadius] = useState(20);
   const [maxRadius, setMaxRadius] = useState(50);
   const [gravity, setGravity] = useState(0.02);
-  const [bg, setBg] = useState("#111111");
   const [popEffect, setPopEffect] = useState(true);
   const [mergeOnCollide, setMergeOnCollide] = useState(true);
-  const [glow, setGlow] = useState(true);
-  const [shimmerColor, setShimmerColor] = useState("#ffffff");
-  const [friction, setFriction] = useState(0.99);
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { BubbleUniverse } from 'own-the-canvas';
+  const [glowEffect, setGlowEffect] = useState(true);
 
-<BubbleUniverse
-  preset="${preset}"
-  bubbleCount={${bubbleCount}}
-  gravity={${gravity}}
-  popEffect={${popEffect}}
-  mergeOnCollide={${mergeOnCollide}}
-/>`;
+  function onPresetChange(p: string) {
+    setPreset(p);
+    const v = BUBBLE_PRESET_VALUES[p] ?? BUBBLE_PRESET_VALUES.default;
+    setBg(v.bg);
+    setShimmerColor(v.shimmerColor);
+    setGravity(v.gravity);
+    setBubbleCount(v.bubbleCount);
+    setMinRadius(v.minRadius);
+    setMaxRadius(v.maxRadius);
+  }
+
+  const code = [
+    `import { BubbleUniverse } from 'own-the-canvas';`,
+    ``,
+    `<BubbleUniverse`,
+    `  preset="${preset}"`,
+    `  backgroundColor="${bg}"`,
+    `  shimmerColor="${shimmerColor}"`,
+    `  bubbleCount={${bubbleCount}}`,
+    `  minRadius={${minRadius}}`,
+    `  maxRadius={${maxRadius}}`,
+    `  gravity={${gravity}}`,
+    `  popEffect={${popEffect}}`,
+    `  mergeOnCollide={${mergeOnCollide}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <BubbleUniverse preset={preset} bubbleCount={bubbleCount} minRadius={minRadius}
             maxRadius={maxRadius} gravity={gravity} backgroundColor={bg}
-            popEffect={popEffect} mergeOnCollide={mergeOnCollide} glowEffect={glow}
-            shimmerColor={shimmerColor} friction={friction} interactive={interactive}
+            popEffect={popEffect} mergeOnCollide={mergeOnCollide} glowEffect={glowEffect}
+            shimmerColor={shimmerColor}
             width="100%" height="100%" />
         </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Hover to push · click to pop</span></div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>Click bubbles to pop · Hover to push</span></div>
         <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="BubbleUniverse" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "soap", "neon", "golden", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "soap", "neon", "deep", "minimal"]} onChange={onPresetChange} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Bubble count" value={bubbleCount} min={3} max={40} step={1} onChange={setBubbleCount} />
-          <Slider label="Min radius" value={minRadius} min={10} max={60} step={5} onChange={setMinRadius} />
-          <Slider label="Max radius" value={maxRadius} min={20} max={100} step={5} onChange={setMaxRadius} />
-          <Slider label="Gravity" value={gravity} min={0} max={0.1} step={0.005} onChange={setGravity} />
           <ColorPicker label="Shimmer color" value={shimmerColor} onChange={setShimmerColor} />
-          <Slider label="Friction" value={friction} min={0.98} max={1.0} step={0.002} onChange={setFriction} />
+          <Slider label="Bubble count" value={bubbleCount} min={3} max={40} step={1} onChange={setBubbleCount} />
+          <Slider label="Min radius" value={minRadius} min={10} max={50} step={5} onChange={setMinRadius} />
+          <Slider label="Max radius" value={maxRadius} min={40} max={150} step={5} onChange={setMaxRadius} />
+          <Slider label="Gravity" value={gravity} min={0} max={0.08} step={0.002} onChange={setGravity} />
           <Toggle label="Pop effect" value={popEffect} onChange={setPopEffect} />
           <Toggle label="Merge on collide" value={mergeOnCollide} onChange={setMergeOnCollide} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
         </div>
       </div>
     </>
   );
 }
 
+const SAKURA_PRESET_VALUES: Record<string, { petalColor: string; bg: string; gravity: number; petalSize: number; windStrength: number }> = {
+  default: { petalColor: "#ffffff", bg: "#111111", gravity: 0.06, petalSize: 8,  windStrength: 0.8 },
+  sakura:  { petalColor: "#ffb7c5", bg: "#0a0005", gravity: 0.04, petalSize: 10, windStrength: 0.8 },
+  autumn:  { petalColor: "#ff6633", bg: "#111111", gravity: 0.08, petalSize: 8,  windStrength: 1.2 },
+  snow:    { petalColor: "#e8f0ff", bg: "#0a0a0a", gravity: 0.035,petalSize: 5,  windStrength: 0.8 },
+  neon:    { petalColor: "#00ffcc", bg: "#000a05", gravity: 0.06, petalSize: 8,  windStrength: 0.8 },
+};
+
 function SakuraBlossomPanel() {
   const [preset, setPreset] = useState("default");
-  const [petalCount, setPetalCount] = useState(80);
   const [petalColor, setPetalColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
+  const [petalCount, setPetalCount] = useState(80);
   const [petalSize, setPetalSize] = useState(8);
   const [gravity, setGravity] = useState(0.06);
-  const [windStrength, setWindStrength] = useState(0.8);
-  const [bg, setBg] = useState("#111111");
-  const [windGusts, setWindGusts] = useState(true);
-  const [showAccumulation, setShowAccumulation] = useState(true);
-  const [maxAccumulation, setMaxAccumulation] = useState(50);
-  const code = `import { SakuraBlossom } from 'own-the-canvas';
+  const [wind, setWind] = useState(0.8);
+  const [gusts, setGusts] = useState(true);
+  const [accumulation, setAccumulation] = useState(true);
 
-<SakuraBlossom
-  preset="${preset}"
-  petalCount={${petalCount}}
-  petalColor="${petalColor}"
-  windStrength={${windStrength}}
-  showAccumulation={${showAccumulation}}
-/>`;
+  function onPresetChange(p: string) {
+    setPreset(p);
+    const v = SAKURA_PRESET_VALUES[p] ?? SAKURA_PRESET_VALUES.default;
+    setPetalColor(v.petalColor);
+    setBg(v.bg);
+    setGravity(v.gravity);
+    setPetalSize(v.petalSize);
+    setWind(v.windStrength);
+  }
+
+  const code = [
+    `import { SakuraBlossom } from 'own-the-canvas';`,
+    ``,
+    `<SakuraBlossom`,
+    `  preset="${preset}"`,
+    `  petalColor="${petalColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  petalCount={${petalCount}}`,
+    `  petalSize={${petalSize}}`,
+    `  gravity={${gravity}}`,
+    `  windStrength={${wind}}`,
+    `  windGusts={${gusts}}`,
+    `  showAccumulation={${accumulation}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <SakuraBlossom preset={preset} petalCount={petalCount} petalColor={petalColor}
-            petalSize={petalSize} gravity={gravity} windStrength={windStrength}
-            windGusts={windGusts} showAccumulation={showAccumulation}
-            maxAccumulation={maxAccumulation}
+            petalSize={petalSize} gravity={gravity} windStrength={wind}
+            windGusts={gusts} showAccumulation={accumulation}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>Petals drift on the wind</span></div>
         <CodeSnippet code={code} />
       </div>
       <div className="controls">
         <CtrlHeader id="SakuraBlossom" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "pink", "night", "golden", "storm"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "sakura", "autumn", "snow", "neon"]} onChange={onPresetChange} />
           <Divider />
           <ColorPicker label="Petal color" value={petalColor} onChange={setPetalColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Petal count" value={petalCount} min={10} max={300} step={10} onChange={setPetalCount} />
+          <Slider label="Petal count" value={petalCount} min={10} max={200} step={10} onChange={setPetalCount} />
           <Slider label="Petal size" value={petalSize} min={3} max={20} step={1} onChange={setPetalSize} />
           <Slider label="Gravity" value={gravity} min={0.01} max={0.3} step={0.01} onChange={setGravity} />
-          <Slider label="Wind strength" value={windStrength} min={0} max={3} step={0.1} onChange={setWindStrength} />
-          <Slider label="Max accumulation" value={maxAccumulation} min={10} max={100} step={5} onChange={setMaxAccumulation} />
-          <Toggle label="Wind gusts" value={windGusts} onChange={setWindGusts} />
-          <Toggle label="Accumulation" value={showAccumulation} onChange={setShowAccumulation} />
+          <Slider label="Wind strength" value={wind} min={0} max={4} step={0.1} onChange={setWind} />
+          <Toggle label="Wind gusts" value={gusts} onChange={setGusts} />
+          <Toggle label="Accumulation" value={accumulation} onChange={setAccumulation} />
         </div>
       </div>
     </>
   );
 }
+
+const RD_PRESET_PARAMS: Record<string, { feedRate: number; killRate: number; colorA?: string; colorB?: string; backgroundColor?: string }> = {
+  default: { feedRate: 0.055, killRate: 0.062 },
+  coral:   { feedRate: 0.055, killRate: 0.062 },
+  spots:   { feedRate: 0.035, killRate: 0.065 },
+  maze:    { feedRate: 0.029, killRate: 0.057 },
+  waves:   { feedRate: 0.014, killRate: 0.053 },
+  neon:    { feedRate: 0.055, killRate: 0.062, colorA: "#0a0a0a", colorB: "#00ffff", backgroundColor: "#0a0a0a" },
+};
 
 function ReactionDiffusionPanel() {
   const [preset, setPreset] = useState("default");
   const [feedRate, setFeedRate] = useState(0.055);
   const [killRate, setKillRate] = useState(0.062);
   const [speed, setSpeed] = useState(8);
+  const [resolution, setResolution] = useState(0.5);
   const [colorA, setColorA] = useState("#111111");
   const [colorB, setColorB] = useState("#ffffff");
+  const [bg, setBg] = useState("#111111");
   const [interactive, setInteractive] = useState(true);
-  const [diffusionU, setDiffusionU] = useState(0.21);
-  const [diffusionV, setDiffusionV] = useState(0.105);
-  const [resolution, setResolution] = useState(0.5);
-  const code = `import { ReactionDiffusion } from 'own-the-canvas';
 
-<ReactionDiffusion
-  preset="${preset}"
-  feedRate={${feedRate}}
-  killRate={${killRate}}
-  speed={${speed}}
-  interactive={${interactive}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = RD_PRESET_PARAMS[p];
+    if (!pp) return;
+    setFeedRate(pp.feedRate);
+    setKillRate(pp.killRate);
+    if (pp.colorA) setColorA(pp.colorA);
+    if (pp.colorB) setColorB(pp.colorB);
+    if (pp.backgroundColor) setBg(pp.backgroundColor);
+  }
+
+  const code = [
+    `import { ReactionDiffusion } from 'own-the-canvas';`,
+    ``,
+    `<ReactionDiffusion`,
+    `  preset="${preset}"`,
+    `  feedRate={${feedRate}}`,
+    `  killRate={${killRate}}`,
+    `  speed={${speed}}`,
+    `  resolution={${resolution}}`,
+    `  colorA="${colorA}"`,
+    `  colorB="${colorB}"`,
+    `  backgroundColor="${bg}"`,
+    !interactive ? `  interactive={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <ReactionDiffusion preset={preset} feedRate={feedRate} killRate={killRate}
             speed={speed} colorA={colorA} colorB={colorB} interactive={interactive}
-            diffusionU={diffusionU} diffusionV={diffusionV} resolution={resolution}
+            resolution={resolution} backgroundColor={bg}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Mouse disturbs the chemical field</span></div>
@@ -3010,17 +3001,16 @@ function ReactionDiffusionPanel() {
       <div className="controls">
         <CtrlHeader id="ReactionDiffusion" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "spots", "stripes", "coral", "maze", "worms"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "coral", "spots", "maze", "waves", "neon"]} onChange={handlePreset} />
           <Divider />
-          <ColorPicker label="Low conc. color" value={colorA} onChange={setColorA} />
-          <ColorPicker label="High conc. color" value={colorB} onChange={setColorB} />
+          <ColorPicker label="Color A (low)" value={colorA} onChange={setColorA} />
+          <ColorPicker label="Color B (high)" value={colorB} onChange={setColorB} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Feed rate" value={feedRate} min={0.01} max={0.1} step={0.001} onChange={setFeedRate} />
-          <Slider label="Kill rate" value={killRate} min={0.03} max={0.09} step={0.001} onChange={setKillRate} />
-          <Slider label="Steps/frame" value={speed} min={1} max={20} step={1} onChange={setSpeed} />
-          <Slider label="Diffusion U" value={diffusionU} min={0.1} max={0.3} step={0.01} onChange={setDiffusionU} />
-          <Slider label="Diffusion V" value={diffusionV} min={0.05} max={0.15} step={0.005} onChange={setDiffusionV} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={1} step={0.1} onChange={setResolution} />
-          <Toggle label="Mouse interaction" value={interactive} onChange={setInteractive} />
+          <Slider label="Kill rate" value={killRate} min={0.04} max={0.08} step={0.001} onChange={setKillRate} />
+          <Slider label="Speed" value={speed} min={1} max={20} step={1} onChange={setSpeed} />
+          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setResolution} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -3077,37 +3067,75 @@ function AuroraBorealisPanel() {
   );
 }
 
+const SPIROGRAPH_PRESET_PARAMS = {
+  default:   { colors: ["#ffffff"],                              bg: "#111111", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
+  neon:      { colors: ["#00ffff", "#ff00ff"],                   bg: "#000000", lineWidth: 1.5, layerCount: 1, symmetry: 1, glowEffect: true,  glowBlur: 15, trailFade: 0.005, speed: 2   },
+  prismatic: { colors: ["#ff2244", "#22aaff", "#44ff88"],        bg: "#050005", lineWidth: 1,   layerCount: 3, symmetry: 2, glowEffect: false, glowBlur: 10, trailFade: 0.004, speed: 2   },
+  mandala:   { colors: ["#ff00ff", "#00ffff"],                   bg: "#000000", lineWidth: 1,   layerCount: 2, symmetry: 6, glowEffect: true,  glowBlur: 12, trailFade: 0.002, speed: 2   },
+  cosmic:    { colors: ["#ff4488", "#44ffff", "#ffff44", "#44ff88"], bg: "#020008", lineWidth: 1, layerCount: 4, symmetry: 1, glowEffect: true, glowBlur: 10, trailFade: 0.002, speed: 2 },
+  minimal:   { colors: ["#ffffff"],                              bg: "#111111", lineWidth: 0.5, layerCount: 1, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.001, speed: 0.5 },
+};
+
 function SpirographPanel() {
-  const [preset, setPreset] = useState("default");
-  const [outerRadius, setOuterRadius] = useState(0.85);
+  const [preset, setPreset]           = useState("default");
   const [innerRadius, setInnerRadius] = useState(0.4);
   const [penDistance, setPenDistance] = useState(0.9);
-  const [speed, setSpeed] = useState(2);
-  const [lineWidth, setLineWidth] = useState(1);
-  const [bg, setBg] = useState("#111111");
-  const [glow, setGlow] = useState(false);
-  const [autoReset, setAutoReset] = useState(true);
-  const [trailFade, setTrailFade] = useState(0);
-  const [animated, setAnimated] = useState(true);
-  const [layerCount, setLayerCount] = useState(1);
-  const [symmetry, setSymmetry] = useState(1);
-  const [glowBlur, setGlowBlur] = useState(0);
-  const code = `import { Spirograph } from 'own-the-canvas';
+  const [speed, setSpeed]             = useState(2);
+  const [colors, setColors]           = useState(["#ffffff"]);
+  const [bg, setBg]                   = useState("#111111");
+  const [lineWidth, setLineWidth]     = useState(1);
+  const [trailFade, setTrailFade]     = useState(0.003);
+  const [animated, setAnimated]       = useState(true);
+  const [autoReset, setAutoReset]     = useState(true);
+  const [layerCount, setLayerCount]   = useState(2);
+  const [symmetry, setSymmetry]       = useState(1);
+  const [glowEffect, setGlowEffect]   = useState(false);
+  const [glowBlur, setGlowBlur]       = useState(10);
 
-<Spirograph
-  preset="${preset}"
-  outerRadius={${outerRadius}}
-  innerRadius={${innerRadius}}
-  penDistance={${penDistance}}
-  speed={${speed}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = SPIROGRAPH_PRESET_PARAMS[p as keyof typeof SPIROGRAPH_PRESET_PARAMS];
+    if (!pp) return;
+    setColors(pp.colors);
+    setBg(pp.bg);
+    setLineWidth(pp.lineWidth);
+    setLayerCount(pp.layerCount);
+    setSymmetry(pp.symmetry);
+    setGlowEffect(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+    setTrailFade(pp.trailFade);
+    setSpeed(pp.speed);
+  }
+
+  const code = [
+    `import { Spirograph } from 'own-the-canvas';`,
+    ``,
+    `<Spirograph`,
+    `  preset="${preset}"`,
+    `  innerRadius={${innerRadius}}`,
+    `  penDistance={${penDistance}}`,
+    `  speed={${speed}}`,
+    `  colors={${JSON.stringify(colors)}}`,
+    `  backgroundColor="${bg}"`,
+    `  lineWidth={${lineWidth}}`,
+    `  trailFade={${trailFade}}`,
+    layerCount !== 2 ? `  layerCount={${layerCount}}` : null,
+    symmetry !== 1 ? `  symmetry={${symmetry}}` : null,
+    glowEffect ? `  glowEffect` : null,
+    glowEffect && glowBlur !== 10 ? `  glowBlur={${glowBlur}}` : null,
+    !animated ? `  animated={false}` : null,
+    !autoReset ? `  autoReset={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Spirograph preset={preset} outerRadius={outerRadius} innerRadius={innerRadius}
-            penDistance={penDistance} speed={speed} lineWidth={lineWidth}
-            backgroundColor={bg} glowEffect={glow} autoReset={autoReset}
+          <Spirograph preset={preset} innerRadius={innerRadius}
+            penDistance={penDistance} speed={speed} colors={colors} lineWidth={lineWidth}
+            backgroundColor={bg} glowEffect={glowEffect} autoReset={autoReset}
             trailFade={trailFade} animated={animated} layerCount={layerCount}
             symmetry={symmetry} glowBlur={glowBlur}
             width="100%" height="100%" />
@@ -3118,19 +3146,18 @@ function SpirographPanel() {
       <div className="controls">
         <CtrlHeader id="Spirograph" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "rose", "star", "web", "celtic", "lotus"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "prismatic", "mandala", "cosmic", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Outer radius" value={outerRadius} min={0.4} max={0.95} step={0.01} onChange={setOuterRadius} />
           <Slider label="Inner radius" value={innerRadius} min={0.1} max={0.9} step={0.01} onChange={setInnerRadius} />
           <Slider label="Pen distance" value={penDistance} min={0.1} max={1.5} step={0.05} onChange={setPenDistance} />
-          <Slider label="Speed (deg/frame)" value={speed} min={0.5} max={8} step={0.5} onChange={setSpeed} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
+          <Slider label="Speed (deg/frame)" value={speed} min={0.1} max={8} step={0.1} onChange={setSpeed} />
+          <Slider label="Line width" value={lineWidth} min={0.2} max={4} step={0.1} onChange={setLineWidth} />
           <Slider label="Trail fade" value={trailFade} min={0} max={0.02} step={0.001} onChange={setTrailFade} />
-          <Slider label="Layer count" value={layerCount} min={1} max={5} step={1} onChange={setLayerCount} />
+          <Slider label="Layer count" value={layerCount} min={1} max={6} step={1} onChange={setLayerCount} />
           <Slider label="Symmetry" value={symmetry} min={1} max={8} step={1} onChange={setSymmetry} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={2} onChange={setGlowBlur} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Glow blur" value={glowBlur} min={2} max={40} step={1} onChange={setGlowBlur} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
           <Toggle label="Auto reset" value={autoReset} onChange={setAutoReset} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
@@ -3140,32 +3167,42 @@ function SpirographPanel() {
 }
 
 function SandSimulationPanel() {
-  const [material, setMaterial] = useState<SandMaterial>("sand");
+  const [preset, setPreset] = useState("default");
   const [cellSize, setCellSize] = useState(4);
   const [brushSize, setBrushSize] = useState(3);
+  const [material, setMaterial] = useState<SandMaterial>("sand");
   const [sandColor, setSandColor] = useState("#ffffff");
   const [waterColor, setWaterColor] = useState("#6b7280");
+  const [fireColor, setFireColor] = useState("#ffffff");
+  const [wallColor, setWallColor] = useState("#4b5563");
   const [bg, setBg] = useState("#111111");
-  const [preset, setPreset] = useState("default");
-  const [fireColor, setFireColor] = useState("#ff4500");
-  const [wallColor, setWallColor] = useState("#6b7280");
   const [interactive, setInteractive] = useState(true);
-  const [gravity, setGravity] = useState(1);
-  const code = `import { SandSimulation } from 'own-the-canvas';
 
-<SandSimulation
-  material="${material}"
-  cellSize={${cellSize}}
-  brushSize={${brushSize}}
-  sandColor="${sandColor}"
-/>`;
+  const code = [
+    `import { SandSimulation } from 'own-the-canvas';`,
+    ``,
+    `<SandSimulation`,
+    `  preset="${preset}"`,
+    `  cellSize={${cellSize}}`,
+    `  brushSize={${brushSize}}`,
+    `  material="${material}"`,
+    `  sandColor="${sandColor}"`,
+    `  waterColor="${waterColor}"`,
+    `  fireColor="${fireColor}"`,
+    `  wallColor="${wallColor}"`,
+    `  backgroundColor="${bg}"`,
+    !interactive ? `  interactive={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <SandSimulation preset={preset} material={material} cellSize={cellSize} brushSize={brushSize}
             sandColor={sandColor} waterColor={waterColor} backgroundColor={bg}
-            fireColor={fireColor} wallColor={wallColor} interactive={interactive} gravity={gravity}
+            fireColor={fireColor} wallColor={wallColor} interactive={interactive}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click/drag to paint material</span></div>
@@ -3175,16 +3212,15 @@ function SandSimulationPanel() {
         <CtrlHeader id="SandSimulation" />
         <div className="ctrl-body">
           <Sel label="Preset" value={preset} options={["default", "desert", "ocean", "inferno", "neon"]} onChange={setPreset} />
-          <Sel label="Material" value={material} options={["sand", "water", "fire", "wall", "empty"]} onChange={(v) => setMaterial(v as SandMaterial)} />
+          <Sel label="Material" value={material} options={["sand", "water", "fire", "wall", "erase"]} onChange={(v) => setMaterial(v as SandMaterial)} />
           <Divider />
           <ColorPicker label="Sand color" value={sandColor} onChange={setSandColor} />
           <ColorPicker label="Water color" value={waterColor} onChange={setWaterColor} />
           <ColorPicker label="Fire color" value={fireColor} onChange={setFireColor} />
           <ColorPicker label="Wall color" value={wallColor} onChange={setWallColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Cell size" value={cellSize} min={2} max={10} step={1} onChange={setCellSize} />
+          <Slider label="Cell size" value={cellSize} min={2} max={12} step={1} onChange={setCellSize} />
           <Slider label="Brush size" value={brushSize} min={1} max={10} step={1} onChange={setBrushSize} />
-          <Slider label="Gravity" value={gravity} min={0.5} max={2} step={0.1} onChange={setGravity} />
           <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
@@ -3196,21 +3232,39 @@ function WaveInterferencePanel() {
   const [preset, setPreset] = useState("default");
   const [wavelength, setWavelength] = useState(80);
   const [speed, setSpeed] = useState(1);
+  const [decay, setDecay] = useState(0.003);
+  const [resolution, setResolution] = useState(0.4);
   const [colorHigh, setColorHigh] = useState("#ffffff");
   const [colorLow, setColorLow] = useState("#111111");
-  const [decay, setDecay] = useState(0.003);
-  const [showSources, setShowSources] = useState(true);
+  const [showSources, setShowSources] = useState(false);
   const [animated, setAnimated] = useState(true);
-  const [maxSources, setMaxSources] = useState(4);
-  const [resolution, setResolution] = useState(0.5);
-  const code = `import { WaveInterference } from 'own-the-canvas';
 
-<WaveInterference
-  preset="${preset}"
-  wavelength={${wavelength}}
-  speed={${speed}}
-  showSources={${showSources}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = WAVE_PRESETS[p as keyof typeof WAVE_PRESETS] ?? {};
+    if (v.colorHigh) setColorHigh(v.colorHigh);
+    if (v.colorLow) setColorLow(v.colorLow);
+    if (v.wavelength) setWavelength(v.wavelength);
+    if (v.decay !== undefined) setDecay(v.decay);
+  }
+
+  const code = [
+    `import { WaveInterference } from 'own-the-canvas';`,
+    ``,
+    `<WaveInterference`,
+    `  preset="${preset}"`,
+    `  wavelength={${wavelength}}`,
+    `  speed={${speed}}`,
+    `  decay={${decay}}`,
+    `  resolution={${resolution}}`,
+    `  colorHigh="${colorHigh}"`,
+    `  colorLow="${colorLow}"`,
+    showSources ? `  showSources` : null,
+    !animated ? `  animated={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
   return (
     <>
       <div className="canvas-wrap">
@@ -3218,7 +3272,7 @@ function WaveInterferencePanel() {
           <WaveInterference preset={preset} wavelength={wavelength} speed={speed}
             colorHigh={colorHigh} colorLow={colorLow} decay={decay}
             showSources={showSources} animated={animated}
-            maxSources={maxSources} resolution={resolution}
+            resolution={resolution}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to add wave sources</span></div>
@@ -3227,15 +3281,14 @@ function WaveInterferencePanel() {
       <div className="controls">
         <CtrlHeader id="WaveInterference" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "ripple", "neon", "ocean", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "ripple", "plasma", "neon", "cosmic"]} onChange={handlePreset} />
           <Divider />
-          <ColorPicker label="High amplitude" value={colorHigh} onChange={setColorHigh} />
-          <ColorPicker label="Low amplitude" value={colorLow} onChange={setColorLow} />
+          <ColorPicker label="High color" value={colorHigh} onChange={setColorHigh} />
+          <ColorPicker label="Low color" value={colorLow} onChange={setColorLow} />
           <Slider label="Wavelength" value={wavelength} min={20} max={200} step={5} onChange={setWavelength} />
-          <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
+          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
           <Slider label="Decay" value={decay} min={0} max={0.01} step={0.0005} onChange={setDecay} />
-          <Slider label="Max sources" value={maxSources} min={1} max={12} step={1} onChange={setMaxSources} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={1} step={0.1} onChange={setResolution} />
+          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setResolution} />
           <Toggle label="Show sources" value={showSources} onChange={setShowSources} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
@@ -3246,25 +3299,47 @@ function WaveInterferencePanel() {
 
 function DiffusionAggregationPanel() {
   const [preset, setPreset] = useState("default");
+  const [particleColor, setParticleColor] = useState("#ffffff");
+  const [walkerColor, setWalkerColor] = useState("#6b7280");
+  const [bg, setBg] = useState("#111111");
+  const [particleSize, setParticleSize] = useState(3);
   const [walkerCount, setWalkerCount] = useState(60);
   const [stepsPerFrame, setStepsPerFrame] = useState(20);
-  const [particleSize, setParticleSize] = useState(3);
-  const [particleColor, setParticleColor] = useState("#ffffff");
   const [seedMode, setSeedMode] = useState<DLASeedMode>("center");
-  const [glow, setGlow] = useState(true);
   const [showWalkers, setShowWalkers] = useState(false);
-  const [bg, setBg] = useState("#111111");
-  const [walkerColor, setWalkerColor] = useState("#ffffff");
-  const [glowBlur, setGlowBlur] = useState(0);
-  const [interactiveDLA, setInteractiveDLA] = useState(true);
-  const code = `import { DiffusionAggregation } from 'own-the-canvas';
+  const [glowEffect, setGlowEffect] = useState(true);
+  const [glowBlur, setGlowBlur] = useState(8);
 
-<DiffusionAggregation
-  preset="${preset}"
-  walkerCount={${walkerCount}}
-  seedMode="${seedMode}"
-  glowEffect={${glow}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = DLA_PRESETS[p as keyof typeof DLA_PRESETS] ?? {};
+    if (v.particleColor) setParticleColor(v.particleColor);
+    if (v.walkerColor) setWalkerColor(v.walkerColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+    if (v.seedMode) setSeedMode(v.seedMode);
+    if (v.particleSize) setParticleSize(v.particleSize);
+    if (v.glowEffect !== undefined) setGlowEffect(v.glowEffect);
+    if (v.glowBlur !== undefined) setGlowBlur(v.glowBlur);
+  }
+
+  const code = [
+    `import { DiffusionAggregation } from 'own-the-canvas';`,
+    ``,
+    `<DiffusionAggregation`,
+    `  preset="${preset}"`,
+    `  particleColor="${particleColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  particleSize={${particleSize}}`,
+    `  walkerCount={${walkerCount}}`,
+    `  stepsPerFrame={${stepsPerFrame}}`,
+    `  seedMode="${seedMode}"`,
+    showWalkers ? `  showWalkers` : null,
+    !glowEffect ? `  glowEffect={false}` : null,
+    glowBlur !== 8 ? `  glowBlur={${glowBlur}}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
   return (
     <>
       <div className="canvas-wrap">
@@ -3272,8 +3347,8 @@ function DiffusionAggregationPanel() {
           <DiffusionAggregation preset={preset} walkerCount={walkerCount}
             stepsPerFrame={stepsPerFrame} particleSize={particleSize}
             particleColor={particleColor} seedMode={seedMode}
-            glowEffect={glow} showWalkers={showWalkers} backgroundColor={bg}
-            walkerColor={walkerColor} glowBlur={glowBlur} interactive={interactiveDLA}
+            glowEffect={glowEffect} showWalkers={showWalkers} backgroundColor={bg}
+            walkerColor={walkerColor} glowBlur={glowBlur}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to add seed points</span></div>
@@ -3282,58 +3357,93 @@ function DiffusionAggregationPanel() {
       <div className="controls">
         <CtrlHeader id="DiffusionAggregation" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "coral", "frost", "minimal"]} onChange={setPreset} />
-          <Sel label="Seed mode" value={seedMode} options={["center", "bottom", "edges", "random"]} onChange={(v) => setSeedMode(v as DLASeedMode)} />
+          <Sel label="Preset" value={preset} options={["default", "coral", "snowflake", "lightning", "neon", "frost"]} onChange={handlePreset} />
+          <Sel label="Seed mode" value={seedMode} options={["center", "ring", "bottom"]} onChange={(v) => setSeedMode(v as DLASeedMode)} />
           <Divider />
-          <ColorPicker label="Crystal color" value={particleColor} onChange={setParticleColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Walker count" value={walkerCount} min={10} max={200} step={10} onChange={setWalkerCount} />
-          <Slider label="Steps/frame" value={stepsPerFrame} min={5} max={60} step={5} onChange={setStepsPerFrame} />
-          <Slider label="Particle size" value={particleSize} min={1} max={8} step={1} onChange={setParticleSize} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={2} onChange={setGlowBlur} />
+          <ColorPicker label="Particle color" value={particleColor} onChange={setParticleColor} />
           <ColorPicker label="Walker color" value={walkerColor} onChange={setWalkerColor} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Slider label="Particle size" value={particleSize} min={1} max={8} step={1} onChange={setParticleSize} />
+          <Slider label="Walker count" value={walkerCount} min={10} max={200} step={10} onChange={setWalkerCount} />
+          <Slider label="Steps per frame" value={stepsPerFrame} min={1} max={60} step={1} onChange={setStepsPerFrame} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={1} onChange={setGlowBlur} />
           <Toggle label="Show walkers" value={showWalkers} onChange={setShowWalkers} />
-          <Toggle label="Interactive" value={interactiveDLA} onChange={setInteractiveDLA} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
         </div>
       </div>
     </>
   );
 }
 
+const LISSAJOUS_PRESET_PARAMS = {
+  default:   { freqX: 3, freqY: 2, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "solid" as LissajousColorMode, bg: "#111111" },
+  butterfly: { freqX: 3, freqY: 2, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "solid" as LissajousColorMode, bg: "#111111" },
+  star:      { freqX: 5, freqY: 4, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "solid" as LissajousColorMode, bg: "#111111" },
+  web:       { freqX: 7, freqY: 6, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "cycle" as LissajousColorMode, bg: "#111111" },
+  neon:      { freqX: 3, freqY: 2, phaseSpeed: 0.5, lineWidth: 2,   glowEffect: true,  colorMode: "cycle" as LissajousColorMode, bg: "#000000" },
+  crystal:   { freqX: 5, freqY: 3, phaseSpeed: 0.5, lineWidth: 2,   glowEffect: true,  colorMode: "cycle" as LissajousColorMode, bg: "#000510" },
+};
+
 function LissajousPanel() {
+  const [preset, setPreset] = useState("default");
   const [freqX, setFreqX] = useState(3);
   const [freqY, setFreqY] = useState(2);
   const [phaseSpeed, setPhaseSpeed] = useState(0.5);
-  const [lineWidth, setLineWidth] = useState(1.5);
+  const [amplitude, setAmplitude] = useState(0.9);
   const [color, setColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
+  const [lineWidth, setLineWidth] = useState(1.5);
   const [trailFade, setTrailFade] = useState(0.04);
+  const [glowEffect, setGlowEffect] = useState(false);
+  const [glowBlur, setGlowBlur] = useState(12);
   const [colorMode, setColorMode] = useState<LissajousColorMode>("solid");
-  const [glow, setGlow] = useState(false);
-  const [phaseShift, setPhaseShift] = useState(90);
-  const [amplitude, setAmplitude] = useState(0.9);
-  const [glowBlur, setGlowBlur] = useState(0);
-  const [curvePoints, setCurvePoints] = useState(600);
   const [animated, setAnimated] = useState(true);
-  const code = `import { Lissajous } from 'own-the-canvas';
+  const [speed, setSpeed] = useState(1);
 
-<Lissajous
-  freqX={${freqX}}
-  freqY={${freqY}}
-  phaseSpeed={${phaseSpeed}}
-  colorMode="${colorMode}"
-  lineWidth={${lineWidth}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = LISSAJOUS_PRESET_PARAMS[p as keyof typeof LISSAJOUS_PRESET_PARAMS];
+    if (!pp) return;
+    setFreqX(pp.freqX);
+    setFreqY(pp.freqY);
+    setPhaseSpeed(pp.phaseSpeed);
+    setLineWidth(pp.lineWidth);
+    setGlowEffect(pp.glowEffect);
+    setColorMode(pp.colorMode);
+    setBg(pp.bg);
+  }
+
+  const code = [
+    `import { Lissajous } from 'own-the-canvas';`,
+    ``,
+    `<Lissajous`,
+    `  preset="${preset}"`,
+    `  freqX={${freqX}}`,
+    `  freqY={${freqY}}`,
+    `  phaseSpeed={${phaseSpeed}}`,
+    `  amplitude={${amplitude}}`,
+    `  color="${color}"`,
+    `  backgroundColor="${bg}"`,
+    `  lineWidth={${lineWidth}}`,
+    `  trailFade={${trailFade}}`,
+    colorMode !== "solid" ? `  colorMode="${colorMode}"` : null,
+    glowEffect ? `  glowEffect` : null,
+    glowEffect && glowBlur !== 12 ? `  glowBlur={${glowBlur}}` : null,
+    speed !== 1 ? `  speed={${speed}}` : null,
+    !animated ? `  animated={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Lissajous freqX={freqX} freqY={freqY} phaseSpeed={phaseSpeed}
-            lineWidth={lineWidth} color={color} backgroundColor={bg}
-            trailFade={trailFade} colorMode={colorMode} glowEffect={glow}
-            phaseShift={phaseShift} amplitude={amplitude} glowBlur={glowBlur}
-            curvePoints={curvePoints} animated={animated}
+          <Lissajous preset={preset} freqX={freqX} freqY={freqY} phaseSpeed={phaseSpeed}
+            amplitude={amplitude} color={color} backgroundColor={bg}
+            lineWidth={lineWidth} trailFade={trailFade} glowEffect={glowEffect}
+            glowBlur={glowBlur} colorMode={colorMode} animated={animated} speed={speed}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -3342,20 +3452,20 @@ function LissajousPanel() {
       <div className="controls">
         <CtrlHeader id="Lissajous" />
         <div className="ctrl-body">
+          <Sel label="Preset" value={preset} options={["default", "butterfly", "star", "web", "neon", "crystal"]} onChange={handlePreset} />
           <Sel label="Color mode" value={colorMode} options={["solid", "cycle"]} onChange={(v) => setColorMode(v as LissajousColorMode)} />
           <Divider />
           <ColorPicker label="Color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Freq X" value={freqX} min={1} max={8} step={1} onChange={setFreqX} />
-          <Slider label="Freq Y" value={freqY} min={1} max={8} step={1} onChange={setFreqY} />
-          <Slider label="Phase speed" value={phaseSpeed} min={0} max={3} step={0.1} onChange={setPhaseSpeed} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={5} step={0.5} onChange={setLineWidth} />
-          <Slider label="Trail fade" value={trailFade} min={0.005} max={0.3} step={0.005} onChange={setTrailFade} />
-          <Slider label="Phase shift" value={phaseShift} min={0} max={360} step={5} onChange={setPhaseShift} />
-          <Slider label="Amplitude" value={amplitude} min={0.3} max={1} step={0.05} onChange={setAmplitude} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={2} onChange={setGlowBlur} />
-          <Slider label="Curve points" value={curvePoints} min={100} max={1200} step={100} onChange={setCurvePoints} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Freq X" value={freqX} min={1} max={12} step={1} onChange={setFreqX} />
+          <Slider label="Freq Y" value={freqY} min={1} max={12} step={1} onChange={setFreqY} />
+          <Slider label="Phase speed" value={phaseSpeed} min={0} max={3} step={0.05} onChange={setPhaseSpeed} />
+          <Slider label="Amplitude" value={amplitude} min={0.3} max={1} step={0.01} onChange={setAmplitude} />
+          <Slider label="Line width" value={lineWidth} min={0.5} max={6} step={0.1} onChange={setLineWidth} />
+          <Slider label="Trail fade" value={trailFade} min={0} max={0.2} step={0.005} onChange={setTrailFade} />
+          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
+          {glowEffect && <Slider label="Glow blur" value={glowBlur} min={2} max={40} step={1} onChange={setGlowBlur} />}
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -3363,35 +3473,59 @@ function LissajousPanel() {
   );
 }
 
+const LSYSTEM_PRESET_PARAMS = {
+  default:    { angle: 25 },
+  fern:       { angle: 22 },
+  dragon:     { angle: 90 },
+  sierpinski: { angle: 120 },
+  bush:       { angle: 25 },
+  snowflake:  { angle: 60 },
+};
+
 function LSystemPanel() {
   const [preset, setPreset] = useState("default");
-  const [iterations, setIterations] = useState(4);
   const [angle, setAngle] = useState(25);
-  const [speed, setSpeed] = useState(5);
   const [lineWidth, setLineWidth] = useState(1);
   const [color, setColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
-  const [glow, setGlow] = useState(false);
+  const [speed, setSpeed] = useState(5);
   const [autoReset, setAutoReset] = useState(true);
   const [trailFade, setTrailFade] = useState(0);
-  const [glowBlur, setGlowBlur] = useState(0);
-  const code = `import { LSystem } from 'own-the-canvas';
+  const [glowEffect, setGlowEffect] = useState(false);
+  const [glowBlur, setGlowBlur] = useState(8);
 
-<LSystem
-  preset="${preset}"
-  iterations={${iterations}}
-  angle={${angle}}
-  speed={${speed}}
-  color="${color}"
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = LSYSTEM_PRESET_PARAMS[p as keyof typeof LSYSTEM_PRESET_PARAMS];
+    if (pp) setAngle(pp.angle);
+  }
+
+  const code = [
+    `import { LSystem } from 'own-the-canvas';`,
+    ``,
+    `<LSystem`,
+    `  preset="${preset}"`,
+    angle !== 25 ? `  angle={${angle}}` : null,
+    lineWidth !== 1 ? `  lineWidth={${lineWidth}}` : null,
+    `  color="${color}"`,
+    `  backgroundColor="${bg}"`,
+    speed !== 5 ? `  speed={${speed}}` : null,
+    trailFade > 0 ? `  trailFade={${trailFade}}` : null,
+    glowEffect ? `  glowEffect` : null,
+    glowEffect && glowBlur !== 8 ? `  glowBlur={${glowBlur}}` : null,
+    !autoReset ? `  autoReset={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <LSystem preset={preset} iterations={iterations} angle={angle}
-            speed={speed} lineWidth={lineWidth} color={color}
-            backgroundColor={bg} glowEffect={glow}
-            autoReset={autoReset} trailFade={trailFade} glowBlur={glowBlur}
+          <LSystem preset={preset} angle={angle} lineWidth={lineWidth} color={color}
+            backgroundColor={bg} speed={speed} autoReset={autoReset}
+            trailFade={trailFade} glowEffect={glowEffect} glowBlur={glowBlur}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -3400,17 +3534,16 @@ function LSystemPanel() {
       <div className="controls">
         <CtrlHeader id="LSystem" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "fern", "dragon", "sierpinski", "bush", "snowflake"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "fern", "dragon", "sierpinski", "bush", "snowflake"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Iterations" value={iterations} min={1} max={7} step={1} onChange={setIterations} />
-          <Slider label="Angle" value={angle} min={5} max={90} step={1} onChange={setAngle} />
-          <Slider label="Draw speed" value={speed} min={1} max={50} step={1} onChange={setSpeed} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
-          <Slider label="Trail fade" value={trailFade} min={0} max={0.1} step={0.005} onChange={setTrailFade} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={2} onChange={setGlowBlur} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Angle" value={angle} min={10} max={90} step={1} onChange={setAngle} />
+          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.1} onChange={setLineWidth} />
+          <Slider label="Speed" value={speed} min={1} max={10} step={1} onChange={setSpeed} />
+          <Slider label="Trail fade" value={trailFade} min={0} max={0.3} step={0.01} onChange={setTrailFade} />
+          {glowEffect && <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />}
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
           <Toggle label="Auto reset" value={autoReset} onChange={setAutoReset} />
         </div>
       </div>
@@ -3418,34 +3551,70 @@ function LSystemPanel() {
   );
 }
 
+const KALEIDOSCOPE_PRESET_PARAMS = {
+  default: { segments: 8,  colorA: "#e0e0ff", colorB: "#1a0a2e", bg: "#111111", noiseScale: 2.5, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
+  neon:    { segments: 8,  colorA: "#00ffff", colorB: "#ff00ff", bg: "#000000", noiseScale: 3,   zoomSpeed: 0.3, rotation: 0.2, speed: 1.5 },
+  crystal: { segments: 12, colorA: "#88ccff", colorB: "#002244", bg: "#000510", noiseScale: 4,   zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
+  void:    { segments: 6,  colorA: "#cc00ff", colorB: "#000000", bg: "#000000", noiseScale: 3,   zoomSpeed: 0.3, rotation: 0.4, speed: 1   },
+  fire:    { segments: 6,  colorA: "#ff8800", colorB: "#ff0000", bg: "#0a0000", noiseScale: 3,   zoomSpeed: 0.3, rotation: 0.2, speed: 2   },
+  ice:     { segments: 10, colorA: "#ffffff", colorB: "#002255", bg: "#000510", noiseScale: 2,   zoomSpeed: 0.5, rotation: 0.2, speed: 1   },
+};
+
 function KaleidoscopePanel() {
   const [preset, setPreset] = useState("default");
-  const [segments, setSegments] = useState(6);
+  const [segments, setSegments] = useState(8);
   const [speed, setSpeed] = useState(1);
-  const [noiseScale, setNoiseScale] = useState(3);
-  const [rotation, setRotation] = useState(0.2);
-  const [colorA, setColorA] = useState("#ffffff");
-  const [colorB, setColorB] = useState("#333333");
+  const [colorA, setColorA] = useState("#e0e0ff");
+  const [colorB, setColorB] = useState("#1a0a2e");
   const [bg, setBg] = useState("#111111");
+  const [noiseScale, setNoise] = useState(2.5);
+  const [zoomSpeed, setZoom] = useState(0.3);
+  const [rotation, setRotation] = useState(0.2);
+  const [resolution, setRes] = useState(0.5);
   const [animated, setAnimated] = useState(true);
-  const [zoomSpeed, setZoomSpeed] = useState(0.2);
-  const [resolution, setResolution] = useState(0.5);
-  const code = `import { Kaleidoscope } from 'own-the-canvas';
 
-<Kaleidoscope
-  preset="${preset}"
-  segments={${segments}}
-  speed={${speed}}
-  noiseScale={${noiseScale}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = KALEIDOSCOPE_PRESET_PARAMS[p as keyof typeof KALEIDOSCOPE_PRESET_PARAMS];
+    if (!pp) return;
+    setSegments(pp.segments);
+    setColorA(pp.colorA);
+    setColorB(pp.colorB);
+    setBg(pp.bg);
+    setNoise(pp.noiseScale);
+    setZoom(pp.zoomSpeed);
+    setRotation(pp.rotation);
+    setSpeed(pp.speed);
+  }
+
+  const code = [
+    `import { Kaleidoscope } from 'own-the-canvas';`,
+    ``,
+    `<Kaleidoscope`,
+    `  preset="${preset}"`,
+    `  segments={${segments}}`,
+    `  colorA="${colorA}"`,
+    `  colorB="${colorB}"`,
+    `  backgroundColor="${bg}"`,
+    noiseScale !== 3 ? `  noiseScale={${noiseScale}}` : null,
+    zoomSpeed !== 0.3 ? `  zoomSpeed={${zoomSpeed}}` : null,
+    rotation !== 0.2 ? `  rotation={${rotation}}` : null,
+    speed !== 1 ? `  speed={${speed}}` : null,
+    resolution !== 0.5 ? `  resolution={${resolution}}` : null,
+    !animated ? `  animated={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Kaleidoscope preset={preset} segments={segments} speed={speed}
-            noiseScale={noiseScale} rotation={rotation}
-            colorA={colorA} colorB={colorB} backgroundColor={bg} animated={animated}
-            zoomSpeed={zoomSpeed} resolution={resolution}
+            colorA={colorA} colorB={colorB} backgroundColor={bg}
+            noiseScale={noiseScale} zoomSpeed={zoomSpeed} rotation={rotation}
+            resolution={resolution} animated={animated}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -3454,17 +3623,17 @@ function KaleidoscopePanel() {
       <div className="controls">
         <CtrlHeader id="Kaleidoscope" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "ice", "fire", "nature", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "crystal", "void", "fire", "ice"]} onChange={handlePreset} />
           <Divider />
-          <ColorPicker label="Color A" value={colorA} onChange={setColorA} />
-          <ColorPicker label="Color B" value={colorB} onChange={setColorB} />
+          <ColorPicker label="Color A (peak)" value={colorA} onChange={setColorA} />
+          <ColorPicker label="Color B (trough)" value={colorB} onChange={setColorB} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Segments" value={segments} min={3} max={24} step={1} onChange={setSegments} />
-          <Slider label="Speed" value={speed} min={0.1} max={4} step={0.1} onChange={setSpeed} />
-          <Slider label="Noise scale" value={noiseScale} min={0.5} max={10} step={0.5} onChange={setNoiseScale} />
-          <Slider label="Rotation speed" value={rotation} min={0} max={2} step={0.05} onChange={setRotation} />
-          <Slider label="Zoom speed" value={zoomSpeed} min={0} max={1} step={0.05} onChange={setZoomSpeed} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={1} step={0.1} onChange={setResolution} />
+          <Slider label="Segments" value={segments} min={2} max={16} step={1} onChange={setSegments} />
+          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
+          <Slider label="Noise scale" value={noiseScale} min={1} max={8} step={0.5} onChange={setNoise} />
+          <Slider label="Zoom speed" value={zoomSpeed} min={0} max={2} step={0.05} onChange={setZoom} />
+          <Slider label="Rotation" value={rotation} min={-2} max={2} step={0.05} onChange={setRotation} />
+          <Slider label="Resolution" value={resolution} min={0.15} max={1} step={0.05} onChange={setRes} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -3472,28 +3641,62 @@ function KaleidoscopePanel() {
   );
 }
 
+const VORONOI_PRESET_PARAMS = {
+  "default":       { colorMode: "solid"    as VoronoiColorMode, cellColor: "#ffffff", bg: "#111111", edgeColor: "#333333", showEdges: true,  cellCount: 20 },
+  "stained-glass": { colorMode: "cycle"    as VoronoiColorMode, cellColor: "#ffffff", bg: "#111111", edgeColor: "#111111", showEdges: true,  cellCount: 25 },
+  "neon":          { colorMode: "cycle"    as VoronoiColorMode, cellColor: "#ffffff", bg: "#000000", edgeColor: "#000000", showEdges: false, cellCount: 20 },
+  "frost":         { colorMode: "gradient" as VoronoiColorMode, cellColor: "#88ccff", bg: "#001833", edgeColor: "#ffffff", showEdges: true,  cellCount: 20 },
+  "ember":         { colorMode: "cycle"    as VoronoiColorMode, cellColor: "#ffffff", bg: "#0a0200", edgeColor: "#0a0200", showEdges: false, cellCount: 20 },
+  "void":          { colorMode: "solid"    as VoronoiColorMode, cellColor: "#ffffff", bg: "#000000", edgeColor: "#333333", showEdges: false, cellCount: 20 },
+};
+
 function VoronoiCellsPanel() {
   const [preset, setPreset] = useState("default");
   const [cellCount, setCellCount] = useState(20);
   const [speed, setSpeed] = useState(1);
   const [colorMode, setColorMode] = useState<VoronoiColorMode>("solid");
   const [cellColor, setCellColor] = useState("#ffffff");
-  const [edgeColor, setEdgeColor] = useState("#333333");
   const [bg, setBg] = useState("#111111");
   const [showEdges, setShowEdges] = useState(true);
+  const [edgeColor, setEdgeColor] = useState("#333333");
+  const [resolution, setRes] = useState(1.0);
+  const [relaxation, setRelax] = useState(0.05);
+  const [interactive, setInteract] = useState(true);
   const [animated, setAnimated] = useState(true);
-  const [resolution, setResolution] = useState(0.3);
-  const [relaxation, setRelaxation] = useState(0.05);
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { VoronoiCells } from 'own-the-canvas';
 
-<VoronoiCells
-  preset="${preset}"
-  cellCount={${cellCount}}
-  colorMode="${colorMode}"
-  speed={${speed}}
-  showEdges={${showEdges}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = VORONOI_PRESET_PARAMS[p as keyof typeof VORONOI_PRESET_PARAMS];
+    if (!pp) return;
+    setColorMode(pp.colorMode);
+    setCellColor(pp.cellColor);
+    setBg(pp.bg);
+    setEdgeColor(pp.edgeColor);
+    setShowEdges(pp.showEdges);
+    setCellCount(pp.cellCount);
+  }
+
+  const code = [
+    `import { VoronoiCells } from 'own-the-canvas';`,
+    ``,
+    `<VoronoiCells`,
+    `  preset="${preset}"`,
+    `  cellCount={${cellCount}}`,
+    colorMode !== "solid" ? `  colorMode="${colorMode}"` : null,
+    `  cellColor="${cellColor}"`,
+    `  backgroundColor="${bg}"`,
+    !showEdges ? `  showEdges={false}` : null,
+    showEdges && edgeColor !== "#333333" ? `  edgeColor="${edgeColor}"` : null,
+    speed !== 1 ? `  speed={${speed}}` : null,
+    relaxation !== 0.05 ? `  relaxation={${relaxation}}` : null,
+    resolution !== 0.25 ? `  resolution={${resolution}}` : null,
+    !interactive ? `  interactive={false}` : null,
+    !animated ? `  animated={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
@@ -3510,65 +3713,94 @@ function VoronoiCellsPanel() {
       <div className="controls">
         <CtrlHeader id="VoronoiCells" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "pastel", "monochrome", "fire"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "stained-glass", "neon", "frost", "ember", "void"]} onChange={handlePreset} />
           <Sel label="Color mode" value={colorMode} options={["solid", "gradient", "cycle"]} onChange={(v) => setColorMode(v as VoronoiColorMode)} />
           <Divider />
           <ColorPicker label="Cell color" value={cellColor} onChange={setCellColor} />
           <ColorPicker label="Edge color" value={edgeColor} onChange={setEdgeColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Cell count" value={cellCount} min={5} max={80} step={5} onChange={setCellCount} />
-          <Slider label="Drift speed" value={speed} min={0} max={4} step={0.1} onChange={setSpeed} />
-          <Slider label="Resolution" value={resolution} min={0.1} max={0.5} step={0.05} onChange={setResolution} />
-          <Slider label="Relaxation" value={relaxation} min={0} max={0.2} step={0.01} onChange={setRelaxation} />
+          <Slider label="Cell count" value={cellCount} min={3} max={60} step={1} onChange={setCellCount} />
+          <Slider label="Speed" value={speed} min={0} max={5} step={0.1} onChange={setSpeed} />
+          <Slider label="Relaxation" value={relaxation} min={0} max={0.3} step={0.01} onChange={setRelax} />
+          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setRes} />
           <Toggle label="Show edges" value={showEdges} onChange={setShowEdges} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
   );
 }
 
+const SLIMEMOLD_PRESET_PARAMS = {
+  default: { trailColor: "#ffffff", bg: "#111111", trailDecay: 0.92, agentCount: 1800 },
+  neon:    { trailColor: "#00ffff", bg: "#000000", trailDecay: 0.92, agentCount: 1800 },
+  coral:   { trailColor: "#ff8844", bg: "#0a0200", trailDecay: 0.92, agentCount: 1800 },
+  vein:    { trailColor: "#ff2244", bg: "#080000", trailDecay: 0.92, agentCount: 3000 },
+  frost:   { trailColor: "#88ddff", bg: "#000a10", trailDecay: 0.92, agentCount: 1800 },
+  gold:    { trailColor: "#ffcc44", bg: "#0a0800", trailDecay: 0.92, agentCount: 1800 },
+};
+
 function SlimeMoldPanel() {
   const [preset, setPreset] = useState("default");
   const [agentCount, setAgentCount] = useState(1800);
   const [sensorAngle, setSensorAngle] = useState(45);
+  const [sensorDist, setSensorDist] = useState(9);
   const [stepSize, setStepSize] = useState(1.5);
-  const [trailDecay, setTrailDecay] = useState(0.92);
+  const [rotateSpeed, setRotate] = useState(45);
+  const [trailDecay, setDecay] = useState(0.92);
+  const [diffuse, setDiffuse] = useState(0.2);
   const [trailColor, setTrailColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
-  const [interactive, setInteractive] = useState(true);
-  const [sensorDistance, setSensorDistance] = useState(9);
-  const [rotateSpeed, setRotateSpeed] = useState(45);
-  const [diffuseStrength, setDiffuseStrength] = useState(0.2);
-  const [resolution, setResolution] = useState(0.4);
+  const [resolution, setRes] = useState(0.35);
+  const [interactive, setInteract] = useState(true);
   const [mouseRadius, setMouseRadius] = useState(20);
-  const [mouseStrength, setMouseStrength] = useState(5);
+  const [mouseStrength, setMouseStr] = useState(3);
   const [animated, setAnimated] = useState(true);
-  const code = `import { SlimeMold } from 'own-the-canvas';
 
-<SlimeMold
-  preset="${preset}"
-  agentCount={${agentCount}}
-  trailDecay={${trailDecay}}
-  sensorDistance={${sensorDistance}}
-  rotateSpeed={${rotateSpeed}}
-  diffuseStrength={${diffuseStrength}}
-  resolution={${resolution}}
-  mouseRadius={${mouseRadius}}
-  mouseStrength={${mouseStrength}}
-  interactive={${interactive}}
-  animated={${animated}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = SLIMEMOLD_PRESET_PARAMS[p as keyof typeof SLIMEMOLD_PRESET_PARAMS];
+    if (!pp) return;
+    setTrailColor(pp.trailColor);
+    setBg(pp.bg);
+    setDecay(pp.trailDecay);
+    setAgentCount(pp.agentCount);
+  }
+
+  const code = [
+    `import { SlimeMold } from 'own-the-canvas';`,
+    ``,
+    `<SlimeMold`,
+    `  preset="${preset}"`,
+    `  agentCount={${agentCount}}`,
+    `  trailColor="${trailColor}"`,
+    `  backgroundColor="${bg}"`,
+    sensorAngle !== 45 ? `  sensorAngle={${sensorAngle}}` : null,
+    sensorDist !== 9 ? `  sensorDistance={${sensorDist}}` : null,
+    stepSize !== 1.5 ? `  stepSize={${stepSize}}` : null,
+    rotateSpeed !== 45 ? `  rotateSpeed={${rotateSpeed}}` : null,
+    trailDecay !== 0.92 ? `  trailDecay={${trailDecay}}` : null,
+    diffuse !== 0.2 ? `  diffuseStrength={${diffuse}}` : null,
+    resolution !== 0.35 ? `  resolution={${resolution}}` : null,
+    !interactive ? `  interactive={false}` : null,
+    mouseRadius !== 20 ? `  mouseRadius={${mouseRadius}}` : null,
+    mouseStrength !== 3 ? `  mouseStrength={${mouseStrength}}` : null,
+    !animated ? `  animated={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <SlimeMold preset={preset} agentCount={agentCount} sensorAngle={sensorAngle}
-            stepSize={stepSize} trailDecay={trailDecay} trailColor={trailColor}
-            backgroundColor={bg} interactive={interactive}
-            sensorDistance={sensorDistance} rotateSpeed={rotateSpeed}
-            diffuseStrength={diffuseStrength} resolution={resolution}
+            sensorDistance={sensorDist} stepSize={stepSize} rotateSpeed={rotateSpeed}
+            trailDecay={trailDecay} diffuseStrength={diffuse}
+            trailColor={trailColor} backgroundColor={bg}
+            resolution={resolution} interactive={interactive}
             mouseRadius={mouseRadius} mouseStrength={mouseStrength}
             animated={animated}
             width="100%" height="100%" />
@@ -3579,21 +3811,20 @@ function SlimeMoldPanel() {
       <div className="controls">
         <CtrlHeader id="SlimeMold" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "toxic", "minimal", "web"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "coral", "vein", "frost", "gold"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Trail color" value={trailColor} onChange={setTrailColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Agent count" value={agentCount} min={200} max={5000} step={200} onChange={setAgentCount} />
-          <Slider label="Sensor angle" value={sensorAngle} min={10} max={90} step={5} onChange={setSensorAngle} />
-          <Slider label="Sensor distance" value={sensorDistance} min={3} max={20} step={1} onChange={setSensorDistance} />
-          <Slider label="Rotate speed" value={rotateSpeed} min={10} max={90} step={5} onChange={setRotateSpeed} />
-          <Slider label="Step size" value={stepSize} min={0.5} max={4} step={0.25} onChange={setStepSize} />
-          <Slider label="Trail decay" value={trailDecay} min={0.8} max={0.99} step={0.01} onChange={setTrailDecay} />
-          <Slider label="Diffuse strength" value={diffuseStrength} min={0.05} max={0.5} step={0.05} onChange={setDiffuseStrength} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={0.6} step={0.1} onChange={setResolution} />
-          <Slider label="Mouse radius" value={mouseRadius} min={5} max={50} step={5} onChange={setMouseRadius} />
-          <Slider label="Mouse strength" value={mouseStrength} min={1} max={10} step={1} onChange={setMouseStrength} />
-          <Toggle label="Mouse attraction" value={interactive} onChange={setInteractive} />
+          <Slider label="Agent count" value={agentCount} min={200} max={8000} step={200} onChange={setAgentCount} />
+          <Slider label="Sensor angle" value={sensorAngle} min={10} max={90} step={1} onChange={setSensorAngle} />
+          <Slider label="Sensor distance" value={sensorDist} min={3} max={25} step={1} onChange={setSensorDist} />
+          <Slider label="Step size" value={stepSize} min={0.5} max={4} step={0.1} onChange={setStepSize} />
+          <Slider label="Trail decay" value={trailDecay} min={0.7} max={0.99} step={0.01} onChange={setDecay} />
+          <Slider label="Diffuse" value={diffuse} min={0} max={0.8} step={0.05} onChange={setDiffuse} />
+          <Slider label="Resolution" value={resolution} min={0.15} max={0.8} step={0.05} onChange={setRes} />
+          {interactive && <Slider label="Mouse radius" value={mouseRadius} min={20} max={200} step={10} onChange={setMouseRadius} />}
+          {interactive && <Slider label="Mouse strength" value={mouseStrength} min={1} max={10} step={1} onChange={setMouseStr} />}
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -3601,48 +3832,79 @@ function SlimeMoldPanel() {
   );
 }
 
+const INKBLEED_PRESET_PARAMS = {
+  default:  { inkColor: "#ffffff", paperColor: "#111111", diffusionRate: 0.3,  viscosity: 0.8,  evaporationRate: 0.002, glowEffect: false, glowBlur: 8 },
+  midnight: { inkColor: "#3b82f6", paperColor: "#020817", diffusionRate: 0.4,  viscosity: 0.8,  evaporationRate: 0.002, glowEffect: true,  glowBlur: 12 },
+  sepia:    { inkColor: "#92400e", paperColor: "#fef3c7", diffusionRate: 0.2,  viscosity: 0.9,  evaporationRate: 0.002, glowEffect: false, glowBlur: 8 },
+  toxic:    { inkColor: "#84cc16", paperColor: "#0a0f00", diffusionRate: 0.5,  viscosity: 0.8,  evaporationRate: 0.002, glowEffect: true,  glowBlur: 12 },
+  neon:     { inkColor: "#f0abfc", paperColor: "#0a000f", diffusionRate: 0.35, viscosity: 0.8,  evaporationRate: 0.002, glowEffect: true,  glowBlur: 15 },
+  frost:    { inkColor: "#bae6fd", paperColor: "#0c1428", diffusionRate: 0.25, viscosity: 0.85, evaporationRate: 0.001, glowEffect: false, glowBlur: 8 },
+};
+
 function InkBleedPanel() {
   const [preset, setPreset] = useState("default");
   const [inkColor, setInkColor] = useState("#ffffff");
-  const [paperColor, setPaperColor] = useState("#111111");
-  const [diffusionRate, setDiffusionRate] = useState(0.3);
+  const [paperColor, setPaper] = useState("#111111");
+  const [diffusion, setDiffusion] = useState(0.3);
   const [viscosity, setViscosity] = useState(0.8);
+  const [evapRate, setEvapRate] = useState(0.002);
   const [inkRadius, setInkRadius] = useState(8);
+  const [inkStrength, setInkStr] = useState(1);
+  const [interactive, setInteract] = useState(true);
   const [autoInk, setAutoInk] = useState(true);
-  const [glow, setGlow] = useState(false);
-  const [evaporationRate, setEvaporationRate] = useState(0.002);
-  const [inkStrength, setInkStrength] = useState(1);
-  const [interactive, setInteractive] = useState(true);
-  const [autoInkInterval, setAutoInkInterval] = useState(2000);
-  const [resolution, setResolution] = useState(0.5);
+  const [autoInterval, setAutoInterval] = useState(2000);
+  const [resolution, setRes] = useState(0.5);
+  const [glowEffect, setGlow] = useState(false);
   const [glowBlur, setGlowBlur] = useState(8);
   const [animated, setAnimated] = useState(true);
-  const code = `import { InkBleed } from 'own-the-canvas';
 
-<InkBleed
-  preset="${preset}"
-  inkColor="${inkColor}"
-  diffusionRate={${diffusionRate}}
-  viscosity={${viscosity}}
-  evaporationRate={${evaporationRate}}
-  inkStrength={${inkStrength}}
-  autoInk={${autoInk}}
-  autoInkInterval={${autoInkInterval}}
-  resolution={${resolution}}
-  glowBlur={${glowBlur}}
-  interactive={${interactive}}
-  animated={${animated}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = INKBLEED_PRESET_PARAMS[p as keyof typeof INKBLEED_PRESET_PARAMS];
+    if (!pp) return;
+    setInkColor(pp.inkColor);
+    setPaper(pp.paperColor);
+    setDiffusion(pp.diffusionRate);
+    setViscosity(pp.viscosity);
+    setEvapRate(pp.evaporationRate);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+  }
+
+  const code = [
+    `import { InkBleed } from 'own-the-canvas';`,
+    ``,
+    `<InkBleed`,
+    `  preset="${preset}"`,
+    `  inkColor="${inkColor}"`,
+    `  paperColor="${paperColor}"`,
+    `  diffusionRate={${diffusion}}`,
+    `  viscosity={${viscosity}}`,
+    `  evaporationRate={${evapRate}}`,
+    `  inkRadius={${inkRadius}}`,
+    `  inkStrength={${inkStrength}}`,
+    `  interactive={${interactive}}`,
+    `  autoInk={${autoInk}}`,
+    `  autoInkInterval={${autoInterval}}`,
+    `  resolution={${resolution}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  animated={${animated}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <InkBleed preset={preset} inkColor={inkColor} paperColor={paperColor}
-            diffusionRate={diffusionRate} viscosity={viscosity}
-            inkRadius={inkRadius} autoInk={autoInk} glowEffect={glow}
-            evaporationRate={evaporationRate} inkStrength={inkStrength}
-            interactive={interactive} autoInkInterval={autoInkInterval}
-            resolution={resolution} glowBlur={glowBlur} animated={animated}
+            diffusionRate={diffusion} viscosity={viscosity}
+            evaporationRate={evapRate} inkRadius={inkRadius} inkStrength={inkStrength}
+            interactive={interactive} autoInk={autoInk} autoInkInterval={autoInterval}
+            resolution={resolution} glowEffect={glowEffect} glowBlur={glowBlur}
+            animated={animated}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click/drag to drop ink</span></div>
@@ -3651,21 +3913,21 @@ function InkBleedPanel() {
       <div className="controls">
         <CtrlHeader id="InkBleed" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "sumi", "neon", "rust", "midnight"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "midnight", "sepia", "toxic", "neon", "frost"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Ink color" value={inkColor} onChange={setInkColor} />
-          <ColorPicker label="Paper color" value={paperColor} onChange={setPaperColor} />
-          <Slider label="Diffusion rate" value={diffusionRate} min={0.05} max={0.9} step={0.05} onChange={setDiffusionRate} />
-          <Slider label="Viscosity" value={viscosity} min={0.1} max={1} step={0.05} onChange={setViscosity} />
-          <Slider label="Evaporation rate" value={evaporationRate} min={0.0005} max={0.01} step={0.0005} onChange={setEvaporationRate} />
-          <Slider label="Ink strength" value={inkStrength} min={0.1} max={1} step={0.1} onChange={setInkStrength} />
-          <Slider label="Drop radius" value={inkRadius} min={2} max={30} step={1} onChange={setInkRadius} />
-          <Slider label="Auto ink interval (ms)" value={autoInkInterval} min={500} max={5000} step={500} onChange={setAutoInkInterval} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={1} step={0.1} onChange={setResolution} />
-          <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />
-          <Toggle label="Auto ink drops" value={autoInk} onChange={setAutoInk} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <ColorPicker label="Paper color" value={paperColor} onChange={setPaper} />
+          <Slider label="Diffusion rate" value={diffusion} min={0.01} max={0.9} step={0.01} onChange={setDiffusion} />
+          <Slider label="Viscosity" value={viscosity} min={0} max={0.99} step={0.01} onChange={setViscosity} />
+          <Slider label="Evaporation rate" value={evapRate} min={0} max={0.02} step={0.0005} onChange={setEvapRate} />
+          <Slider label="Ink radius" value={inkRadius} min={2} max={40} step={1} onChange={setInkRadius} />
+          <Slider label="Ink strength" value={inkStrength} min={0.1} max={2} step={0.05} onChange={setInkStr} />
+          <Slider label="Auto interval ms" value={autoInterval} min={500} max={5000} step={100} onChange={setAutoInterval} />
+          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setRes} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={1} onChange={setGlowBlur} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
+          <Toggle label="Auto ink" value={autoInk} onChange={setAutoInk} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -3673,47 +3935,87 @@ function InkBleedPanel() {
   );
 }
 
+const WATERCOLOR_PRESET_PARAMS = {
+  default:    { color1: "#ffffff", color2: "#6b7280", color3: "#9ca3af", bg: "#111111", bloomRadius: 80,  opacity: 0.15, wetEdge: 0.4, layerCount: 6, noiseAmount: 0.5 },
+  sunset:     { color1: "#f97316", color2: "#ec4899", color3: "#8b5cf6", bg: "#0a0005", bloomRadius: 100, opacity: 0.18, wetEdge: 0.5, layerCount: 6, noiseAmount: 0.5 },
+  ocean:      { color1: "#0ea5e9", color2: "#06b6d4", color3: "#6366f1", bg: "#020b18", bloomRadius: 90,  opacity: 0.15, wetEdge: 0.35,layerCount: 6, noiseAmount: 0.5 },
+  spring:     { color1: "#86efac", color2: "#fde68a", color3: "#fbcfe8", bg: "#0a0f05", bloomRadius: 80,  opacity: 0.2,  wetEdge: 0.4, layerCount: 8, noiseAmount: 0.5 },
+  monochrome: { color1: "#ffffff", color2: "#d1d5db", color3: "#9ca3af", bg: "#111111", bloomRadius: 100, opacity: 0.12, wetEdge: 0.6, layerCount: 6, noiseAmount: 0.5 },
+  neon:       { color1: "#f0abfc", color2: "#67e8f9", color3: "#c084fc", bg: "#050010", bloomRadius: 110, opacity: 0.2,  wetEdge: 0.7, layerCount: 6, noiseAmount: 0.6 },
+};
+
 function WatercolorBloomPanel() {
   const [preset, setPreset] = useState("default");
+  const [color1, setColor1] = useState("#ffffff");
+  const [color2, setColor2] = useState("#6b7280");
+  const [color3, setColor3] = useState("#9ca3af");
   const [bg, setBg] = useState("#111111");
   const [bloomRadius, setBloomRadius] = useState(80);
   const [bloomSpeed, setBloomSpeed] = useState(0.5);
   const [opacity, setOpacity] = useState(0.15);
   const [wetEdge, setWetEdge] = useState(0.4);
-  const [layerCount, setLayerCount] = useState(6);
-  const [noiseAmount, setNoiseAmount] = useState(0.5);
-  const [autoBloom, setAutoBloom] = useState(true);
+  const [layerCount, setLayers] = useState(6);
+  const [noiseAmount, setNoise] = useState(0.5);
   const [fadeSpeed, setFadeSpeed] = useState(0.001);
-  const [interactive, setInteractive] = useState(true);
-  const [autoBloomInterval, setAutoBloomInterval] = useState(1500);
-  const [resolution, setResolution] = useState(0.5);
+  const [interactive, setInteract] = useState(true);
+  const [autoBloom, setAutoBloom] = useState(true);
+  const [autoInterval, setAutoInt] = useState(1500);
+  const [resolution, setRes] = useState(0.5);
   const [animated, setAnimated] = useState(true);
   const [maxBlooms, setMaxBlooms] = useState(12);
-  const code = `import { WatercolorBloom } from 'own-the-canvas';
 
-<WatercolorBloom
-  preset="${preset}"
-  bloomRadius={${bloomRadius}}
-  opacity={${opacity}}
-  wetEdge={${wetEdge}}
-  layerCount={${layerCount}}
-  fadeSpeed={${fadeSpeed}}
-  autoBloom={${autoBloom}}
-  autoBloomInterval={${autoBloomInterval}}
-  resolution={${resolution}}
-  maxBlooms={${maxBlooms}}
-  interactive={${interactive}}
-  animated={${animated}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = WATERCOLOR_PRESET_PARAMS[p as keyof typeof WATERCOLOR_PRESET_PARAMS];
+    if (!pp) return;
+    setColor1(pp.color1);
+    setColor2(pp.color2);
+    setColor3(pp.color3);
+    setBg(pp.bg);
+    setBloomRadius(pp.bloomRadius);
+    setOpacity(pp.opacity);
+    setWetEdge(pp.wetEdge);
+    setLayers(pp.layerCount);
+    setNoise(pp.noiseAmount);
+  }
+
+  const colors = [color1, color2, color3];
+
+  const code = [
+    `import { WatercolorBloom } from 'own-the-canvas';`,
+    ``,
+    `<WatercolorBloom`,
+    `  preset="${preset}"`,
+    `  colors={${JSON.stringify(colors)}}`,
+    `  backgroundColor="${bg}"`,
+    `  bloomRadius={${bloomRadius}}`,
+    `  bloomSpeed={${bloomSpeed}}`,
+    `  opacity={${opacity}}`,
+    `  wetEdge={${wetEdge}}`,
+    `  layerCount={${layerCount}}`,
+    `  noiseAmount={${noiseAmount}}`,
+    `  fadeSpeed={${fadeSpeed}}`,
+    `  interactive={${interactive}}`,
+    `  autoBloom={${autoBloom}}`,
+    `  autoBloomInterval={${autoInterval}}`,
+    `  resolution={${resolution}}`,
+    `  animated={${animated}}`,
+    `  maxBlooms={${maxBlooms}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <WatercolorBloom preset={preset} bloomRadius={bloomRadius} bloomSpeed={bloomSpeed}
+          <WatercolorBloom preset={preset} colors={colors} backgroundColor={bg}
+            bloomRadius={bloomRadius} bloomSpeed={bloomSpeed}
             opacity={opacity} wetEdge={wetEdge} layerCount={layerCount}
-            noiseAmount={noiseAmount} autoBloom={autoBloom} backgroundColor={bg}
+            noiseAmount={noiseAmount} autoBloom={autoBloom}
             fadeSpeed={fadeSpeed} interactive={interactive}
-            autoBloomInterval={autoBloomInterval} resolution={resolution}
+            autoBloomInterval={autoInterval} resolution={resolution}
             animated={animated} maxBlooms={maxBlooms}
             width="100%" height="100%" />
         </div>
@@ -3723,21 +4025,24 @@ function WatercolorBloomPanel() {
       <div className="controls">
         <CtrlHeader id="WatercolorBloom" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "sunset", "ocean", "spring", "monochrome", "neon"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "sunset", "ocean", "spring", "monochrome", "neon"]} onChange={handlePreset} />
           <Divider />
+          <ColorPicker label="Color 1" value={color1} onChange={setColor1} />
+          <ColorPicker label="Color 2" value={color2} onChange={setColor2} />
+          <ColorPicker label="Color 3" value={color3} onChange={setColor3} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Bloom radius" value={bloomRadius} min={20} max={200} step={5} onChange={setBloomRadius} />
-          <Slider label="Bloom speed" value={bloomSpeed} min={0.1} max={2} step={0.1} onChange={setBloomSpeed} />
-          <Slider label="Opacity" value={opacity} min={0.02} max={0.5} step={0.01} onChange={setOpacity} />
+          <Slider label="Bloom radius" value={bloomRadius} min={20} max={300} step={5} onChange={setBloomRadius} />
+          <Slider label="Bloom speed" value={bloomSpeed} min={0.1} max={3} step={0.05} onChange={setBloomSpeed} />
+          <Slider label="Opacity" value={opacity} min={0.01} max={0.5} step={0.01} onChange={setOpacity} />
           <Slider label="Wet edge" value={wetEdge} min={0} max={1} step={0.05} onChange={setWetEdge} />
-          <Slider label="Layers" value={layerCount} min={1} max={12} step={1} onChange={setLayerCount} />
-          <Slider label="Edge noise" value={noiseAmount} min={0} max={1} step={0.05} onChange={setNoiseAmount} />
-          <Slider label="Fade speed" value={fadeSpeed} min={0.0002} max={0.005} step={0.0002} onChange={setFadeSpeed} />
-          <Slider label="Auto bloom interval (ms)" value={autoBloomInterval} min={500} max={5000} step={500} onChange={setAutoBloomInterval} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={1} step={0.1} onChange={setResolution} />
+          <Slider label="Layers" value={layerCount} min={2} max={16} step={1} onChange={setLayers} />
+          <Slider label="Noise amount" value={noiseAmount} min={0} max={1} step={0.05} onChange={setNoise} />
+          <Slider label="Fade speed" value={fadeSpeed} min={0} max={0.01} step={0.0005} onChange={setFadeSpeed} />
+          <Slider label="Auto interval ms" value={autoInterval} min={200} max={5000} step={100} onChange={setAutoInt} />
           <Slider label="Max blooms" value={maxBlooms} min={1} max={30} step={1} onChange={setMaxBlooms} />
+          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setRes} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Auto bloom" value={autoBloom} onChange={setAutoBloom} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -3745,44 +4050,87 @@ function WatercolorBloomPanel() {
   );
 }
 
+const PENDULA_PRESET_PARAMS = {
+  default: { color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "solid"    as PendulaWaveColorMode, glowEffect: false, glowBlur: 10 },
+  neon:    { color: "#00ffcc", color2: "#ff00aa", bg: "#000000", lineWidth: 1,   trailFade: 0.015, damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "cycle"    as PendulaWaveColorMode, glowEffect: true,  glowBlur: 12 },
+  crystal: { color: "#88ccff", color2: "#ffffff", bg: "#000510", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 3, freq2: 5, freq3: 0.01, colorMode: "gradient" as PendulaWaveColorMode, glowEffect: true,  glowBlur: 8 },
+  sand:    { color: "#d4a76a", color2: "#7c5c2e", bg: "#1a1005", lineWidth: 1.5, trailFade: 0.005, damping: 0.9998, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "gradient" as PendulaWaveColorMode, glowEffect: false, glowBlur: 10 },
+  minimal: { color: "#6b7280", color2: "#6b7280", bg: "#111111", lineWidth: 0.8, trailFade: 0.03,  damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "solid"    as PendulaWaveColorMode, glowEffect: false, glowBlur: 10 },
+  cosmic:  { color: "#c084fc", color2: "#38bdf8", bg: "#020010", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 5, freq2: 7, freq3: 0.02, colorMode: "cycle"    as PendulaWaveColorMode, glowEffect: true,  glowBlur: 15 },
+};
+
 function PendulaWavePanel() {
   const [preset, setPreset] = useState("default");
+  const [color, setColor] = useState("#ffffff");
+  const [color2, setColor2] = useState("#6b7280");
+  const [bg, setBg] = useState("#111111");
+  const [lineWidth, setLineWidth] = useState(1);
+  const [trailFade, setTrailFade] = useState(0.01);
+  const [speed, setSpeed] = useState(1);
+  const [damping, setDamping] = useState(0.9995);
   const [freq1, setFreq1] = useState(2);
   const [freq2, setFreq2] = useState(3);
   const [freq3, setFreq3] = useState(0.01);
   const [amplitude, setAmplitude] = useState(0.9);
-  const [speed, setSpeed] = useState(1);
-  const [damping, setDamping] = useState(0.9995);
-  const [lineWidth, setLineWidth] = useState(1);
-  const [trailFade, setTrailFade] = useState(0.01);
-  const [color, setColor] = useState("#ffffff");
-  const [color2, setColor2] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
   const [colorMode, setColorMode] = useState<PendulaWaveColorMode>("solid");
-  const [glow, setGlow] = useState(false);
+  const [glowEffect, setGlow] = useState(false);
   const [glowBlur, setGlowBlur] = useState(10);
-  const code = `import { PendulaWave } from 'own-the-canvas';
+  const [animated, setAnimated] = useState(true);
+  const [autoReset, setAutoReset] = useState(true);
 
-<PendulaWave
-  preset="${preset}"
-  freq1={${freq1}}
-  freq2={${freq2}}
-  freq3={${freq3}}
-  amplitude={${amplitude}}
-  speed={${speed}}
-  colorMode="${colorMode}"
-  damping={${damping}}
-  color2="${color2}"
-  glowBlur={${glowBlur}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = PENDULA_PRESET_PARAMS[p as keyof typeof PENDULA_PRESET_PARAMS];
+    if (!pp) return;
+    setColor(pp.color);
+    setColor2(pp.color2);
+    setBg(pp.bg);
+    setLineWidth(pp.lineWidth);
+    setTrailFade(pp.trailFade);
+    setDamping(pp.damping);
+    setFreq1(pp.freq1);
+    setFreq2(pp.freq2);
+    setFreq3(pp.freq3);
+    setColorMode(pp.colorMode);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+  }
+
+  const code = [
+    `import { PendulaWave } from 'own-the-canvas';`,
+    ``,
+    `<PendulaWave`,
+    `  preset="${preset}"`,
+    `  color="${color}"`,
+    `  color2="${color2}"`,
+    `  backgroundColor="${bg}"`,
+    `  lineWidth={${lineWidth}}`,
+    `  trailFade={${trailFade}}`,
+    `  speed={${speed}}`,
+    `  damping={${damping}}`,
+    `  freq1={${freq1}}`,
+    `  freq2={${freq2}}`,
+    `  freq3={${freq3}}`,
+    `  amplitude={${amplitude}}`,
+    `  colorMode="${colorMode}"`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  animated={${animated}}`,
+    `  autoReset={${autoReset}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <PendulaWave preset={preset} freq1={freq1} freq2={freq2} freq3={freq3}
-            amplitude={amplitude} speed={speed} damping={damping}
-            lineWidth={lineWidth} trailFade={trailFade} color={color} color2={color2}
-            backgroundColor={bg} colorMode={colorMode} glowEffect={glow} glowBlur={glowBlur}
+          <PendulaWave preset={preset} color={color} color2={color2}
+            backgroundColor={bg} lineWidth={lineWidth} trailFade={trailFade}
+            speed={speed} damping={damping} freq1={freq1} freq2={freq2} freq3={freq3}
+            amplitude={amplitude} colorMode={colorMode} glowEffect={glowEffect}
+            glowBlur={glowBlur} animated={animated} autoReset={autoReset}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -3791,66 +4139,105 @@ function PendulaWavePanel() {
       <div className="controls">
         <CtrlHeader id="PendulaWave" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "crystal", "sand", "minimal", "cosmic"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "crystal", "sand", "minimal", "cosmic"]} onChange={handlePreset} />
           <Sel label="Color mode" value={colorMode} options={["solid", "cycle", "gradient"]} onChange={(v) => setColorMode(v as PendulaWaveColorMode)} />
           <Divider />
           <ColorPicker label="Color" value={color} onChange={setColor} />
           <ColorPicker label="Color 2" value={color2} onChange={setColor2} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Freq X" value={freq1} min={1} max={12} step={0.5} onChange={setFreq1} />
-          <Slider label="Freq Y" value={freq2} min={1} max={12} step={0.5} onChange={setFreq2} />
-          <Slider label="Freq 3" value={freq3} min={0.001} max={0.1} step={0.001} onChange={setFreq3} />
+          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
+          <Slider label="Freq 1 (x)" value={freq1} min={1} max={10} step={0.5} onChange={setFreq1} />
+          <Slider label="Freq 2 (y)" value={freq2} min={1} max={10} step={0.5} onChange={setFreq2} />
+          <Slider label="Freq 3 (φ)" value={freq3} min={0} max={0.1} step={0.005} onChange={setFreq3} />
+          <Slider label="Damping" value={damping} min={0.998} max={1} step={0.0001} onChange={setDamping} />
           <Slider label="Amplitude" value={amplitude} min={0.1} max={1} step={0.05} onChange={setAmplitude} />
-          <Slider label="Speed" value={speed} min={0.1} max={4} step={0.1} onChange={setSpeed} />
-          <Slider label="Damping" value={damping} min={0.99} max={1} step={0.0001} onChange={setDamping} />
           <Slider label="Trail fade" value={trailFade} min={0.001} max={0.1} step={0.001} onChange={setTrailFade} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={5} step={0.5} onChange={setLineWidth} />
-          <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Line width" value={lineWidth} min={0.5} max={5} step={0.25} onChange={setLineWidth} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={1} onChange={setGlowBlur} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Animated" value={animated} onChange={setAnimated} />
+          <Toggle label="Auto reset" value={autoReset} onChange={setAutoReset} />
         </div>
       </div>
     </>
   );
 }
 
+const CRYSTALGROWTH_PRESET_PARAMS = {
+  default:   { crystalColor: "#ffffff", activeColor: "#6b7280", bg: "#111111", symmetry: 6,  branchProb: 0.3,  noise: 0.2,  cellSize: 3, glowEffect: true,  glowBlur: 12, colorMode: "solid" as CrystalGrowthColorMode },
+  snowflake: { crystalColor: "#e0f2fe", activeColor: "#7dd3fc", bg: "#0c1a2e", symmetry: 6,  branchProb: 0.4,  noise: 0.15, cellSize: 3, glowEffect: true,  glowBlur: 10, colorMode: "solid" as CrystalGrowthColorMode },
+  gem:       { crystalColor: "#c084fc", activeColor: "#e879f9", bg: "#09000f", symmetry: 8,  branchProb: 0.2,  noise: 0.1,  cellSize: 3, glowEffect: true,  glowBlur: 15, colorMode: "age"   as CrystalGrowthColorMode },
+  neon:      { crystalColor: "#00ffcc", activeColor: "#ff00aa", bg: "#000000", symmetry: 4,  branchProb: 0.35, noise: 0.3,  cellSize: 3, glowEffect: true,  glowBlur: 18, colorMode: "cycle" as CrystalGrowthColorMode },
+  frost:     { crystalColor: "#bae6fd", activeColor: "#ffffff", bg: "#0a1628", symmetry: 6,  branchProb: 0.5,  noise: 0.25, cellSize: 2, glowEffect: true,  glowBlur: 8,  colorMode: "solid" as CrystalGrowthColorMode },
+  gold:      { crystalColor: "#fbbf24", activeColor: "#f59e0b", bg: "#0a0500", symmetry: 12, branchProb: 0.15, noise: 0.05, cellSize: 3, glowEffect: true,  glowBlur: 12, colorMode: "age"   as CrystalGrowthColorMode },
+};
+
 function CrystalGrowthPanel() {
   const [preset, setPreset] = useState("default");
-  const [symmetry, setSymmetry] = useState(6);
-  const [growthSpeed, setGrowthSpeed] = useState(3);
-  const [branchProbability, setBranchProbability] = useState(0.3);
-  const [cellSize, setCellSize] = useState(3);
-  const [crystalColor, setCrystalColor] = useState("#ffffff");
+  const [crystalColor, setCrystal] = useState("#ffffff");
+  const [activeColor, setActive] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
-  const [colorMode, setColorMode] = useState<CrystalGrowthColorMode>("solid");
-  const [glow, setGlow] = useState(true);
-  const [activeColor, setActiveColor] = useState("#6b7280");
+  const [growthSpeed, setSpeed] = useState(3);
+  const [symmetry, setSymmetry] = useState(6);
+  const [branchProb, setBranchProb] = useState(0.3);
+  const [noiseAmount, setNoise] = useState(0.2);
+  const [cellSize, setCellSize] = useState(3);
+  const [glowEffect, setGlow] = useState(true);
   const [glowBlur, setGlowBlur] = useState(12);
-  const [interactive, setInteractive] = useState(true);
+  const [interactive, setInteract] = useState(true);
   const [autoReset, setAutoReset] = useState(true);
-  const [noiseAmount, setNoiseAmount] = useState(0.2);
-  const code = `import { CrystalGrowth } from 'own-the-canvas';
+  const [colorMode, setColorMode] = useState<CrystalGrowthColorMode>("solid");
+  const [animated, setAnimated] = useState(true);
 
-<CrystalGrowth
-  preset="${preset}"
-  symmetry={${symmetry}}
-  growthSpeed={${growthSpeed}}
-  branchProbability={${branchProbability}}
-  activeColor="${activeColor}"
-  glowBlur={${glowBlur}}
-  noiseAmount={${noiseAmount}}
-  interactive={${interactive}}
-  autoReset={${autoReset}}
-  glowEffect={${glow}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = CRYSTALGROWTH_PRESET_PARAMS[p as keyof typeof CRYSTALGROWTH_PRESET_PARAMS];
+    if (!pp) return;
+    setCrystal(pp.crystalColor);
+    setActive(pp.activeColor);
+    setBg(pp.bg);
+    setSymmetry(pp.symmetry);
+    setBranchProb(pp.branchProb);
+    setNoise(pp.noise);
+    setCellSize(pp.cellSize);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+    setColorMode(pp.colorMode);
+  }
+
+  const code = [
+    `import { CrystalGrowth } from 'own-the-canvas';`,
+    ``,
+    `<CrystalGrowth`,
+    `  preset="${preset}"`,
+    `  crystalColor="${crystalColor}"`,
+    `  activeColor="${activeColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  growthSpeed={${growthSpeed}}`,
+    `  symmetry={${symmetry}}`,
+    `  branchProbability={${branchProb}}`,
+    `  noiseAmount={${noiseAmount}}`,
+    `  cellSize={${cellSize}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  interactive={${interactive}}`,
+    `  autoReset={${autoReset}}`,
+    `  colorMode="${colorMode}"`,
+    `  animated={${animated}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <CrystalGrowth preset={preset} symmetry={symmetry} growthSpeed={growthSpeed}
-            branchProbability={branchProbability} cellSize={cellSize}
-            crystalColor={crystalColor} activeColor={activeColor} backgroundColor={bg}
-            colorMode={colorMode} glowEffect={glow} glowBlur={glowBlur}
-            interactive={interactive} autoReset={autoReset} noiseAmount={noiseAmount}
+          <CrystalGrowth preset={preset} crystalColor={crystalColor} activeColor={activeColor}
+            backgroundColor={bg} growthSpeed={growthSpeed} symmetry={symmetry}
+            branchProbability={branchProb} noiseAmount={noiseAmount} cellSize={cellSize}
+            glowEffect={glowEffect} glowBlur={glowBlur} interactive={interactive}
+            autoReset={autoReset} colorMode={colorMode} animated={animated}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to seed new growth</span></div>
@@ -3859,71 +4246,111 @@ function CrystalGrowthPanel() {
       <div className="controls">
         <CtrlHeader id="CrystalGrowth" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "snowflake", "gem", "neon", "frost", "gold"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "snowflake", "gem", "neon", "frost", "gold"]} onChange={handlePreset} />
           <Sel label="Color mode" value={colorMode} options={["solid", "age", "cycle"]} onChange={(v) => setColorMode(v as CrystalGrowthColorMode)} />
           <Divider />
-          <ColorPicker label="Crystal color" value={crystalColor} onChange={setCrystalColor} />
-          <ColorPicker label="Active color" value={activeColor} onChange={setActiveColor} />
+          <ColorPicker label="Crystal color" value={crystalColor} onChange={setCrystal} />
+          <ColorPicker label="Active color" value={activeColor} onChange={setActive} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Slider label="Growth speed" value={growthSpeed} min={1} max={20} step={1} onChange={setSpeed} />
           <Slider label="Symmetry arms" value={symmetry} min={2} max={12} step={1} onChange={setSymmetry} />
-          <Slider label="Growth speed" value={growthSpeed} min={1} max={15} step={1} onChange={setGrowthSpeed} />
-          <Slider label="Branch probability" value={branchProbability} min={0} max={0.8} step={0.05} onChange={setBranchProbability} />
-          <Slider label="Noise amount" value={noiseAmount} min={0} max={1} step={0.05} onChange={setNoiseAmount} />
+          <Slider label="Branch probability" value={branchProb} min={0} max={1} step={0.05} onChange={setBranchProb} />
+          <Slider label="Noise amount" value={noiseAmount} min={0} max={1} step={0.05} onChange={setNoise} />
           <Slider label="Cell size" value={cellSize} min={1} max={8} step={1} onChange={setCellSize} />
-          <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={1} onChange={setGlowBlur} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Auto reset" value={autoReset} onChange={setAutoReset} />
+          <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
     </>
   );
 }
 
+const NEURALWEB_PRESET_PARAMS = {
+  default: { nodeColor: "#ffffff", edgeColor: "#6b7280", signalColor: "#ffffff", bg: "#111111", connRadius: 150, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.85, glowEffect: true,  glowBlur: 15, wanderSpeed: 0.3 },
+  neon:    { nodeColor: "#00ffcc", edgeColor: "#00ffcc", signalColor: "#ffffff", bg: "#000000", connRadius: 150, nodeRadius: 4, pulseInterval: 1500, pulseDecay: 0.9,  glowEffect: true,  glowBlur: 20, wanderSpeed: 0.3 },
+  brain:   { nodeColor: "#f472b6", edgeColor: "#ec4899", signalColor: "#fbbf24", bg: "#0f0005", connRadius: 130, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.88, glowEffect: true,  glowBlur: 18, wanderSpeed: 0.4 },
+  minimal: { nodeColor: "#6b7280", edgeColor: "#374151", signalColor: "#9ca3af", bg: "#111111", connRadius: 150, nodeRadius: 3, pulseInterval: 3000, pulseDecay: 0.85, glowEffect: false, glowBlur: 15, wanderSpeed: 0.3 },
+  plasma:  { nodeColor: "#c084fc", edgeColor: "#7c3aed", signalColor: "#f0abfc", bg: "#050010", connRadius: 170, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.92, glowEffect: true,  glowBlur: 25, wanderSpeed: 0.2 },
+  circuit: { nodeColor: "#22c55e", edgeColor: "#166534", signalColor: "#86efac", bg: "#020a02", connRadius: 100, nodeRadius: 3, pulseInterval: 1000, pulseDecay: 0.8,  glowEffect: true,  glowBlur: 12, wanderSpeed: 0.1 },
+};
+
 function NeuralWebPanel() {
   const [preset, setPreset] = useState("default");
   const [nodeCount, setNodeCount] = useState(40);
-  const [connectionRadius, setConnectionRadius] = useState(150);
-  const [speed, setSpeed] = useState(1);
-  const [pulseInterval, setPulseInterval] = useState(2000);
   const [nodeColor, setNodeColor] = useState("#ffffff");
   const [edgeColor, setEdgeColor] = useState("#6b7280");
   const [signalColor, setSignalColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
-  const [glow, setGlow] = useState(true);
-  const [interactive, setInteractive] = useState(true);
+  const [connRadius, setConnRadius] = useState(150);
   const [nodeRadius, setNodeRadius] = useState(4);
   const [lineWidth, setLineWidth] = useState(1);
+  const [speed, setSpeed] = useState(1);
+  const [pulseInterval, setPulseInt] = useState(2000);
   const [pulseDecay, setPulseDecay] = useState(0.85);
+  const [glowEffect, setGlow] = useState(true);
   const [glowBlur, setGlowBlur] = useState(15);
-  const [wanderSpeed, setWanderSpeed] = useState(0.3);
+  const [interactive, setInteract] = useState(true);
   const [animated, setAnimated] = useState(true);
-  const code = `import { NeuralWeb } from 'own-the-canvas';
+  const [wander, setWander] = useState(true);
+  const [wanderSpeed, setWanderSpeed] = useState(0.3);
 
-<NeuralWeb
-  preset="${preset}"
-  nodeCount={${nodeCount}}
-  connectionRadius={${connectionRadius}}
-  speed={${speed}}
-  signalColor="${signalColor}"
-  nodeRadius={${nodeRadius}}
-  lineWidth={${lineWidth}}
-  pulseDecay={${pulseDecay}}
-  glowBlur={${glowBlur}}
-  wanderSpeed={${wanderSpeed}}
-  interactive={${interactive}}
-  animated={${animated}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = NEURALWEB_PRESET_PARAMS[p as keyof typeof NEURALWEB_PRESET_PARAMS];
+    if (!pp) return;
+    setNodeColor(pp.nodeColor);
+    setEdgeColor(pp.edgeColor);
+    setSignalColor(pp.signalColor);
+    setBg(pp.bg);
+    setConnRadius(pp.connRadius);
+    setNodeRadius(pp.nodeRadius);
+    setPulseInt(pp.pulseInterval);
+    setPulseDecay(pp.pulseDecay);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+    setWanderSpeed(pp.wanderSpeed);
+  }
+
+  const code = [
+    `import { NeuralWeb } from 'own-the-canvas';`,
+    ``,
+    `<NeuralWeb`,
+    `  preset="${preset}"`,
+    `  nodeCount={${nodeCount}}`,
+    `  nodeColor="${nodeColor}"`,
+    `  edgeColor="${edgeColor}"`,
+    `  signalColor="${signalColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  connectionRadius={${connRadius}}`,
+    `  nodeRadius={${nodeRadius}}`,
+    `  lineWidth={${lineWidth}}`,
+    `  speed={${speed}}`,
+    `  pulseInterval={${pulseInterval}}`,
+    `  pulseDecay={${pulseDecay}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  interactive={${interactive}}`,
+    `  animated={${animated}}`,
+    `  wander={${wander}}`,
+    `  wanderSpeed={${wanderSpeed}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <NeuralWeb preset={preset} nodeCount={nodeCount} connectionRadius={connectionRadius}
-            speed={speed} pulseInterval={pulseInterval} nodeColor={nodeColor}
+          <NeuralWeb preset={preset} nodeCount={nodeCount} nodeColor={nodeColor}
             edgeColor={edgeColor} signalColor={signalColor} backgroundColor={bg}
-            glowEffect={glow} interactive={interactive}
-            nodeRadius={nodeRadius} lineWidth={lineWidth} pulseDecay={pulseDecay}
-            glowBlur={glowBlur} wanderSpeed={wanderSpeed} animated={animated}
+            connectionRadius={connRadius} nodeRadius={nodeRadius} lineWidth={lineWidth}
+            speed={speed} pulseInterval={pulseInterval} pulseDecay={pulseDecay}
+            glowEffect={glowEffect} glowBlur={glowBlur} interactive={interactive}
+            animated={animated} wander={wander} wanderSpeed={wanderSpeed}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to fire a signal pulse</span></div>
@@ -3932,23 +4359,24 @@ function NeuralWebPanel() {
       <div className="controls">
         <CtrlHeader id="NeuralWeb" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "brain", "minimal", "plasma", "circuit"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "brain", "minimal", "plasma", "circuit"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Node color" value={nodeColor} onChange={setNodeColor} />
           <ColorPicker label="Edge color" value={edgeColor} onChange={setEdgeColor} />
           <ColorPicker label="Signal color" value={signalColor} onChange={setSignalColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Node count" value={nodeCount} min={10} max={100} step={5} onChange={setNodeCount} />
-          <Slider label="Node radius" value={nodeRadius} min={1} max={10} step={0.5} onChange={setNodeRadius} />
-          <Slider label="Connection radius" value={connectionRadius} min={50} max={300} step={10} onChange={setConnectionRadius} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
-          <Slider label="Signal speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
-          <Slider label="Pulse interval (ms)" value={pulseInterval} min={500} max={5000} step={100} onChange={setPulseInterval} />
+          <Slider label="Node count" value={nodeCount} min={5} max={100} step={5} onChange={setNodeCount} />
+          <Slider label="Connection radius" value={connRadius} min={50} max={400} step={10} onChange={setConnRadius} />
+          <Slider label="Node radius" value={nodeRadius} min={1} max={12} step={0.5} onChange={setNodeRadius} />
+          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.25} onChange={setLineWidth} />
+          <Slider label="Signal speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
+          <Slider label="Pulse interval ms" value={pulseInterval} min={200} max={5000} step={100} onChange={setPulseInt} />
           <Slider label="Pulse decay" value={pulseDecay} min={0.5} max={1} step={0.01} onChange={setPulseDecay} />
-          <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />
-          <Slider label="Wander speed" value={wanderSpeed} min={0} max={2} step={0.1} onChange={setWanderSpeed} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Slider label="Wander speed" value={wanderSpeed} min={0} max={2} step={0.05} onChange={setWanderSpeed} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={1} onChange={setGlowBlur} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
+          <Toggle label="Wander" value={wander} onChange={setWander} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -3956,45 +4384,80 @@ function NeuralWebPanel() {
   );
 }
 
+const PARTICLETEXT_PRESET_PARAMS = {
+  default: { color: "#ffffff", bg: "#111111", particleSize: 2,   repelRadius: 80,  repelForce: 5, snapSpeed: 0.12, glowEffect: false, glowBlur: 6 },
+  neon:    { color: "#00ffcc", bg: "#000000", particleSize: 2,   repelRadius: 80,  repelForce: 7, snapSpeed: 0.12, glowEffect: true,  glowBlur: 10 },
+  fire:    { color: "#f97316", bg: "#0a0200", particleSize: 2,   repelRadius: 80,  repelForce: 8, snapSpeed: 0.12, glowEffect: true,  glowBlur: 12 },
+  frost:   { color: "#93c5fd", bg: "#030712", particleSize: 2,   repelRadius: 100, repelForce: 5, snapSpeed: 0.08, glowEffect: true,  glowBlur: 8 },
+  gold:    { color: "#fbbf24", bg: "#0a0800", particleSize: 2,   repelRadius: 80,  repelForce: 5, snapSpeed: 0.12, glowEffect: true,  glowBlur: 14 },
+  minimal: { color: "#6b7280", bg: "#111111", particleSize: 1.5, repelRadius: 80,  repelForce: 3, snapSpeed: 0.12, glowEffect: false, glowBlur: 6 },
+};
+
 function ParticleTextPanel() {
   const [preset, setPreset] = useState("default");
   const [text, setText] = useState("hello");
   const [fontSize, setFontSize] = useState(120);
-  const [particleSize, setParticleSize] = useState(2);
-  const [particleGap, setParticleGap] = useState(4);
-  const [repelRadius, setRepelRadius] = useState(80);
-  const [repelForce, setRepelForce] = useState(5);
-  const [snapSpeed, setSnapSpeed] = useState(0.12);
-  const [friction, setFriction] = useState(0.85);
   const [color, setColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
-  const [glow, setGlow] = useState(false);
+  const [particleSize, setPSize] = useState(2);
+  const [particleGap, setPGap] = useState(4);
+  const [repelRadius, setRepRad] = useState(80);
+  const [repelForce, setRepForce] = useState(5);
+  const [snapSpeed, setSnap] = useState(0.12);
+  const [friction, setFriction] = useState(0.85);
+  const [glowEffect, setGlow] = useState(false);
   const [glowBlur, setGlowBlur] = useState(6);
   const [animated, setAnimated] = useState(true);
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { ParticleText } from 'own-the-canvas';
+  const [interactive, setInteract] = useState(true);
 
-<ParticleText
-  preset="${preset}"
-  text="${text}"
-  fontSize={${fontSize}}
-  particleSize={${particleSize}}
-  repelRadius={${repelRadius}}
-  snapSpeed={${snapSpeed}}
-  friction={${friction}}
-  glowBlur={${glowBlur}}
-  color="${color}"
-  interactive={${interactive}}
-  animated={${animated}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = PARTICLETEXT_PRESET_PARAMS[p as keyof typeof PARTICLETEXT_PRESET_PARAMS];
+    if (!pp) return;
+    setColor(pp.color);
+    setBg(pp.bg);
+    setPSize(pp.particleSize);
+    setRepRad(pp.repelRadius);
+    setRepForce(pp.repelForce);
+    setSnap(pp.snapSpeed);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+  }
+
+  const code = [
+    `import { ParticleText } from 'own-the-canvas';`,
+    ``,
+    `<ParticleText`,
+    `  preset="${preset}"`,
+    `  text="${text}"`,
+    `  fontSize={${fontSize}}`,
+    `  color="${color}"`,
+    `  backgroundColor="${bg}"`,
+    `  particleSize={${particleSize}}`,
+    `  particleGap={${particleGap}}`,
+    `  repelRadius={${repelRadius}}`,
+    `  repelForce={${repelForce}}`,
+    `  snapSpeed={${snapSpeed}}`,
+    `  friction={${friction}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  interactive={${interactive}}`,
+    `  animated={${animated}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <ParticleText preset={preset} text={text} fontSize={fontSize} particleSize={particleSize}
-            particleGap={particleGap} repelRadius={repelRadius} repelForce={repelForce}
+          <ParticleText preset={preset} text={text} fontSize={fontSize}
+            color={color} backgroundColor={bg}
+            particleSize={particleSize} particleGap={particleGap}
+            repelRadius={repelRadius} repelForce={repelForce}
             snapSpeed={snapSpeed} friction={friction}
-            color={color} backgroundColor={bg} glowEffect={glow} glowBlur={glowBlur}
+            glowEffect={glowEffect} glowBlur={glowBlur}
             animated={animated} interactive={interactive}
             width="100%" height="100%" />
         </div>
@@ -4004,7 +4467,7 @@ function ParticleTextPanel() {
       <div className="controls">
         <CtrlHeader id="ParticleText" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "fire", "frost", "gold", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "fire", "frost", "gold", "minimal"]} onChange={handlePreset} />
           <div className="ctrl-row">
             <label className="ctrl-label">Text</label>
             <input className="ctrl-text-input" value={text}
@@ -4012,18 +4475,18 @@ function ParticleTextPanel() {
               spellCheck={false} />
           </div>
           <Divider />
-          <ColorPicker label="Color" value={color} onChange={setColor} />
+          <ColorPicker label="Particle color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Font size" value={fontSize} min={40} max={200} step={10} onChange={setFontSize} />
-          <Slider label="Particle size" value={particleSize} min={1} max={6} step={0.5} onChange={setParticleSize} />
-          <Slider label="Particle gap" value={particleGap} min={2} max={12} step={1} onChange={setParticleGap} />
-          <Slider label="Repel radius" value={repelRadius} min={20} max={200} step={10} onChange={setRepelRadius} />
-          <Slider label="Repel force" value={repelForce} min={1} max={15} step={0.5} onChange={setRepelForce} />
-          <Slider label="Snap speed" value={snapSpeed} min={0.01} max={0.5} step={0.01} onChange={setSnapSpeed} />
+          <Slider label="Particle size" value={particleSize} min={0.5} max={5} step={0.5} onChange={setPSize} />
+          <Slider label="Particle gap" value={particleGap} min={2} max={12} step={1} onChange={setPGap} />
+          <Slider label="Repel radius" value={repelRadius} min={20} max={200} step={10} onChange={setRepRad} />
+          <Slider label="Repel force" value={repelForce} min={1} max={20} step={0.5} onChange={setRepForce} />
+          <Slider label="Snap speed" value={snapSpeed} min={0.01} max={0.5} step={0.01} onChange={setSnap} />
           <Slider label="Friction" value={friction} min={0.5} max={0.99} step={0.01} onChange={setFriction} />
-          <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={1} onChange={setGlowBlur} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
@@ -4031,32 +4494,75 @@ function ParticleTextPanel() {
   );
 }
 
+const METABALLS_PRESET_PARAMS = {
+  default: { color: "#ffffff", bg: "#111111", threshold: 1,   speed: 1,   minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 20 },
+  plasma:  { color: "#c084fc", bg: "#050010", threshold: 1,   speed: 1.5, minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 30 },
+  lava:    { color: "#f97316", bg: "#1a0000", threshold: 1,   speed: 0.5, minRadius: 50, maxRadius: 100, glowEffect: true,  glowBlur: 20 },
+  ocean:   { color: "#38bdf8", bg: "#020c17", threshold: 0.8, speed: 0.8, minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 15 },
+  neon:    { color: "#00ffcc", bg: "#000000", threshold: 1.1, speed: 2,   minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 25 },
+  ghost:   { color: "#e2e8f0", bg: "#111111", threshold: 0.9, speed: 0.3, minRadius: 60, maxRadius: 110, glowEffect: false, glowBlur: 20 },
+};
+
 function MetaballsPanel() {
   const [preset, setPreset] = useState("default");
   const [blobCount, setBlobCount] = useState(5);
-  const [speed, setSpeed] = useState(1);
-  const [minRadius, setMinRadius] = useState(40);
-  const [maxRadius, setMaxRadius] = useState(80);
-  const [threshold, setThreshold] = useState(1);
   const [color, setColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
-  const [glow, setGlow] = useState(true);
-  const code = `import { Metaballs } from 'own-the-canvas';
+  const [threshold, setThresh] = useState(1);
+  const [speed, setSpeed] = useState(1);
+  const [minRadius, setMinR] = useState(40);
+  const [maxRadius, setMaxR] = useState(80);
+  const [glowEffect, setGlow] = useState(true);
+  const [glowBlur, setGlowBlur] = useState(20);
+  const [resolution, setRes] = useState(0.4);
+  const [animated, setAnimated] = useState(true);
+  const [interactive, setInteract] = useState(true);
 
-<Metaballs
-  preset="${preset}"
-  blobCount={${blobCount}}
-  speed={${speed}}
-  threshold={${threshold}}
-  glowEffect={${glow}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = METABALLS_PRESET_PARAMS[p as keyof typeof METABALLS_PRESET_PARAMS];
+    if (!pp) return;
+    setColor(pp.color);
+    setBg(pp.bg);
+    setThresh(pp.threshold);
+    setSpeed(pp.speed);
+    setMinR(pp.minRadius);
+    setMaxR(pp.maxRadius);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+  }
+
+  const code = [
+    `import { Metaballs } from 'own-the-canvas';`,
+    ``,
+    `<Metaballs`,
+    `  preset="${preset}"`,
+    `  blobCount={${blobCount}}`,
+    `  color="${color}"`,
+    `  backgroundColor="${bg}"`,
+    `  threshold={${threshold}}`,
+    `  speed={${speed}}`,
+    `  minRadius={${minRadius}}`,
+    `  maxRadius={${maxRadius}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  resolution={${resolution}}`,
+    `  interactive={${interactive}}`,
+    `  animated={${animated}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <Metaballs preset={preset} blobCount={blobCount} speed={speed}
-            minRadius={minRadius} maxRadius={maxRadius} threshold={threshold}
-            color={color} backgroundColor={bg} glowEffect={glow}
+          <Metaballs preset={preset} blobCount={blobCount} color={color}
+            backgroundColor={bg} threshold={threshold} speed={speed}
+            minRadius={minRadius} maxRadius={maxRadius}
+            glowEffect={glowEffect} glowBlur={glowBlur}
+            resolution={resolution} interactive={interactive} animated={animated}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Drag to move · click to add</span></div>
@@ -4065,66 +4571,107 @@ function MetaballsPanel() {
       <div className="controls">
         <CtrlHeader id="Metaballs" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "lava", "ocean", "plasma"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "plasma", "lava", "ocean", "neon", "ghost"]} onChange={handlePreset} />
           <Divider />
-          <ColorPicker label="Color" value={color} onChange={setColor} />
+          <ColorPicker label="Blob color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Blob count" value={blobCount} min={2} max={12} step={1} onChange={setBlobCount} />
-          <Slider label="Speed" value={speed} min={0.1} max={4} step={0.1} onChange={setSpeed} />
-          <Slider label="Min radius" value={minRadius} min={15} max={80} step={5} onChange={setMinRadius} />
-          <Slider label="Max radius" value={maxRadius} min={30} max={150} step={5} onChange={setMaxRadius} />
-          <Slider label="Threshold" value={threshold} min={0.5} max={2} step={0.05} onChange={setThreshold} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Blob count" value={blobCount} min={1} max={12} step={1} onChange={setBlobCount} />
+          <Slider label="Threshold" value={threshold} min={0.3} max={2} step={0.05} onChange={setThresh} />
+          <Slider label="Speed" value={speed} min={0} max={5} step={0.1} onChange={setSpeed} />
+          <Slider label="Min radius" value={minRadius} min={10} max={150} step={5} onChange={setMinR} />
+          <Slider label="Max radius" value={maxRadius} min={10} max={200} step={5} onChange={setMaxR} />
+          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setRes} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={50} step={1} onChange={setGlowBlur} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
+          <Toggle label="Animated" value={animated} onChange={setAnimated} />
         </div>
       </div>
     </>
   );
 }
 
+const ANTCOLONY_PRESET_PARAMS = {
+  default: { antColor: "#ffffff", pheromoneColor: "#6b7280", foodColor: "#4ade80", nestColor: "#f59e0b", bg: "#111111", antCount: 150, antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 5 },
+  neon:    { antColor: "#ffffff", pheromoneColor: "#00ffcc", foodColor: "#f0abfc", nestColor: "#fbbf24", bg: "#000000", antCount: 150, antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 8 },
+  desert:  { antColor: "#451a03", pheromoneColor: "#d97706", foodColor: "#84cc16", nestColor: "#b45309", bg: "#fef3c7", antCount: 150, antSpeed: 2,   evaporationRate: 0.005, pheromoneStrength: 5 },
+  jungle:  { antColor: "#1a0a00", pheromoneColor: "#4ade80", foodColor: "#fbbf24", nestColor: "#7c3aed", bg: "#052e16", antCount: 200, antSpeed: 1,   evaporationRate: 0.003, pheromoneStrength: 5 },
+  minimal: { antColor: "#9ca3af", pheromoneColor: "#374151", foodColor: "#6b7280", nestColor: "#6b7280", bg: "#111111", antCount: 80,  antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 3 },
+  swarm:   { antColor: "#ffffff", pheromoneColor: "#6b7280", foodColor: "#4ade80", nestColor: "#f59e0b", bg: "#111111", antCount: 400, antSpeed: 2,   evaporationRate: 0.002, pheromoneStrength: 10 },
+};
+
 function AntColonyPanel() {
   const [preset, setPreset] = useState("default");
   const [antCount, setAntCount] = useState(150);
+  const [evapRate, setEvapRate] = useState(0.003);
+  const [diffRate, setDiffRate] = useState(0.1);
+  const [phStrength, setPhStrength] = useState(5);
   const [antSpeed, setAntSpeed] = useState(1.5);
-  const [evaporationRate, setEvaporationRate] = useState(0.003);
-  const [pheromoneStrength, setPheromoneStrength] = useState(5);
+  const [sensorAngle, setSensorAng] = useState(0.4);
+  const [sensorDist, setSensorDist] = useState(6);
+  const [turnSpeed, setTurnSpeed] = useState(0.3);
   const [antColor, setAntColor] = useState("#ffffff");
-  const [pheromoneColor, setPheromoneColor] = useState("#6b7280");
+  const [phColor, setPhColor] = useState("#6b7280");
   const [foodColor, setFoodColor] = useState("#4ade80");
   const [nestColor, setNestColor] = useState("#f59e0b");
   const [bg, setBg] = useState("#111111");
+  const [maxFood, setMaxFood] = useState(5);
   const [animated, setAnimated] = useState(true);
-  const [interactive, setInteractive] = useState(true);
-  const [diffusionRate, setDiffusionRate] = useState(0.1);
-  const [sensorAngle, setSensorAngle] = useState(0.4);
-  const [sensorDistance, setSensorDistance] = useState(6);
-  const [turnSpeed, setTurnSpeed] = useState(0.3);
-  const [resolution, setResolution] = useState(0.5);
-  const code = `import { AntColony } from 'own-the-canvas';
+  const [interactive, setInteract] = useState(true);
 
-<AntColony
-  preset="${preset}"
-  antCount={${antCount}}
-  antSpeed={${antSpeed}}
-  evaporationRate={${evaporationRate}}
-  diffusionRate={${diffusionRate}}
-  sensorAngle={${sensorAngle}}
-  sensorDistance={${sensorDistance}}
-  turnSpeed={${turnSpeed}}
-  resolution={${resolution}}
-  interactive={${interactive}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = ANTCOLONY_PRESET_PARAMS[p as keyof typeof ANTCOLONY_PRESET_PARAMS];
+    if (!pp) return;
+    setAntColor(pp.antColor);
+    setPhColor(pp.pheromoneColor);
+    setFoodColor(pp.foodColor);
+    setNestColor(pp.nestColor);
+    setBg(pp.bg);
+    setAntCount(pp.antCount);
+    setAntSpeed(pp.antSpeed);
+    setEvapRate(pp.evaporationRate);
+    setPhStrength(pp.pheromoneStrength);
+  }
+
+  const code = [
+    `import { AntColony } from 'own-the-canvas';`,
+    ``,
+    `<AntColony`,
+    `  preset="${preset}"`,
+    `  antCount={${antCount}}`,
+    `  evaporationRate={${evapRate}}`,
+    `  diffusionRate={${diffRate}}`,
+    `  pheromoneStrength={${phStrength}}`,
+    `  antSpeed={${antSpeed}}`,
+    `  sensorAngle={${sensorAngle}}`,
+    `  sensorDistance={${sensorDist}}`,
+    `  turnSpeed={${turnSpeed}}`,
+    `  antColor="${antColor}"`,
+    `  pheromoneColor="${phColor}"`,
+    `  foodColor="${foodColor}"`,
+    `  nestColor="${nestColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  maxFood={${maxFood}}`,
+    `  interactive={${interactive}}`,
+    `  animated={${animated}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <AntColony preset={preset} antCount={antCount} antSpeed={antSpeed}
-            evaporationRate={evaporationRate} pheromoneStrength={pheromoneStrength}
-            antColor={antColor} pheromoneColor={pheromoneColor}
+            evaporationRate={evapRate} pheromoneStrength={phStrength}
+            antColor={antColor} pheromoneColor={phColor}
             foodColor={foodColor} nestColor={nestColor}
             backgroundColor={bg} animated={animated} interactive={interactive}
-            diffusionRate={diffusionRate} sensorAngle={sensorAngle}
-            sensorDistance={sensorDistance} turnSpeed={turnSpeed}
-            resolution={resolution}
+            diffusionRate={diffRate} sensorAngle={sensorAngle}
+            sensorDistance={sensorDist} turnSpeed={turnSpeed}
+            maxFood={maxFood}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live simulation</span></div>
@@ -4133,70 +4680,106 @@ function AntColonyPanel() {
       <div className="controls">
         <CtrlHeader id="AntColony" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "dense"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "desert", "jungle", "minimal", "swarm"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Ant color" value={antColor} onChange={setAntColor} />
-          <ColorPicker label="Pheromone color" value={pheromoneColor} onChange={setPheromoneColor} />
+          <ColorPicker label="Pheromone color" value={phColor} onChange={setPhColor} />
           <ColorPicker label="Food color" value={foodColor} onChange={setFoodColor} />
           <ColorPicker label="Nest color" value={nestColor} onChange={setNestColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Ant count" value={antCount} min={20} max={500} step={10} onChange={setAntCount} />
-          <Slider label="Ant speed" value={antSpeed} min={0.5} max={4} step={0.25} onChange={setAntSpeed} />
-          <Slider label="Evaporation" value={evaporationRate} min={0.001} max={0.02} step={0.001} onChange={setEvaporationRate} />
-          <Slider label="Pheromone strength" value={pheromoneStrength} min={1} max={20} step={1} onChange={setPheromoneStrength} />
-          <Slider label="Diffusion rate" value={diffusionRate} min={0.01} max={0.3} step={0.01} onChange={setDiffusionRate} />
-          <Slider label="Sensor angle" value={sensorAngle} min={0.1} max={1} step={0.05} onChange={setSensorAngle} />
-          <Slider label="Sensor distance" value={sensorDistance} min={3} max={15} step={1} onChange={setSensorDistance} />
-          <Slider label="Turn speed" value={turnSpeed} min={0.1} max={0.8} step={0.05} onChange={setTurnSpeed} />
-          <Slider label="Resolution" value={resolution} min={0.2} max={0.8} step={0.1} onChange={setResolution} />
+          <Slider label="Ant speed" value={antSpeed} min={0.5} max={5} step={0.1} onChange={setAntSpeed} />
+          <Slider label="Evaporation rate" value={evapRate} min={0} max={0.02} step={0.001} onChange={setEvapRate} />
+          <Slider label="Diffusion rate" value={diffRate} min={0} max={0.5} step={0.01} onChange={setDiffRate} />
+          <Slider label="Pheromone strength" value={phStrength} min={1} max={30} step={1} onChange={setPhStrength} />
+          <Slider label="Sensor angle" value={sensorAngle} min={0.1} max={1.5} step={0.05} onChange={setSensorAng} />
+          <Slider label="Sensor distance" value={sensorDist} min={2} max={30} step={1} onChange={setSensorDist} />
+          <Slider label="Turn speed" value={turnSpeed} min={0.05} max={1} step={0.05} onChange={setTurnSpeed} />
+          <Slider label="Max food sources" value={maxFood} min={1} max={10} step={1} onChange={setMaxFood} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
   );
 }
 
+const MAGNETICFIELD_PRESET_PARAMS = {
+  default:  { positiveColor: "#ef4444", negativeColor: "#3b82f6", lineColor: "#6b7280", bg: "#111111", lineOpacity: 0.6, glowEffect: true,  glowBlur: 20, fieldLineCount: 16 },
+  neon:     { positiveColor: "#f43f5e", negativeColor: "#3b82f6", lineColor: "#00ffcc", bg: "#000000", lineOpacity: 0.8, glowEffect: true,  glowBlur: 25, fieldLineCount: 16 },
+  warm:     { positiveColor: "#f97316", negativeColor: "#fbbf24", lineColor: "#fed7aa", bg: "#0c0500", lineOpacity: 0.6, glowEffect: true,  glowBlur: 18, fieldLineCount: 16 },
+  mono:     { positiveColor: "#ffffff", negativeColor: "#6b7280", lineColor: "#9ca3af", bg: "#111111", lineOpacity: 0.5, glowEffect: false, glowBlur: 20, fieldLineCount: 16 },
+  electric: { positiveColor: "#38bdf8", negativeColor: "#a78bfa", lineColor: "#e0f2fe", bg: "#020c14", lineOpacity: 0.6, glowEffect: true,  glowBlur: 30, fieldLineCount: 24 },
+  minimal:  { positiveColor: "#ef4444", negativeColor: "#3b82f6", lineColor: "#4b5563", bg: "#111111", lineOpacity: 0.4, glowEffect: false, glowBlur: 20, fieldLineCount: 10 },
+};
+
 function MagneticFieldPanel() {
-  const [fieldLineCount, setFieldLineCount] = useState(16);
+  const [preset, setPreset] = useState("default");
+  const [fieldLines, setFieldLines] = useState(16);
   const [stepSize, setStepSize] = useState(4);
+  const [maxSteps, setMaxSteps] = useState(400);
+  const [posColor, setPosColor] = useState("#ef4444");
+  const [negColor, setNegColor] = useState("#3b82f6");
   const [lineColor, setLineColor] = useState("#6b7280");
-  const [positiveColor, setPositiveColor] = useState("#ef4444");
-  const [negativeColor, setNegativeColor] = useState("#3b82f6");
   const [bg, setBg] = useState("#111111");
   const [lineWidth, setLineWidth] = useState(1);
-  const [lineOpacity, setLineOpacity] = useState(0.6);
-  const [glow, setGlow] = useState(true);
-  const [glowBlur, setGlowBlur] = useState(20);
-  const [maxSteps, setMaxSteps] = useState(400);
+  const [lineOpacity, setOpacity] = useState(0.6);
   const [poleRadius, setPoleRadius] = useState(12);
-  const [maxPoles, setMaxPoles] = useState(6);
+  const [glowEffect, setGlow] = useState(true);
+  const [glowBlur, setGlowBlur] = useState(20);
   const [animated, setAnimated] = useState(false);
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { MagneticField } from 'own-the-canvas';
+  const [interactive, setInteract] = useState(true);
+  const [maxPoles, setMaxPoles] = useState(6);
 
-<MagneticField
-  fieldLineCount={${fieldLineCount}}
-  stepSize={${stepSize}}
-  lineColor="${lineColor}"
-  maxSteps={${maxSteps}}
-  poleRadius={${poleRadius}}
-  maxPoles={${maxPoles}}
-  glowEffect={${glow}}
-  glowBlur={${glowBlur}}
-  animated={${animated}}
-  interactive={${interactive}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = MAGNETICFIELD_PRESET_PARAMS[p as keyof typeof MAGNETICFIELD_PRESET_PARAMS];
+    if (!pp) return;
+    setPosColor(pp.positiveColor);
+    setNegColor(pp.negativeColor);
+    setLineColor(pp.lineColor);
+    setBg(pp.bg);
+    setOpacity(pp.lineOpacity);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+    setFieldLines(pp.fieldLineCount);
+  }
+
+  const code = [
+    `import { MagneticField } from 'own-the-canvas';`,
+    ``,
+    `<MagneticField`,
+    `  preset="${preset}"`,
+    `  fieldLineCount={${fieldLines}}`,
+    `  stepSize={${stepSize}}`,
+    `  maxSteps={${maxSteps}}`,
+    `  positiveColor="${posColor}"`,
+    `  negativeColor="${negColor}"`,
+    `  lineColor="${lineColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  lineWidth={${lineWidth}}`,
+    `  lineOpacity={${lineOpacity}}`,
+    `  poleRadius={${poleRadius}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  animated={${animated}}`,
+    `  interactive={${interactive}}`,
+    `  maxPoles={${maxPoles}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <MagneticField fieldLineCount={fieldLineCount} stepSize={stepSize}
-            lineColor={lineColor} positiveColor={positiveColor} negativeColor={negativeColor}
-            backgroundColor={bg} lineWidth={lineWidth} lineOpacity={lineOpacity}
-            glowEffect={glow} glowBlur={glowBlur} maxSteps={maxSteps}
-            poleRadius={poleRadius} maxPoles={maxPoles}
-            animated={animated} interactive={interactive}
+          <MagneticField preset={preset} fieldLineCount={fieldLines} stepSize={stepSize}
+            maxSteps={maxSteps} positiveColor={posColor} negativeColor={negColor}
+            lineColor={lineColor} backgroundColor={bg} lineWidth={lineWidth}
+            lineOpacity={lineOpacity} poleRadius={poleRadius}
+            glowEffect={glowEffect} glowBlur={glowBlur}
+            animated={animated} interactive={interactive} maxPoles={maxPoles}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Drag poles · click to add · right-click to remove</span></div>
@@ -4205,26 +4788,37 @@ function MagneticFieldPanel() {
       <div className="controls">
         <CtrlHeader id="MagneticField" />
         <div className="ctrl-body">
-          <ColorPicker label="N-pole color" value={positiveColor} onChange={setPositiveColor} />
-          <ColorPicker label="S-pole color" value={negativeColor} onChange={setNegativeColor} />
-          <ColorPicker label="Field line color" value={lineColor} onChange={setLineColor} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "warm", "mono", "electric", "minimal"]} onChange={handlePreset} />
+          <Divider />
+          <ColorPicker label="N-pole color" value={posColor} onChange={setPosColor} />
+          <ColorPicker label="S-pole color" value={negColor} onChange={setNegColor} />
+          <ColorPicker label="Line color" value={lineColor} onChange={setLineColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Field lines" value={fieldLineCount} min={4} max={32} step={4} onChange={setFieldLineCount} />
-          <Slider label="Step size" value={stepSize} min={1} max={10} step={1} onChange={setStepSize} />
-          <Slider label="Max steps" value={maxSteps} min={100} max={800} step={50} onChange={setMaxSteps} />
-          <Slider label="Pole radius" value={poleRadius} min={5} max={25} step={1} onChange={setPoleRadius} />
-          <Slider label="Max poles" value={maxPoles} min={2} max={10} step={1} onChange={setMaxPoles} />
+          <Slider label="Field lines" value={fieldLines} min={4} max={36} step={2} onChange={setFieldLines} />
+          <Slider label="Step size" value={stepSize} min={1} max={10} step={0.5} onChange={setStepSize} />
+          <Slider label="Max steps" value={maxSteps} min={50} max={800} step={50} onChange={setMaxSteps} />
           <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.25} onChange={setLineWidth} />
-          <Slider label="Line opacity" value={lineOpacity} min={0.1} max={1} step={0.05} onChange={setLineOpacity} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={2} onChange={setGlowBlur} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Line opacity" value={lineOpacity} min={0.1} max={1} step={0.05} onChange={setOpacity} />
+          <Slider label="Pole radius" value={poleRadius} min={6} max={30} step={1} onChange={setPoleRadius} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={50} step={1} onChange={setGlowBlur} />
+          <Slider label="Max poles" value={maxPoles} min={2} max={8} step={1} onChange={setMaxPoles} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
   );
 }
+
+const TERRAINMESH_PRESET_PARAMS = {
+  default:  { wireColor: "#ffffff", bg: "#111111", heightScale: 120, noiseScale: 0.12, glowEffect: false, glowBlur: 8, colorByHeight: true,  lineWidth: 0.5 },
+  volcanic: { wireColor: "#ef4444", bg: "#0a0000", heightScale: 160, noiseScale: 0.12, glowEffect: true,  glowBlur: 10, colorByHeight: true, lineWidth: 0.5 },
+  arctic:   { wireColor: "#bae6fd", bg: "#020c17", heightScale: 80,  noiseScale: 0.08, glowEffect: true,  glowBlur: 8,  colorByHeight: true, lineWidth: 0.5 },
+  neon:     { wireColor: "#00ffcc", bg: "#000000", heightScale: 140, noiseScale: 0.12, glowEffect: true,  glowBlur: 12, colorByHeight: false, lineWidth: 0.75 },
+  golden:   { wireColor: "#fbbf24", bg: "#0a0800", heightScale: 100, noiseScale: 0.12, glowEffect: true,  glowBlur: 8,  colorByHeight: true, lineWidth: 0.5 },
+  minimal:  { wireColor: "#4b5563", bg: "#111111", heightScale: 60,  noiseScale: 0.12, glowEffect: false, glowBlur: 8,  colorByHeight: false, lineWidth: 0.5 },
+};
 
 function TerrainMeshPanel() {
   const [preset, setPreset] = useState("default");
@@ -4234,39 +4828,64 @@ function TerrainMeshPanel() {
   const [heightScale, setHeightScale] = useState(120);
   const [wireColor, setWireColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
-  const [autoRotate, setAutoRotate] = useState(true);
-  const [glow, setGlow] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(10);
   const [fov, setFov] = useState(500);
-  const [rotateX, setRotateX] = useState(0.4);
-  const [autoRotateSpeed, setAutoRotateSpeed] = useState(0.003);
-  const [lineWidth, setLineWidth] = useState(0.5);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [autoRotSpeed, setAutoRotSpd] = useState(0.003);
+  const [glowEffect, setGlow] = useState(false);
+  const [glowBlur, setGlowBlur] = useState(8);
+  const [interactive, setInteract] = useState(true);
   const [animated, setAnimated] = useState(true);
-  const [interactive, setInteractive] = useState(true);
-  const code = `import { TerrainMesh } from 'own-the-canvas';
+  const [lineWidth, setLineWidth] = useState(0.5);
+  const [colorByH, setColorByH] = useState(true);
 
-<TerrainMesh
-  preset="${preset}"
-  gridCols={${gridCols}}
-  noiseScale={${noiseScale}}
-  heightScale={${heightScale}}
-  fov={${fov}}
-  rotateX={${rotateX}}
-  autoRotateSpeed={${autoRotateSpeed}}
-  lineWidth={${lineWidth}}
-  autoRotate={${autoRotate}}
-  animated={${animated}}
-  interactive={${interactive}}
-/>`;
+  function handlePreset(p: string) {
+    setPreset(p);
+    const pp = TERRAINMESH_PRESET_PARAMS[p as keyof typeof TERRAINMESH_PRESET_PARAMS];
+    if (!pp) return;
+    setWireColor(pp.wireColor);
+    setBg(pp.bg);
+    setHeightScale(pp.heightScale);
+    setNoiseScale(pp.noiseScale);
+    setGlow(pp.glowEffect);
+    setGlowBlur(pp.glowBlur);
+    setColorByH(pp.colorByHeight);
+    setLineWidth(pp.lineWidth);
+  }
+
+  const code = [
+    `import { TerrainMesh } from 'own-the-canvas';`,
+    ``,
+    `<TerrainMesh`,
+    `  preset="${preset}"`,
+    `  gridCols={${gridCols}}`,
+    `  gridRows={${gridRows}}`,
+    `  noiseScale={${noiseScale}}`,
+    `  heightScale={${heightScale}}`,
+    `  wireColor="${wireColor}"`,
+    `  backgroundColor="${bg}"`,
+    `  fov={${fov}}`,
+    `  autoRotate={${autoRotate}}`,
+    `  autoRotateSpeed={${autoRotSpeed}}`,
+    `  glowEffect={${glowEffect}}`,
+    `  glowBlur={${glowBlur}}`,
+    `  lineWidth={${lineWidth}}`,
+    `  colorByHeight={${colorByH}}`,
+    `  interactive={${interactive}}`,
+    `  animated={${animated}}`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <TerrainMesh preset={preset} gridCols={gridCols} gridRows={gridRows}
             noiseScale={noiseScale} heightScale={heightScale} wireColor={wireColor}
-            backgroundColor={bg} autoRotate={autoRotate} glowEffect={glow}
-            glowBlur={glowBlur} fov={fov} rotateX={rotateX}
-            autoRotateSpeed={autoRotateSpeed} lineWidth={lineWidth}
+            backgroundColor={bg} fov={fov} autoRotate={autoRotate}
+            autoRotateSpeed={autoRotSpeed} glowEffect={glowEffect} glowBlur={glowBlur}
+            lineWidth={lineWidth} colorByHeight={colorByH}
             animated={animated} interactive={interactive}
             width="100%" height="100%" />
         </div>
@@ -4276,23 +4895,23 @@ function TerrainMeshPanel() {
       <div className="controls">
         <CtrlHeader id="TerrainMesh" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "mountain", "ocean", "desert", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "volcanic", "arctic", "neon", "golden", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Wire color" value={wireColor} onChange={setWireColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Grid cols" value={gridCols} min={10} max={80} step={5} onChange={setGridCols} />
-          <Slider label="Grid rows" value={gridRows} min={10} max={60} step={5} onChange={setGridRows} />
+          <Slider label="Grid columns" value={gridCols} min={5} max={80} step={5} onChange={setGridCols} />
+          <Slider label="Grid rows" value={gridRows} min={5} max={60} step={5} onChange={setGridRows} />
           <Slider label="Noise scale" value={noiseScale} min={0.02} max={0.5} step={0.01} onChange={setNoiseScale} />
-          <Slider label="Height scale" value={heightScale} min={20} max={300} step={10} onChange={setHeightScale} />
-          <Slider label="FOV" value={fov} min={200} max={1000} step={50} onChange={setFov} />
-          <Slider label="Rotate X" value={rotateX} min={0} max={1.5} step={0.05} onChange={setRotateX} />
-          <Slider label="Auto-rotate speed" value={autoRotateSpeed} min={0.001} max={0.01} step={0.001} onChange={setAutoRotateSpeed} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={3} step={0.25} onChange={setLineWidth} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={20} step={2} onChange={setGlowBlur} />
-          <Toggle label="Auto rotate" value={autoRotate} onChange={setAutoRotate} />
-          <Toggle label="Glow" value={glow} onChange={setGlow} />
+          <Slider label="Height scale" value={heightScale} min={10} max={300} step={10} onChange={setHeightScale} />
+          <Slider label="FOV" value={fov} min={100} max={1000} step={50} onChange={setFov} />
+          <Slider label="Rotate speed" value={autoRotSpeed} min={0} max={0.02} step={0.001} onChange={setAutoRotSpd} />
+          <Slider label="Line width" value={lineWidth} min={0.25} max={3} step={0.25} onChange={setLineWidth} />
+          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={1} onChange={setGlowBlur} />
+          <Toggle label="Auto-rotate" value={autoRotate} onChange={setAutoRotate} />
+          <Toggle label="Color by height" value={colorByH} onChange={setColorByH} />
+          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -4624,7 +5243,7 @@ const PANELS: Record<ComponentId, React.FC> = {
 export default function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const paramId = searchParams.get("component") as ComponentId | null;
-  const initial: ComponentId = (paramId && ALL_COMPONENTS.includes(paramId)) ? paramId : "MatrixRain";
+  const initial: ComponentId = (paramId && ALL_COMPONENTS.includes(paramId)) ? paramId : ALL_COMPONENTS[0];
   const [active, setActive] = useState<ComponentId>(initial);
   const [code, setCode] = useState("");
   const [showCode, setShowCode] = useState(false);

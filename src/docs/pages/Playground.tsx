@@ -14,9 +14,14 @@ const CSS = `
   justify-content: space-between;
   padding: 0 20px;
   height: var(--topbar-h);
+  min-height: 44px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   background: var(--bg);
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .playground-topbar-title {
@@ -26,6 +31,7 @@ const CSS = `
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .playground-topbar-badge {
@@ -42,6 +48,23 @@ const CSS = `
 .playground-topbar-note {
   font-size: 12px;
   color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .playground-topbar {
+    padding: 8px 14px;
+    height: auto;
+  }
+  .playground-topbar-title {
+    font-size: 13px;
+  }
+  .playground-topbar-note {
+    font-size: 11px;
+    width: 100%;
+  }
 }
 
 .playground-frame {
