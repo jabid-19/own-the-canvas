@@ -20,7 +20,7 @@ interface MagneticBlobPresetValues {
   wanderStrength?: number;
 }
 
-const PRESETS: Record<MagneticBlobPreset, MagneticBlobPresetValues> = {
+export const PRESETS: Record<MagneticBlobPreset, MagneticBlobPresetValues> = {
   default: {
     count: 5,
     colors: ["#ffffff", "#6b7280"],

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { FluidSimulation } from "../../../components/FluidSimulation";
+import { FluidSimulation, PRESETS as FLUID_PRESETS } from "../../../components/FluidSimulation";
 
 const PROPS = [
   { name: "resolution",      type: "number",  default: "80",        description: "Grid resolution 32–128. Lower = faster, coarser." },
@@ -26,6 +26,17 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [mouseForce, setMouseForce] = useState(5);
   const [bg, setBg] = useState("#111111");
   const [inkColors, setInkColors] = useState(["#ffffff", "#6b7280"]);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = FLUID_PRESETS[p as keyof typeof FLUID_PRESETS] ?? {};
+    if (v.resolution !== undefined)  setResolution(v.resolution);
+    if (v.dissipation !== undefined) setDissipation(v.dissipation);
+    if (v.autoInk !== undefined)     setAutoInk(v.autoInk);
+    if (v.mouseForce !== undefined)  setMouseForce(v.mouseForce);
+    if (v.backgroundColor)           setBg(v.backgroundColor);
+    if (v.inkColors)                 setInkColors(v.inkColors);
+  }
 
   const code = [
     `import { FluidSimulation } from 'own-the-canvas';`,
@@ -55,7 +66,7 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />

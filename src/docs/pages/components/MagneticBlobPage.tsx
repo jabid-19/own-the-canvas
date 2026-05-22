@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { MagneticBlob } from "../../../components/MagneticBlob";
+import { MagneticBlob, PRESETS as BLOB_PRESETS } from "../../../components/MagneticBlob";
 
 const PROPS = [
   { name: "count",           type: "number",  default: "5",         description: "Number of blobs." },
@@ -30,6 +30,18 @@ function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
   const [colors, setColors] = useState(["#ffffff"]);
   const [followMouse, setFollowMouse] = useState(true);
   const [glow, setGlow] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = BLOB_PRESETS[p as keyof typeof BLOB_PRESETS] ?? {};
+    if (v.count !== undefined)       setCount(v.count);
+    if (v.radius !== undefined)      setRadius(v.radius);
+    if (v.threshold !== undefined)   setThreshold(v.threshold);
+    if (v.backgroundColor)           setBg(v.backgroundColor);
+    if (v.colors)                    setColors(v.colors);
+    if (v.followMouse !== undefined) setFollowMouse(v.followMouse);
+    if (v.glowEffect !== undefined)  setGlow(v.glowEffect);
+  }
 
   const code = [
     `import { MagneticBlob } from 'own-the-canvas';`,
@@ -60,7 +72,7 @@ function MagneticBlobPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />

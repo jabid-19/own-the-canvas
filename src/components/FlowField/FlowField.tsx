@@ -13,7 +13,7 @@ interface FlowFieldPresetValues {
   curl?: boolean;
 }
 
-const PRESETS: Record<FlowFieldPreset, FlowFieldPresetValues> = {
+export const PRESETS: Record<FlowFieldPreset, FlowFieldPresetValues> = {
   default: {
     colors: ["#ffffff", "#6b7280", "#9ca3af"],
     backgroundColor: "#111111",

@@ -19,7 +19,7 @@ interface FluidPresetValues {
   inkRadius?: number;
 }
 
-const PRESETS: Record<FluidPreset, FluidPresetValues> = {
+export const PRESETS: Record<FluidPreset, FluidPresetValues> = {
   default: {
     resolution: 80,
     viscosity: 0.0001,

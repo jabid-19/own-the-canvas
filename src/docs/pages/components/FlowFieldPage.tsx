@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageShell } from "../../components/PageShell";
 import { PropsTable } from "../../components/PropsTable";
 import { PlaygroundShell, PSel, PSlider, PColor, PColorArray, PToggle, PDivider, PLiveLabel } from "../../components/PlaygroundControls";
-import { FlowField } from "../../../components/FlowField";
+import { FlowField, PRESETS as FLOWFIELD_PRESETS } from "../../../components/FlowField";
 
 const PROPS = [
   { name: "particleCount",   type: "number",   default: "800",       description: "Number of flow particles." },
@@ -27,6 +27,16 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [lineWidth, setLineWidth] = useState(1);
   const [bg, setBg] = useState("#111111");
   const [colors, setColors] = useState(["#ffffff"]);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = FLOWFIELD_PRESETS[p as keyof typeof FLOWFIELD_PRESETS] ?? {};
+    if (v.colors)              setColors(v.colors);
+    if (v.backgroundColor)     setBg(v.backgroundColor);
+    if (v.speed !== undefined) setSpeed(v.speed);
+    if (v.curl !== undefined)  setCurl(v.curl);
+    if (v.particleCount)       setCount(v.particleCount);
+  }
 
   const code = [
     `import { FlowField } from 'own-the-canvas';`,
@@ -56,7 +66,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />

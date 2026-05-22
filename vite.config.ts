@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
         ? [
             dts({
               include: ["src/components/**", "src/hooks/**", "src/types/**", "src/index.ts"],
-              outDir: "dist",
+              outDir: "lib",
               insertTypesEntry: true,
             }),
           ]
@@ -28,6 +28,8 @@ export default defineConfig(({ mode }) => {
             formats: ["es", "cjs"],
             fileName: (format) => `index.${format === "es" ? "es" : "cjs"}.js`,
           },
+          outDir: "lib",
+          copyPublicDir: false,
           rollupOptions: {
             external: ["react", "react-dom", "react/jsx-runtime"],
             output: {
