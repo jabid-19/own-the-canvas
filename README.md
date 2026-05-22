@@ -4,7 +4,7 @@
 
 # own-the-canvas
 
-**52 canvas-based React visual components. Zero dependencies. TypeScript.**
+**50+ canvas-based React visual components. Zero dependencies. TypeScript.**
 
 [![npm version](https://img.shields.io/npm/v/own-the-canvas?style=flat-square&color=555555)](https://www.npmjs.com/package/own-the-canvas)
 [![license](https://img.shields.io/npm/l/own-the-canvas?style=flat-square&color=555555)](LICENSE)
