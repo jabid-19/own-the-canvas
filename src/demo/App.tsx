@@ -8,7 +8,7 @@ import { AudioVisualizer } from "../components/AudioVisualizer";
 import { Confetti } from "../components/Confetti";
 import { NoiseGradient } from "../components/NoiseGradient";
 import { PixelDissolve } from "../components/PixelDissolve";
-import { FlowField } from "../components/FlowField";
+import { FlowField, PRESETS as FLOWFIELD_PRESETS } from "../components/FlowField";
 import { Spotlight } from "../components/Spotlight";
 import { Shockwave } from "../components/Shockwave";
 import { Fireworks } from "../components/Fireworks";
@@ -16,7 +16,7 @@ import { GlitchOverlay } from "../components/GlitchOverlay";
 import { LiveChart } from "../components/LiveChart";
 import type { LiveChartSeries } from "../components/LiveChart";
 import { Mandala } from "../components/Mandala";
-import { MagneticBlob } from "../components/MagneticBlob";
+import { MagneticBlob, PRESETS as BLOB_PRESETS } from "../components/MagneticBlob";
 import { ClothSimulation } from "../components/ClothSimulation";
 import { FluidSimulation } from "../components/FluidSimulation";
 import { Rain } from "../components/Rain";
@@ -432,6 +432,21 @@ const GLOBAL_CSS = `
     transition: all 150ms; white-space: nowrap;
   }
   .code-view-btn:hover { border-color: var(--border-mid); color: var(--text-1); background: var(--surface-hov); }
+  .ctrl-reset-bar {
+    display: flex; justify-content: flex-end; align-items: center;
+    padding: 6px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  .ctrl-reset-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px;
+    background: var(--bg-base); border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer; font-size: 12px;
+    font-weight: 500; font-family: var(--font); color: var(--text-2);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ctrl-reset-btn:hover { color: var(--text-1); border-color: var(--border-mid); }
   .code-block-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 8px 14px;
@@ -1126,9 +1141,54 @@ function Sel<T extends string>({ label, value, options, onChange }: {
 
 function Divider() { return <div className="ctl-divider" />; }
 
+function ColorArrayPicker({ label, value, onChange }: {
+  label: string; value: string[]; onChange: (v: string[]) => void;
+}) {
+  const add = () => onChange([...value, "#ffffff"]);
+  const remove = () => { if (value.length > 1) onChange(value.slice(0, -1)); };
+  const update = (i: number, c: string) => {
+    const next = [...value];
+    next[i] = c;
+    onChange(next);
+  };
+  const btnStyle: React.CSSProperties = {
+    width: 18, height: 18, borderRadius: 4, border: "1px solid var(--border-mid)",
+    background: "var(--surface)", color: "var(--text-2)", cursor: "pointer",
+    display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0,
+  };
+  return (
+    <div style={{ padding: "7px 0" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+        <span style={{ fontSize: 11, fontWeight: 500, color: "var(--text-2)", flex: "none" }}>{label}</span>
+        <button onClick={remove} disabled={value.length <= 1} aria-label="Remove color"
+          style={{ ...btnStyle, opacity: value.length <= 1 ? 0.35 : 1, cursor: value.length <= 1 ? "not-allowed" : "pointer" }}>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </button>
+        <button onClick={add} aria-label="Add color" style={btnStyle}>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {value.map((c, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="color" value={c} onChange={(e) => update(i, e.target.value)}
+              style={{ width: 28, height: 24, border: "1px solid var(--border-mid)", borderRadius: 5, cursor: "pointer", padding: 2, background: "var(--bg-overlay)" }} />
+            <span style={{ fontSize: 10, color: "var(--text-3)" }}>{c.toUpperCase()}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Code context ─────────────────────────────────────────────────────────────
-interface CodeContextValue { code: string; setCode: (c: string) => void; showCode: boolean; setShowCode: (v: boolean) => void; }
-const CodeContext = React.createContext<CodeContextValue>({ code: "", setCode: () => {}, showCode: false, setShowCode: () => {} });
+interface CodeContextValue { code: string; setCode: (c: string) => void; showCode: boolean; setShowCode: (v: boolean) => void; onReset: () => void; }
+const CodeContext = React.createContext<CodeContextValue>({ code: "", setCode: () => {}, showCode: false, setShowCode: () => {}, onReset: () => {} });
 
 // ─── Code snippet ─────────────────────────────────────────────────────────────
 function CodeSnippet({ code }: { code: string }) {
@@ -1471,6 +1531,8 @@ function FireEffectPanel() {
         <div className="ctrl-body">
           <Sel label="Palette" value={palette} options={["smoke", "inferno", "toxic", "ice", "plasma"]} onChange={setPalette} />
           <Divider />
+          <ColorArrayPicker label="Custom Colors (≥2 overrides palette)" value={customColors} onChange={setCustomColors} />
+          <Divider />
           <div className="ctl-section">
             <Slider label="Intensity" value={intensity} min={0.1} max={1} step={0.05} onChange={setIntensity} />
             <Slider label="Wind strength" value={wind} min={0} max={1} step={0.05} onChange={setWind} />
@@ -1803,6 +1865,16 @@ function FlowFieldPanel() {
   const [bg, setBg] = useState("#111111");
   const [colors, setColors] = useState(["#ffffff"]);
 
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = FLOWFIELD_PRESETS[p as keyof typeof FLOWFIELD_PRESETS] ?? {};
+    if (v.colors)              setColors(v.colors);
+    if (v.backgroundColor)     setBg(v.backgroundColor);
+    if (v.speed !== undefined) setSpeed(v.speed);
+    if (v.curl !== undefined)  setCurl(v.curl);
+    if (v.particleCount)       setCount(v.particleCount);
+  }
+
   const code = [
     `import { FlowField } from 'own-the-canvas';`,
     ``,
@@ -1833,9 +1905,12 @@ function FlowFieldPanel() {
       <div className="controls">
         <CtrlHeader id="FlowField" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "ocean", "lava", "forest", "monochrome"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Divider />
+          <ColorArrayPicker label="Colors" value={colors} onChange={setColors} />
+          <Divider />
           <Slider label="Particle count" value={count} min={100} max={2000} step={50} onChange={setCount} />
           <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
           <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
@@ -2172,6 +2247,9 @@ function MandalaPanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Divider />
+          <ColorArrayPicker label="Colors" value={colors} onChange={setColors} />
+          <Divider />
           <Slider label="Symmetry arms" value={symmetry} min={3} max={24} step={1} onChange={setSymmetry} />
           <Slider label="Layers" value={layers} min={1} max={8} step={1} onChange={setLayers} />
           <Slider label="Speed" value={speed} min={0} max={3} step={0.1} onChange={setSpeed} />
@@ -2192,6 +2270,18 @@ function MagneticBlobPanel() {
   const [colors, setColors] = useState(["#ffffff"]);
   const [followMouse, setFollowMouse] = useState(true);
   const [glow, setGlow] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = BLOB_PRESETS[p as keyof typeof BLOB_PRESETS] ?? {};
+    if (v.count !== undefined)       setCount(v.count);
+    if (v.radius !== undefined)      setRadius(v.radius);
+    if (v.threshold !== undefined)   setThreshold(v.threshold);
+    if (v.backgroundColor)           setBg(v.backgroundColor);
+    if (v.colors)                    setColors(v.colors);
+    if (v.followMouse !== undefined) setFollowMouse(v.followMouse);
+    if (v.glowEffect !== undefined)  setGlow(v.glowEffect);
+  }
 
   const code = [
     `import { MagneticBlob } from 'own-the-canvas';`,
@@ -2224,9 +2314,12 @@ function MagneticBlobPanel() {
       <div className="controls">
         <CtrlHeader id="MagneticBlob" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Divider />
+          <ColorArrayPicker label="Blob Colors" value={colors} onChange={setColors} />
+          <Divider />
           <Slider label="Blob count" value={count} min={2} max={10} step={1} onChange={setCount} />
           <Slider label="Radius" value={radius} min={30} max={150} step={5} onChange={setRadius} />
           <Slider label="Merge threshold" value={threshold} min={1} max={3} step={0.05} onChange={setThreshold} />
@@ -2330,6 +2423,9 @@ function FluidSimulationPanel() {
           <Sel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={setPreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Divider />
+          <ColorArrayPicker label="Ink Colors" value={inkColors} onChange={setInkColors} />
+          <Divider />
           <Slider label="Resolution" value={resolution} min={32} max={128} step={8} onChange={setResolution} />
           <Slider label="Dissipation" value={dissipation} min={0.97} max={0.999} step={0.001} onChange={setDissipation} />
           <Slider label="Mouse force" value={mouseForce} min={1} max={15} step={1} onChange={setMouseForce} />
@@ -2556,6 +2652,9 @@ function WormholePanel() {
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
+          <Divider />
+          <ColorArrayPicker label="Ring Colors" value={colors} onChange={setColors} />
+          <Divider />
           <Slider label="Speed" value={speed} min={0.2} max={5} step={0.1} onChange={setSpeed} />
           <Slider label="Twist" value={twist} min={0} max={2} step={0.05} onChange={setTwist} />
           <Slider label="Ring count" value={ringCount} min={10} max={60} step={5} onChange={setRingCount} />
@@ -3149,6 +3248,9 @@ function SpirographPanel() {
           <Sel label="Preset" value={preset} options={["default", "neon", "prismatic", "mandala", "cosmic", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Divider />
+          <ColorArrayPicker label="Colors" value={colors} onChange={setColors} />
+          <Divider />
           <Slider label="Inner radius" value={innerRadius} min={0.1} max={0.9} step={0.01} onChange={setInnerRadius} />
           <Slider label="Pen distance" value={penDistance} min={0.1} max={1.5} step={0.05} onChange={setPenDistance} />
           <Slider label="Speed (deg/frame)" value={speed} min={0.1} max={8} step={0.1} onChange={setSpeed} />
@@ -5168,18 +5270,23 @@ function SolarFlarePanel() {
 function CtrlHeader({ id }: { id: ComponentId }) {
   const meta = COMPONENT_META[id];
   const icon = icons[id];
-  const { setShowCode } = React.useContext(CodeContext);
+  const { setShowCode, onReset } = React.useContext(CodeContext);
   return (
-    <div className="ctrl-head">
-      <div className="ctrl-head-top">
-        <div className="ctrl-component-icon" style={{ background: meta.accent + "22", color: meta.accent }}>
-          {icon}
+    <>
+      <div className="ctrl-head">
+        <div className="ctrl-head-top">
+          <div className="ctrl-component-icon" style={{ background: meta.accent + "22", color: meta.accent }}>
+            {icon}
+          </div>
+          <span className="ctrl-name">{id}</span>
+          <button className="code-view-btn" onClick={() => setShowCode(true)}>{"</>"}</button>
         </div>
-        <span className="ctrl-name">{id}</span>
-        <button className="code-view-btn" onClick={() => setShowCode(true)}>{"</>"}</button>
+        <p className="ctrl-desc">{meta.desc}</p>
       </div>
-      <p className="ctrl-desc">{meta.desc}</p>
-    </div>
+      <div className="ctrl-reset-bar">
+        <button className="ctrl-reset-btn" onClick={onReset}>↺ Reset</button>
+      </div>
+    </>
   );
 }
 
@@ -5247,6 +5354,7 @@ export default function App() {
   const [active, setActive] = useState<ComponentId>(initial);
   const [code, setCode] = useState("");
   const [showCode, setShowCode] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
   const Panel = PANELS[active];
 
   function selectComponent(id: ComponentId) {
@@ -5255,8 +5363,12 @@ export default function App() {
     setSearchParams({ component: id }, { replace: true });
   }
 
+  function handleReset() {
+    setResetKey((k) => k + 1);
+  }
+
   return (
-    <CodeContext.Provider value={{ code, setCode, showCode, setShowCode }}>
+    <CodeContext.Provider value={{ code, setCode, showCode, setShowCode, onReset: handleReset }}>
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
       <div className="app">
 
@@ -5299,7 +5411,7 @@ export default function App() {
 
         {/* Workspace */}
         <main className="workspace" role="main">
-          <Panel />
+          <Panel key={`${active}-${resetKey}`} />
         </main>
 
       </div>

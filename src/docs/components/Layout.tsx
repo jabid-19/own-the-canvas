@@ -90,6 +90,7 @@ export function Layout({ children }: LayoutProps) {
 
   useEffect(() => {
     setMobileOpen(false);
+    document.getElementById("main-content")?.scrollTo({ top: 0 });
   }, [location.pathname]);
 
   return (

@@ -63,7 +63,7 @@ const CSS = `
 .home-topbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
   padding: 12px 32px;
   border-bottom: 1px solid var(--border);
@@ -73,6 +73,14 @@ const CSS = `
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   z-index: 20;
+}
+
+.home-topbar-version {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  font-family: var(--mono);
 }
 
 .home-topbar-link {
@@ -357,6 +365,8 @@ export function Home() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <div className="home-topbar">
+        <span className="home-topbar-version">v1.0.8</span>
+        <div style={{ display: "flex", gap: 8 }}>
         <a
           href="https://github.com/jabid-19/own-the-canvas"
           className="home-topbar-link"
@@ -379,6 +389,7 @@ export function Home() {
           </svg>
           npm
         </a>
+        </div>
       </div>
 
       <div className="home">
@@ -474,7 +485,7 @@ export default function App() {
         {/* Footer */}
         <footer className="home-footer">
           <span>own-the-canvas · MIT License</span>
-          <span>v1.0.5</span>
+          <span>v1.0.8</span>
         </footer>
       </div>
     </>
