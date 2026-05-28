@@ -365,7 +365,7 @@ export function Home() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <div className="home-topbar">
-        <span className="home-topbar-version">v1.0.7</span>
+        <span className="home-topbar-version">v1.0.8</span>
         <div style={{ display: "flex", gap: 8 }}>
           <a
             href="https://github.com/jabid-19/own-the-canvas"
@@ -485,7 +485,7 @@ export default function App() {
         {/* Footer */}
         <footer className="home-footer">
           <span>own-the-canvas · MIT License</span>
-          <span>v1.0.7</span>
+          <span>v1.0.8</span>
         </footer>
       </div>
     </>
