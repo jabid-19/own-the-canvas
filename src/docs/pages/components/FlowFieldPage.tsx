@@ -16,6 +16,9 @@ const PROPS = [
   { name: "animated",        type: "boolean",  default: "true",      description: "Enable animation loop." },
   { name: "timeSpeed",       type: "number",   default: "1",         description: "How fast the noise field evolves." },
   { name: "curl",            type: "boolean",  default: "false",     description: "Add curl noise for more swirling flow." },
+  { name: "interactive",     type: "boolean",  default: "false",     description: "Mouse cursor attracts nearby particles." },
+  { name: "attractRadius",   type: "number",   default: "100",       description: "Radius in px around cursor that attracts particles." },
+  { name: "attractStrength", type: "number",   default: "3",         description: "Attraction force strength." },
   { name: "preset",          type: "string",   default: "—",         description: '"default" | "neon" | "ocean" | "lava" | "forest" | "monochrome"' },
 ];
 
@@ -24,6 +27,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [count, setCount] = useState(800);
   const [speed, setSpeed] = useState(1);
   const [curl, setCurl] = useState(false);
+  const [interactive, setInteractive] = useState(false);
   const [lineWidth, setLineWidth] = useState(1);
   const [bg, setBg] = useState("#111111");
   const [colors, setColors] = useState(["#ffffff"]);
@@ -47,6 +51,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
     `  speed={${speed}}`,
     `  lineWidth={${lineWidth}}`,
     curl ? `  curl` : null,
+    interactive ? `  interactive` : null,
     `  colors={${JSON.stringify(colors)}}`,
     `  backgroundColor="${bg}"`,
     `  width="100%"`,
@@ -57,7 +62,7 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <FlowField preset={preset} particleCount={count} speed={speed}
-        curl={curl} lineWidth={lineWidth} colors={colors} backgroundColor={bg}
+        curl={curl} interactive={interactive} lineWidth={lineWidth} colors={colors} backgroundColor={bg}
         width="100%" height="100%" />
       <PLiveLabel />
     </div>
@@ -79,6 +84,8 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
         <PSlider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
         <PDivider />
         <PToggle label="Curl noise" value={curl} onChange={setCurl} />
+        <PDivider />
+        <PToggle label="Interactive" value={interactive} onChange={setInteractive} />
       </div>
     </>
   );

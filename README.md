@@ -54,14 +54,14 @@ All components accept a `preset` prop for instant themed defaults — override a
 
 ### DragonCursor
 
-A sinuous dragon body that trails your cursor in real time. Segments, wings, optional fire breath — all configurable.
+A sinuous dragon body that trails your cursor in real time. Segments, wings, optional fire breath, and a background star field with optional per-star glow halos — all configurable.
 
 **Presets:** `default · emerald · inferno · void · ice`
 
 ```tsx
 import { DragonCursor } from "own-the-canvas";
 
-<DragonCursor preset="inferno" segmentCount={24} showFire wingSpan={70} />
+<DragonCursor preset="inferno" segmentCount={24} showFire wingSpan={70} starCount={80} glowingStars />
 ```
 
 | Prop | Type | Default | Description |
@@ -71,6 +71,10 @@ import { DragonCursor } from "own-the-canvas";
 | `wingSpan` | `number` | `60` | Wing span in px |
 | `showFire` | `boolean` | `false` | Enable fire breath |
 | `followSpeed` | `number` | `0.15` | Cursor follow lerp speed |
+| `starCount` | `number` | `60` | Number of background stars |
+| `starColor` | `string` | `"#ffffff"` | Star color |
+| `glowingStars` | `boolean` | `false` | Layered halo glow on ~28% of stars |
+| `starGlowBlur` | `number` | `8` | Glow blur radius for glowing stars |
 
 ---
 
@@ -221,14 +225,14 @@ import { BubbleUniverse } from "own-the-canvas";
 
 ### Rain
 
-Falling rain streaks with sinusoidal wind drift and splash particles on ground impact. Great as a layered overlay.
+Falling rain streaks with sinusoidal wind drift, splash particles on ground impact, and a background star field with optional glow halos. Great as a layered overlay.
 
 **Presets:** `default · storm · drizzle · neon · golden`
 
 ```tsx
 import { Rain } from "own-the-canvas";
 
-<Rain preset="storm" dropCount={400} wind={0.6} showSplashes />
+<Rain preset="storm" dropCount={400} wind={0.6} showSplashes starCount={60} glowingStars />
 ```
 
 | Prop | Type | Default | Description |
@@ -238,6 +242,10 @@ import { Rain } from "own-the-canvas";
 | `wind` | `number` | `0.3` | Horizontal wind drift |
 | `dropColor` | `string` | `"#000000"` | Drop stroke color |
 | `showSplashes` | `boolean` | `true` | Splash particles on impact |
+| `starCount` | `number` | `60` | Number of background stars |
+| `starColor` | `string` | `"#ffffff"` | Star color |
+| `glowingStars` | `boolean` | `false` | Layered halo glow on ~28% of stars |
+| `starGlowBlur` | `number` | `8` | Glow blur radius for glowing stars |
 
 ---
 

@@ -498,6 +498,9 @@ Default colors (monochrome): `["#ffffff", "#6b7280", "#9ca3af"]`
 | `animated` | `boolean` | `true` | Enable animation |
 | `timeSpeed` | `number` | `1` | Noise field evolution speed |
 | `curl` | `boolean` | `false` | Add curl noise for swirling flow |
+| `interactive` | `boolean` | `false` | Mouse cursor attracts nearby particles |
+| `attractRadius` | `number` | `100` | Radius in px around cursor that attracts particles |
+| `attractStrength` | `number` | `3` | Attraction force strength |
 
 ---
 
@@ -574,6 +577,10 @@ Default colors (monochrome): `["#ffffff", "#e2e8f0", "#6b7280", "#9ca3af"]`
 | `glowBlur` | `number` | `8` | Shadow blur for glow |
 | `backgroundColor` | `string` | `"#111111"` | Canvas background |
 | `shellSpeed` | `number` | `12` | Shell upward speed |
+| `starCount` | `number` | `80` | Number of background stars |
+| `starColor` | `string` | `"#ffffff"` | Star color |
+| `glowingStars` | `boolean` | `false` | Enable layered halo glow on ~28% of stars |
+| `starGlowBlur` | `number` | `8` | Shadow blur radius for glowing stars |
 
 ---
 
@@ -759,6 +766,10 @@ Falling rain drops with optional splash particles on impact. Wind drift oscillat
 | `splashColor` | `string` | `"#7aaec8"` | Splash particle color |
 | `showSplashes` | `boolean` | `true` | Show splashes when drops hit bottom |
 | `backgroundColor` | `string` | `"#111111"` | Canvas background |
+| `starCount` | `number` | `60` | Number of background stars |
+| `starColor` | `string` | `"#ffffff"` | Star color |
+| `glowingStars` | `boolean` | `false` | Enable layered halo glow on ~28% of stars |
+| `starGlowBlur` | `number` | `8` | Shadow blur radius for glowing stars |
 
 ---
 
@@ -1378,7 +1389,7 @@ Interactive 2D magnetic dipole field visualizer. Field lines are traced via Eule
 
 ### 45. DragonCursor
 
-Skeleton dragon that follows the cursor. Built from vertebra joints, curved ribs, bone wings with membrane arcs, and a skull with animated jaws and hollow eye sockets. Optional fire emission from the mouth.
+Skeleton dragon that follows the cursor. Built from vertebra joints, curved ribs, bone wings with membrane arcs, and a skull with animated jaws and hollow eye sockets. Optional fire emission from the mouth. Background star field with optional per-star glow halos.
 
 **Presets:** `default` · `emerald` · `inferno` · `void` · `ice`
 
@@ -1394,6 +1405,10 @@ Skeleton dragon that follows the cursor. Built from vertebra joints, curved ribs
 | `wingSpan` | `number` | `60` | Wing extent in px |
 | `showFire` | `boolean` | `false` | Enable fire emission from mouth |
 | `interactive` | `boolean` | `true` | Dragon follows the cursor |
+| `starCount` | `number` | `60` | Number of background stars |
+| `starColor` | `string` | `"#ffffff"` | Star color |
+| `glowingStars` | `boolean` | `false` | Enable layered halo glow on ~28% of stars |
+| `starGlowBlur` | `number` | `8` | Shadow blur radius for glowing stars |
 
 ---
 
@@ -1440,7 +1455,7 @@ Animated koi fish swimming in a tranquil pond with water ripples, lily pads, and
 
 ### 48. BlackHole
 
-Accretion disk with relativistic lensing distortion, polar jets, and orbiting particle stream. Cursor controls the viewing angle interactively.
+Accretion disk with relativistic lensing distortion, polar jets, and orbiting particle stream. Cursor controls the viewing angle interactively. Background star field with optional per-star glow halos.
 
 **Presets:** `default` · `cosmic` · `inferno` · `neon` · `void`
 
@@ -1456,7 +1471,11 @@ Accretion disk with relativistic lensing distortion, polar jets, and orbiting pa
 | `showJets` | `boolean` | `true` | Render relativistic jets |
 | `lensing` | `boolean` | `true` | Gravitational lensing distortion |
 | `speed` | `number` | `1` | Animation speed multiplier |
-| `interactive` | `boolean` | `true` | Cursor tilts viewing angle |
+| `interactive` | `boolean` | `true` | Cursor shifts the singularity position |
+| `starCount` | `number` | `100` | Number of background stars |
+| `starColor` | `string` | `"#ffffff"` | Star color |
+| `glowingStars` | `boolean` | `false` | Enable layered halo glow on ~28% of stars |
+| `starGlowBlur` | `number` | `8` | Shadow blur radius for glowing stars |
 
 ---
 

@@ -16,6 +16,10 @@ const PROPS = [
   { name: "splashColor",     type: "string",  default: '"#000000"', description: "Splash particle color." },
   { name: "showSplashes",    type: "boolean", default: "true",      description: "Show splash particles when drops hit bottom." },
   { name: "backgroundColor", type: "string",  default: '"#ffffff"', description: 'Canvas background color. Use "transparent" to overlay on another element.' },
+  { name: "starCount",       type: "number",  default: "60",        description: "Number of background stars." },
+  { name: "starColor",       type: "string",  default: '"#ffffff"', description: "Star color." },
+  { name: "glowingStars",    type: "boolean", default: "false",     description: "Enable glow effect on ~28% of stars." },
+  { name: "starGlowBlur",    type: "number",  default: "8",         description: "Shadow blur radius for glowing stars." },
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "storm" | "drizzle" | "neon" | "golden"' },
 ];
 
@@ -28,6 +32,10 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
   const [splashColor, setSplashColor] = useState("#000000");
   const [bg, setBg] = useState("#ffffff");
   const [showSplashes, setShowSplashes] = useState(true);
+  const [starCount, setStarCount] = useState(60);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   const code = [
     `import { Rain } from 'own-the-canvas';`,
@@ -41,6 +49,10 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
     `  splashColor="${splashColor}"`,
     showSplashes ? null : `  showSplashes={false}`,
     `  backgroundColor="${bg}"`,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
@@ -50,7 +62,9 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Rain preset={preset} dropCount={dropCount} speed={speed} wind={wind}
         dropColor={dropColor} splashColor={splashColor} showSplashes={showSplashes}
-        backgroundColor={bg} width="100%" height="100%" />
+        backgroundColor={bg} starCount={starCount} starColor={starColor}
+        glowingStars={glowingStars} starGlowBlur={starGlowBlur}
+        width="100%" height="100%" />
       <PLiveLabel />
     </div>
   );
@@ -70,6 +84,11 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
         <PSlider label="Wind" value={wind} min={0} max={3} step={0.1} onChange={setWind} />
         <PDivider />
         <PToggle label="Show splashes" value={showSplashes} onChange={setShowSplashes} />
+        <PDivider />
+        <PSlider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+        <PColor label="Star color" value={starColor} onChange={setStarColor} />
+        <PToggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+        <PSlider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
       </div>
     </>
   );

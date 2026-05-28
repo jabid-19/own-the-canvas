@@ -21,6 +21,14 @@ interface Ripple {
   maxLife: number;
 }
 
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  opacity: number;
+  isGlowing: boolean;
+}
+
 export interface UseRainOptions {
   dropCount: number;
   speed: number;
@@ -33,6 +41,10 @@ export interface UseRainOptions {
   splashColor: string;
   showSplashes: boolean;
   backgroundColor: string;
+  starCount: number;
+  starColor: string;
+  glowingStars: boolean;
+  starGlowBlur: number;
 }
 
 // Per-layer [speedMul, opacityMul, sizeMul]
@@ -50,6 +62,7 @@ export function useRain(
   optionsRef.current = options;
   const dropsRef = useRef<Drop[]>([]);
   const ripplesRef = useRef<Ripple[]>([]);
+  const starsRef = useRef<Star[]>([]);
   const rafRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   const reinitRef = useRef<(() => void) | null>(null);
@@ -88,6 +101,17 @@ export function useRain(
       ripplesRef.current = [];
     }
 
+    function initStars(width: number, height: number) {
+      const { starCount } = optionsRef.current;
+      starsRef.current = Array.from({ length: starCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 0.3 + Math.random() * 1.2,
+        opacity: 0.4 + Math.random() * 0.6,
+        isGlowing: Math.random() < 0.28,
+      }));
+    }
+
     function applyDpr(width: number, height: number) {
       const dpr = window.devicePixelRatio || 1;
       canvas!.width = Math.round(width * dpr);
@@ -97,6 +121,7 @@ export function useRain(
       ctx.scale(dpr, dpr);
       w = width; h = height;
       initDrops();
+      initStars(width, height);
     }
 
     reinitRef.current = () => { if (w > 0 && h > 0) initDrops(); };
@@ -108,6 +133,48 @@ export function useRain(
     ro.observe(parent);
     const rect = parent.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
+
+    let prevStarCount = options.starCount;
+
+    function drawStars() {
+      const { starCount, starColor, glowingStars, starGlowBlur } = optionsRef.current;
+      if (starCount !== prevStarCount) {
+        prevStarCount = starCount;
+        initStars(w, h);
+      }
+      const stars = starsRef.current;
+      if (stars.length === 0) return;
+      ctx.fillStyle = starColor;
+      for (const star of stars) {
+        if (glowingStars && star.isGlowing) continue;
+        ctx.globalAlpha = star.opacity;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (glowingStars) {
+        ctx.shadowColor = starColor;
+        ctx.shadowBlur = starGlowBlur;
+        for (const star of stars) {
+          if (!star.isGlowing) continue;
+          ctx.globalAlpha = star.opacity * 0.12;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity * 0.35;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "rgba(0,0,0,0)";
+      }
+      ctx.globalAlpha = 1;
+    }
 
     function draw() {
       const { wind, windSpeed, dropColor, splashColor, showSplashes, backgroundColor } = optionsRef.current;
@@ -123,6 +190,8 @@ export function useRain(
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, w, h);
       }
+
+      drawStars();
 
       const dropRgb = hexToRgbString(dropColor);
       const splashRgb = hexToRgbString(splashColor);

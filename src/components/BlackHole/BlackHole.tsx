@@ -66,6 +66,14 @@ export interface BlackHoleProps extends BaseCanvasProps {
   speed?: number;
   /** Cursor shifts the singularity position (default: true) */
   interactive?: boolean;
+  /** Number of background stars (default: 0) */
+  starCount?: number;
+  /** Star color (default: "#ffffff") */
+  starColor?: string;
+  /** Enable glow on some stars (default: false) */
+  glowingStars?: boolean;
+  /** Glow blur radius for glowing stars (default: 8) */
+  starGlowBlur?: number;
   /** Named preset */
   preset?: BlackHolePreset | string;
 }
@@ -75,6 +83,7 @@ export const BlackHole = forwardRef<HTMLCanvasElement, BlackHoleProps>(
     const {
       preset, diskColor, backgroundColor, particleCount, gravity,
       eventHorizonRadius, diskWidth, jetColor, showJets, lensing, speed, interactive,
+      starCount, starColor, glowingStars, starGlowBlur,
       width, height, className, style,
     } = props;
 
@@ -94,6 +103,10 @@ export const BlackHole = forwardRef<HTMLCanvasElement, BlackHoleProps>(
       lensing:             lensing             ?? true,
       speed:               speed               ?? 1,
       interactive:         interactive         ?? true,
+      starCount:           starCount           ?? 100,
+      starColor:           starColor           ?? "#ffffff",
+      glowingStars:        glowingStars        ?? false,
+      starGlowBlur:        starGlowBlur        ?? 8,
     });
 
     return (

@@ -84,6 +84,14 @@ export interface RainProps extends BaseCanvasProps {
   showSplashes?: boolean;
   /** Canvas background color. (default: "#ffffff") */
   backgroundColor?: string;
+  /** Number of background stars (default: 0) */
+  starCount?: number;
+  /** Star color (default: "#ffffff") */
+  starColor?: string;
+  /** Enable glow on some stars (default: false) */
+  glowingStars?: boolean;
+  /** Glow blur radius for glowing stars (default: 8) */
+  starGlowBlur?: number;
   /** Named preset. */
   preset?: RainPreset | string;
 }
@@ -93,6 +101,7 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
     preset,
     dropCount, speed, wind, windSpeed, dropLength, dropWidth,
     dropOpacity, dropColor, splashColor, showSplashes, backgroundColor,
+    starCount, starColor, glowingStars, starGlowBlur,
     width, height, className, style,
   } = props;
 
@@ -113,6 +122,10 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
     splashColor:  splashColor  ?? p.splashColor  ?? "#000000",
     showSplashes: showSplashes ?? p.showSplashes ?? true,
     backgroundColor: backgroundColor ?? p.backgroundColor ?? "#ffffff",
+    starCount:    starCount    ?? 60,
+    starColor:    starColor    ?? "#ffffff",
+    glowingStars: glowingStars ?? false,
+    starGlowBlur: starGlowBlur ?? 8,
   });
 
   return (

@@ -19,6 +19,10 @@ const PROPS = [
   { name: "glowBlur",        type: "number",   default: "8",         description: "Shadow blur for glow." },
   { name: "backgroundColor", type: "string",   default: '"#111111"', description: "Canvas background color." },
   { name: "shellSpeed",      type: "number",   default: "12",        description: "Shell upward speed." },
+  { name: "starCount",       type: "number",   default: "80",        description: "Number of background stars." },
+  { name: "starColor",       type: "string",   default: '"#ffffff"', description: "Star color." },
+  { name: "glowingStars",    type: "boolean",  default: "false",     description: "Enable glow effect on ~28% of stars." },
+  { name: "starGlowBlur",    type: "number",   default: "8",         description: "Shadow blur radius for glowing stars." },
   { name: "preset",          type: "string",   default: "—",         description: '"default" | "celebration" | "subtle" | "neon" | "golden"' },
 ];
 
@@ -30,6 +34,10 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
   const [bg, setBg] = useState("#111111");
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [glow, setGlow] = useState(true);
+  const [starCount, setStarCount] = useState(80);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   const code = [
     `import { Fireworks } from 'own-the-canvas';`,
@@ -42,6 +50,10 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
     autoLaunch ? null : `  autoLaunch={false}`,
     glow ? null : `  glowEffect={false}`,
     `  backgroundColor="${bg}"`,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
@@ -51,7 +63,9 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Fireworks preset={preset} particleCount={count} gravity={gravity}
         spread={spread} backgroundColor={bg} autoLaunch={autoLaunch}
-        glowEffect={glow} width="100%" height="100%" />
+        glowEffect={glow} starCount={starCount} starColor={starColor}
+        glowingStars={glowingStars} starGlowBlur={starGlowBlur}
+        width="100%" height="100%" />
       <PLiveLabel text="Click to launch a shell" />
     </div>
   );
@@ -70,6 +84,11 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
         <PDivider />
         <PToggle label="Auto-launch" value={autoLaunch} onChange={setAutoLaunch} />
         <PToggle label="Glow effect" value={glow} onChange={setGlow} />
+        <PDivider />
+        <PSlider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+        <PColor label="Star color" value={starColor} onChange={setStarColor} />
+        <PToggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+        <PSlider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
       </div>
     </>
   );

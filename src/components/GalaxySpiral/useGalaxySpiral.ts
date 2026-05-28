@@ -157,7 +157,7 @@ export function useGalaxySpiral(
       // Update view tilt from mouse
       const view = viewRef.current;
       const mouse = mouseRef.current;
-      if (mouse) {
+      if (mouse && optionsRef.current.interactive) {
         view.targetTX = 0.1 + (mouse.y / h) * 0.7;
         view.targetTY = ((mouse.x / w) - 0.5) * 1.2;
       } else {

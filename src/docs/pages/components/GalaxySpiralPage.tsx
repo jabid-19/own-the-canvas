@@ -38,6 +38,8 @@ function GalaxySpiralPlayground({ onReset }: { onReset?: () => void }) {
   const [diskColor, setDiskColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
   const [rotSpeed, setRotSpeed] = useState(0.3);
+  const [tiltX, setTiltX] = useState(0.3);
+  const [interactive, setInteractive] = useState(true);
   const [coreGlow, setCoreGlow] = useState(true);
 
   function onPresetChange(p: string) {
@@ -63,11 +65,13 @@ function GalaxySpiralPlayground({ onReset }: { onReset?: () => void }) {
     `  diskColor="${diskColor}"`,
     `  backgroundColor="${bg}"`,
     `  rotationSpeed={${rotSpeed / 1000}}`,
+    `  tiltX={${tiltX}}`,
+    !interactive ? `  interactive={false}` : null,
     `  coreGlow={${coreGlow}}`,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative", background: bg }}>
@@ -80,11 +84,13 @@ function GalaxySpiralPlayground({ onReset }: { onReset?: () => void }) {
         diskColor={diskColor}
         backgroundColor={bg}
         rotationSpeed={rotSpeed / 1000}
+        tiltX={tiltX}
+        interactive={interactive}
         coreGlow={coreGlow}
         width="100%"
         height="100%"
       />
-      <PLiveLabel text="Move cursor to tilt the viewing angle" />
+      {interactive && <PLiveLabel text="Move cursor to tilt the viewing angle" />}
     </div>
   );
 
@@ -97,12 +103,14 @@ function GalaxySpiralPlayground({ onReset }: { onReset?: () => void }) {
         <PColor label="Disk color" value={diskColor} onChange={setDiskColor} />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PToggle label="Core glow" value={coreGlow} onChange={setCoreGlow} />
+        <PToggle label="Interactive" value={interactive} onChange={setInteractive} />
       </div>
       <div>
         <PSlider label="Star count" value={starCount} min={500} max={6000} step={250} onChange={setStarCount} />
         <PSlider label="Arms" value={armCount} min={1} max={6} step={1} onChange={setArmCount} />
         <PSlider label="Arm tightness" value={armTightness} min={0.1} max={1.5} step={0.05} onChange={setArmTightness} />
         <PSlider label="Rotation speed" value={rotSpeed} min={0} max={2} step={0.1} onChange={setRotSpeed} />
+        <PSlider label="Tilt X" value={tiltX} min={0} max={1.5} step={0.05} onChange={setTiltX} />
       </div>
     </>
   );

@@ -39,6 +39,7 @@ function TornadoVortexPlayground({ onReset }: { onReset?: () => void }) {
   const [funnelHeight, setFunnelHeight] = useState(0.8);
   const [showLightning, setShowLightning] = useState(true);
   const [showDust, setShowDust] = useState(true);
+  const [interactive, setInteractive] = useState(true);
   const [speed, setSpeed] = useState(1);
 
   function onPresetChange(p: string) {
@@ -64,11 +65,12 @@ function TornadoVortexPlayground({ onReset }: { onReset?: () => void }) {
     `  funnelHeight={${funnelHeight}}`,
     `  showLightning={${showLightning}}`,
     `  showGroundDust={${showDust}}`,
+    !interactive ? `  interactive={false}` : null,
     `  speed={${speed}}`,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative", background: bg }}>
@@ -82,11 +84,12 @@ function TornadoVortexPlayground({ onReset }: { onReset?: () => void }) {
         funnelHeight={funnelHeight}
         showLightning={showLightning}
         showGroundDust={showDust}
+        interactive={interactive}
         speed={speed}
         width="100%"
         height="100%"
       />
-      <PLiveLabel text="Move cursor to steer the tornado" />
+      {interactive && <PLiveLabel text="Move cursor to steer the tornado" />}
     </div>
   );
 
@@ -100,6 +103,7 @@ function TornadoVortexPlayground({ onReset }: { onReset?: () => void }) {
         <PColor label="Background" value={bg} onChange={setBg} />
         <PToggle label="Lightning" value={showLightning} onChange={setShowLightning} />
         <PToggle label="Ground dust" value={showDust} onChange={setShowDust} />
+        <PToggle label="Interactive" value={interactive} onChange={setInteractive} />
       </div>
       <div>
         <PSlider label="Particles" value={particleCount} min={100} max={1200} step={50} onChange={setParticleCount} />

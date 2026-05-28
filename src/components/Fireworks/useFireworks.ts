@@ -22,6 +22,14 @@ interface Shell {
   exploded: boolean;
 }
 
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  opacity: number;
+  isGlowing: boolean;
+}
+
 export interface UseFireworksOptions {
   colors: string[];
   particleCount: number;
@@ -37,6 +45,10 @@ export interface UseFireworksOptions {
   glowBlur: number;
   backgroundColor: string;
   shellSpeed: number;
+  starCount: number;
+  starColor: string;
+  glowingStars: boolean;
+  starGlowBlur: number;
 }
 
 // Extract base RGB from any CSS color string for fade overlay
@@ -62,6 +74,7 @@ export function useFireworks(
   optionsRef.current = options;
   const particlesRef = useRef<Particle[]>([]);
   const shellsRef = useRef<Shell[]>([]);
+  const starsRef = useRef<Star[]>([]);
   const rafRef = useRef<number>(0);
   const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -93,6 +106,17 @@ export function useFireworks(
     const ctx = canvas.getContext("2d")!;
     let w = 0, h = 0;
 
+    function initStars(width: number, height: number) {
+      const { starCount } = optionsRef.current;
+      starsRef.current = Array.from({ length: starCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 0.3 + Math.random() * 1.2,
+        opacity: 0.4 + Math.random() * 0.6,
+        isGlowing: Math.random() < 0.28,
+      }));
+    }
+
     function applyDpr(width: number, height: number) {
       const cvs = canvasRef.current!;
       const dpr = window.devicePixelRatio || 1;
@@ -102,6 +126,7 @@ export function useFireworks(
       cvs.style.height = `${height}px`;
       ctx.scale(dpr, dpr);
       w = width; h = height;
+      initStars(width, height);
     }
 
     const ro = new ResizeObserver(entries => {
@@ -149,6 +174,48 @@ export function useFireworks(
       }
     }
 
+    let prevStarCount = options.starCount;
+
+    function drawStars() {
+      const { starCount, starColor, glowingStars, starGlowBlur } = optionsRef.current;
+      if (starCount !== prevStarCount) {
+        prevStarCount = starCount;
+        initStars(w, h);
+      }
+      const stars = starsRef.current;
+      if (stars.length === 0) return;
+      ctx.fillStyle = starColor;
+      for (const star of stars) {
+        if (glowingStars && star.isGlowing) continue;
+        ctx.globalAlpha = star.opacity;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (glowingStars) {
+        ctx.shadowColor = starColor;
+        ctx.shadowBlur = starGlowBlur;
+        for (const star of stars) {
+          if (!star.isGlowing) continue;
+          ctx.globalAlpha = star.opacity * 0.12;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity * 0.35;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "rgba(0,0,0,0)";
+      }
+      ctx.globalAlpha = 1;
+    }
+
     function draw() {
       const { gravity, friction, fadeSpeed, glowEffect, glowBlur, backgroundColor, trailLength } = optionsRef.current;
       const isTransparent = !backgroundColor || backgroundColor === "transparent";
@@ -164,6 +231,8 @@ export function useFireworks(
         ctx.fillStyle = toFadeOverlay(backgroundColor, trailOpacity);
         ctx.fillRect(0, 0, w, h);
       }
+
+      drawStars();
 
       // ── Shells ───────────────────────────────────────────────────────────────
       let shellWrite = 0;

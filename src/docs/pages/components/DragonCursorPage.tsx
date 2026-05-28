@@ -15,6 +15,10 @@ const PROPS = [
   { name: "wingSpan",       type: "number",  default: "60",           description: "Wing length in px." },
   { name: "showFire",       type: "boolean", default: "true",         description: "Show fire breath particles." },
   { name: "interactive",    type: "boolean", default: "true",         description: "Dragon follows cursor; false = autonomous wander." },
+  { name: "starCount",      type: "number",  default: "60",           description: "Number of background stars." },
+  { name: "starColor",      type: "string",  default: '"#ffffff"',    description: "Star color." },
+  { name: "glowingStars",   type: "boolean", default: "false",        description: "Enable glow effect on ~28% of stars." },
+  { name: "starGlowBlur",   type: "number",  default: "8",            description: "Shadow blur radius for glowing stars." },
   { name: "preset",         type: "string",  default: "—",            description: '"default" | "emerald" | "inferno" | "void" | "ice"' },
 ];
 
@@ -38,6 +42,10 @@ function DragonCursorPlayground({ onReset }: { onReset?: () => void }) {
   const [wingSpan, setWingSpan] = useState(60);
   const [showFire, setShowFire] = useState(false);
   const [interactive, setInteractive] = useState(true);
+  const [starCount, setStarCount] = useState(60);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   function onPresetChange(p: string) {
     setPreset(p);
@@ -61,10 +69,14 @@ function DragonCursorPlayground({ onReset }: { onReset?: () => void }) {
     `  followSpeed={${followSpeed}}`,
     `  showFire={${showFire}}`,
     `  interactive={${interactive}}`,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative", background: bg }}>
@@ -80,6 +92,10 @@ function DragonCursorPlayground({ onReset }: { onReset?: () => void }) {
         wingSpan={wingSpan}
         showFire={showFire}
         interactive={interactive}
+        starCount={starCount}
+        starColor={starColor}
+        glowingStars={glowingStars}
+        starGlowBlur={starGlowBlur}
         width="100%"
         height="100%"
       />
@@ -103,6 +119,11 @@ function DragonCursorPlayground({ onReset }: { onReset?: () => void }) {
         <PSlider label="Head size" value={segSize} min={8} max={36} step={1} onChange={setSegSize} />
         <PSlider label="Follow speed" value={followSpeed} min={0.02} max={0.5} step={0.01} onChange={setFollowSpeed} />
         <PSlider label="Wing span" value={wingSpan} min={20} max={150} step={5} onChange={setWingSpan} />
+        <PDivider />
+        <PSlider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+        <PColor label="Star color" value={starColor} onChange={setStarColor} />
+        <PToggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+        <PSlider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
       </div>
     </>
   );

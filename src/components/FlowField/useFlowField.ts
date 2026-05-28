@@ -57,6 +57,9 @@ export interface UseFlowFieldOptions {
   animated: boolean;
   timeSpeed: number;
   curl: boolean;
+  interactive: boolean;
+  attractRadius: number;
+  attractStrength: number;
 }
 
 export function useFlowField(
@@ -69,6 +72,7 @@ export function useFlowField(
   const rafRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   const reinitRef = useRef<(() => void) | null>(null);
+  const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     reinitRef.current?.();
@@ -114,6 +118,17 @@ export function useFlowField(
 
     reinitRef.current = () => { if (w > 0 && h > 0) initParticles(); };
 
+    function getPos(e: MouseEvent) {
+      const rect = canvas!.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    function onMouseMove(e: MouseEvent) {
+      if (optionsRef.current.interactive) mouseRef.current = getPos(e);
+    }
+    function onMouseLeave() { mouseRef.current = null; }
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mouseleave", onMouseLeave);
+
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;
       if (width > 0 && height > 0) applyDpr(width, height);
@@ -123,7 +138,7 @@ export function useFlowField(
     if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
 
     function draw() {
-      const { speed, noiseScale, fadeStrength, lineWidth, backgroundColor, timeSpeed, curl } = optionsRef.current;
+      const { speed, noiseScale, fadeStrength, lineWidth, backgroundColor, timeSpeed, curl, attractRadius, attractStrength } = optionsRef.current;
 
       timeRef.current += timeSpeed * 0.001;
       const t = timeRef.current;
@@ -140,6 +155,7 @@ export function useFlowField(
       }
 
       const particles = particlesRef.current;
+      const mouse = mouseRef.current;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
@@ -162,6 +178,18 @@ export function useFlowField(
 
         p.vx = p.vx * 0.9 + dx * speed * 0.1;
         p.vy = p.vy * 0.9 + dy * speed * 0.1;
+
+        if (mouse) {
+          const mdx = mouse.x - p.x;
+          const mdy = mouse.y - p.y;
+          const dist = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (dist < attractRadius && dist > 0) {
+            const force = ((attractRadius - dist) / attractRadius) * attractStrength * 0.1;
+            p.vx += (mdx / dist) * force;
+            p.vy += (mdy / dist) * force;
+          }
+        }
+
         p.x += p.vx;
         p.y += p.vy;
         p.age++;
@@ -187,6 +215,11 @@ export function useFlowField(
     }
 
     rafRef.current = requestAnimationFrame(draw);
-    return () => { ro.disconnect(); cancelAnimationFrame(rafRef.current); };
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(rafRef.current);
+      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseleave", onMouseLeave);
+    };
   }, [canvasRef]);
 }

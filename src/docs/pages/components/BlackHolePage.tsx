@@ -16,6 +16,10 @@ const PROPS = [
   { name: "lensing",            type: "boolean", default: "true",      description: "Background grid gravitational lensing." },
   { name: "speed",              type: "number",  default: "1",         description: "Animation speed multiplier." },
   { name: "interactive",        type: "boolean", default: "true",      description: "Cursor shifts the singularity position." },
+  { name: "starCount",          type: "number",  default: "100",       description: "Number of background stars." },
+  { name: "starColor",          type: "string",  default: '"#ffffff"', description: "Star color." },
+  { name: "glowingStars",       type: "boolean", default: "false",     description: "Enable glow effect on ~28% of stars." },
+  { name: "starGlowBlur",       type: "number",  default: "8",         description: "Shadow blur radius for glowing stars." },
   { name: "preset",             type: "string",  default: "—",         description: '"default" | "cosmic" | "inferno" | "neon" | "void"' },
 ];
 
@@ -40,6 +44,11 @@ function BlackHolePlayground({ onReset }: { onReset?: () => void }) {
   const [speed, setSpeed] = useState(1);
   const [showJets, setShowJets] = useState(true);
   const [lensing, setLensing] = useState(true);
+  const [starCount, setStarCount] = useState(100);
+  const [interactive, setInteractive] = useState(true);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   function onPresetChange(p: string) {
     setPreset(p);
@@ -64,10 +73,15 @@ function BlackHolePlayground({ onReset }: { onReset?: () => void }) {
     `  speed={${speed}}`,
     `  showJets={${showJets}}`,
     `  lensing={${lensing}}`,
+    !interactive ? `  interactive={false}` : null,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative", background: bg }}>
@@ -82,10 +96,15 @@ function BlackHolePlayground({ onReset }: { onReset?: () => void }) {
         speed={speed}
         showJets={showJets}
         lensing={lensing}
+        interactive={interactive}
+        starCount={starCount}
+        starColor={starColor}
+        glowingStars={glowingStars}
+        starGlowBlur={starGlowBlur}
         width="100%"
         height="100%"
       />
-      <PLiveLabel text="Move cursor to shift the singularity" />
+      {interactive && <PLiveLabel text="Move cursor to shift the singularity" />}
     </div>
   );
 
@@ -99,12 +118,18 @@ function BlackHolePlayground({ onReset }: { onReset?: () => void }) {
         <PColor label="Background" value={bg} onChange={setBg} />
         <PToggle label="Show jets" value={showJets} onChange={setShowJets} />
         <PToggle label="Lensing" value={lensing} onChange={setLensing} />
+        <PToggle label="Interactive" value={interactive} onChange={setInteractive} />
       </div>
       <div>
         <PSlider label="Particle count" value={particleCount} min={50} max={600} step={25} onChange={setParticleCount} />
         <PSlider label="Event horizon" value={ehRadius} min={10} max={80} step={5} onChange={setEhRadius} />
         <PSlider label="Disk width" value={diskWidth} min={40} max={250} step={10} onChange={setDiskWidth} />
         <PSlider label="Speed" value={speed} min={0.1} max={3} step={0.1} onChange={setSpeed} />
+        <PDivider />
+        <PSlider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+        <PColor label="Star color" value={starColor} onChange={setStarColor} />
+        <PToggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+        <PSlider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
       </div>
     </>
   );

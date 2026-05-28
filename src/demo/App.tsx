@@ -1861,6 +1861,7 @@ function FlowFieldPanel() {
   const [count, setCount] = useState(800);
   const [speed, setSpeed] = useState(1);
   const [curl, setCurl] = useState(false);
+  const [interactive, setInteractive] = useState(false);
   const [lineWidth, setLineWidth] = useState(1);
   const [bg, setBg] = useState("#111111");
   const [colors, setColors] = useState(["#ffffff"]);
@@ -1884,6 +1885,7 @@ function FlowFieldPanel() {
     `  speed={${speed}}`,
     `  lineWidth={${lineWidth}}`,
     curl ? `  curl` : null,
+    interactive ? `  interactive` : null,
     `  colors={${JSON.stringify(colors)}}`,
     `  backgroundColor="${bg}"`,
     `  width="100%"`,
@@ -1895,8 +1897,8 @@ function FlowFieldPanel() {
     <>
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
-          <FlowField preset={preset} particleCount={count} speed={speed} curl={curl} lineWidth={lineWidth}
-            colors={colors}
+          <FlowField preset={preset} particleCount={count} speed={speed} curl={curl} interactive={interactive}
+            lineWidth={lineWidth} colors={colors}
             backgroundColor={bg} width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
@@ -1915,6 +1917,8 @@ function FlowFieldPanel() {
           <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
           <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.5} onChange={setLineWidth} />
           <Toggle label="Curl noise" value={curl} onChange={setCurl} />
+          <Divider />
+          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
         </div>
       </div>
     </>
@@ -2044,6 +2048,10 @@ function FireworksPanel() {
   const [bg, setBg] = useState("#111111");
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [glow, setGlow] = useState(true);
+  const [starCount, setStarCount] = useState(80);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   const code = [
     `import { Fireworks } from 'own-the-canvas';`,
@@ -2056,6 +2064,10 @@ function FireworksPanel() {
     autoLaunch ? null : `  autoLaunch={false}`,
     glow ? null : `  glowEffect={false}`,
     `  backgroundColor="${bg}"`,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
@@ -2066,7 +2078,9 @@ function FireworksPanel() {
       <div className="canvas-wrap">
         <div className="canvas-wrap-inner">
           <Fireworks preset={preset} particleCount={count} gravity={gravity} spread={spread}
-            backgroundColor={bg} autoLaunch={autoLaunch} glowEffect={glow} width="100%" height="100%" />
+            backgroundColor={bg} autoLaunch={autoLaunch} glowEffect={glow}
+            starCount={starCount} starColor={starColor} glowingStars={glowingStars} starGlowBlur={starGlowBlur}
+            width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Click to launch a shell</span></div>
         <CodeSnippet code={code} />
@@ -2082,6 +2096,11 @@ function FireworksPanel() {
           <Slider label="Spread" value={spread} min={2} max={10} step={0.5} onChange={setSpread} />
           <Toggle label="Auto-launch" value={autoLaunch} onChange={setAutoLaunch} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
+          <Divider />
+          <Slider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+          <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
+          <Toggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+          <Slider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
         </div>
       </div>
     </>
@@ -2445,6 +2464,10 @@ function RainPanel() {
   const [splashColor, setSplashColor] = useState("#000000");
   const [bg, setBg] = useState("#ffffff");
   const [showSplashes, setShowSplashes] = useState(true);
+  const [starCount, setStarCount] = useState(60);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   const code = [
     `import { Rain } from 'own-the-canvas';`,
@@ -2458,6 +2481,10 @@ function RainPanel() {
     `  splashColor="${splashColor}"`,
     showSplashes ? null : `  showSplashes={false}`,
     `  backgroundColor="${bg}"`,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
@@ -2469,7 +2496,9 @@ function RainPanel() {
         <div className="canvas-wrap-inner">
           <Rain preset={preset} dropCount={dropCount} speed={speed} wind={wind}
             dropColor={dropColor} splashColor={splashColor} showSplashes={showSplashes}
-            backgroundColor={bg} width="100%" height="100%" />
+            backgroundColor={bg} starCount={starCount} starColor={starColor}
+            glowingStars={glowingStars} starGlowBlur={starGlowBlur}
+            width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Rain with wind drift</span></div>
         <CodeSnippet code={code} />
@@ -2486,6 +2515,11 @@ function RainPanel() {
           <Slider label="Speed" value={speed} min={2} max={40} step={1} onChange={setSpeed} />
           <Slider label="Wind" value={wind} min={0} max={3} step={0.1} onChange={setWind} />
           <Toggle label="Show splashes" value={showSplashes} onChange={setShowSplashes} />
+          <Divider />
+          <Slider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+          <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
+          <Toggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+          <Slider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
         </div>
       </div>
     </>
@@ -2738,6 +2772,10 @@ function DragonCursorPanel() {
   const [wingSpan, setWingSpan] = useState(60);
   const [showFire, setShowFire] = useState(false);
   const [interactive, setInteractive] = useState(true);
+  const [starCount, setStarCount] = useState(60);
+  const [starColor, setStarColor] = useState("#ffffff");
+  const [glowingStars, setGlowingStars] = useState(false);
+  const [starGlowBlur, setStarGlowBlur] = useState(8);
 
   function onPresetChange(p: string) {
     setPreset(p);
@@ -2761,10 +2799,14 @@ function DragonCursorPanel() {
     `  followSpeed={${followSpeed}}`,
     `  showFire={${showFire}}`,
     `  interactive={${interactive}}`,
+    starCount > 0 ? `  starCount={${starCount}}` : null,
+    starCount > 0 ? `  starColor="${starColor}"` : null,
+    starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
+    starCount > 0 && glowingStars ? `  starGlowBlur={${starGlowBlur}}` : null,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
   return (
     <>
       <div className="canvas-wrap">
@@ -2773,6 +2815,7 @@ function DragonCursorPanel() {
             bodyColor={bodyColor} fireColor={fireColor} followSpeed={followSpeed}
             wingSpan={wingSpan} showFire={showFire} backgroundColor={bg}
             eyeColor={eyeColor} interactive={interactive}
+            starCount={starCount} starColor={starColor} glowingStars={glowingStars} starGlowBlur={starGlowBlur}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to guide the dragon</span></div>
@@ -2792,6 +2835,11 @@ function DragonCursorPanel() {
           <Slider label="Wing span" value={wingSpan} min={20} max={150} step={5} onChange={setWingSpan} />
           <Toggle label="Show fire" value={showFire} onChange={setShowFire} />
           <Toggle label="Follow cursor" value={interactive} onChange={setInteractive} />
+          <Divider />
+          <Slider label="Stars" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
+          <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
+          <Toggle label="Glowing stars" value={glowingStars} onChange={setGlowingStars} />
+          <Slider label="Star glow blur" value={starGlowBlur} min={2} max={30} step={1} onChange={setStarGlowBlur} />
         </div>
       </div>
     </>
@@ -5033,18 +5081,30 @@ function BlackHolePanel() {
   const [showJets, setShowJets] = useState(true);
   const [lensing, setLensing] = useState(true);
   const [interactive, setInteractive] = useState(true);
-  const code = `import { BlackHole } from 'own-the-canvas';
+  const [bhStarCount, setBhStarCount] = useState(100);
+  const [bhStarColor, setBhStarColor] = useState("#ffffff");
+  const [bhGlowingStars, setBhGlowingStars] = useState(false);
+  const [bhStarGlowBlur, setBhStarGlowBlur] = useState(8);
 
-<BlackHole
-  preset="${preset}"
-  particleCount={${particleCount}}
-  gravity={${gravity}}
-  eventHorizonRadius={${eventHorizonRadius}}
-  jetColor="${jetColor}"
-  showJets={${showJets}}
-  lensing={${lensing}}
-  interactive={${interactive}}
-/>`;
+  const code = [
+    `import { BlackHole } from 'own-the-canvas';`,
+    ``,
+    `<BlackHole`,
+    `  preset="${preset}"`,
+    `  particleCount={${particleCount}}`,
+    `  gravity={${gravity}}`,
+    `  eventHorizonRadius={${eventHorizonRadius}}`,
+    `  jetColor="${jetColor}"`,
+    `  showJets={${showJets}}`,
+    `  lensing={${lensing}}`,
+    `  interactive={${interactive}}`,
+    bhStarCount > 0 ? `  starCount={${bhStarCount}}` : null,
+    bhStarCount > 0 ? `  starColor="${bhStarColor}"` : null,
+    bhStarCount > 0 && bhGlowingStars ? `  glowingStars={true}` : null,
+    bhStarCount > 0 && bhGlowingStars ? `  starGlowBlur={${bhStarGlowBlur}}` : null,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
   return (
     <>
       <div className="canvas-wrap">
@@ -5053,6 +5113,7 @@ function BlackHolePanel() {
             eventHorizonRadius={eventHorizonRadius} diskWidth={diskWidth}
             speed={speed} diskColor={diskColor} jetColor={jetColor} backgroundColor={bg}
             showJets={showJets} lensing={lensing} interactive={interactive}
+            starCount={bhStarCount} starColor={bhStarColor} glowingStars={bhGlowingStars} starGlowBlur={bhStarGlowBlur}
             width="100%" height="100%" />
         </div>
         <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to shift the singularity</span></div>
@@ -5074,6 +5135,11 @@ function BlackHolePanel() {
           <Toggle label="Polar jets" value={showJets} onChange={setShowJets} />
           <Toggle label="Lensing grid" value={lensing} onChange={setLensing} />
           <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+          <Divider />
+          <Slider label="Stars" value={bhStarCount} min={0} max={300} step={10} onChange={setBhStarCount} />
+          <ColorPicker label="Star color" value={bhStarColor} onChange={setBhStarColor} />
+          <Toggle label="Glowing stars" value={bhGlowingStars} onChange={setBhGlowingStars} />
+          <Slider label="Star glow blur" value={bhStarGlowBlur} min={2} max={30} step={1} onChange={setBhStarGlowBlur} />
         </div>
       </div>
     </>

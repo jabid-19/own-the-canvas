@@ -73,6 +73,12 @@ export interface FlowFieldProps extends BaseCanvasProps {
   timeSpeed?: number;
   /** Add curl noise component for more swirling flow (default: false) */
   curl?: boolean;
+  /** Mouse cursor attracts nearby particles (default: false) */
+  interactive?: boolean;
+  /** Radius in px around cursor that attracts particles (default: 100) */
+  attractRadius?: number;
+  /** Attraction force strength (default: 3) */
+  attractStrength?: number;
   /** Named preset: "default" | "neon" | "ocean" | "lava" | "forest" | "monochrome" */
   preset?: FlowFieldPreset | string;
 }
@@ -82,6 +88,7 @@ export const FlowField = forwardRef<HTMLCanvasElement, FlowFieldProps>(
     const {
       preset, particleCount, colors, speed, noiseScale, trailLength,
       fadeStrength, lineWidth, backgroundColor, animated, timeSpeed, curl,
+      interactive, attractRadius, attractStrength,
       width, height, className, style,
     } = props;
 
@@ -102,6 +109,9 @@ export const FlowField = forwardRef<HTMLCanvasElement, FlowFieldProps>(
       animated: animated ?? true,
       timeSpeed: timeSpeed ?? 1,
       curl: curl ?? p.curl ?? false,
+      interactive: interactive ?? false,
+      attractRadius: attractRadius ?? 100,
+      attractStrength: attractStrength ?? 3,
     });
 
     return (

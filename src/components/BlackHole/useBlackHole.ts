@@ -18,6 +18,14 @@ interface JetParticle {
   x: number;
 }
 
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  opacity: number;
+  isGlowing: boolean;
+}
+
 export interface UseBlackHoleOptions {
   diskColor: string;
   backgroundColor: string;
@@ -30,6 +38,10 @@ export interface UseBlackHoleOptions {
   lensing: boolean;
   speed: number;
   interactive: boolean;
+  starCount: number;
+  starColor: string;
+  glowingStars: boolean;
+  starGlowBlur: number;
 }
 
 export function useBlackHole(
@@ -41,6 +53,7 @@ export function useBlackHole(
 
   const diskRef = useRef<DiskParticle[]>([]);
   const jetsRef = useRef<JetParticle[]>([]);
+  const starsRef = useRef<Star[]>([]);
   const rafRef = useRef<number>(0);
   const timeRef = useRef(0);
   const singularityRef = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
@@ -80,6 +93,17 @@ export function useBlackHole(
       }));
     }
 
+    function initStars(width: number, height: number) {
+      const { starCount } = optionsRef.current;
+      starsRef.current = Array.from({ length: starCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 0.3 + Math.random() * 1.2,
+        opacity: 0.4 + Math.random() * 0.6,
+        isGlowing: Math.random() < 0.28,
+      }));
+    }
+
     function applyDpr(width: number, height: number) {
       const dpr = window.devicePixelRatio || 1;
       canvas!.width = Math.round(width * dpr);
@@ -91,6 +115,7 @@ export function useBlackHole(
       h = height;
       singularityRef.current = { x: w / 2, y: h / 2, tx: w / 2, ty: h / 2 };
       initParticles();
+      initStars(width, height);
     }
 
     const ro = new ResizeObserver((entries) => {
@@ -136,6 +161,48 @@ export function useBlackHole(
       }
     }
 
+    let prevStarCount = options.starCount;
+
+    function drawStars() {
+      const { starCount, starColor, glowingStars, starGlowBlur } = optionsRef.current;
+      if (starCount !== prevStarCount) {
+        prevStarCount = starCount;
+        initStars(w, h);
+      }
+      const stars = starsRef.current;
+      if (stars.length === 0) return;
+      ctx.fillStyle = starColor;
+      for (const star of stars) {
+        if (glowingStars && star.isGlowing) continue;
+        ctx.globalAlpha = star.opacity;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (glowingStars) {
+        ctx.shadowColor = starColor;
+        ctx.shadowBlur = starGlowBlur;
+        for (const star of stars) {
+          if (!star.isGlowing) continue;
+          ctx.globalAlpha = star.opacity * 0.12;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity * 0.35;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "rgba(0,0,0,0)";
+      }
+      ctx.globalAlpha = 1;
+    }
+
     function draw(dt: number) {
       const {
         diskColor, backgroundColor, particleCount, gravity,
@@ -154,6 +221,8 @@ export function useBlackHole(
 
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, w, h);
+
+      drawStars();
 
       // Lensing grid
       if (lensing) drawLensing(cx, cy, eventHorizonRadius);

@@ -16,6 +16,14 @@ interface FireParticle {
   size: number;
 }
 
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  opacity: number;
+  isGlowing: boolean;
+}
+
 export interface UseDragonCursorOptions {
   segmentCount: number;
   segmentSize: number;
@@ -27,6 +35,10 @@ export interface UseDragonCursorOptions {
   wingSpan: number;
   showFire: boolean;
   interactive: boolean;
+  starCount: number;
+  starColor: string;
+  glowingStars: boolean;
+  starGlowBlur: number;
 }
 
 export function useDragonCursor(
@@ -38,6 +50,7 @@ export function useDragonCursor(
 
   const segmentsRef = useRef<Segment[]>([]);
   const fireRef = useRef<FireParticle[]>([]);
+  const starsRef = useRef<Star[]>([]);
   const rafRef = useRef<number>(0);
   const mouseRef = useRef<{ x: number; y: number }>({ x: -999, y: -999 });
   const timeRef = useRef<number>(0);
@@ -61,6 +74,17 @@ export function useDragonCursor(
       mouseRef.current = { x: cx, y: cy };
     }
 
+    function initStars(width: number, height: number) {
+      const { starCount } = optionsRef.current;
+      starsRef.current = Array.from({ length: starCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 0.3 + Math.random() * 1.2,
+        opacity: 0.4 + Math.random() * 0.6,
+        isGlowing: Math.random() < 0.28,
+      }));
+    }
+
     function applyDpr(width: number, height: number) {
       const dpr = window.devicePixelRatio || 1;
       canvas!.width = Math.round(width * dpr);
@@ -71,6 +95,7 @@ export function useDragonCursor(
       w = width;
       h = height;
       initSegments();
+      initStars(width, height);
     }
 
     const ro = new ResizeObserver((entries) => {
@@ -181,6 +206,48 @@ export function useDragonCursor(
       ctx.restore();
     }
 
+    let prevStarCount = options.starCount;
+
+    function drawStars() {
+      const { starCount, starColor, glowingStars, starGlowBlur } = optionsRef.current;
+      if (starCount !== prevStarCount) {
+        prevStarCount = starCount;
+        initStars(w, h);
+      }
+      const stars = starsRef.current;
+      if (stars.length === 0) return;
+      ctx.fillStyle = starColor;
+      for (const star of stars) {
+        if (glowingStars && star.isGlowing) continue;
+        ctx.globalAlpha = star.opacity;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (glowingStars) {
+        ctx.shadowColor = starColor;
+        ctx.shadowBlur = starGlowBlur;
+        for (const star of stars) {
+          if (!star.isGlowing) continue;
+          ctx.globalAlpha = star.opacity * 0.12;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity * 0.35;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = star.opacity;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "rgba(0,0,0,0)";
+      }
+      ctx.globalAlpha = 1;
+    }
+
     function draw(dt: number) {
       const {
         segmentCount, segmentSize, bodyColor, fireColor,
@@ -192,6 +259,8 @@ export function useDragonCursor(
 
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, w, h);
+
+      drawStars();
 
       const segments = segmentsRef.current;
 
