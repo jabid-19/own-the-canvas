@@ -55,6 +55,8 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "react-helmet-async": "^3.0.0",
     "@storybook/addon-essentials": "^7.6.0",
     "@storybook/react": "^7.6.0",
     "@storybook/react-vite": "^7.6.0",
@@ -73,8 +75,5 @@
     "vite-plugin-dts": "^3.6.0",
     "vitest": "^4.1.6"
   },
-  "dependencies": {
-    "@vercel/analytics": "^2.0.1",
-    "react-helmet-async": "^3.0.0"
-  }
+
 }
