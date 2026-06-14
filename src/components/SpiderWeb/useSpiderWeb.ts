@@ -120,7 +120,9 @@ export function useSpiderWeb(
       const { spokeCount, ringCount } = opts;
       ctx.fillStyle = opts.backgroundColor;
       ctx.fillRect(0, 0, w, h);
-      if (nodes.length !== spokeCount) { raf = requestAnimationFrame(loop); return; }
+      if (nodes.length !== spokeCount || (nodes[0] && nodes[0].length !== ringCount)) {
+        buildWeb();
+      }
       const cx = w / 2, cy = h / 2;
 
       for (let s = 0; s < spokeCount; s++) {
@@ -181,8 +183,8 @@ export function useSpiderWeb(
 
       if (opts.showSpider) {
         if (mouse.x > -100) {
-          spider.targetX += (mouse.x - spider.targetX) * 0.008;
-          spider.targetY += (mouse.y - spider.targetY) * 0.008;
+          spider.targetX += (mouse.x - spider.targetX) * 0.08;
+          spider.targetY += (mouse.y - spider.targetY) * 0.08;
         }
         spider.x += (spider.targetX - spider.x) * 0.04;
         spider.y += (spider.targetY - spider.y) * 0.04;
