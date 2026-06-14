@@ -1,6 +1,22 @@
 import { BaseCanvasProps } from '../../types';
 
 type MagneticBlobPreset = "default" | "neon" | "plasma" | "ocean" | "lava" | "minimal";
+interface MagneticBlobPresetValues {
+    count?: number;
+    colors?: string[];
+    radius?: number;
+    speed?: number;
+    magnetStrength?: number;
+    magnetRadius?: number;
+    threshold?: number;
+    glowEffect?: boolean;
+    glowBlur?: number;
+    backgroundColor?: string;
+    animated?: boolean;
+    followMouse?: boolean;
+    wanderStrength?: number;
+}
+export declare const PRESETS: Record<MagneticBlobPreset, MagneticBlobPresetValues>;
 export interface MagneticBlobProps extends BaseCanvasProps {
     /** Number of blobs (default: 5) */
     count?: number;

@@ -14,7 +14,7 @@ interface BlackHolePresetValues {
   eventHorizonRadius?: number;
 }
 
-const PRESETS: Record<BlackHolePreset, BlackHolePresetValues> = {
+export const PRESETS: Record<BlackHolePreset, BlackHolePresetValues> = {
   default: {},
   cosmic: {
     diskColor: "#aaccff",

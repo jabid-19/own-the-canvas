@@ -20,7 +20,7 @@ interface GlitchPresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<GlitchPreset, GlitchPresetValues> = {
+export const PRESETS: Record<GlitchPreset, GlitchPresetValues> = {
   default: {
     intensity: 0.6,
     speed: 1,

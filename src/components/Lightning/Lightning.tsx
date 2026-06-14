@@ -21,7 +21,7 @@ interface LightningPresetValues {
   endY?: number;
 }
 
-const PRESETS: Record<LightningPreset, LightningPresetValues> = {
+export const PRESETS: Record<LightningPreset, LightningPresetValues> = {
   default: {
     color: "#6b7280",
     coreColor: "#ffffff",

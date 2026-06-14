@@ -18,7 +18,7 @@ interface LiveChartPresetValues {
   glowBlur?: number;
 }
 
-const PRESETS: Record<LiveChartPreset, LiveChartPresetValues> = {
+export const PRESETS: Record<LiveChartPreset, LiveChartPresetValues> = {
   default: {
     lineWidth: 2,
     showGrid: true,

@@ -18,7 +18,7 @@ interface MandalaPresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<MandalaPreset, MandalaPresetValues> = {
+export const PRESETS: Record<MandalaPreset, MandalaPresetValues> = {
   default: {
     symmetry: 8,
     colors: ["#ffffff", "#6b7280"],

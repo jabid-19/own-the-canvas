@@ -18,7 +18,7 @@ interface ShockwavePresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<ShockwavePreset, ShockwavePresetValues> = {
+export const PRESETS: Record<ShockwavePreset, ShockwavePresetValues> = {
   default: {
     color: "#ffffff",
     secondaryColor: "#6b7280",

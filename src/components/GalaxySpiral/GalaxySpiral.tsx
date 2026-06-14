@@ -13,7 +13,7 @@ interface GalaxySpiralPresetValues {
   rotationSpeed?: number;
 }
 
-const PRESETS: Record<GalaxySpiralPreset, GalaxySpiralPresetValues> = {
+export const PRESETS: Record<GalaxySpiralPreset, GalaxySpiralPresetValues> = {
   default: {},
   andromeda: {
     coreColor: "#ffd8a8",

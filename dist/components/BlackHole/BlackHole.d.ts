@@ -23,6 +23,14 @@ export interface BlackHoleProps extends BaseCanvasProps {
     speed?: number;
     /** Cursor shifts the singularity position (default: true) */
     interactive?: boolean;
+    /** Number of background stars (default: 0) */
+    starCount?: number;
+    /** Star color (default: "#ffffff") */
+    starColor?: string;
+    /** Enable glow on some stars (default: false) */
+    glowingStars?: boolean;
+    /** Glow blur radius for glowing stars (default: 8) */
+    starGlowBlur?: number;
     /** Named preset */
     preset?: BlackHolePreset | string;
 }

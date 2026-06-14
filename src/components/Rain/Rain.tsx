@@ -18,7 +18,7 @@ interface RainPresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<RainPreset, RainPresetValues> = {
+export const PRESETS: Record<RainPreset, RainPresetValues> = {
   default: {
     dropColor: "#000000",
     splashColor: "#000000",

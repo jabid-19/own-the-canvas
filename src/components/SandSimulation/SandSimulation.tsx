@@ -13,7 +13,7 @@ interface SandSimulationPresetValues {
   material?: SandMaterial;
 }
 
-const PRESETS: Record<SandSimulationPreset, SandSimulationPresetValues> = {
+export const PRESETS: Record<SandSimulationPreset, SandSimulationPresetValues> = {
   default: {},
   desert: { sandColor: "#c8a85a", backgroundColor: "#1a1200", wallColor: "#6b4c1a" },
   ocean: { waterColor: "#0088cc", backgroundColor: "#001a2e", wallColor: "#0a3a5a", material: "water" },

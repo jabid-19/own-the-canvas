@@ -24,7 +24,7 @@ interface BoidsPresetValues {
   wrapEdges?: boolean;
 }
 
-const PRESETS: Record<BoidsPreset, BoidsPresetValues> = {
+export const PRESETS: Record<BoidsPreset, BoidsPresetValues> = {
   default: {
     color: "#ffffff",
     backgroundColor: "#111111",

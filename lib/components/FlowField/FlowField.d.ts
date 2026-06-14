@@ -1,6 +1,15 @@
 import { BaseCanvasProps } from '../../types';
 
 type FlowFieldPreset = "default" | "neon" | "ocean" | "lava" | "forest" | "monochrome";
+interface FlowFieldPresetValues {
+    particleCount?: number;
+    colors?: string[];
+    backgroundColor?: string;
+    noiseScale?: number;
+    speed?: number;
+    curl?: boolean;
+}
+export declare const PRESETS: Record<FlowFieldPreset, FlowFieldPresetValues>;
 export interface FlowFieldProps extends BaseCanvasProps {
     /** Number of flow particles (default: 800) */
     particleCount?: number;
@@ -24,6 +33,12 @@ export interface FlowFieldProps extends BaseCanvasProps {
     timeSpeed?: number;
     /** Add curl noise component for more swirling flow (default: false) */
     curl?: boolean;
+    /** Mouse cursor attracts nearby particles (default: false) */
+    interactive?: boolean;
+    /** Radius in px around cursor that attracts particles (default: 100) */
+    attractRadius?: number;
+    /** Attraction force strength (default: 3) */
+    attractStrength?: number;
     /** Named preset: "default" | "neon" | "ocean" | "lava" | "forest" | "monochrome" */
     preset?: FlowFieldPreset | string;
 }

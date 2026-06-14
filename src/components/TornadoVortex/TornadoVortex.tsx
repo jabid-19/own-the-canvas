@@ -13,7 +13,7 @@ interface TornadoVortexPresetValues {
   funnelHeight?: number;
 }
 
-const PRESETS: Record<TornadoVortexPreset, TornadoVortexPresetValues> = {
+export const PRESETS: Record<TornadoVortexPreset, TornadoVortexPresetValues> = {
   default: {},
   storm: {
     funnelColor: "#c8d8e8",

@@ -1,6 +1,21 @@
 import { BaseCanvasProps } from '../../types';
 
 type FluidPreset = "default" | "ink" | "neon" | "lava" | "ocean" | "smoke";
+interface FluidPresetValues {
+    resolution?: number;
+    viscosity?: number;
+    diffusion?: number;
+    dissipation?: number;
+    inkColors?: string[];
+    glowEffect?: boolean;
+    glowBlur?: number;
+    backgroundColor?: string;
+    autoInk?: boolean;
+    autoInkInterval?: number;
+    mouseForce?: number;
+    inkRadius?: number;
+}
+export declare const PRESETS: Record<FluidPreset, FluidPresetValues>;
 export interface FluidSimulationProps extends BaseCanvasProps {
     /** Grid resolution (32–128) — lower is faster (default: 80) */
     resolution?: number;

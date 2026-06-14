@@ -13,7 +13,7 @@ interface SolarFlarePresetValues {
   glowBlur?: number;
 }
 
-const PRESETS: Record<SolarFlarePreset, SolarFlarePresetValues> = {
+export const PRESETS: Record<SolarFlarePreset, SolarFlarePresetValues> = {
   default: {},
   inferno: {
     sunColor: "#ff6600",

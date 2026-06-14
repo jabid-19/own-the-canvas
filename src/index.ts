@@ -155,3 +155,17 @@ export type { BubbleUniverseProps } from "./components/BubbleUniverse";
 
 export { SolarFlare } from "./components/SolarFlare";
 export type { SolarFlareProps } from "./components/SolarFlare";
+
+export { LorenzAttractor } from "./components/LorenzAttractor";
+export type { LorenzAttractorProps } from "./components/LorenzAttractor";
+
+export { CymaticsPattern } from "./components/CymaticsPattern";
+export type { CymaticsPatternProps } from "./components/CymaticsPattern";
+
+export { NBodyGravity } from "./components/NBodyGravity";
+export type { NBodyGravityProps } from "./components/NBodyGravity";
+
+
+export { TopographicContours } from "./components/TopographicContours";
+export type { TopographicContoursProps } from "./components/TopographicContours";
+

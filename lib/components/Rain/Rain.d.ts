@@ -24,6 +24,14 @@ export interface RainProps extends BaseCanvasProps {
     showSplashes?: boolean;
     /** Canvas background color. (default: "#ffffff") */
     backgroundColor?: string;
+    /** Number of background stars (default: 0) */
+    starCount?: number;
+    /** Star color (default: "#ffffff") */
+    starColor?: string;
+    /** Enable glow on some stars (default: false) */
+    glowingStars?: boolean;
+    /** Glow blur radius for glowing stars (default: 8) */
+    starGlowBlur?: number;
     /** Named preset. */
     preset?: RainPreset | string;
 }

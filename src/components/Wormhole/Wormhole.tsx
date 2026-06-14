@@ -19,7 +19,7 @@ interface WormholePresetValues {
   interactive?: boolean;
 }
 
-const PRESETS: Record<WormholePreset, WormholePresetValues> = {
+export const PRESETS: Record<WormholePreset, WormholePresetValues> = {
   default: {
     colors: ["#ffffff", "#6b7280"],
     backgroundColor: "#111111",

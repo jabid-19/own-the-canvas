@@ -14,6 +14,10 @@ export interface UseFireworksOptions {
     glowBlur: number;
     backgroundColor: string;
     shellSpeed: number;
+    starCount: number;
+    starColor: string;
+    glowingStars: boolean;
+    starGlowBlur: number;
 }
 export declare function useFireworks(canvasRef: RefObject<HTMLCanvasElement | null>, options: UseFireworksOptions): {
     launch: (x?: number) => void;

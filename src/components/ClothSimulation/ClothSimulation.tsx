@@ -22,7 +22,7 @@ interface ClothPresetValues {
   tearDistance?: number;
 }
 
-const PRESETS: Record<ClothPreset, ClothPresetValues> = {
+export const PRESETS: Record<ClothPreset, ClothPresetValues> = {
   default: {
     cols: 25,
     rows: 20,

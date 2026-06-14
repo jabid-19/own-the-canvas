@@ -170,6 +170,28 @@ const CSS = `
   color: var(--text-2);
   line-height: 1.5;
 }
+
+.component-card-footer-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-mid);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 150ms var(--ease);
+  font-family: inherit;
+}
+.component-card-footer-play:hover {
+  background: var(--accent-mid);
+}
 `;
 
 interface ComponentCardProps {
@@ -209,6 +231,17 @@ export function ComponentCard({ name, description, path, accent, preview }: Comp
             {name}
           </div>
           <div className="component-card-desc">{description}</div>
+          <button
+            className="component-card-footer-play"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setHovered(v => !v);
+            }}
+            aria-label={hovered ? "Stop preview" : "Play preview"}
+          >
+            {hovered ? "✕ Stop" : "▶ Preview"}
+          </button>
         </div>
       </Link>
     </>

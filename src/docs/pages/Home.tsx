@@ -51,6 +51,7 @@ import { BlackHole } from "../../components/BlackHole";
 import { GalaxySpiral } from "../../components/GalaxySpiral";
 import { TornadoVortex } from "../../components/TornadoVortex";
 import { SolarFlare } from "../../components/SolarFlare";
+import { LorenzAttractor } from "../../components/LorenzAttractor";
 
 const CSS = `
 .home {
@@ -350,6 +351,7 @@ const COMPONENTS = [
   { name: "GalaxySpiral", path: "/components/galaxy-spiral", accent: "#818cf8", desc: "Spiral galaxy with depth-sorted stellar particles and logarithmic arm math", preview: <GalaxySpiral armCount={2} starCount={1500} width="100%" height="100%" /> },
   { name: "TornadoVortex", path: "/components/tornado-vortex", accent: "#6b7280", desc: "Winding funnel vortex of debris particles with random internal lightning", preview: <TornadoVortex particleCount={400} width="100%" height="100%" /> },
   { name: "SolarFlare", path: "/components/solar-flare", accent: "#f97316", desc: "Glow-enhanced solar mass with convection cells and arcing flare loops", preview: <SolarFlare sunRadius={0.3} width="100%" height="100%" /> },
+  { name: "LorenzAttractor", path: "/components/lorenz-attractor", accent: "#00ffcc", desc: "Chaotic strange attractor integrated with RK4, projected into 3D with mouse-drag orbit", preview: <LorenzAttractor preset="neon" width="100%" height="100%" /> },
 ];
 
 
@@ -365,7 +367,7 @@ export function Home() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <div className="home-topbar">
-        <span className="home-topbar-version">v1.0.8</span>
+        <span className="home-topbar-version">v1.0.9</span>
         <div style={{ display: "flex", gap: 8 }}>
           <a
             href="https://github.com/jabid-19/own-the-canvas"
@@ -485,7 +487,7 @@ export default function App() {
         {/* Footer */}
         <footer className="home-footer">
           <span>own-the-canvas · MIT License</span>
-          <span>v1.0.8</span>
+          <span>v1.0.9</span>
         </footer>
       </div>
     </>

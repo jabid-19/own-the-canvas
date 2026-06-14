@@ -11,5 +11,9 @@ export interface UseDragonCursorOptions {
     wingSpan: number;
     showFire: boolean;
     interactive: boolean;
+    starCount: number;
+    starColor: string;
+    glowingStars: boolean;
+    starGlowBlur: number;
 }
 export declare function useDragonCursor(canvasRef: RefObject<HTMLCanvasElement | null>, options: UseDragonCursorOptions): void;

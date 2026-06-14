@@ -21,6 +21,14 @@ export interface DragonCursorProps extends BaseCanvasProps {
     showFire?: boolean;
     /** Dragon follows cursor (default: true) */
     interactive?: boolean;
+    /** Number of background stars (default: 0) */
+    starCount?: number;
+    /** Star color (default: "#ffffff") */
+    starColor?: string;
+    /** Enable glow on some stars (default: false) */
+    glowingStars?: boolean;
+    /** Glow blur radius for glowing stars (default: 8) */
+    starGlowBlur?: number;
     /** Named preset */
     preset?: DragonCursorPreset | string;
 }

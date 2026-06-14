@@ -9,21 +9,21 @@ import { Confetti } from "../components/Confetti";
 import { NoiseGradient } from "../components/NoiseGradient";
 import { PixelDissolve } from "../components/PixelDissolve";
 import { FlowField, PRESETS as FLOWFIELD_PRESETS } from "../components/FlowField";
-import { Spotlight } from "../components/Spotlight";
-import { Shockwave } from "../components/Shockwave";
-import { Fireworks } from "../components/Fireworks";
-import { GlitchOverlay } from "../components/GlitchOverlay";
-import { LiveChart } from "../components/LiveChart";
+import { Spotlight, PRESETS as SPOTLIGHT_PRESETS } from "../components/Spotlight";
+import { Shockwave, PRESETS as SHOCKWAVE_PRESETS } from "../components/Shockwave";
+import { Fireworks, PRESETS as FIREWORKS_PRESETS } from "../components/Fireworks";
+import { GlitchOverlay, PRESETS as GLITCH_PRESETS } from "../components/GlitchOverlay";
+import { LiveChart, PRESETS as LIVECHART_PRESETS } from "../components/LiveChart";
 import type { LiveChartSeries } from "../components/LiveChart";
-import { Mandala } from "../components/Mandala";
+import { Mandala, PRESETS as MANDALA_PRESETS } from "../components/Mandala";
 import { MagneticBlob, PRESETS as BLOB_PRESETS } from "../components/MagneticBlob";
-import { ClothSimulation } from "../components/ClothSimulation";
-import { FluidSimulation } from "../components/FluidSimulation";
-import { Rain } from "../components/Rain";
-import { Lightning } from "../components/Lightning";
+import { ClothSimulation, PRESETS as CLOTH_PRESETS } from "../components/ClothSimulation";
+import { FluidSimulation, PRESETS as FLUID_PRESETS } from "../components/FluidSimulation";
+import { Rain, PRESETS as RAIN_PRESETS } from "../components/Rain";
+import { Lightning, PRESETS as LIGHTNING_PRESETS } from "../components/Lightning";
 import { GameOfLife, PRESETS as GOL_PRESETS } from "../components/GameOfLife";
-import { Wormhole } from "../components/Wormhole";
-import { Boids } from "../components/Boids";
+import { Wormhole, PRESETS as WORMHOLE_PRESETS } from "../components/Wormhole";
+import { Boids, PRESETS as BOIDS_PRESETS } from "../components/Boids";
 import type { FirePalette } from "../components/FireEffect";
 import type { ConfettiPalette } from "../components/Confetti";
 import type { VisualizerMode } from "../components/AudioVisualizer";
@@ -35,9 +35,9 @@ import { KoiPond } from "../components/KoiPond";
 import { BubbleUniverse } from "../components/BubbleUniverse";
 import { SakuraBlossom } from "../components/SakuraBlossom";
 import { ReactionDiffusion } from "../components/ReactionDiffusion";
-import { AuroraBorealis } from "../components/AuroraBorealis";
+import { AuroraBorealis, PRESETS as AURORA_PRESETS } from "../components/AuroraBorealis";
 import { Spirograph } from "../components/Spirograph";
-import { SandSimulation } from "../components/SandSimulation";
+import { SandSimulation, PRESETS as SAND_PRESETS } from "../components/SandSimulation";
 import type { SandMaterial } from "../components/SandSimulation";
 import { WaveInterference, PRESETS as WAVE_PRESETS } from "../components/WaveInterference";
 import { DiffusionAggregation, PRESETS as DLA_PRESETS } from "../components/DiffusionAggregation";
@@ -61,10 +61,10 @@ import { Metaballs } from "../components/Metaballs";
 import { AntColony } from "../components/AntColony";
 import { MagneticField } from "../components/MagneticField";
 import { TerrainMesh } from "../components/TerrainMesh";
-import { BlackHole } from "../components/BlackHole";
-import { GalaxySpiral } from "../components/GalaxySpiral";
-import { TornadoVortex } from "../components/TornadoVortex";
-import { SolarFlare } from "../components/SolarFlare";
+import { BlackHole, PRESETS as BLACKHOLE_PRESETS } from "../components/BlackHole";
+import { GalaxySpiral, PRESETS as GALAXY_PRESETS } from "../components/GalaxySpiral";
+import { TornadoVortex, PRESETS as TORNADO_PRESETS } from "../components/TornadoVortex";
+import { SolarFlare, PRESETS as SOLARFLARE_PRESETS } from "../components/SolarFlare";
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -1938,6 +1938,21 @@ function SpotlightPanel() {
   const [shape, setShape] = useState<"circle" | "ellipse">("circle");
   const [ellipseRatio, setEllipseRatio] = useState(0.6);
   const [interactive, setInteractive] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = SPOTLIGHT_PRESETS[p as keyof typeof SPOTLIGHT_PRESETS] ?? {};
+    if (v.radius !== undefined)       setRadius(v.radius);
+    if (v.overlayOpacity !== undefined) setOpacity(v.overlayOpacity);
+    if (v.edgeSoftness !== undefined) setSoftness(v.edgeSoftness);
+    if (v.showGlow !== undefined)     setGlow(v.showGlow);
+    if (v.glowColor)                  setGlowColor(v.glowColor);
+    if (v.overlayColor)               setOverlayColor(v.overlayColor);
+    if (v.followSpeed !== undefined)  setFollowSpeed(v.followSpeed);
+    if (v.shape)                      setShape(v.shape as "circle" | "ellipse");
+    if (v.ellipseRatio !== undefined) setEllipseRatio(v.ellipseRatio);
+  }
+
   const code = `import { Spotlight } from 'own-the-canvas';
 
 <div style={{ position: "relative" }}>
@@ -1968,7 +1983,7 @@ function SpotlightPanel() {
       <div className="controls">
         <CtrlHeader id="Spotlight" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "soft", "dramatic", "neon", "ellipse"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "soft", "dramatic", "neon", "ellipse"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Overlay color" value={overlayColor} onChange={setOverlayColor} />
           <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
@@ -1995,6 +2010,16 @@ function ShockwavePanel() {
   const [bg, setBg] = useState("#111111");
   const [glow, setGlow] = useState(true);
   const [autoFire, setAutoFire] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = SHOCKWAVE_PRESETS[p as keyof typeof SHOCKWAVE_PRESETS] ?? {};
+    if (v.ringCount !== undefined)  setRingCount(v.ringCount);
+    if (v.speed !== undefined)      setSpeed(v.speed);
+    if (v.color)                    setColor(v.color);
+    if (v.backgroundColor)          setBg(v.backgroundColor);
+    if (v.glowEffect !== undefined)  setGlow(v.glowEffect);
+  }
 
   const code = [
     `import { Shockwave } from 'own-the-canvas';`,
@@ -2026,7 +2051,7 @@ function ShockwavePanel() {
       <div className="controls">
         <CtrlHeader id="Shockwave" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "explosion", "ripple", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "explosion", "ripple", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Ring color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
@@ -2052,6 +2077,16 @@ function FireworksPanel() {
   const [starColor, setStarColor] = useState("#ffffff");
   const [glowingStars, setGlowingStars] = useState(false);
   const [starGlowBlur, setStarGlowBlur] = useState(8);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = FIREWORKS_PRESETS[p as keyof typeof FIREWORKS_PRESETS] ?? {};
+    if (v.particleCount !== undefined) setCount(v.particleCount);
+    if (v.gravity !== undefined)       setGravity(v.gravity);
+    if (v.spread !== undefined)        setSpread(v.spread);
+    if (v.backgroundColor)             setBg(v.backgroundColor);
+    if (v.glowEffect !== undefined)    setGlow(v.glowEffect);
+  }
 
   const code = [
     `import { Fireworks } from 'own-the-canvas';`,
@@ -2088,7 +2123,7 @@ function FireworksPanel() {
       <div className="controls">
         <CtrlHeader id="Fireworks" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "celebration", "subtle", "neon", "golden"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "celebration", "subtle", "neon", "golden"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Particle count" value={count} min={20} max={200} step={10} onChange={setCount} />
@@ -2117,6 +2152,17 @@ function GlitchOverlayPanel() {
   const [scanlines, setScanlines] = useState(true);
   const [blockGlitch, setBlockGlitch] = useState(true);
   const [animated, setAnimated] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = GLITCH_PRESETS[p as keyof typeof GLITCH_PRESETS] ?? {};
+    if (v.intensity !== undefined)   setIntensity(v.intensity);
+    if (v.speed !== undefined)       setSpeed(v.speed);
+    if (v.rgbShift !== undefined)    setRgbShift(v.rgbShift);
+    if (v.color)                     setColor(v.color);
+    if (v.scanlines !== undefined)   setScanlines(v.scanlines);
+    if (v.blockGlitch !== undefined) setBlockGlitch(v.blockGlitch);
+  }
 
   const code = [
     `import { GlitchOverlay } from 'own-the-canvas';`,
@@ -2155,7 +2201,7 @@ function GlitchOverlayPanel() {
       <div className="controls">
         <CtrlHeader id="GlitchOverlay" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Accent color" value={color} onChange={setColor} />
           <ColorPicker label="RGB Shift Color" value={rgbShiftColor} onChange={setRgbShiftColor} />
@@ -2178,6 +2224,16 @@ function LiveChartPanel() {
   const [showDots, setShowDots] = useState(false);
   const [glow, setGlow] = useState(true);
   const [bg, setBg] = useState("#111111");
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = LIVECHART_PRESETS[p as keyof typeof LIVECHART_PRESETS] ?? {};
+    if (v.smooth !== undefined)     setSmooth(v.smooth);
+    if (v.showGrid !== undefined)   setShowGrid(v.showGrid);
+    if (v.showDots !== undefined)   setShowDots(v.showDots);
+    if (v.glowEffect !== undefined) setGlow(v.glowEffect);
+    if (v.backgroundColor)          setBg(v.backgroundColor);
+  }
 
   const series: LiveChartSeries[] = React.useMemo(() => [
     { data: Array.from({ length: 40 }, (_, i) => 50 + Math.sin(i * 0.4) * 30 + Math.random() * 10), color: "#ffffff", filled: true },
@@ -2209,7 +2265,7 @@ function LiveChartPanel() {
       <div className="controls">
         <CtrlHeader id="LiveChart" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "ocean", "fire"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "ocean", "fire"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Toggle label="Smooth curves" value={smooth} onChange={setSmooth} />
@@ -2231,6 +2287,18 @@ function MandalaPanel() {
   const [colors, setColors] = useState(["#ffffff"]);
   const [mirror, setMirror] = useState(true);
   const [glow, setGlow] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = MANDALA_PRESETS[p as keyof typeof MANDALA_PRESETS] ?? {};
+    if (v.symmetry !== undefined)    setSymmetry(v.symmetry);
+    if (v.layers !== undefined)      setLayers(v.layers);
+    if (v.speed !== undefined)       setSpeed(v.speed);
+    if (v.backgroundColor)           setBg(v.backgroundColor);
+    if (v.colors)                    setColors(v.colors);
+    if (v.mirror !== undefined)      setMirror(v.mirror);
+    if (v.glowEffect !== undefined)  setGlow(v.glowEffect);
+  }
 
   const code = [
     `import { Mandala } from 'own-the-canvas';`,
@@ -2263,7 +2331,7 @@ function MandalaPanel() {
       <div className="controls">
         <CtrlHeader id="Mandala" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Divider />
@@ -2359,6 +2427,17 @@ function ClothSimulationPanel() {
   const [lineColor, setLineColor] = useState("#6b7280");
   const [bg, setBg] = useState("#111111");
 
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = CLOTH_PRESETS[p as keyof typeof CLOTH_PRESETS] ?? {};
+    if (v.cols !== undefined)          setCols(v.cols);
+    if (v.gravity !== undefined)       setGravity(v.gravity);
+    if (v.wind !== undefined)          setWind(v.wind);
+    if (v.tearable !== undefined)      setTearable(v.tearable);
+    if (v.lineColor)                   setLineColor(v.lineColor);
+    if (v.backgroundColor)             setBg(v.backgroundColor);
+  }
+
   const code = [
     `import { ClothSimulation } from 'own-the-canvas';`,
     ``,
@@ -2389,7 +2468,7 @@ function ClothSimulationPanel() {
       <div className="controls">
         <CtrlHeader id="ClothSimulation" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "silk", "net", "heavy", "spider"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "silk", "net", "heavy", "spider"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Cloth color" value={lineColor} onChange={setLineColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
@@ -2411,6 +2490,17 @@ function FluidSimulationPanel() {
   const [mouseForce, setMouseForce] = useState(5);
   const [bg, setBg] = useState("#111111");
   const [inkColors, setInkColors] = useState(["#ffffff", "#6b7280"]);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = FLUID_PRESETS[p as keyof typeof FLUID_PRESETS] ?? {};
+    if (v.resolution !== undefined)   setResolution(v.resolution);
+    if (v.dissipation !== undefined)  setDissipation(v.dissipation);
+    if (v.autoInk !== undefined)      setAutoInk(v.autoInk);
+    if (v.mouseForce !== undefined)   setMouseForce(v.mouseForce);
+    if (v.backgroundColor)            setBg(v.backgroundColor);
+    if (v.inkColors)                  setInkColors(v.inkColors);
+  }
 
   const code = `import { FluidSimulation } from 'own-the-canvas';
 
@@ -2439,7 +2529,7 @@ function FluidSimulationPanel() {
       <div className="controls">
         <CtrlHeader id="FluidSimulation" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Divider />
@@ -2468,6 +2558,17 @@ function RainPanel() {
   const [starColor, setStarColor] = useState("#ffffff");
   const [glowingStars, setGlowingStars] = useState(false);
   const [starGlowBlur, setStarGlowBlur] = useState(8);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = RAIN_PRESETS[p as keyof typeof RAIN_PRESETS] ?? {};
+    if (v.dropCount !== undefined)  setDropCount(v.dropCount);
+    if (v.speed !== undefined)      setSpeed(v.speed);
+    if (v.wind !== undefined)       setWind(v.wind);
+    if (v.dropColor)                setDropColor(v.dropColor);
+    if (v.splashColor)              setSplashColor(v.splashColor);
+    if (v.backgroundColor)          setBg(v.backgroundColor);
+  }
 
   const code = [
     `import { Rain } from 'own-the-canvas';`,
@@ -2506,7 +2607,7 @@ function RainPanel() {
       <div className="controls">
         <CtrlHeader id="Rain" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "storm", "drizzle", "neon", "golden"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "storm", "drizzle", "neon", "golden"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Drop color" value={dropColor} onChange={setDropColor} />
           <ColorPicker label="Splash color" value={splashColor} onChange={setSplashColor} />
@@ -2533,6 +2634,16 @@ function LightningPanel() {
   const [branchChance, setBranchChance] = useState(0.1);
   const [glowBlur, setGlowBlur] = useState(20);
   const [autoInterval, setAutoInterval] = useState(2000);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = LIGHTNING_PRESETS[p as keyof typeof LIGHTNING_PRESETS] ?? {};
+    if (v.color)                        setColor(v.color);
+    if (v.backgroundColor)              setBg(v.backgroundColor);
+    if (v.branchChance !== undefined)   setBranchChance(v.branchChance);
+    if (v.glowBlur !== undefined)       setGlowBlur(v.glowBlur);
+    if (v.autoInterval !== undefined)   setAutoInterval(v.autoInterval);
+  }
 
   const code = [
     `import { Lightning } from 'own-the-canvas';`,
@@ -2563,7 +2674,7 @@ function LightningPanel() {
       <div className="controls">
         <CtrlHeader id="Lightning" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "storm", "plasma", "subtle"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neon", "storm", "plasma", "subtle"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Bolt color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
@@ -2650,6 +2761,16 @@ function WormholePanel() {
   const [starColor, setStarColor] = useState("#ffffff");
   const [bg, setBg] = useState("#111111");
 
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = WORMHOLE_PRESETS[p as keyof typeof WORMHOLE_PRESETS] ?? {};
+    if (v.speed !== undefined)      setSpeed(v.speed);
+    if (v.twist !== undefined)      setTwist(v.twist);
+    if (v.starCount !== undefined)  setStarCount(v.starCount);
+    if (v.colors)                   setColors(v.colors);
+    if (v.backgroundColor)          setBg(v.backgroundColor);
+  }
+
   const code = [
     `import { Wormhole } from 'own-the-canvas';`,
     ``,
@@ -2682,7 +2803,7 @@ function WormholePanel() {
       <div className="controls">
         <CtrlHeader id="Wormhole" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "hyperspace", "neon", "vortex", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "hyperspace", "neon", "vortex", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
@@ -2707,6 +2828,16 @@ function BoidsPanel() {
   const [bg, setBg] = useState("#111111");
   const [trailLength, setTrailLength] = useState(8);
   const [sepForce, setSepForce] = useState(0.05);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = BOIDS_PRESETS[p as keyof typeof BOIDS_PRESETS] ?? {};
+    if (v.count !== undefined)       setCount(v.count);
+    if (v.maxSpeed !== undefined)    setMaxSpeed(v.maxSpeed);
+    if (v.color)                     setColor(v.color);
+    if (v.backgroundColor)           setBg(v.backgroundColor);
+    if (v.trailLength !== undefined) setTrailLength(v.trailLength);
+  }
 
   const code = [
     `import { Boids } from 'own-the-canvas';`,
@@ -2738,7 +2869,7 @@ function BoidsPanel() {
       <div className="controls">
         <CtrlHeader id="Boids" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "birds", "fish", "swarm", "neon"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "birds", "fish", "swarm", "neon"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Color" value={color} onChange={setColor} />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
@@ -3174,6 +3305,14 @@ function AuroraBorealisPanel() {
   const [starCount, setStarCount] = useState(80);
   const [bg, setBg] = useState("#111111");
   const [animated, setAnimated] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = AURORA_PRESETS[p as keyof typeof AURORA_PRESETS] ?? {};
+    if (v.intensity !== undefined)   setIntensity(v.intensity);
+    if (v.backgroundColor)           setBg(v.backgroundColor);
+  }
+
   const code = `import { AuroraBorealis } from 'own-the-canvas';
 
 <AuroraBorealis
@@ -3198,7 +3337,7 @@ function AuroraBorealisPanel() {
       <div className="controls">
         <CtrlHeader id="AuroraBorealis" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "green", "purple", "blue", "rainbow", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "green", "purple", "blue", "rainbow", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Background" value={bg} onChange={setBg} />
           <Slider label="Speed" value={speed} min={0.1} max={4} step={0.1} onChange={setSpeed} />
@@ -3328,6 +3467,17 @@ function SandSimulationPanel() {
   const [bg, setBg] = useState("#111111");
   const [interactive, setInteractive] = useState(true);
 
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = SAND_PRESETS[p as keyof typeof SAND_PRESETS] ?? {};
+    if (v.sandColor)       setSandColor(v.sandColor);
+    if (v.waterColor)      setWaterColor(v.waterColor);
+    if (v.fireColor)       setFireColor(v.fireColor);
+    if (v.wallColor)       setWallColor(v.wallColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+    if (v.material)        setMaterial(v.material as SandMaterial);
+  }
+
   const code = [
     `import { SandSimulation } from 'own-the-canvas';`,
     ``,
@@ -3361,7 +3511,7 @@ function SandSimulationPanel() {
       <div className="controls">
         <CtrlHeader id="SandSimulation" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "desert", "ocean", "inferno", "neon"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "desert", "ocean", "inferno", "neon"]} onChange={handlePreset} />
           <Sel label="Material" value={material} options={["sand", "water", "fire", "wall", "erase"]} onChange={(v) => setMaterial(v as SandMaterial)} />
           <Divider />
           <ColorPicker label="Sand color" value={sandColor} onChange={setSandColor} />
@@ -5086,6 +5236,16 @@ function BlackHolePanel() {
   const [bhGlowingStars, setBhGlowingStars] = useState(false);
   const [bhStarGlowBlur, setBhStarGlowBlur] = useState(8);
 
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = BLACKHOLE_PRESETS[p as keyof typeof BLACKHOLE_PRESETS] ?? {};
+    if (v.diskColor)                   setDiskColor(v.diskColor);
+    if (v.jetColor)                    setJetColor(v.jetColor);
+    if (v.backgroundColor)             setBg(v.backgroundColor);
+    if (v.particleCount !== undefined)  setParticleCount(v.particleCount);
+    if (v.diskWidth !== undefined)      setDiskWidth(v.diskWidth);
+  }
+
   const code = [
     `import { BlackHole } from 'own-the-canvas';`,
     ``,
@@ -5122,7 +5282,7 @@ function BlackHolePanel() {
       <div className="controls">
         <CtrlHeader id="BlackHole" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neutron", "quasar", "minimal", "neon"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "neutron", "quasar", "minimal", "neon"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Disk color" value={diskColor} onChange={setDiskColor} />
           <ColorPicker label="Jet color" value={jetColor} onChange={setJetColor} />
@@ -5159,6 +5319,18 @@ function GalaxySpiralPanel() {
   const [tiltX, setTiltX] = useState(0.3);
   const [glowBlur, setGlowBlur] = useState(30);
   const [interactive, setInteractive] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = GALAXY_PRESETS[p as keyof typeof GALAXY_PRESETS] ?? {};
+    if (v.coreColor)                   setCoreColor(v.coreColor);
+    if (v.diskColor)                   setDiskColor(v.diskColor);
+    if (v.backgroundColor)             setBg(v.backgroundColor);
+    if (v.armCount !== undefined)      setArmCount(v.armCount);
+    if (v.armTightness !== undefined)  setArmTightness(v.armTightness);
+    if (v.rotationSpeed !== undefined) setRotationSpeed(v.rotationSpeed);
+  }
+
   const code = `import { GalaxySpiral } from 'own-the-canvas';
 
 <GalaxySpiral
@@ -5187,7 +5359,7 @@ function GalaxySpiralPanel() {
       <div className="controls">
         <CtrlHeader id="GalaxySpiral" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "milkyway", "andromeda", "barred", "neon"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "milkyway", "andromeda", "barred", "neon"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Core color" value={coreColor} onChange={setCoreColor} />
           <ColorPicker label="Disk color" value={diskColor} onChange={setDiskColor} />
@@ -5219,6 +5391,18 @@ function TornadoVortexPanel() {
   const [bg, setBg] = useState("#111111");
   const [showLightning, setShowLightning] = useState(true);
   const [showGroundDust, setShowGroundDust] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = TORNADO_PRESETS[p as keyof typeof TORNADO_PRESETS] ?? {};
+    if (v.funnelColor)                 setFunnelColor(v.funnelColor);
+    if (v.debrisColor)                 setDebrisColor(v.debrisColor);
+    if (v.lightningColor)              setLightningColor(v.lightningColor);
+    if (v.backgroundColor)             setBg(v.backgroundColor);
+    if (v.rotationSpeed !== undefined)  setRotationSpeed(v.rotationSpeed);
+    if (v.funnelHeight !== undefined)   setFunnelHeight(v.funnelHeight);
+  }
+
   const code = `import { TornadoVortex } from 'own-the-canvas';
 
 <TornadoVortex
@@ -5247,7 +5431,7 @@ function TornadoVortexPanel() {
       <div className="controls">
         <CtrlHeader id="TornadoVortex" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "fire", "electric", "dust", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "fire", "electric", "dust", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Funnel color" value={funnelColor} onChange={setFunnelColor} />
           <ColorPicker label="Debris color" value={debrisColor} onChange={setDebrisColor} />
@@ -5281,6 +5465,18 @@ function SolarFlarePanel() {
   const [glow, setGlow] = useState(true);
   const [glowBlur, setGlowBlur] = useState(40);
   const [interactive, setInteractive] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = SOLARFLARE_PRESETS[p as keyof typeof SOLARFLARE_PRESETS] ?? {};
+    if (v.sunColor)                   setSunColor(v.sunColor);
+    if (v.coronaColor)                setCoronaColor(v.coronaColor);
+    if (v.flareColor)                 setFlareColor(v.flareColor);
+    if (v.backgroundColor)            setBg(v.backgroundColor);
+    if (v.glowBlur !== undefined)     setGlowBlur(v.glowBlur);
+    if (v.sunRadius !== undefined)    setSunRadius(v.sunRadius);
+  }
+
   const code = `import { SolarFlare } from 'own-the-canvas';
 
 <SolarFlare
@@ -5311,7 +5507,7 @@ function SolarFlarePanel() {
       <div className="controls">
         <CtrlHeader id="SolarFlare" />
         <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "intense", "calm", "neon", "minimal"]} onChange={setPreset} />
+          <Sel label="Preset" value={preset} options={["default", "intense", "calm", "neon", "minimal"]} onChange={handlePreset} />
           <Divider />
           <ColorPicker label="Sun color" value={sunColor} onChange={setSunColor} />
           <ColorPicker label="Corona color" value={coronaColor} onChange={setCoronaColor} />

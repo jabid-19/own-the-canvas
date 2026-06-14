@@ -11,5 +11,8 @@ export interface UseFlowFieldOptions {
     animated: boolean;
     timeSpeed: number;
     curl: boolean;
+    interactive: boolean;
+    attractRadius: number;
+    attractStrength: number;
 }
 export declare function useFlowField(canvasRef: RefObject<HTMLCanvasElement | null>, options: UseFlowFieldOptions): void;

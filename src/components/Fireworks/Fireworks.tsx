@@ -19,7 +19,7 @@ interface FireworksPresetValues {
   particleSize?: number;
 }
 
-const PRESETS: Record<FireworksPreset, FireworksPresetValues> = {
+export const PRESETS: Record<FireworksPreset, FireworksPresetValues> = {
   default: {
     colors: ["#ffffff", "#e2e8f0", "#6b7280", "#9ca3af"],
     particleCount: 80,

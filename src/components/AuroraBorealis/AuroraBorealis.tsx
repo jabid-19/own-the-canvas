@@ -11,7 +11,7 @@ interface AuroraBorealisPresetValues {
   speed?: number;
 }
 
-const PRESETS: Record<AuroraBorealisPreset, AuroraBorealisPresetValues> = {
+export const PRESETS: Record<AuroraBorealisPreset, AuroraBorealisPresetValues> = {
   default: {},
   arctic: { colors: ["#00ff88", "#00ccff", "#88ff00"], backgroundColor: "#050a0f" },
   solar: { colors: ["#ff4400", "#ff8800", "#cc00ff"], backgroundColor: "#0a0005" },

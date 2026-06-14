@@ -11,5 +11,9 @@ export interface UseBlackHoleOptions {
     lensing: boolean;
     speed: number;
     interactive: boolean;
+    starCount: number;
+    starColor: string;
+    glowingStars: boolean;
+    starGlowBlur: number;
 }
 export declare function useBlackHole(canvasRef: RefObject<HTMLCanvasElement | null>, options: UseBlackHoleOptions): void;
