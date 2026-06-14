@@ -175,3 +175,6 @@ export type { SpiderWebProps } from "./components/SpiderWeb";
 export { ButterflySwarm } from "./components/ButterflySwarm";
 export type { ButterflySwarmProps } from "./components/ButterflySwarm";
 
+export { WillowTree } from "./components/WillowTree";
+export type { WillowTreeProps } from "./components/WillowTree";
+
