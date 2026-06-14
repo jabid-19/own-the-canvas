@@ -7,8 +7,8 @@ import { ButterflySwarm } from "../../../components/ButterflySwarm";
 
 const PROPS = [
   { name: "butterflyCount",  type: "number",  default: "12",        description: "Number of butterflies." },
-  { name: "wingColor",       type: "string",  default: '"#f97316"', description: "Primary wing fill color." },
-  { name: "patternColor",    type: "string",  default: '"#111111"', description: "Wing spot and body color." },
+  { name: "wingColor",       type: "string",  default: '"#c8c8c8"', description: "Primary wing fill color." },
+  { name: "patternColor",    type: "string",  default: '"#444444"', description: "Wing spot and body color." },
   { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background." },
   { name: "flapSpeed",       type: "number",  default: "1",         description: "Wing flap speed multiplier." },
   { name: "speed",           type: "number",  default: "1",         description: "Movement speed multiplier." },
@@ -19,7 +19,7 @@ const PROPS = [
 ];
 
 const PRESET_VALUES: Record<string, { wingColor: string; patternColor: string; bg: string }> = {
-  default: { wingColor: "#f97316", patternColor: "#111111", bg: "#111111" },
+  default: { wingColor: "#c8c8c8", patternColor: "#444444", bg: "#0a0a0a" },
   monarch: { wingColor: "#e06010", patternColor: "#111111", bg: "#0a0800" },
   morpho:  { wingColor: "#1060ff", patternColor: "#0030aa", bg: "#000508" },
   meadow:  { wingColor: "#f0c030", patternColor: "#804000", bg: "#0a1405" },
@@ -28,9 +28,9 @@ const PRESET_VALUES: Record<string, { wingColor: string; patternColor: string; b
 
 function ButterflySwarmPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]               = useState("default");
-  const [wingColor, setWingColor]         = useState("#f97316");
-  const [patternColor, setPatternColor]   = useState("#111111");
-  const [bg, setBg]                       = useState("#111111");
+  const [wingColor, setWingColor]         = useState("#c8c8c8");
+  const [patternColor, setPatternColor]   = useState("#444444");
+  const [bg, setBg]                       = useState("#0a0a0a");
   const [butterflyCount, setButterflyCount] = useState(12);
   const [flapSpeed, setFlapSpeed]         = useState(1);
   const [speed, setSpeed]                 = useState(1);

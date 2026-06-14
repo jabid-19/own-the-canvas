@@ -31,8 +31,6 @@ export interface DeepSeaBioluminescenceProps extends BaseCanvasProps {
   waterColor?: string;
   /** Cursor movement spawns bioluminescent ripples (default: true) */
   interactive?: boolean;
-  /** Show anglerfish with glowing lure (default: true) */
-  showAnglerfish?: boolean;
   /** Overall animation speed multiplier (default: 1) */
   speed?: number;
   /** Named preset */
@@ -43,7 +41,7 @@ export const DeepSeaBioluminescence = forwardRef<HTMLCanvasElement, DeepSeaBiolu
   (props, ref) => {
     const {
       preset, jellyfishCount, planktonCount, jellyfishColor, glowColor,
-      waterColor, interactive, showAnglerfish, speed,
+      waterColor, interactive, speed,
       width, height, className, style,
     } = props;
 
@@ -54,11 +52,10 @@ export const DeepSeaBioluminescence = forwardRef<HTMLCanvasElement, DeepSeaBiolu
     useDeepSeaBioluminescence(internalRef, {
       jellyfishCount:  jellyfishCount  ?? 5,
       planktonCount:   planktonCount   ?? 200,
-      jellyfishColor:  jellyfishColor  ?? p.jellyfishColor ?? "#88ccff",
-      glowColor:       glowColor       ?? p.glowColor      ?? "#00ffcc",
-      waterColor:      waterColor      ?? p.waterColor      ?? "#020c14",
+      jellyfishColor:  jellyfishColor  ?? p.jellyfishColor ?? "#99bbcc",
+      glowColor:       glowColor       ?? p.glowColor      ?? "#aaccdd",
+      waterColor:      waterColor      ?? p.waterColor      ?? "#060c10",
       interactive:     interactive     ?? true,
-      showAnglerfish:  showAnglerfish  ?? true,
       speed:           speed           ?? 1,
     });
 

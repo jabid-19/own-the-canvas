@@ -23,12 +23,6 @@ interface Ripple {
   alpha: number;
 }
 
-interface DeepFish {
-  x: number; y: number;
-  vx: number; size: number;
-  alpha: number;
-}
-
 export interface UseDeepSeaBioluminescenceOptions {
   jellyfishCount: number;
   planktonCount: number;
@@ -36,7 +30,6 @@ export interface UseDeepSeaBioluminescenceOptions {
   glowColor: string;
   waterColor: string;
   interactive: boolean;
-  showAnglerfish: boolean;
   speed: number;
 }
 
@@ -84,8 +77,6 @@ export function useDeepSeaBioluminescence(
     let jellyfish: Jellyfish[] = [];
     let plankton: Plankton[] = [];
     const ripples: Ripple[] = [];
-    const fish: DeepFish[] = [];
-    let anglerPhase = 0;
     const mouse = { x: -1, y: -1, px: -1, py: -1 };
 
     function init() {
@@ -139,7 +130,6 @@ export function useDeepSeaBioluminescence(
     function loop() {
       t += 0.016;
       const opts = optionsRef.current;
-      anglerPhase += 0.03;
 
       ctx.fillStyle = opts.waterColor;
       ctx.fillRect(0, 0, w, h);
@@ -244,84 +234,6 @@ export function useDeepSeaBioluminescence(
           ctx.lineWidth = 1;
           ctx.stroke();
         }
-      }
-
-      // anglerfish
-      if (opts.showAnglerfish) {
-        const ax = w * 0.88, ay = h * 0.82;
-        const lureX = ax - 30 + Math.sin(anglerPhase) * 8;
-        const lureY = ay - 50 + Math.cos(anglerPhase * 0.7) * 6;
-
-        // rod
-        ctx.beginPath();
-        ctx.moveTo(ax - 10, ay - 20);
-        ctx.quadraticCurveTo(ax - 25, ay - 45, lureX, lureY);
-        ctx.strokeStyle = hexToRgba(opts.glowColor, 0.4);
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // lure glow
-        const lureGrad = ctx.createRadialGradient(lureX, lureY, 0, lureX, lureY, 12);
-        lureGrad.addColorStop(0, hexToRgba(opts.glowColor, 0.9));
-        lureGrad.addColorStop(1, hexToRgba(opts.glowColor, 0));
-        ctx.beginPath();
-        ctx.arc(lureX, lureY, 12, 0, Math.PI * 2);
-        ctx.fillStyle = lureGrad;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(lureX, lureY, 3, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(opts.glowColor, 1);
-        ctx.fill();
-
-        // body silhouette
-        ctx.beginPath();
-        ctx.ellipse(ax, ay, 28, 18, 0.2, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba("#000010", 0.85);
-        ctx.fill();
-
-        // eye
-        ctx.beginPath();
-        ctx.arc(ax - 12, ay - 5, 5, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(opts.glowColor, 0.5);
-        ctx.fill();
-
-        // teeth
-        ctx.beginPath();
-        for (let ti = 0; ti < 5; ti++) {
-          ctx.moveTo(ax - 20 + ti * 8, ay + 10);
-          ctx.lineTo(ax - 16 + ti * 8, ay + 18);
-        }
-        ctx.strokeStyle = hexToRgba("#aaccdd", 0.4);
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      }
-
-      // deep fish
-      if (Math.random() < 0.003 && fish.length < 3) {
-        const goRight = Math.random() < 0.5;
-        fish.push({ x: goRight ? -80 : w + 80, y: h * (0.1 + Math.random() * 0.7), vx: goRight ? (0.4 + Math.random() * 0.5) : -(0.4 + Math.random() * 0.5), size: 30 + Math.random() * 40, alpha: 0 });
-      }
-      for (let i = fish.length - 1; i >= 0; i--) {
-        const f = fish[i];
-        f.x += f.vx * opts.speed;
-        f.alpha = Math.min(0.35, f.alpha + 0.005);
-        if ((f.vx > 0 && f.x > w + 100) || (f.vx < 0 && f.x < -100)) { fish.splice(i, 1); continue; }
-        ctx.save();
-        ctx.translate(f.x, f.y);
-        if (f.vx < 0) ctx.scale(-1, 1);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, f.size, f.size * 0.35, 0, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(opts.jellyfishColor, f.alpha);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(-f.size, 0);
-        ctx.lineTo(-f.size - f.size * 0.4, -f.size * 0.2);
-        ctx.lineTo(-f.size - f.size * 0.4, f.size * 0.2);
-        ctx.closePath();
-        ctx.fillStyle = hexToRgba(opts.jellyfishColor, f.alpha);
-        ctx.fill();
-        ctx.restore();
       }
 
       raf = requestAnimationFrame(loop);

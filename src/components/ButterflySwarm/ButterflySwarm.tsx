@@ -12,7 +12,7 @@ interface ButterflySwarmPresetValues {
 }
 
 const PRESETS: Record<ButterflySwarmPreset, ButterflySwarmPresetValues> = {
-  default:  {},
+  default:  { wingColor: "#c8c8c8", patternColor: "#444444", backgroundColor: "#0a0a0a" },
   monarch:  { wingColor: "#e06010", patternColor: "#111111", backgroundColor: "#0a0800" },
   morpho:   { wingColor: "#1060ff", patternColor: "#0030aa", backgroundColor: "#000508" },
   meadow:   { wingColor: "#f0c030", patternColor: "#804000", backgroundColor: "#0a1405" },
@@ -56,8 +56,8 @@ export const ButterflySwarm = forwardRef<HTMLCanvasElement, ButterflySwarmProps>
 
     useButterflySwarm(internalRef, {
       butterflyCount: butterflyCount ?? 12,
-      wingColor:      wingColor      ?? p.wingColor      ?? "#f97316",
-      patternColor:   patternColor   ?? p.patternColor   ?? "#111111",
+      wingColor:      wingColor      ?? p.wingColor      ?? "#c8c8c8",
+      patternColor:   patternColor   ?? p.patternColor   ?? "#444444",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       flapSpeed:      flapSpeed      ?? 1,
       speed:          speed          ?? 1,
