@@ -20,10 +20,10 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders 48 component cards", () => {
+  it("renders 53 component cards", () => {
     render(<Wrapper />);
     const cards = screen.getAllByTestId("component-card");
-    expect(cards).toHaveLength(48);
+    expect(cards).toHaveLength(53);
   });
 
   it("renders install command", () => {
