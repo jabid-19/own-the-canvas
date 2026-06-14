@@ -7,6 +7,7 @@ const COMPONENT_LINKS = [
   { name: "SpiderWeb", path: "/components/spider-web" },
   { name: "ButterflySwarm", path: "/components/butterfly-swarm" },
   { name: "WillowTree", path: "/components/willow-tree" },
+  { name: "DeepSeaBioluminescence", path: "/components/deep-sea-bioluminescence" },
   { name: "MatrixRain", path: "/components/matrix-rain" },
   { name: "FluidSimulation", path: "/components/fluid-simulation" },
   { name: "FlowField", path: "/components/flow-field" },

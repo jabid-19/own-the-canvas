@@ -55,6 +55,7 @@ const KoiPondPage        = lazy(() => import("./pages/components/KoiPondPage").t
 const SpiderWebPage     = lazy(() => import("./pages/components/SpiderWebPage").then((m) => ({ default: m.SpiderWebPage })));
 const ButterflySwarmPage = lazy(() => import("./pages/components/ButterflySwarmPage").then((m) => ({ default: m.ButterflySwarmPage })));
 const WillowTreePage     = lazy(() => import("./pages/components/WillowTreePage").then((m) => ({ default: m.WillowTreePage })));
+const DeepSeaBioluminescencePage = lazy(() => import("./pages/components/DeepSeaBioluminescencePage").then((m) => ({ default: m.DeepSeaBioluminescencePage })));
 const BlackHolePage      = lazy(() => import("./pages/components/BlackHolePage").then((m) => ({ default: m.BlackHolePage })));
 const GalaxySpiralPage   = lazy(() => import("./pages/components/GalaxySpiralPage").then((m) => ({ default: m.GalaxySpiralPage })));
 const TornadoVortexPage  = lazy(() => import("./pages/components/TornadoVortexPage").then((m) => ({ default: m.TornadoVortexPage })));
@@ -135,6 +136,7 @@ export function DocsApp() {
           <Route path="/components/spider-web"          element={<SpiderWebPage />} />
           <Route path="/components/butterfly-swarm"     element={<ButterflySwarmPage />} />
           <Route path="/components/willow-tree"         element={<WillowTreePage />} />
+          <Route path="/components/deep-sea-bioluminescence" element={<DeepSeaBioluminescencePage />} />
           <Route path="/components/black-hole"           element={<BlackHolePage />} />
           <Route path="/components/galaxy-spiral"        element={<GalaxySpiralPage />} />
           <Route path="/components/tornado-vortex"       element={<TornadoVortexPage />} />

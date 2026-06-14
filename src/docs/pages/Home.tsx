@@ -55,6 +55,7 @@ import { SolarFlare } from "../../components/SolarFlare";
 import { LorenzAttractor } from "../../components/LorenzAttractor";
 import { ButterflySwarm } from "../../components/ButterflySwarm";
 import { WillowTree } from "../../components/WillowTree";
+import { DeepSeaBioluminescence } from "../../components/DeepSeaBioluminescence";
 
 const CSS = `
 .home {
@@ -311,6 +312,7 @@ const COMPONENTS = [
   { name: "SpiderWeb", path: "/components/spider-web", accent: "#c8c8c8", desc: "Orb-weaver silk web with spring-physics strands, glowing dew drops, and a cursor-stalking spider", preview: <SpiderWeb spokeCount={10} ringCount={8} width="100%" height="100%" /> },
   { name: "ButterflySwarm", path: "/components/butterfly-swarm", accent: "#f97316", desc: "Flapping butterflies that drift and flock — hover to attract, move fast to scatter", preview: <ButterflySwarm butterflyCount={8} width="100%" height="100%" /> },
   { name: "WillowTree", path: "/components/willow-tree", accent: "#4a7c59", desc: "Generative weeping willow with spring strand physics — move cursor to direct the wind", preview: <WillowTree branchCount={6} strandCount={4} width="100%" height="100%" /> },
+  { name: "DeepSeaBioluminescence", path: "/components/deep-sea-bioluminescence", accent: "#00ffcc", desc: "Dark ocean environment with pulsing jellyfish, bioluminescent plankton, and cursor-triggered glow ripples", preview: <DeepSeaBioluminescence jellyfishCount={3} planktonCount={120} width="100%" height="100%" /> },
   { name: "MatrixRain", path: "/components/matrix-rain", accent: "#00ff41", desc: "Falling digital character rain with trails, speed control, and custom charsets", preview: <MatrixRain fontSize={14} speed={1} width="100%" height="100%" /> },
   { name: "FluidSimulation", path: "/components/fluid-simulation", accent: "#06b6d4", desc: "Navier-Stokes grid fluid simulation reacting dynamically to mouse movement", preview: <FluidSimulation resolution={64} width="100%" height="100%" /> },
   { name: "FlowField", path: "/components/flow-field", accent: "#9ca3af", desc: "Perlin noise-guided particle vector streams with swirling curl noise", preview: <FlowField width="100%" height="100%" /> },

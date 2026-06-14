@@ -178,3 +178,6 @@ export type { ButterflySwarmProps } from "./components/ButterflySwarm";
 export { WillowTree } from "./components/WillowTree";
 export type { WillowTreeProps } from "./components/WillowTree";
 
+export { DeepSeaBioluminescence } from "./components/DeepSeaBioluminescence";
+export type { DeepSeaBioluminescenceProps } from "./components/DeepSeaBioluminescence";
+
