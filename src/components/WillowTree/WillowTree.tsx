@@ -12,7 +12,7 @@ interface WillowTreePresetValues {
 }
 
 const PRESETS: Record<WillowTreePreset, WillowTreePresetValues> = {
-  default: {},
+  default: { trunkColor: "#3a3028", leafColor: "#6a8a6a", skyColor: "#0d0d0d", groundColor: "#111111" },
   spring:  { trunkColor: "#5a3a20", leafColor: "#66cc44", skyColor: "#1a2a3a", groundColor: "#0a1a08" },
   autumn:  { trunkColor: "#4a2a10", leafColor: "#cc6620", skyColor: "#1a0e08", groundColor: "#120800" },
   night:   { trunkColor: "#3a3040", leafColor: "#8898a8", skyColor: "#020412", groundColor: "#060412" },
@@ -20,13 +20,13 @@ const PRESETS: Record<WillowTreePreset, WillowTreePresetValues> = {
 };
 
 export interface WillowTreeProps extends BaseCanvasProps {
-  /** Trunk and branch color (default: "#4a3728") */
+  /** Trunk and branch color (default: "#3a3028") */
   trunkColor?: string;
-  /** Leaf and strand color (default: "#4a7c59") */
+  /** Leaf and strand color (default: "#6a8a6a") */
   leafColor?: string;
-  /** Background gradient top color (default: "#111111") */
+  /** Background gradient top color (default: "#0d0d0d") */
   skyColor?: string;
-  /** Background gradient bottom color (default: "#1a1a1a") */
+  /** Background gradient bottom color (default: "#111111") */
   groundColor?: string;
   /** Number of major branches (default: 8) */
   branchCount?: number;
@@ -53,10 +53,10 @@ export const WillowTree = forwardRef<HTMLCanvasElement, WillowTreeProps>(
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useWillowTree(internalRef, {
-      trunkColor:        trunkColor        ?? p.trunkColor  ?? "#4a3728",
-      leafColor:         leafColor         ?? p.leafColor   ?? "#4a7c59",
-      skyColor:          skyColor          ?? p.skyColor    ?? "#111111",
-      groundColor:       groundColor       ?? p.groundColor ?? "#1a1a1a",
+      trunkColor:        trunkColor        ?? p.trunkColor  ?? "#3a3028",
+      leafColor:         leafColor         ?? p.leafColor   ?? "#6a8a6a",
+      skyColor:          skyColor          ?? p.skyColor    ?? "#0d0d0d",
+      groundColor:       groundColor       ?? p.groundColor ?? "#111111",
       branchCount:       branchCount       ?? 8,
       strandCount:       strandCount       ?? 6,
       interactive:       interactive       ?? true,

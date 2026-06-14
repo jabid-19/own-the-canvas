@@ -13,8 +13,10 @@ interface Strand {
   phase: number;
 }
 
-interface BranchPoint {
-  x: number; y: number;
+interface Branch {
+  originX: number; originY: number;  // point on trunk where branch starts
+  tipX: number; tipY: number;        // branch endpoint (where strands hang from)
+  width: number;
   strands: Strand[];
 }
 
@@ -44,9 +46,9 @@ export interface UseWillowTreeOptions {
   showFallingLeaves: boolean;
 }
 
-const STRAND_SPRING = 0.04;
-const STRAND_DAMPING = 0.82;
-const NODES_PER_STRAND = 12;
+const STRAND_SPRING = 0.035;
+const STRAND_DAMPING = 0.80;
+const NODES_PER_STRAND = 14;
 
 export function useWillowTree(
   canvasRef: RefObject<HTMLCanvasElement | null>,
@@ -63,7 +65,7 @@ export function useWillowTree(
     let w = 0, h = 0, t = 0;
 
     const trunk: TrunkSegment[] = [];
-    const branches: BranchPoint[] = [];
+    const branches: Branch[] = [];
     const fallingLeaves: FallingLeaf[] = [];
     const mouse = { x: -1, normalizedX: 0 };
 
@@ -72,52 +74,74 @@ export function useWillowTree(
       trunk.length = 0; branches.length = 0;
 
       const cx = w / 2;
-      const trunkBaseY = h;
-      const trunkTopY = h * 0.35;
+      const trunkBaseY = h * 0.97;
+      const trunkTopY  = h * 0.22;
       const trunkH = trunkBaseY - trunkTopY;
-      const segs = 6;
+      const segs = 8;
 
+      // Build trunk with slight natural lean
       for (let i = 0; i < segs; i++) {
         const t0 = i / segs, t1 = (i + 1) / segs;
-        const lean = Math.sin(t0 * Math.PI) * w * 0.02;
+        const xOff = Math.sin(t0 * Math.PI * 0.9) * w * 0.012;
         trunk.push({
-          x1: cx + lean, y1: trunkBaseY - t0 * trunkH,
-          x2: cx + lean * 1.1, y2: trunkBaseY - t1 * trunkH,
-          w: 18 * (1 - t0 * 0.6),
+          x1: cx + xOff,     y1: trunkBaseY - t0 * trunkH,
+          x2: cx + xOff * 1.05, y2: trunkBaseY - t1 * trunkH,
+          w: 24 * (1 - t0 * 0.72),
         });
       }
 
+      // Spread branches along upper 50-100% of trunk
       for (let b = 0; b < branchCount; b++) {
-        const frac = 0.1 + (b / branchCount) * 0.85;
-        const segIdx = Math.min(Math.floor(frac * segs), segs - 1);
+        // Alternate left/right, denser near top
+        const side = b % 2 === 0 ? 1 : -1;
+        // Distribute from top down so topmost branches are first
+        const fracAlongTrunk = 0.45 + (b / branchCount) * 0.52;
+        const segIdx = Math.min(Math.floor(fracAlongTrunk * segs), segs - 1);
         const seg = trunk[segIdx];
-        const bx = seg.x2 + (Math.random() - 0.5) * w * 0.08;
-        const by = seg.y2 + (Math.random() - 0.5) * h * 0.04;
-        const branchReach = w * (0.15 + Math.random() * 0.2) * (Math.random() < 0.5 ? 1 : -1);
-        const hangX = bx + branchReach;
-        const hangY = by - h * 0.02;
+        // Origin: midpoint of that trunk segment
+        const originX = (seg.x1 + seg.x2) * 0.5;
+        const originY = (seg.y1 + seg.y2) * 0.5;
 
-        const strands: Strand[] = [];
+        // Branch tip: arches outward and slightly upward
+        const reach = w * (0.18 + Math.random() * 0.16);
+        const tipX  = originX + side * reach;
+        const tipY  = originY - h * (0.03 + Math.random() * 0.04);
+
+        // Build hanging strands distributed across the branch
+        const strandArr: Strand[] = [];
         for (let s = 0; s < strandCount; s++) {
-          const startX = hangX + (s / strandCount - 0.5) * Math.abs(branchReach) * 0.8;
-          const strandLen = h * (0.3 + Math.random() * 0.25);
+          // Space strands from 20% along the branch to the tip
+          const tParam = 0.2 + (s / Math.max(strandCount - 1, 1)) * 0.8;
+          const hangX  = originX + (tipX - originX) * tParam;
+          const hangY  = originY + (tipY - originY) * tParam;
+          const len    = h * (0.35 + Math.random() * 0.25);
+
           const nodes: StrandNode[] = [];
           for (let n = 0; n < NODES_PER_STRAND; n++) {
-            const frac2 = n / (NODES_PER_STRAND - 1);
-            const bx2 = startX, by2 = hangY + frac2 * strandLen;
-            nodes.push({ x: bx2, y: by2, vx: 0, vy: 0, baseX: bx2, baseY: by2 });
+            const frac = n / (NODES_PER_STRAND - 1);
+            nodes.push({
+              x: hangX,           y: hangY + frac * len,
+              vx: 0,              vy: 0,
+              baseX: hangX,       baseY: hangY + frac * len,
+            });
           }
-          strands.push({ nodes, phase: Math.random() * Math.PI * 2 });
+          strandArr.push({ nodes, phase: Math.random() * Math.PI * 2 });
         }
-        branches.push({ x: bx, y: by, strands });
+
+        branches.push({
+          originX, originY,
+          tipX, tipY,
+          width: 3.5 * (1 - fracAlongTrunk * 0.5),
+          strands: strandArr,
+        });
       }
     }
 
     function applyDpr(width: number, height: number) {
       const dpr = window.devicePixelRatio || 1;
-      canvas!.width = Math.round(width * dpr);
+      canvas!.width  = Math.round(width  * dpr);
       canvas!.height = Math.round(height * dpr);
-      canvas!.style.width = `${width}px`;
+      canvas!.style.width  = `${width}px`;
       canvas!.style.height = `${height}px`;
       ctx.scale(dpr, dpr);
       w = width; h = height;
@@ -146,6 +170,7 @@ export function useWillowTree(
       t += 0.016;
       const opts = optionsRef.current;
 
+      // Background gradient
       const grad = ctx.createLinearGradient(0, 0, 0, h);
       grad.addColorStop(0, opts.skyColor);
       grad.addColorStop(1, opts.groundColor);
@@ -153,30 +178,34 @@ export function useWillowTree(
       ctx.fillRect(0, 0, w, h);
 
       const windX = opts.interactive && mouse.x >= 0
-        ? mouse.normalizedX * 1.8
-        : Math.sin(t * 0.4) * 0.6;
+        ? mouse.normalizedX * 2.0
+        : Math.sin(t * 0.35) * 0.7 + Math.sin(t * 0.17) * 0.3;
 
-      // rebuild if branch count changed
+      // Rebuild if branch count changed
       if (branches.length !== opts.branchCount) buildTree();
 
-      for (const branch of branches) {
-        for (const strand of branch.strands) {
+      // Physics: pin node[0] to its base, simulate rest
+      for (const br of branches) {
+        for (const strand of br.strands) {
           const { nodes, phase } = strand;
-          nodes[0].x = nodes[0].baseX; nodes[0].y = nodes[0].baseY;
+          nodes[0].x = nodes[0].baseX;
+          nodes[0].y = nodes[0].baseY;
           for (let n = 1; n < nodes.length; n++) {
             const nd = nodes[n];
-            const windForce = windX * (n / nodes.length) * 0.8;
-            const sway = Math.sin(t * 0.9 + phase + n * 0.3) * 0.15;
-            const fx = nd.baseX - nd.x + windForce + sway;
-            const fy = nd.baseY - nd.y;
+            const depthFactor = n / nodes.length;
+            const windForce = windX * depthFactor * 1.0;
+            const sway      = Math.sin(t * 0.8 + phase + n * 0.25) * 0.18;
+            const fx = (nd.baseX - nd.x) + windForce + sway;
+            const fy = (nd.baseY - nd.y);
             nd.vx = (nd.vx + fx * STRAND_SPRING) * STRAND_DAMPING;
             nd.vy = (nd.vy + fy * STRAND_SPRING) * STRAND_DAMPING;
-            nd.x += nd.vx; nd.y += nd.vy;
+            nd.x += nd.vx;
+            nd.y += nd.vy;
           }
         }
       }
 
-      // draw trunk
+      // Draw trunk (bottom-to-top so wider segments are behind thinner)
       ctx.lineCap = "round";
       for (const seg of trunk) {
         ctx.beginPath();
@@ -187,55 +216,71 @@ export function useWillowTree(
         ctx.stroke();
       }
 
-      // draw branch stubs + strands
-      const lastSeg = trunk[trunk.length - 1];
-      for (const branch of branches) {
+      // Draw branches: arc from origin on trunk out to tip
+      for (const br of branches) {
         ctx.beginPath();
-        ctx.moveTo(lastSeg.x2, lastSeg.y2);
-        ctx.quadraticCurveTo(branch.x, branch.y - h * 0.05, branch.x, branch.y);
+        ctx.moveTo(br.originX, br.originY);
+        // Control point pulls slightly upward for a natural arch
+        const cpX = br.originX + (br.tipX - br.originX) * 0.45;
+        const cpY = br.originY - h * 0.06;
+        ctx.quadraticCurveTo(cpX, cpY, br.tipX, br.tipY);
         ctx.strokeStyle = opts.trunkColor;
-        ctx.lineWidth = 4;
+        ctx.lineWidth = Math.max(br.width, 1);
         ctx.stroke();
 
-        for (const strand of branch.strands) {
+        // Draw hanging strands
+        for (const strand of br.strands) {
           const { nodes } = strand;
+          // Strand line
           ctx.beginPath();
           ctx.moveTo(nodes[0].x, nodes[0].y);
-          for (let n = 1; n < nodes.length; n++) ctx.lineTo(nodes[n].x, nodes[n].y);
-          ctx.strokeStyle = hexToRgba(opts.leafColor, 0.7);
-          ctx.lineWidth = 1.5;
+          for (let n = 1; n < nodes.length; n++) {
+            ctx.lineTo(nodes[n].x, nodes[n].y);
+          }
+          ctx.strokeStyle = hexToRgba(opts.leafColor, 0.75);
+          ctx.lineWidth = 1.2;
           ctx.stroke();
 
-          for (let n = 0; n < nodes.length; n += 2) {
+          // Leaf clusters at every other node
+          for (let n = 1; n < nodes.length; n += 2) {
+            const alpha = 0.6 + (n / nodes.length) * 0.3;
             ctx.beginPath();
-            ctx.ellipse(nodes[n].x, nodes[n].y, 3, 2, Math.PI / 4, 0, Math.PI * 2);
-            ctx.fillStyle = hexToRgba(opts.leafColor, 0.8);
+            ctx.ellipse(nodes[n].x, nodes[n].y, 3.5, 2, Math.PI / 4, 0, Math.PI * 2);
+            ctx.fillStyle = hexToRgba(opts.leafColor, alpha);
             ctx.fill();
           }
         }
       }
 
-      // falling leaves
+      // Falling leaves
       if (opts.showFallingLeaves) {
-        if (Math.random() < 0.03 && fallingLeaves.length < 30 && branches.length > 0) {
-          const branch = branches[Math.floor(Math.random() * branches.length)];
-          const strand = branch.strands[Math.floor(Math.random() * branch.strands.length)];
-          const nd = strand.nodes[Math.floor(Math.random() * strand.nodes.length)];
-          fallingLeaves.push({ x: nd.x, y: nd.y, vx: windX * 0.5 + (Math.random() - 0.5) * 0.5, vy: 0.5 + Math.random() * 0.8, rotation: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.08, alpha: 0.9, size: 3 + Math.random() * 3 });
+        if (Math.random() < 0.04 && fallingLeaves.length < 40 && branches.length > 0) {
+          const br = branches[Math.floor(Math.random() * branches.length)];
+          const st = br.strands[Math.floor(Math.random() * br.strands.length)];
+          const nd = st.nodes[Math.floor(Math.random() * (st.nodes.length - 1)) + 1];
+          fallingLeaves.push({
+            x: nd.x, y: nd.y,
+            vx: windX * 0.4 + (Math.random() - 0.5) * 0.4,
+            vy: 0.4 + Math.random() * 0.7,
+            rotation: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.1,
+            alpha: 0.85,
+            size: 3 + Math.random() * 3,
+          });
         }
         for (let i = fallingLeaves.length - 1; i >= 0; i--) {
-          const leaf = fallingLeaves[i];
-          leaf.x += leaf.vx + windX * 0.3;
-          leaf.y += leaf.vy;
-          leaf.rotation += leaf.rotSpeed;
-          leaf.alpha -= 0.003;
-          if (leaf.alpha <= 0 || leaf.y > h + 10) { fallingLeaves.splice(i, 1); continue; }
+          const lf = fallingLeaves[i];
+          lf.x  += lf.vx + windX * 0.25;
+          lf.y  += lf.vy;
+          lf.rotation += lf.rotSpeed;
+          lf.alpha -= 0.0025;
+          if (lf.alpha <= 0 || lf.y > h + 10) { fallingLeaves.splice(i, 1); continue; }
           ctx.save();
-          ctx.translate(leaf.x, leaf.y);
-          ctx.rotate(leaf.rotation);
+          ctx.translate(lf.x, lf.y);
+          ctx.rotate(lf.rotation);
           ctx.beginPath();
-          ctx.ellipse(0, 0, leaf.size, leaf.size * 0.5, 0, 0, Math.PI * 2);
-          ctx.fillStyle = hexToRgba(opts.leafColor, leaf.alpha);
+          ctx.ellipse(0, 0, lf.size, lf.size * 0.45, 0, 0, Math.PI * 2);
+          ctx.fillStyle = hexToRgba(opts.leafColor, lf.alpha);
           ctx.fill();
           ctx.restore();
         }
