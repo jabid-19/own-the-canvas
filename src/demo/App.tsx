@@ -9,12 +9,9 @@ import { Confetti } from "../components/Confetti";
 import { NoiseGradient } from "../components/NoiseGradient";
 import { PixelDissolve } from "../components/PixelDissolve";
 import { FlowField, PRESETS as FLOWFIELD_PRESETS } from "../components/FlowField";
-import { Spotlight, PRESETS as SPOTLIGHT_PRESETS } from "../components/Spotlight";
 import { Shockwave, PRESETS as SHOCKWAVE_PRESETS } from "../components/Shockwave";
 import { Fireworks, PRESETS as FIREWORKS_PRESETS } from "../components/Fireworks";
 import { GlitchOverlay, PRESETS as GLITCH_PRESETS } from "../components/GlitchOverlay";
-import { LiveChart, PRESETS as LIVECHART_PRESETS } from "../components/LiveChart";
-import type { LiveChartSeries } from "../components/LiveChart";
 import { Mandala, PRESETS as MANDALA_PRESETS } from "../components/Mandala";
 import { MagneticBlob, PRESETS as BLOB_PRESETS } from "../components/MagneticBlob";
 import { ClothSimulation, PRESETS as CLOTH_PRESETS } from "../components/ClothSimulation";
@@ -614,13 +611,6 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M2 5c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".5" />
     </svg>
   ),
-  Spotlight: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="3" fill="currentColor" opacity=".9" />
-      <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1" opacity=".3" />
-      <circle cx="8" cy="8" r="7.5" stroke="currentColor" strokeWidth="0.5" opacity=".1" />
-    </svg>
-  ),
   Shockwave: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" />
@@ -649,12 +639,6 @@ const icons: Record<string, React.ReactNode> = {
       <rect x="1" y="11" width="14" height="2" rx="0.5" fill="currentColor" opacity=".7" />
       <rect x="3" y="5" width="6" height="1" fill="currentColor" opacity=".3" />
       <rect x="8" y="9" width="5" height="1" fill="currentColor" opacity=".3" />
-    </svg>
-  ),
-  LiveChart: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <polyline points="1,13 4,8 7,10 10,5 13,7 15,3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <line x1="1" y1="14" x2="15" y2="14" stroke="currentColor" strokeWidth="0.75" opacity=".3" />
     </svg>
   ),
   Mandala: (
@@ -1004,11 +988,9 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   NoiseGradient: { desc: "Animated Perlin noise color gradient", accent: "#38ef7d" },
   PixelDissolve: { desc: "Pixelated dissolve transition overlay for any content", accent: "#bf5fff" },
   FlowField: { desc: "Perlin noise vector field with particle streams", accent: "#9ca3af" },
-  Spotlight: { desc: "Mouse-following light reveal over dark overlay", accent: "#e0b0ff" },
   Shockwave: { desc: "Click-triggered radial ring blast with glow", accent: "#9ca3af" },
   Fireworks: { desc: "Physics shells, burst particles, and gravity trails", accent: "#f59e0b" },
   GlitchOverlay: { desc: "CRT scanlines, RGB shift, and block glitch", accent: "#00ffff" },
-  LiveChart: { desc: "Real-time animated line and area chart", accent: "#4ade80" },
   Mandala: { desc: "N-fold rotational symmetry with organic petal layers", accent: "#f43f5e" },
   MagneticBlob: { desc: "Metaballs that merge and follow the cursor", accent: "#a78bfa" },
   ClothSimulation: { desc: "Verlet spring-mass fabric with wind and tearing", accent: "#67e8f9" },
@@ -1052,9 +1034,9 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
 type ComponentId =
   | "MatrixRain" | "FluidSimulation" | "FlowField" | "Boids"
   | "GlitchOverlay" | "PixelDissolve" | "Confetti" | "AudioVisualizer" | "Mandala"
-  | "Spotlight" | "Starfield" | "NoiseGradient" | "Shockwave"
+  | "Starfield" | "NoiseGradient" | "Shockwave"
   | "Fireworks" | "Wormhole" | "ClothSimulation" | "MagneticBlob" | "GameOfLife"
-  | "Rain" | "Lightning" | "FireEffect" | "LiveChart" | "ParticleField"
+  | "Rain" | "Lightning" | "FireEffect" | "ParticleField"
   | "DragonCursor" | "KoiPond" | "BubbleUniverse" | "SakuraBlossom"
   | "ReactionDiffusion" | "AuroraBorealis" | "Spirograph" | "SandSimulation"
   | "WaveInterference" | "DiffusionAggregation" | "Lissajous" | "LSystem"
@@ -1066,10 +1048,10 @@ type ComponentId =
 const ALL_COMPONENTS: ComponentId[] = [
   "DragonCursor", "KoiPond", "MatrixRain", "FluidSimulation", "FlowField", "Boids",
   "GlitchOverlay", "PixelDissolve", "Confetti", "AudioVisualizer", "Mandala",
-  "Spotlight", "Starfield", "NoiseGradient", "Shockwave",
+  "Starfield", "NoiseGradient", "Shockwave",
   "Fireworks", "Wormhole", "BubbleUniverse", "SakuraBlossom",
   "ClothSimulation", "MagneticBlob", "GameOfLife",
-  "Rain", "Lightning", "FireEffect", "LiveChart", "ParticleField",
+  "Rain", "Lightning", "FireEffect", "ParticleField",
   "ReactionDiffusion", "AuroraBorealis", "Spirograph", "SandSimulation",
   "WaveInterference", "DiffusionAggregation", "Lissajous", "LSystem",
   "Kaleidoscope", "VoronoiCells", "SlimeMold", "InkBleed",
@@ -1925,83 +1907,6 @@ function FlowFieldPanel() {
   );
 }
 
-function SpotlightPanel() {
-  const [preset, setPreset] = useState("default");
-  const [radius, setRadius] = useState(120);
-  const [opacity, setOpacity] = useState(0.75);
-  const [softness, setSoftness] = useState(0.4);
-  const [glow, setGlow] = useState(true);
-  const [glowColor, setGlowColor] = useState("#6b7280");
-  const [overlayColor, setOverlayColor] = useState("#000000");
-  const [color, setColor] = useState("#ffffff");
-  const [followSpeed, setFollowSpeed] = useState(0.1);
-  const [shape, setShape] = useState<"circle" | "ellipse">("circle");
-  const [ellipseRatio, setEllipseRatio] = useState(0.6);
-  const [interactive, setInteractive] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = SPOTLIGHT_PRESETS[p as keyof typeof SPOTLIGHT_PRESETS] ?? {};
-    if (v.radius !== undefined)       setRadius(v.radius);
-    if (v.overlayOpacity !== undefined) setOpacity(v.overlayOpacity);
-    if (v.edgeSoftness !== undefined) setSoftness(v.edgeSoftness);
-    if (v.showGlow !== undefined)     setGlow(v.showGlow);
-    if (v.glowColor)                  setGlowColor(v.glowColor);
-    if (v.overlayColor)               setOverlayColor(v.overlayColor);
-    if (v.followSpeed !== undefined)  setFollowSpeed(v.followSpeed);
-    if (v.shape)                      setShape(v.shape as "circle" | "ellipse");
-    if (v.ellipseRatio !== undefined) setEllipseRatio(v.ellipseRatio);
-  }
-
-  const code = `import { Spotlight } from 'own-the-canvas';
-
-<div style={{ position: "relative" }}>
-  <YourContent />
-  <Spotlight
-    preset="${preset}"
-    radius={${radius}}
-    overlayOpacity={${opacity}}
-    shape="${shape}"
-    showGlow={${glow}}
-    interactive={${interactive}}
-    style={{ position: "absolute", inset: 0 }}
-  />
-</div>`;
-  return (
-    <>
-      <div className="canvas-wrap" style={{ position: "relative" }}>
-        <div className="canvas-wrap-inner" style={{ background: "linear-gradient(135deg,#0a0015 0%,#050020 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ textAlign: "center", color: "#fff", padding: 40, pointerEvents: "none", userSelect: "none" }}>
-            <div style={{ fontSize: 48, fontWeight: 700, letterSpacing: -2, marginBottom: 12 }}>Move cursor</div>
-            <div style={{ fontSize: 18, opacity: 0.4 }}>The spotlight follows your mouse</div>
-          </div>
-          <Spotlight preset={preset} radius={radius} overlayColor={overlayColor} overlayOpacity={opacity} edgeSoftness={softness} showGlow={glow} glowColor={glowColor} color={color} followSpeed={followSpeed} shape={shape} ellipseRatio={ellipseRatio} interactive={interactive} style={{ position: "absolute", inset: 0 }} />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor over canvas</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="Spotlight" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "soft", "dramatic", "neon", "ellipse"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Overlay color" value={overlayColor} onChange={setOverlayColor} />
-          <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
-          <ColorPicker label="Spotlight tint" value={color} onChange={setColor} />
-          <Slider label="Radius" value={radius} min={40} max={300} step={10} onChange={setRadius} />
-          <Slider label="Overlay opacity" value={opacity} min={0.1} max={0.98} step={0.02} onChange={setOpacity} />
-          <Slider label="Edge softness" value={softness} min={0} max={1} step={0.05} onChange={setSoftness} />
-          <Slider label="Follow speed" value={followSpeed} min={0.01} max={1} step={0.01} onChange={setFollowSpeed} />
-          {shape === "ellipse" && <Slider label="Ellipse ratio" value={ellipseRatio} min={0.2} max={1} step={0.05} onChange={setEllipseRatio} />}
-          <Sel label="Shape" value={shape} options={["circle", "ellipse"]} onChange={(v) => setShape(v as "circle" | "ellipse")} />
-          <Toggle label="Show glow ring" value={glow} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
-        </div>
-      </div>
-    </>
-  );
-}
-
 function ShockwavePanel() {
   const [preset, setPreset] = useState("default");
   const [ringCount, setRingCount] = useState(3);
@@ -2211,67 +2116,6 @@ function GlitchOverlayPanel() {
           <Toggle label="Scanlines" value={scanlines} onChange={setScanlines} />
           <Toggle label="Block glitch" value={blockGlitch} onChange={setBlockGlitch} />
           <Toggle label="Animated" value={animated} onChange={setAnimated} />
-        </div>
-      </div>
-    </>
-  );
-}
-
-function LiveChartPanel() {
-  const [preset, setPreset] = useState("default");
-  const [smooth, setSmooth] = useState(true);
-  const [showGrid, setShowGrid] = useState(true);
-  const [showDots, setShowDots] = useState(false);
-  const [glow, setGlow] = useState(true);
-  const [bg, setBg] = useState("#111111");
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = LIVECHART_PRESETS[p as keyof typeof LIVECHART_PRESETS] ?? {};
-    if (v.smooth !== undefined)     setSmooth(v.smooth);
-    if (v.showGrid !== undefined)   setShowGrid(v.showGrid);
-    if (v.showDots !== undefined)   setShowDots(v.showDots);
-    if (v.glowEffect !== undefined) setGlow(v.glowEffect);
-    if (v.backgroundColor)          setBg(v.backgroundColor);
-  }
-
-  const series: LiveChartSeries[] = React.useMemo(() => [
-    { data: Array.from({ length: 40 }, (_, i) => 50 + Math.sin(i * 0.4) * 30 + Math.random() * 10), color: "#ffffff", filled: true },
-    { data: Array.from({ length: 40 }, (_, i) => 50 + Math.cos(i * 0.3) * 20 + Math.random() * 8), color: "#6b7280", filled: true },
-  ], []);
-
-  const code = `import { LiveChart } from 'own-the-canvas';
-
-<LiveChart
-  preset="${preset}"
-  series={[
-    { data: myData1, color: "#ffffff", filled: true },
-    { data: myData2, color: "#6b7280", filled: true },
-  ]}
-  smooth={${smooth}}
-  showGrid={${showGrid}}
-/>`;
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <LiveChart preset={preset} series={series} smooth={smooth} showGrid={showGrid} showDots={showDots}
-            glowEffect={glow} backgroundColor={bg}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Static dataset — push data dynamically</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="LiveChart" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "minimal", "ocean", "fire"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Toggle label="Smooth curves" value={smooth} onChange={setSmooth} />
-          <Toggle label="Grid lines" value={showGrid} onChange={setShowGrid} />
-          <Toggle label="Data dots" value={showDots} onChange={setShowDots} />
-          <Toggle label="Glow effect" value={glow} onChange={setGlow} />
         </div>
       </div>
     </>
@@ -5565,11 +5409,9 @@ const PANELS: Record<ComponentId, React.FC> = {
   NoiseGradient: NoiseGradientPanel,
   PixelDissolve: PixelDissolvePanel,
   FlowField: FlowFieldPanel,
-  Spotlight: SpotlightPanel,
   Shockwave: ShockwavePanel,
   Fireworks: FireworksPanel,
   GlitchOverlay: GlitchOverlayPanel,
-  LiveChart: LiveChartPanel,
   Mandala: MandalaPanel,
   MagneticBlob: MagneticBlobPanel,
   ClothSimulation: ClothSimulationPanel,

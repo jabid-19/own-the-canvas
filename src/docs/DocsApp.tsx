@@ -14,11 +14,9 @@ const ConfettiPage       = lazy(() => import("./pages/components/ConfettiPage").
 const NoiseGradientPage  = lazy(() => import("./pages/components/NoiseGradientPage").then((m) => ({ default: m.NoiseGradientPage })));
 const PixelDissolvePage  = lazy(() => import("./pages/components/PixelDissolvePage").then((m) => ({ default: m.PixelDissolvePage })));
 const FlowFieldPage        = lazy(() => import("./pages/components/FlowFieldPage").then((m) => ({ default: m.FlowFieldPage })));
-const SpotlightPage        = lazy(() => import("./pages/components/SpotlightPage").then((m) => ({ default: m.SpotlightPage })));
 const ShockwavePage        = lazy(() => import("./pages/components/ShockwavePage").then((m) => ({ default: m.ShockwavePage })));
 const FireworksPage        = lazy(() => import("./pages/components/FireworksPage").then((m) => ({ default: m.FireworksPage })));
 const GlitchOverlayPage    = lazy(() => import("./pages/components/GlitchOverlayPage").then((m) => ({ default: m.GlitchOverlayPage })));
-const LiveChartPage        = lazy(() => import("./pages/components/LiveChartPage").then((m) => ({ default: m.LiveChartPage })));
 const MandalaPage          = lazy(() => import("./pages/components/MandalaPage").then((m) => ({ default: m.MandalaPage })));
 const MagneticBlobPage     = lazy(() => import("./pages/components/MagneticBlobPage").then((m) => ({ default: m.MagneticBlobPage })));
 const ClothSimulationPage  = lazy(() => import("./pages/components/ClothSimulationPage").then((m) => ({ default: m.ClothSimulationPage })));
@@ -54,7 +52,6 @@ const SakuraBlossomPage  = lazy(() => import("./pages/components/SakuraBlossomPa
 const KoiPondPage        = lazy(() => import("./pages/components/KoiPondPage").then((m) => ({ default: m.KoiPondPage })));
 const SpiderWebPage     = lazy(() => import("./pages/components/SpiderWebPage").then((m) => ({ default: m.SpiderWebPage })));
 const ButterflySwarmPage = lazy(() => import("./pages/components/ButterflySwarmPage").then((m) => ({ default: m.ButterflySwarmPage })));
-const WillowTreePage     = lazy(() => import("./pages/components/WillowTreePage").then((m) => ({ default: m.WillowTreePage })));
 const DeepSeaBioluminescencePage = lazy(() => import("./pages/components/DeepSeaBioluminescencePage").then((m) => ({ default: m.DeepSeaBioluminescencePage })));
 const BlackHolePage      = lazy(() => import("./pages/components/BlackHolePage").then((m) => ({ default: m.BlackHolePage })));
 const GalaxySpiralPage   = lazy(() => import("./pages/components/GalaxySpiralPage").then((m) => ({ default: m.GalaxySpiralPage })));
@@ -95,11 +92,9 @@ export function DocsApp() {
           <Route path="/components/noise-gradient" element={<NoiseGradientPage />} />
           <Route path="/components/pixel-dissolve" element={<PixelDissolvePage />} />
 <Route path="/components/flow-field"        element={<FlowFieldPage />} />
-          <Route path="/components/spotlight"         element={<SpotlightPage />} />
           <Route path="/components/shockwave"         element={<ShockwavePage />} />
           <Route path="/components/fireworks"         element={<FireworksPage />} />
           <Route path="/components/glitch-overlay"    element={<GlitchOverlayPage />} />
-          <Route path="/components/live-chart"        element={<LiveChartPage />} />
           <Route path="/components/mandala"           element={<MandalaPage />} />
           <Route path="/components/magnetic-blob"     element={<MagneticBlobPage />} />
           <Route path="/components/cloth-simulation"  element={<ClothSimulationPage />} />
@@ -135,7 +130,6 @@ export function DocsApp() {
           <Route path="/components/koi-pond"             element={<KoiPondPage />} />
           <Route path="/components/spider-web"          element={<SpiderWebPage />} />
           <Route path="/components/butterfly-swarm"     element={<ButterflySwarmPage />} />
-          <Route path="/components/willow-tree"         element={<WillowTreePage />} />
           <Route path="/components/deep-sea-bioluminescence" element={<DeepSeaBioluminescencePage />} />
           <Route path="/components/black-hole"           element={<BlackHolePage />} />
           <Route path="/components/galaxy-spiral"        element={<GalaxySpiralPage />} />

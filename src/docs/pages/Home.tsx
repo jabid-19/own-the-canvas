@@ -26,7 +26,6 @@ import { GameOfLife } from "../../components/GameOfLife";
 import { Rain } from "../../components/Rain";
 import { Lightning } from "../../components/Lightning";
 import { FireEffect } from "../../components/FireEffect";
-import { LiveChart } from "../../components/LiveChart";
 import { ParticleField } from "../../components/ParticleField";
 import { ReactionDiffusion } from "../../components/ReactionDiffusion";
 import { AuroraBorealis } from "../../components/AuroraBorealis";
@@ -52,9 +51,7 @@ import { BlackHole } from "../../components/BlackHole";
 import { GalaxySpiral } from "../../components/GalaxySpiral";
 import { TornadoVortex } from "../../components/TornadoVortex";
 import { SolarFlare } from "../../components/SolarFlare";
-import { LorenzAttractor } from "../../components/LorenzAttractor";
 import { ButterflySwarm } from "../../components/ButterflySwarm";
-import { WillowTree } from "../../components/WillowTree";
 import { DeepSeaBioluminescence } from "../../components/DeepSeaBioluminescence";
 
 const CSS = `
@@ -311,7 +308,6 @@ const COMPONENTS = [
   { name: "KoiPond", path: "/components/koi-pond", accent: "#f97316", desc: "Tranquil pond with swimming koi fish, interactive water ripples, and lilies", preview: <KoiPond fishCount={5} width="100%" height="100%" /> },
   { name: "SpiderWeb", path: "/components/spider-web", accent: "#c8c8c8", desc: "Orb-weaver silk web with spring-physics strands, glowing dew drops, and a cursor-stalking spider", preview: <SpiderWeb spokeCount={10} ringCount={8} width="100%" height="100%" /> },
   { name: "ButterflySwarm", path: "/components/butterfly-swarm", accent: "#f97316", desc: "Flapping butterflies that drift and flock — hover to attract, move fast to scatter", preview: <ButterflySwarm butterflyCount={8} width="100%" height="100%" /> },
-  { name: "WillowTree", path: "/components/willow-tree", accent: "#4a7c59", desc: "Generative weeping willow with spring strand physics — move cursor to direct the wind", preview: <WillowTree branchCount={6} strandCount={4} width="100%" height="100%" /> },
   { name: "DeepSeaBioluminescence", path: "/components/deep-sea-bioluminescence", accent: "#00ffcc", desc: "Dark ocean environment with pulsing jellyfish, bioluminescent plankton, and cursor-triggered glow ripples", preview: <DeepSeaBioluminescence jellyfishCount={3} planktonCount={120} width="100%" height="100%" /> },
   { name: "MatrixRain", path: "/components/matrix-rain", accent: "#00ff41", desc: "Falling digital character rain with trails, speed control, and custom charsets", preview: <MatrixRain fontSize={14} speed={1} width="100%" height="100%" /> },
   { name: "FluidSimulation", path: "/components/fluid-simulation", accent: "#06b6d4", desc: "Navier-Stokes grid fluid simulation reacting dynamically to mouse movement", preview: <FluidSimulation resolution={64} width="100%" height="100%" /> },
@@ -333,7 +329,6 @@ const COMPONENTS = [
   { name: "Rain", path: "/components/rain", accent: "#9ca3af", desc: "Rainfall with wind drift, drop streaks, and splash particles", preview: <Rain width="100%" height="100%" /> },
   { name: "Lightning", path: "/components/lightning", accent: "#c084fc", desc: "Recursive fractal bolts with glow, flicker, and branching paths", preview: <Lightning width="100%" height="100%" /> },
   { name: "FireEffect", path: "/components/fire-effect", accent: "#ff6b35", desc: "Pixel-level cellular automata heat simulation with wind drift and cooling", preview: <FireEffect width="100%" height="100%" /> },
-  { name: "LiveChart", path: "/components/live-chart", accent: "#4ade80", desc: "Real-time scrolling multi-series data graph with bezier curves and fill options", preview: <LiveChart width="100%" height="100%" /> },
   { name: "ParticleField", path: "/components/particle-field", accent: "#8888ff", desc: "Twinkling particle network with interactive proximity lines and mouse repulsion", preview: <ParticleField preset="cosmos" particleCount={60} width="100%" height="100%" /> },
   { name: "ReactionDiffusion", path: "/components/reaction-diffusion", accent: "#a3e635", desc: "Gray-Scott model simulating chemical reaction-diffusion and labyrinthine Turing structures", preview: <ReactionDiffusion width="100%" height="100%" /> },
   { name: "AuroraBorealis", path: "/components/aurora-borealis", accent: "#88ccff", desc: "Layered northern light curtain ribbons moving across a starry backdrop", preview: <AuroraBorealis width="100%" height="100%" /> },
@@ -359,7 +354,6 @@ const COMPONENTS = [
   { name: "GalaxySpiral", path: "/components/galaxy-spiral", accent: "#818cf8", desc: "Spiral galaxy with depth-sorted stellar particles and logarithmic arm math", preview: <GalaxySpiral armCount={2} starCount={1500} width="100%" height="100%" /> },
   { name: "TornadoVortex", path: "/components/tornado-vortex", accent: "#6b7280", desc: "Winding funnel vortex of debris particles with random internal lightning", preview: <TornadoVortex particleCount={400} width="100%" height="100%" /> },
   { name: "SolarFlare", path: "/components/solar-flare", accent: "#f97316", desc: "Glow-enhanced solar mass with convection cells and arcing flare loops", preview: <SolarFlare sunRadius={0.3} width="100%" height="100%" /> },
-  { name: "LorenzAttractor", path: "/components/lorenz-attractor", accent: "#00ffcc", desc: "Chaotic strange attractor integrated with RK4, projected into 3D with mouse-drag orbit", preview: <LorenzAttractor preset="neon" width="100%" height="100%" /> },
 ];
 
 

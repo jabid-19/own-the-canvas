@@ -27,8 +27,6 @@ export type { PixelDissolveProps, DissolveDirection, DissolvePattern } from "./c
 export { FlowField } from "./components/FlowField";
 export type { FlowFieldProps } from "./components/FlowField";
 
-export { Spotlight } from "./components/Spotlight";
-export type { SpotlightProps } from "./components/Spotlight";
 
 export { Shockwave } from "./components/Shockwave";
 export type { ShockwaveProps } from "./components/Shockwave";
@@ -39,8 +37,6 @@ export type { FireworksProps } from "./components/Fireworks";
 export { GlitchOverlay } from "./components/GlitchOverlay";
 export type { GlitchOverlayProps } from "./components/GlitchOverlay";
 
-export { LiveChart } from "./components/LiveChart";
-export type { LiveChartProps, LiveChartSeries } from "./components/LiveChart";
 
 export { Mandala } from "./components/Mandala";
 export type { MandalaProps } from "./components/Mandala";
@@ -156,18 +152,6 @@ export type { BubbleUniverseProps } from "./components/BubbleUniverse";
 export { SolarFlare } from "./components/SolarFlare";
 export type { SolarFlareProps } from "./components/SolarFlare";
 
-export { LorenzAttractor } from "./components/LorenzAttractor";
-export type { LorenzAttractorProps } from "./components/LorenzAttractor";
-
-export { CymaticsPattern } from "./components/CymaticsPattern";
-export type { CymaticsPatternProps } from "./components/CymaticsPattern";
-
-export { NBodyGravity } from "./components/NBodyGravity";
-export type { NBodyGravityProps } from "./components/NBodyGravity";
-
-
-export { TopographicContours } from "./components/TopographicContours";
-export type { TopographicContoursProps } from "./components/TopographicContours";
 
 export { SpiderWeb } from "./components/SpiderWeb";
 export type { SpiderWebProps } from "./components/SpiderWeb";
@@ -175,8 +159,6 @@ export type { SpiderWebProps } from "./components/SpiderWeb";
 export { ButterflySwarm } from "./components/ButterflySwarm";
 export type { ButterflySwarmProps } from "./components/ButterflySwarm";
 
-export { WillowTree } from "./components/WillowTree";
-export type { WillowTreeProps } from "./components/WillowTree";
 
 export { DeepSeaBioluminescence } from "./components/DeepSeaBioluminescence";
 export type { DeepSeaBioluminescenceProps } from "./components/DeepSeaBioluminescence";
