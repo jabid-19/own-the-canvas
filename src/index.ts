@@ -169,3 +169,6 @@ export type { NBodyGravityProps } from "./components/NBodyGravity";
 export { TopographicContours } from "./components/TopographicContours";
 export type { TopographicContoursProps } from "./components/TopographicContours";
 
+export { SpiderWeb } from "./components/SpiderWeb";
+export type { SpiderWebProps } from "./components/SpiderWeb";
+

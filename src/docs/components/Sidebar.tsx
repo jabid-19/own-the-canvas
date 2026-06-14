@@ -4,6 +4,7 @@ import { Link, NavLink, useMatch } from "react-router-dom";
 const COMPONENT_LINKS = [
   { name: "DragonCursor", path: "/components/dragon-cursor" },
   { name: "KoiPond", path: "/components/koi-pond" },
+  { name: "SpiderWeb", path: "/components/spider-web" },
   { name: "MatrixRain", path: "/components/matrix-rain" },
   { name: "FluidSimulation", path: "/components/fluid-simulation" },
   { name: "FlowField", path: "/components/flow-field" },
