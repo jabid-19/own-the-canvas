@@ -13,7 +13,7 @@ interface SpiderWebPresetValues {
 }
 
 const PRESETS: Record<SpiderWebPreset, SpiderWebPresetValues> = {
-  default: {},
+  default: { webColor: "#d8d8d8", backgroundColor: "#0a0a0a", spiderColor: "#c0c0c0", glowColor: "#e0e0e0" },
   night:   { webColor: "#c0c8e0", backgroundColor: "#04081a", spiderColor: "#404060", glowColor: "#8899cc" },
   forest:  { webColor: "#90b890", backgroundColor: "#050f05", spiderColor: "#2a4a2a", glowColor: "#66aa66" },
   neon:    { webColor: "#00ffcc", backgroundColor: "#000000", spiderColor: "#003322", glowColor: "#00ffff" },
@@ -25,15 +25,15 @@ export interface SpiderWebProps extends BaseCanvasProps {
   spokeCount?: number;
   /** Number of concentric rings (default: 10) */
   ringCount?: number;
-  /** Strand color (default: "#c8c8c8") */
+  /** Strand color (default: "#d8d8d8") */
   webColor?: string;
-  /** Canvas background color (default: "#111111") */
+  /** Canvas background color (default: "#0a0a0a") */
   backgroundColor?: string;
-  /** Spider body color (default: "#333333") */
+  /** Spider body color (default: "#c0c0c0") */
   spiderColor?: string;
   /** Show dew drop glow points (default: true) */
   dewDrops?: boolean;
-  /** Dew drop glow color (default: "#aaddff") */
+  /** Dew drop glow color (default: "#e0e0e0") */
   glowColor?: string;
   /** Ambient sway speed multiplier (default: 1) */
   swaySpeed?: number;
@@ -62,11 +62,11 @@ export const SpiderWeb = forwardRef<HTMLCanvasElement, SpiderWebProps>(
     useSpiderWeb(internalRef, {
       spokeCount:    spokeCount    ?? 12,
       ringCount:     ringCount     ?? 10,
-      webColor:      webColor      ?? p.webColor      ?? "#c8c8c8",
-      backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
-      spiderColor:   spiderColor   ?? p.spiderColor   ?? "#333333",
+      webColor:      webColor      ?? p.webColor      ?? "#d8d8d8",
+      backgroundColor: backgroundColor ?? p.backgroundColor ?? "#0a0a0a",
+      spiderColor:   spiderColor   ?? p.spiderColor   ?? "#c0c0c0",
       dewDrops:      dewDrops      ?? true,
-      glowColor:     glowColor     ?? p.glowColor     ?? "#aaddff",
+      glowColor:     glowColor     ?? p.glowColor     ?? "#e0e0e0",
       swaySpeed:     swaySpeed     ?? 1,
       disturbRadius: disturbRadius ?? 80,
       interactive:   interactive   ?? true,
