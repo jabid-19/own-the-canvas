@@ -5745,7 +5745,7 @@ export default function App() {
           <div className="header-divider" aria-hidden="true" />
           <span className="header-tag">52 components</span>
           <div className="header-spacer" />
-          <span className="header-badge">5</span>
+          {/* <span className="header-badge">5</span> */}
         </header>
 
         {/* Component tabs */}
