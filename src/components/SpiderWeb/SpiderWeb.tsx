@@ -12,7 +12,7 @@ interface SpiderWebPresetValues {
   glowColor?: string;
 }
 
-const PRESETS: Record<SpiderWebPreset, SpiderWebPresetValues> = {
+export const PRESETS: Record<SpiderWebPreset, SpiderWebPresetValues> = {
   default: { webColor: "#d8d8d8", backgroundColor: "#0a0a0a", spiderColor: "#c0c0c0", glowColor: "#e0e0e0" },
   night:   { webColor: "#c0c8e0", backgroundColor: "#04081a", spiderColor: "#404060", glowColor: "#8899cc" },
   forest:  { webColor: "#90b890", backgroundColor: "#050f05", spiderColor: "#2a4a2a", glowColor: "#66aa66" },

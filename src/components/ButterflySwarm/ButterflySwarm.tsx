@@ -11,7 +11,7 @@ interface ButterflySwarmPresetValues {
   backgroundColor?: string;
 }
 
-const PRESETS: Record<ButterflySwarmPreset, ButterflySwarmPresetValues> = {
+export const PRESETS: Record<ButterflySwarmPreset, ButterflySwarmPresetValues> = {
   default:  { wingColor: "#c8c8c8", patternColor: "#444444", backgroundColor: "#0a0a0a" },
   monarch:  { wingColor: "#e06010", patternColor: "#111111", backgroundColor: "#0a0800" },
   morpho:   { wingColor: "#1060ff", patternColor: "#0030aa", backgroundColor: "#000508" },

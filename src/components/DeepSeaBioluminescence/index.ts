@@ -1,2 +1,2 @@
-export { DeepSeaBioluminescence } from "./DeepSeaBioluminescence";
+export { DeepSeaBioluminescence, PRESETS } from "./DeepSeaBioluminescence";
 export type { DeepSeaBioluminescenceProps } from "./DeepSeaBioluminescence";

@@ -62,6 +62,9 @@ import { BlackHole, PRESETS as BLACKHOLE_PRESETS } from "../components/BlackHole
 import { GalaxySpiral, PRESETS as GALAXY_PRESETS } from "../components/GalaxySpiral";
 import { TornadoVortex, PRESETS as TORNADO_PRESETS } from "../components/TornadoVortex";
 import { SolarFlare, PRESETS as SOLARFLARE_PRESETS } from "../components/SolarFlare";
+import { ButterflySwarm, PRESETS as BUTTERFLY_PRESETS } from "../components/ButterflySwarm";
+import { DeepSeaBioluminescence, PRESETS as DEEPSEA_PRESETS } from "../components/DeepSeaBioluminescence";
+import { SpiderWeb, PRESETS as SPIDERWEB_PRESETS } from "../components/SpiderWeb";
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -976,6 +979,37 @@ const icons: Record<string, React.ReactNode> = {
       <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="0.5" fill="none" opacity=".2" />
     </svg>
   ),
+  ButterflySwarm: (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 8 C6 6, 2 5, 2 8 C2 11, 5 11, 8 8Z" fill="currentColor" opacity=".8" />
+      <path d="M8 8 C10 6, 14 5, 14 8 C14 11, 11 11, 8 8Z" fill="currentColor" opacity=".6" />
+      <path d="M8 8 C6 10, 3 12, 4 14 C5 15, 7 14, 8 8Z" fill="currentColor" opacity=".5" />
+      <path d="M8 8 C10 10, 13 12, 12 14 C11 15, 9 14, 8 8Z" fill="currentColor" opacity=".4" />
+      <circle cx="8" cy="8" r="1" fill="currentColor" />
+    </svg>
+  ),
+  DeepSeaBioluminescence: (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 3 C10 3, 12 5, 12 7 C12 9, 10 10, 8 10 C6 10, 4 9, 4 7 C4 5, 6 3, 8 3Z" fill="currentColor" opacity=".7" />
+      <path d="M6 10 C5 12, 4 14, 5 14" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".6" />
+      <path d="M8 10 C8 12, 8 14, 8 14" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".6" />
+      <path d="M10 10 C11 12, 12 14, 11 14" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".6" />
+      <circle cx="4" cy="4" r="0.8" fill="currentColor" opacity=".4" />
+      <circle cx="12" cy="12" r="0.8" fill="currentColor" opacity=".4" />
+      <circle cx="3" cy="11" r="0.5" fill="currentColor" opacity=".3" />
+    </svg>
+  ),
+  SpiderWeb: (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <line x1="8" y1="1" x2="8" y2="15" stroke="currentColor" strokeWidth="0.6" opacity=".6" />
+      <line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="0.6" opacity=".6" />
+      <line x1="2.5" y1="2.5" x2="13.5" y2="13.5" stroke="currentColor" strokeWidth="0.6" opacity=".6" />
+      <line x1="13.5" y1="2.5" x2="2.5" y2="13.5" stroke="currentColor" strokeWidth="0.6" opacity=".6" />
+      <ellipse cx="8" cy="8" rx="3" ry="3" stroke="currentColor" strokeWidth="0.6" fill="none" opacity=".7" />
+      <ellipse cx="8" cy="8" rx="5.5" ry="5.5" stroke="currentColor" strokeWidth="0.6" fill="none" opacity=".5" />
+      <circle cx="8" cy="8" r="1" fill="currentColor" opacity=".9" />
+    </svg>
+  ),
 };
 
 const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
@@ -1029,6 +1063,9 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   GalaxySpiral: { desc: "Spiral galaxy particle system with core glow", accent: "#c4b5fd" },
   TornadoVortex: { desc: "Tornado funnel with debris, lightning, and dust cloud", accent: "#d1d5db" },
   SolarFlare: { desc: "Animated sun with convection cells and CME flares", accent: "#fbbf24" },
+  ButterflySwarm: { desc: "Butterflies that flock, flutter, and scatter from the cursor", accent: "#f97316" },
+  DeepSeaBioluminescence: { desc: "Glowing jellyfish and bioluminescent plankton in the deep sea", accent: "#00ccff" },
+  SpiderWeb: { desc: "Procedural spider web with dew drops, sway, and cursor disturbance", accent: "#c8c8c8" },
 };
 
 type ComponentId =
@@ -1043,7 +1080,8 @@ type ComponentId =
   | "Kaleidoscope" | "VoronoiCells" | "SlimeMold" | "InkBleed"
   | "WatercolorBloom" | "PendulaWave" | "CrystalGrowth" | "NeuralWeb"
   | "ParticleText" | "Metaballs" | "AntColony" | "MagneticField"
-  | "TerrainMesh" | "BlackHole" | "GalaxySpiral" | "TornadoVortex" | "SolarFlare";
+  | "TerrainMesh" | "BlackHole" | "GalaxySpiral" | "TornadoVortex" | "SolarFlare"
+  | "ButterflySwarm" | "DeepSeaBioluminescence" | "SpiderWeb";
 
 const ALL_COMPONENTS: ComponentId[] = [
   "DragonCursor", "KoiPond", "MatrixRain", "FluidSimulation", "FlowField", "Boids",
@@ -1058,6 +1096,7 @@ const ALL_COMPONENTS: ComponentId[] = [
   "WatercolorBloom", "PendulaWave", "CrystalGrowth", "NeuralWeb",
   "ParticleText", "Metaballs", "AntColony", "MagneticField",
   "TerrainMesh", "BlackHole", "GalaxySpiral", "TornadoVortex", "SolarFlare",
+  "ButterflySwarm", "DeepSeaBioluminescence", "SpiderWeb",
 ];
 
 // ─── Control Widgets ─────────────────────────────────────────────────────────
@@ -5372,6 +5411,217 @@ function SolarFlarePanel() {
   );
 }
 
+function ButterflySwarmPanel() {
+  const [preset, setPreset] = useState("default");
+  const [butterflyCount, setButterflyCount] = useState(12);
+  const [wingColor, setWingColor] = useState("#c8c8c8");
+  const [patternColor, setPatternColor] = useState("#444444");
+  const [bg, setBg] = useState("#0a0a0a");
+  const [flapSpeed, setFlapSpeed] = useState(1);
+  const [speed, setSpeed] = useState(1);
+  const [interactive, setInteractive] = useState(true);
+  const [showTrails, setShowTrails] = useState(false);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = BUTTERFLY_PRESETS[p as keyof typeof BUTTERFLY_PRESETS] ?? {};
+    if (v.wingColor)       setWingColor(v.wingColor);
+    if (v.patternColor)    setPatternColor(v.patternColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+  }
+
+  const code = [
+    `import { ButterflySwarm } from 'own-the-canvas';`,
+    ``,
+    `<ButterflySwarm`,
+    `  preset="${preset}"`,
+    `  butterflyCount={${butterflyCount}}`,
+    `  wingColor="${wingColor}"`,
+    `  patternColor="${patternColor}"`,
+    `  flapSpeed={${flapSpeed}}`,
+    `  speed={${speed}}`,
+    showTrails ? `  showTrails` : null,
+    !interactive ? `  interactive={false}` : null,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
+  return (
+    <>
+      <div className="canvas-wrap">
+        <div className="canvas-wrap-inner">
+          <ButterflySwarm preset={preset} butterflyCount={butterflyCount}
+            wingColor={wingColor} patternColor={patternColor}
+            flapSpeed={flapSpeed} speed={speed}
+            interactive={interactive} showTrails={showTrails}
+            backgroundColor={bg} width="100%" height="100%" />
+        </div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to scatter butterflies</span></div>
+        <CodeSnippet code={code} />
+      </div>
+      <div className="controls">
+        <CtrlHeader id="ButterflySwarm" />
+        <div className="ctrl-body">
+          <Sel label="Preset" value={preset} options={["default", "monarch", "morpho", "meadow", "night"]} onChange={handlePreset} />
+          <Divider />
+          <ColorPicker label="Wing color" value={wingColor} onChange={setWingColor} />
+          <ColorPicker label="Pattern color" value={patternColor} onChange={setPatternColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Slider label="Count" value={butterflyCount} min={3} max={40} step={1} onChange={setButterflyCount} />
+          <Slider label="Flap speed" value={flapSpeed} min={0.2} max={4} step={0.1} onChange={setFlapSpeed} />
+          <Slider label="Move speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
+          <Toggle label="Show trails" value={showTrails} onChange={setShowTrails} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+function DeepSeaBioluminescencePanel() {
+  const [preset, setPreset] = useState("default");
+  const [jellyfishCount, setJellyfishCount] = useState(5);
+  const [planktonCount, setPlanktonCount] = useState(200);
+  const [jellyfishColor, setJellyfishColor] = useState("#99bbcc");
+  const [glowColor, setGlowColor] = useState("#aaccdd");
+  const [waterColor, setWaterColor] = useState("#060c10");
+  const [speed, setSpeed] = useState(1);
+  const [interactive, setInteractive] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = DEEPSEA_PRESETS[p as keyof typeof DEEPSEA_PRESETS] ?? {};
+    if (v.jellyfishColor) setJellyfishColor(v.jellyfishColor);
+    if (v.glowColor)      setGlowColor(v.glowColor);
+    if (v.waterColor)     setWaterColor(v.waterColor);
+  }
+
+  const code = [
+    `import { DeepSeaBioluminescence } from 'own-the-canvas';`,
+    ``,
+    `<DeepSeaBioluminescence`,
+    `  preset="${preset}"`,
+    `  jellyfishCount={${jellyfishCount}}`,
+    `  planktonCount={${planktonCount}}`,
+    `  jellyfishColor="${jellyfishColor}"`,
+    `  glowColor="${glowColor}"`,
+    `  waterColor="${waterColor}"`,
+    `  speed={${speed}}`,
+    !interactive ? `  interactive={false}` : null,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
+  return (
+    <>
+      <div className="canvas-wrap">
+        <div className="canvas-wrap-inner">
+          <DeepSeaBioluminescence preset={preset} jellyfishCount={jellyfishCount}
+            planktonCount={planktonCount} jellyfishColor={jellyfishColor}
+            glowColor={glowColor} waterColor={waterColor}
+            speed={speed} interactive={interactive}
+            width="100%" height="100%" />
+        </div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to create bioluminescent ripples</span></div>
+        <CodeSnippet code={code} />
+      </div>
+      <div className="controls">
+        <CtrlHeader id="DeepSeaBioluminescence" />
+        <div className="ctrl-body">
+          <Sel label="Preset" value={preset} options={["default", "abyssal", "coral", "aurora", "crimson"]} onChange={handlePreset} />
+          <Divider />
+          <ColorPicker label="Jellyfish color" value={jellyfishColor} onChange={setJellyfishColor} />
+          <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
+          <ColorPicker label="Water color" value={waterColor} onChange={setWaterColor} />
+          <Slider label="Jellyfish count" value={jellyfishCount} min={1} max={15} step={1} onChange={setJellyfishCount} />
+          <Slider label="Plankton count" value={planktonCount} min={50} max={500} step={25} onChange={setPlanktonCount} />
+          <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+function SpiderWebPanel() {
+  const [preset, setPreset] = useState("default");
+  const [spokeCount, setSpokeCount] = useState(12);
+  const [ringCount, setRingCount] = useState(10);
+  const [webColor, setWebColor] = useState("#d8d8d8");
+  const [bg, setBg] = useState("#0a0a0a");
+  const [spiderColor, setSpiderColor] = useState("#c0c0c0");
+  const [glowColor, setGlowColor] = useState("#e0e0e0");
+  const [swaySpeed, setSwaySpeed] = useState(1);
+  const [dewDrops, setDewDrops] = useState(true);
+  const [interactive, setInteractive] = useState(true);
+  const [showSpider, setShowSpider] = useState(true);
+
+  function handlePreset(p: string) {
+    setPreset(p);
+    const v = SPIDERWEB_PRESETS[p as keyof typeof SPIDERWEB_PRESETS] ?? {};
+    if (v.webColor)       setWebColor(v.webColor);
+    if (v.backgroundColor) setBg(v.backgroundColor);
+    if (v.spiderColor)    setSpiderColor(v.spiderColor);
+    if (v.glowColor)      setGlowColor(v.glowColor);
+  }
+
+  const code = [
+    `import { SpiderWeb } from 'own-the-canvas';`,
+    ``,
+    `<SpiderWeb`,
+    `  preset="${preset}"`,
+    `  spokeCount={${spokeCount}}`,
+    `  ringCount={${ringCount}}`,
+    `  webColor="${webColor}"`,
+    `  spiderColor="${spiderColor}"`,
+    `  glowColor="${glowColor}"`,
+    `  swaySpeed={${swaySpeed}}`,
+    !dewDrops ? `  dewDrops={false}` : null,
+    !showSpider ? `  showSpider={false}` : null,
+    !interactive ? `  interactive={false}` : null,
+    `  backgroundColor="${bg}"`,
+    `  width="100%"`,
+    `  height="100%"`,
+    `/>`,
+  ].filter(Boolean).join("\n");
+
+  return (
+    <>
+      <div className="canvas-wrap">
+        <div className="canvas-wrap-inner">
+          <SpiderWeb preset={preset} spokeCount={spokeCount} ringCount={ringCount}
+            webColor={webColor} backgroundColor={bg} spiderColor={spiderColor}
+            glowColor={glowColor} swaySpeed={swaySpeed}
+            dewDrops={dewDrops} interactive={interactive} showSpider={showSpider}
+            width="100%" height="100%" />
+        </div>
+        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to disturb the web</span></div>
+        <CodeSnippet code={code} />
+      </div>
+      <div className="controls">
+        <CtrlHeader id="SpiderWeb" />
+        <div className="ctrl-body">
+          <Sel label="Preset" value={preset} options={["default", "night", "forest", "neon", "frost"]} onChange={handlePreset} />
+          <Divider />
+          <ColorPicker label="Web color" value={webColor} onChange={setWebColor} />
+          <ColorPicker label="Spider color" value={spiderColor} onChange={setSpiderColor} />
+          <ColorPicker label="Dew glow color" value={glowColor} onChange={setGlowColor} />
+          <ColorPicker label="Background" value={bg} onChange={setBg} />
+          <Slider label="Spoke count" value={spokeCount} min={4} max={20} step={1} onChange={setSpokeCount} />
+          <Slider label="Ring count" value={ringCount} min={3} max={20} step={1} onChange={setRingCount} />
+          <Slider label="Sway speed" value={swaySpeed} min={0.1} max={4} step={0.1} onChange={setSwaySpeed} />
+          <Toggle label="Dew drops" value={dewDrops} onChange={setDewDrops} />
+          <Toggle label="Show spider" value={showSpider} onChange={setShowSpider} />
+          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── Controls header ──────────────────────────────────────────────────────────
 function CtrlHeader({ id }: { id: ComponentId }) {
   const meta = COMPONENT_META[id];
@@ -5448,6 +5698,9 @@ const PANELS: Record<ComponentId, React.FC> = {
   GalaxySpiral: GalaxySpiralPanel,
   TornadoVortex: TornadoVortexPanel,
   SolarFlare: SolarFlarePanel,
+  ButterflySwarm: ButterflySwarmPanel,
+  DeepSeaBioluminescence: DeepSeaBioluminescencePanel,
+  SpiderWeb: SpiderWebPanel,
 };
 
 // ─── App ──────────────────────────────────────────────────────────────────────

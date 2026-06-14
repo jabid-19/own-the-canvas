@@ -10,7 +10,7 @@ interface DeepSeaBioluminescencePresetValues {
   waterColor?: string;
 }
 
-const PRESETS: Record<DeepSeaBioluminescencePreset, DeepSeaBioluminescencePresetValues> = {
+export const PRESETS: Record<DeepSeaBioluminescencePreset, DeepSeaBioluminescencePresetValues> = {
   default:  {},
   abyssal:  { jellyfishColor: "#8855cc", glowColor: "#aa55ff", waterColor: "#020008" },
   coral:    { jellyfishColor: "#ff8855", glowColor: "#ffaa44", waterColor: "#040a0c" },
