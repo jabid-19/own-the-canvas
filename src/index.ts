@@ -172,3 +172,6 @@ export type { TopographicContoursProps } from "./components/TopographicContours"
 export { SpiderWeb } from "./components/SpiderWeb";
 export type { SpiderWebProps } from "./components/SpiderWeb";
 
+export { ButterflySwarm } from "./components/ButterflySwarm";
+export type { ButterflySwarmProps } from "./components/ButterflySwarm";
+
