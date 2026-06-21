@@ -1,2 +1,24 @@
+# dependencies
 node_modules
-node_modules
+
+# build output
+lib
+dist
+
+# logs
+*.log
+npm-debug.log*
+
+# env
+.env
+.env.local
+
+# editor / os
+.DS_Store
+.vscode
+.idea
+
+# misc
+.vercel
+storybook-static
+coverage
