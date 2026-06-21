@@ -1,5 +1,19 @@
 import { BaseCanvasProps } from "../../types";
 type MandalaPreset = "default" | "neon" | "lotus" | "cosmic" | "minimal";
+interface MandalaPresetValues {
+    symmetry?: number;
+    colors?: string[];
+    lineWidth?: number;
+    speed?: number;
+    layers?: number;
+    glowEffect?: boolean;
+    glowBlur?: number;
+    strokeOpacity?: number;
+    mirror?: boolean;
+    noiseAmount?: number;
+    backgroundColor?: string;
+}
+export declare const PRESETS: Record<MandalaPreset, MandalaPresetValues>;
 export interface MandalaProps extends BaseCanvasProps {
     /** Number of rotational symmetry arms (default: 8) */
     symmetry?: number;

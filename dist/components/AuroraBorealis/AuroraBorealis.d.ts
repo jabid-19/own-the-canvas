@@ -1,5 +1,12 @@
 import { BaseCanvasProps } from "../../types";
 type AuroraBorealisPreset = "default" | "arctic" | "solar" | "tropical" | "neon" | "midnight";
+interface AuroraBorealisPresetValues {
+    colors?: string[];
+    backgroundColor?: string;
+    intensity?: number;
+    speed?: number;
+}
+export declare const PRESETS: Record<AuroraBorealisPreset, AuroraBorealisPresetValues>;
 export interface AuroraBorealisProps extends BaseCanvasProps {
     /** Aurora band colors (default: monochrome whites/grays) */
     colors?: string[];

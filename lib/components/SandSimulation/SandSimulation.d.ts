@@ -2,6 +2,15 @@ import { BaseCanvasProps } from '../../types';
 import { SandMaterial } from './useSandSimulation';
 
 type SandSimulationPreset = "default" | "desert" | "ocean" | "inferno" | "neon";
+interface SandSimulationPresetValues {
+    sandColor?: string;
+    waterColor?: string;
+    fireColor?: string;
+    wallColor?: string;
+    backgroundColor?: string;
+    material?: SandMaterial;
+}
+export declare const PRESETS: Record<SandSimulationPreset, SandSimulationPresetValues>;
 export interface SandSimulationProps extends BaseCanvasProps {
     /** Cell size in pixels (default: 4) */
     cellSize?: number;

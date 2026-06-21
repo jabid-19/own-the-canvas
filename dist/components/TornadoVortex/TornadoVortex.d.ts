@@ -1,5 +1,14 @@
 import { BaseCanvasProps } from "../../types";
 type TornadoVortexPreset = "default" | "storm" | "fire" | "neon" | "void";
+interface TornadoVortexPresetValues {
+    funnelColor?: string;
+    debrisColor?: string;
+    lightningColor?: string;
+    backgroundColor?: string;
+    rotationSpeed?: number;
+    funnelHeight?: number;
+}
+export declare const PRESETS: Record<TornadoVortexPreset, TornadoVortexPresetValues>;
 export interface TornadoVortexProps extends BaseCanvasProps {
     /** Number of funnel wall particles (default: 600) */
     particleCount?: number;

@@ -1,2 +1,2 @@
-export { Mandala } from "./Mandala";
+export { Mandala, PRESETS } from "./Mandala";
 export type { MandalaProps } from "./Mandala";

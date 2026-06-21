@@ -1,2 +1,2 @@
-export { Fireworks } from './Fireworks';
+export { Fireworks, PRESETS } from './Fireworks';
 export type { FireworksProps } from './Fireworks';

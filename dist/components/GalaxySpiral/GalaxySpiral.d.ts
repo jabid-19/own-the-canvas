@@ -1,5 +1,14 @@
 import { BaseCanvasProps } from "../../types";
 type GalaxySpiralPreset = "default" | "andromeda" | "neon" | "void" | "golden";
+interface GalaxySpiralPresetValues {
+    coreColor?: string;
+    diskColor?: string;
+    backgroundColor?: string;
+    armCount?: number;
+    armTightness?: number;
+    rotationSpeed?: number;
+}
+export declare const PRESETS: Record<GalaxySpiralPreset, GalaxySpiralPresetValues>;
 export interface GalaxySpiralProps extends BaseCanvasProps {
     /** Total star particle count (default: 3000) */
     starCount?: number;

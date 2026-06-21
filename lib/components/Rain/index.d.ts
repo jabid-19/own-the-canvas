@@ -1,2 +1,2 @@
-export { Rain } from './Rain';
+export { Rain, PRESETS } from './Rain';
 export type { RainProps } from './Rain';

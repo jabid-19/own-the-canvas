@@ -43,6 +43,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:lib": "tsc -p tsconfig.lib.json && vite build --mode lib",
+    "prepublishOnly": "npm run build:lib",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test": "vitest run",

@@ -1,6 +1,24 @@
 import { BaseCanvasProps } from '../../types';
 
 type ClothPreset = "default" | "silk" | "net" | "heavy" | "spider";
+interface ClothPresetValues {
+    cols?: number;
+    rows?: number;
+    spacing?: number;
+    gravity?: number;
+    friction?: number;
+    stiffness?: number;
+    iterations?: number;
+    lineColor?: string;
+    pinColor?: string;
+    lineWidth?: number;
+    backgroundColor?: string;
+    wind?: number;
+    windSpeed?: number;
+    tearable?: boolean;
+    tearDistance?: number;
+}
+export declare const PRESETS: Record<ClothPreset, ClothPresetValues>;
 export interface ClothSimulationProps extends BaseCanvasProps {
     /** Grid columns (default: 25) */
     cols?: number;

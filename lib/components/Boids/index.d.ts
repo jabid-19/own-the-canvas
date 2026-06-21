@@ -1,2 +1,2 @@
-export { Boids } from './Boids';
+export { Boids, PRESETS } from './Boids';
 export type { BoidsProps } from './Boids';

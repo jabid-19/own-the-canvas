@@ -1,5 +1,25 @@
 import { BaseCanvasProps } from "../../types";
 type BoidsPreset = "default" | "birds" | "fish" | "swarm" | "neon";
+interface BoidsPresetValues {
+    count?: number;
+    maxSpeed?: number;
+    separationRadius?: number;
+    alignmentRadius?: number;
+    cohesionRadius?: number;
+    separationForce?: number;
+    alignmentForce?: number;
+    cohesionForce?: number;
+    color?: string;
+    trailLength?: number;
+    trailOpacity?: number;
+    boidSize?: number;
+    backgroundColor?: string;
+    interactive?: boolean;
+    mouseRadius?: number;
+    mouseForce?: number;
+    wrapEdges?: boolean;
+}
+export declare const PRESETS: Record<BoidsPreset, BoidsPresetValues>;
 export interface BoidsProps extends BaseCanvasProps {
     /** Number of boids. (default: 80) */
     count?: number;

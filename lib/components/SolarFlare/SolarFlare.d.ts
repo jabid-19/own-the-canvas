@@ -1,6 +1,15 @@
 import { BaseCanvasProps } from '../../types';
 
 type SolarFlarePreset = "default" | "inferno" | "plasma" | "neon" | "white-dwarf";
+interface SolarFlarePresetValues {
+    sunColor?: string;
+    coronaColor?: string;
+    flareColor?: string;
+    backgroundColor?: string;
+    sunRadius?: number;
+    glowBlur?: number;
+}
+export declare const PRESETS: Record<SolarFlarePreset, SolarFlarePresetValues>;
 export interface SolarFlareProps extends BaseCanvasProps {
     /** Photosphere color (default: "#ffffff") */
     sunColor?: string;

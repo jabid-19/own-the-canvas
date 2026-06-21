@@ -1,2 +1,2 @@
-export { Wormhole } from "./Wormhole";
+export { Wormhole, PRESETS } from "./Wormhole";
 export type { WormholeProps } from "./Wormhole";

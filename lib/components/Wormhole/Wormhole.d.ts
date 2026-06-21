@@ -1,6 +1,21 @@
 import { BaseCanvasProps } from '../../types';
 
 type WormholePreset = "default" | "hyperspace" | "neon" | "vortex" | "minimal";
+interface WormholePresetValues {
+    ringCount?: number;
+    speed?: number;
+    colors?: string[];
+    backgroundColor?: string;
+    twist?: number;
+    fov?: number;
+    depth?: number;
+    lineWidth?: number;
+    opacity?: number;
+    starCount?: number;
+    starColor?: string;
+    interactive?: boolean;
+}
+export declare const PRESETS: Record<WormholePreset, WormholePresetValues>;
 export interface WormholeProps extends BaseCanvasProps {
     /** Number of tunnel rings. (default: 30) */
     ringCount?: number;

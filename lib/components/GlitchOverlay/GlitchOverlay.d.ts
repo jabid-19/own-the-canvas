@@ -1,6 +1,22 @@
 import { BaseCanvasProps } from '../../types';
 
 type GlitchPreset = "default" | "crt" | "cyberpunk" | "subtle" | "corrupt";
+interface GlitchPresetValues {
+    intensity?: number;
+    speed?: number;
+    rgbShift?: number;
+    scanlines?: boolean;
+    scanlineOpacity?: number;
+    scanlineSpacing?: number;
+    blockGlitch?: boolean;
+    blockCount?: number;
+    noiseOpacity?: number;
+    flickerRate?: number;
+    color?: string;
+    rgbShiftColor?: string;
+    backgroundColor?: string;
+}
+export declare const PRESETS: Record<GlitchPreset, GlitchPresetValues>;
 export interface GlitchOverlayProps extends BaseCanvasProps {
     /** Glitch probability 0–1 (default: 0.6) */
     intensity?: number;

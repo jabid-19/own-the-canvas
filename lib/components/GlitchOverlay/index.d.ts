@@ -1,2 +1,2 @@
-export { GlitchOverlay } from './GlitchOverlay';
+export { GlitchOverlay, PRESETS } from './GlitchOverlay';
 export type { GlitchOverlayProps } from './GlitchOverlay';

@@ -1,6 +1,20 @@
 import { BaseCanvasProps } from '../../types';
 
 type ShockwavePreset = "default" | "neon" | "explosion" | "ripple" | "minimal";
+interface ShockwavePresetValues {
+    color?: string;
+    secondaryColor?: string;
+    ringCount?: number;
+    ringSpacing?: number;
+    speed?: number;
+    maxRadius?: number;
+    lineWidth?: number;
+    fadeSpeed?: number;
+    glowEffect?: boolean;
+    glowBlur?: number;
+    backgroundColor?: string;
+}
+export declare const PRESETS: Record<ShockwavePreset, ShockwavePresetValues>;
 export interface ShockwaveProps extends BaseCanvasProps {
     /** Primary ring color (default: "#7C3AED") */
     color?: string;

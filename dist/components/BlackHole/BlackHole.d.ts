@@ -1,5 +1,15 @@
 import { BaseCanvasProps } from "../../types";
 type BlackHolePreset = "default" | "cosmic" | "inferno" | "neon" | "void";
+interface BlackHolePresetValues {
+    diskColor?: string;
+    backgroundColor?: string;
+    jetColor?: string;
+    particleCount?: number;
+    diskWidth?: number;
+    gravity?: number;
+    eventHorizonRadius?: number;
+}
+export declare const PRESETS: Record<BlackHolePreset, BlackHolePresetValues>;
 export interface BlackHoleProps extends BaseCanvasProps {
     /** Accretion disk particle color (default: "#ffffff") */
     diskColor?: string;

@@ -1,5 +1,22 @@
 import { BaseCanvasProps } from "../../types";
 type LightningPreset = "default" | "neon" | "storm" | "plasma" | "subtle";
+interface LightningPresetValues {
+    segments?: number;
+    roughness?: number;
+    branchChance?: number;
+    branchDecay?: number;
+    flickerCount?: number;
+    glowBlur?: number;
+    color?: string;
+    coreColor?: string;
+    backgroundColor?: string;
+    autoInterval?: number;
+    interactive?: boolean;
+    startX?: number;
+    startY?: number;
+    endY?: number;
+}
+export declare const PRESETS: Record<LightningPreset, LightningPresetValues>;
 export interface LightningProps extends BaseCanvasProps {
     /** Recursion depth for bolt segments. (default: 8) */
     segments?: number;

@@ -1,2 +1,2 @@
-export { AuroraBorealis } from "./AuroraBorealis";
+export { AuroraBorealis, PRESETS } from "./AuroraBorealis";
 export type { AuroraBorealisProps } from "./AuroraBorealis";

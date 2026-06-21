@@ -1,5 +1,19 @@
 import { BaseCanvasProps } from "../../types";
 type RainPreset = "default" | "storm" | "drizzle" | "neon" | "golden";
+interface RainPresetValues {
+    dropCount?: number;
+    speed?: number;
+    wind?: number;
+    windSpeed?: number;
+    dropLength?: number;
+    dropWidth?: number;
+    dropOpacity?: number;
+    dropColor?: string;
+    splashColor?: string;
+    showSplashes?: boolean;
+    backgroundColor?: string;
+}
+export declare const PRESETS: Record<RainPreset, RainPresetValues>;
 export interface RainProps extends BaseCanvasProps {
     /** Number of rain drops. (default: 200) */
     dropCount?: number;

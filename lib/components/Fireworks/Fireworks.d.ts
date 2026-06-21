@@ -1,6 +1,21 @@
 import { BaseCanvasProps } from '../../types';
 
 type FireworksPreset = "default" | "celebration" | "subtle" | "neon" | "golden";
+interface FireworksPresetValues {
+    colors?: string[];
+    particleCount?: number;
+    gravity?: number;
+    friction?: number;
+    fadeSpeed?: number;
+    spread?: number;
+    glowEffect?: boolean;
+    glowBlur?: number;
+    backgroundColor?: string;
+    shellSpeed?: number;
+    trailLength?: number;
+    particleSize?: number;
+}
+export declare const PRESETS: Record<FireworksPreset, FireworksPresetValues>;
 export interface FireworksProps extends BaseCanvasProps {
     /** Particle burst colors (default: multi-color) */
     colors?: string[];
