@@ -134,8 +134,8 @@ export function useGalaxySpiral(
       mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
     }
     function onMouseLeave() { mouseRef.current = null; }
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     function draw(dt: number) {
       const {
@@ -264,8 +264,8 @@ export function useGalaxySpiral(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

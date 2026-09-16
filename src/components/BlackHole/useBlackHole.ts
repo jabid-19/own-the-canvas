@@ -132,7 +132,7 @@ export function useBlackHole(
       singularityRef.current.tx = e.clientX - r.left;
       singularityRef.current.ty = e.clientY - r.top;
     }
-    canvas.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
 
     function drawLensing(cx: number, cy: number, ehRadius: number) {
       const gridStep = 30;
@@ -339,7 +339,7 @@ export function useBlackHole(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, [canvasRef]);
 }

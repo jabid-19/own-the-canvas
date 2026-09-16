@@ -85,8 +85,8 @@ export function useMagneticBlob(
       mouseRef.current = { x: e.clientX - bounding.left, y: e.clientY - bounding.top };
     }
     function onMouseLeave() { mouseRef.current = null; }
-    parent.addEventListener("mousemove", onMouseMove);
-    parent.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
       const m = hex.replace("#", "").match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
@@ -227,8 +227,8 @@ export function useMagneticBlob(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      parent.removeEventListener("mousemove", onMouseMove);
-      parent.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

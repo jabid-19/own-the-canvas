@@ -151,8 +151,8 @@ export function useNeuralWeb(
       if (idx >= 0) firePulse(idx, 1);
     }
 
-    parent.addEventListener("mousemove", onMouseMove);
-    parent.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
     parent.addEventListener("mousedown", onMouseDown);
     parent.addEventListener("touchstart", onTouchStart, { passive: false });
 
@@ -277,8 +277,8 @@ export function useNeuralWeb(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafId);
-      parent.removeEventListener("mousemove", onMouseMove);
-      parent.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
       parent.removeEventListener("mousedown", onMouseDown);
       parent.removeEventListener("touchstart", onTouchStart);
     };

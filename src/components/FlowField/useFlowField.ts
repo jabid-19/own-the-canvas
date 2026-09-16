@@ -126,8 +126,8 @@ export function useFlowField(
       if (optionsRef.current.interactive) mouseRef.current = getPos(e);
     }
     function onMouseLeave() { mouseRef.current = null; }
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     const ro = new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;
@@ -218,8 +218,8 @@ export function useFlowField(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

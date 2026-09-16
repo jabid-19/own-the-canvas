@@ -123,8 +123,8 @@ export function useDeepSeaBioluminescence(
       }
     }
     function onMouseLeave() { mouse.x = -1; mouse.y = -1; }
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     let raf = 0;
     function loop() {
@@ -243,8 +243,8 @@ export function useDeepSeaBioluminescence(
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

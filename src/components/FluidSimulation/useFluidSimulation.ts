@@ -207,8 +207,8 @@ export function useFluidSimulation(
       };
     }
     function onMouseLeave() { mouseRef.current = null; }
-    parent.addEventListener("mousemove", onMouseMove);
-    parent.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     function scheduleAuto() {
       const { autoInk, autoInkInterval } = optionsRef.current;
@@ -305,8 +305,8 @@ export function useFluidSimulation(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      parent.removeEventListener("mousemove", onMouseMove);
-      parent.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
       if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
     };
   }, [canvasRef, options.resolution]);

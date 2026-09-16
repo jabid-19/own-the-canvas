@@ -111,7 +111,7 @@ export function useDragonCursor(
       const r = canvas!.getBoundingClientRect();
       mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
     }
-    canvas.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
 
     function spawnFire(headX: number, headY: number, dx: number, dy: number) {
       const { segmentSize } = optionsRef.current;
@@ -590,7 +590,7 @@ export function useDragonCursor(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, [canvasRef]);
 }

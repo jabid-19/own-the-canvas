@@ -113,8 +113,8 @@ export function useParticleText(
     }
     function onTouchEnd() { mouseX = -9999; mouseY = -9999; }
 
-    parent.addEventListener("mousemove", onMouseMove);
-    parent.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
     parent.addEventListener("touchmove", onTouchMove, { passive: false });
     parent.addEventListener("touchend", onTouchEnd);
 
@@ -186,8 +186,8 @@ export function useParticleText(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafId);
-      parent.removeEventListener("mousemove", onMouseMove);
-      parent.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
       parent.removeEventListener("touchmove", onTouchMove);
       parent.removeEventListener("touchend", onTouchEnd);
     };

@@ -152,9 +152,9 @@ export function useParticleField(
     }
 
     canvas.addEventListener("mousedown", onMouseDown);
-    canvas.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mouseup", onMouseUp);
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     function draw() {
       const {
@@ -285,9 +285,9 @@ export function useParticleField(
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
       canvas.removeEventListener("mousedown", onMouseDown);
-      canvas.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("mouseup", onMouseUp);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

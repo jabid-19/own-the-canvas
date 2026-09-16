@@ -124,10 +124,10 @@ export function useClothSimulation(
     function onMouseUp() { mouseDownRef.current = false; }
     function onMouseLeave() { mouseRef.current = null; mouseDownRef.current = false; }
 
-    parent.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
     parent.addEventListener("mousedown", onMouseDown);
     parent.addEventListener("mouseup", onMouseUp);
-    parent.addEventListener("mouseleave", onMouseLeave);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     function draw() {
       const {
@@ -251,10 +251,10 @@ export function useClothSimulation(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      parent.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
       parent.removeEventListener("mousedown", onMouseDown);
       parent.removeEventListener("mouseup", onMouseUp);
-      parent.removeEventListener("mouseleave", onMouseLeave);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

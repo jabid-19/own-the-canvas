@@ -155,8 +155,8 @@ export function useKoiPond(
       lastMouseRef.current = { x: nx, y: ny };
     }
     function onMouseLeave() { mouseRef.current = null; }
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
 
     function drawFish(fish: KoiFish, t: number) {
       const segs = fish.segments;
@@ -412,8 +412,8 @@ export function useKoiPond(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [canvasRef]);
 }

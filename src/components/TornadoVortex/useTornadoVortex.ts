@@ -128,7 +128,7 @@ export function useTornadoVortex(
       const r = canvas!.getBoundingClientRect();
       targetXRef.current = e.clientX - r.left;
     }
-    canvas.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
 
     function spawnLightning(cx: number, funnelTop: number, funnelBase: number) {
       const startY = funnelTop + Math.random() * (funnelBase - funnelTop) * 0.3;
@@ -302,7 +302,7 @@ export function useTornadoVortex(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, [canvasRef]);
 }

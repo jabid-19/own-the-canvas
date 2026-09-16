@@ -96,7 +96,7 @@ export function useWormhole(
       // Mouse X controls speed: left = slow, right = fast
       mouseSpeedRef.current = 0.2 + mx * 2.8;
     }
-    canvas.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
 
     function project(angle: number, z: number, rotation: number) {
       const { fov, depth, twist } = optionsRef.current;
@@ -175,7 +175,7 @@ export function useWormhole(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, [canvasRef]);
 }

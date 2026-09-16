@@ -111,8 +111,8 @@ export function useBubbleUniverse(
       }
     }
 
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
     canvas.addEventListener("click", onClick);
 
     function popBubble(b: Bubble) {
@@ -333,8 +333,8 @@ export function useBubbleUniverse(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
       canvas.removeEventListener("click", onClick);
     };
   }, [canvasRef]);
