@@ -879,7 +879,7 @@ export default function App() {
         {/* Footer */}
         <footer className="home-footer">
           <span>own-the-canvas · MIT License</span>
-          <span>v1.0.11</span>
+          <span>v1.0.12</span>
         </footer>
       </div>
     </>

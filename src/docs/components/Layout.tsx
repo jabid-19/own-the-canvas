@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Lenis from "lenis";
 import { Sidebar } from "./Sidebar";
 
 const CSS = `
@@ -87,10 +88,33 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const lenisRef = useRef<Lenis | null>(null);
+
+  useEffect(() => {
+    const wrapper = document.getElementById("main-content");
+    const content = wrapper?.firstElementChild as HTMLElement | null;
+    if (!wrapper || !content) return;
+
+    const lenis = new Lenis({ wrapper, content });
+    lenisRef.current = lenis;
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     setMobileOpen(false);
-    document.getElementById("main-content")?.scrollTo({ top: 0 });
+    lenisRef.current?.scrollTo(0, { immediate: true });
   }, [location.pathname]);
 
   return (
