@@ -1,8 +1,9 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useTornadoVortex } from "./useTornadoVortex";
 
-type TornadoVortexPreset = "default" | "storm" | "fire" | "neon" | "void";
+type TornadoVortexPreset = "default" | "storm" | "fire" | "neon" | "void" | "monochrome";
 
 interface TornadoVortexPresetValues {
   funnelColor?: string;
@@ -14,7 +15,8 @@ interface TornadoVortexPresetValues {
 }
 
 export const PRESETS: Record<TornadoVortexPreset, TornadoVortexPresetValues> = {
-  default: {},
+  default: { funnelColor: "#c8d8e8", debrisColor: "#8898a8", lightningColor: "#ffffff", backgroundColor: "#0a1018" },
+  monochrome: {},
   storm: {
     funnelColor: "#c8d8e8",
     debrisColor: "#8898a8",
@@ -48,13 +50,13 @@ export const PRESETS: Record<TornadoVortexPreset, TornadoVortexPresetValues> = {
 export interface TornadoVortexProps extends BaseCanvasProps {
   /** Number of funnel wall particles (default: 600) */
   particleCount?: number;
-  /** Funnel wall particle color (default: "#ffffff") */
+  /** Funnel wall particle color (default: "#c8d8e8") */
   funnelColor?: string;
-  /** Flying debris color (default: "#6b7280") */
+  /** Flying debris color (default: "#8898a8") */
   debrisColor?: string;
   /** Internal lightning color (default: "#ffffff") */
   lightningColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#0a1018") */
   backgroundColor?: string;
   /** Angular rotation speed (default: 3) */
   rotationSpeed?: number;
@@ -83,11 +85,9 @@ export const TornadoVortex = forwardRef<HTMLCanvasElement, TornadoVortexProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as TornadoVortexPreset]) || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
+    const p = PRESETS[(preset ?? "default") as TornadoVortexPreset] || {};
 
-    useTornadoVortex(internalRef, {
+    const { canvasRef, canvas } = useTornadoVortex({
       particleCount:  particleCount  ?? 600,
       funnelColor:    funnelColor    ?? p.funnelColor    ?? "#ffffff",
       debrisColor:    debrisColor    ?? p.debrisColor    ?? "#6b7280",
@@ -102,24 +102,16 @@ export const TornadoVortex = forwardRef<HTMLCanvasElement, TornadoVortexProps>(
       speed:          speed          ?? 1,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
+      <RuntimeCanvas
+        canvasRef={canvasRef}
+        width={width}
+        height={height}
         className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+        style={style}
+      />
     );
   }
 );

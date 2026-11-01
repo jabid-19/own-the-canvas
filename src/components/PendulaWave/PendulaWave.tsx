@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { usePendulaWave, PendulaWaveColorMode } from "./usePendulaWave";
 
-type PendulaWavePreset = "default" | "neon" | "crystal" | "sand" | "minimal" | "cosmic";
+type PendulaWavePreset = "default" | "neon" | "crystal" | "sand" | "minimal" | "cosmic" | "monochrome";
 
 interface PendulaWavePresetValues {
   color?: string;
@@ -20,7 +20,8 @@ interface PendulaWavePresetValues {
 }
 
 const PRESETS: Record<PendulaWavePreset, PendulaWavePresetValues> = {
-  default: {},
+  default: { color: "#ffb347", color2: "#2ec4b6", backgroundColor: "#06101a", colorMode: "gradient", glowEffect: true, glowBlur: 10 },
+  monochrome: {},
   neon: {
     color: "#00ffcc",
     color2: "#ff00aa",
@@ -70,11 +71,11 @@ const PRESETS: Record<PendulaWavePreset, PendulaWavePresetValues> = {
 };
 
 export interface PendulaWaveProps extends BaseCanvasProps {
-  /** Stroke color (default: "#ffffff") */
+  /** Stroke color (default: "#ffb347") */
   color?: string;
-  /** Secondary color used in gradient colorMode (default: "#6b7280") */
+  /** Secondary color used in gradient colorMode (default: "#2ec4b6") */
   color2?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#06101a") */
   backgroundColor?: string;
   /** Stroke line width (default: 1) */
   lineWidth?: number;
@@ -92,7 +93,7 @@ export interface PendulaWaveProps extends BaseCanvasProps {
   freq3?: number;
   /** Max swing as fraction of canvas half-size (default: 0.9) */
   amplitude?: number;
-  /** Color mode: "solid" | "cycle" | "gradient" (default: "solid") */
+  /** Color mode: "solid" | "cycle" | "gradient" (default: "cycle") */
   colorMode?: PendulaWaveColorMode;
   /** Enable glow (default: false) */
   glowEffect?: boolean;
@@ -113,7 +114,7 @@ export const PendulaWave = forwardRef<HTMLCanvasElement, PendulaWaveProps>(
       animated, autoReset, width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as PendulaWavePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as PendulaWavePreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

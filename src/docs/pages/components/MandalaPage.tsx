@@ -6,19 +6,19 @@ import { Mandala } from "../../../components/Mandala";
 
 const PROPS = [
   { name: "symmetry",        type: "number",  default: "8",         description: "Number of rotational symmetry arms." },
-  { name: "colors",          type: "string[]",default: "multi",     description: "Stroke colors cycled per layer." },
+  { name: "colors",          type: "string[]",default: '["#f43f5e", "#fb7185", "#fda4af", "#fbbf24"]',     description: "Stroke colors cycled per layer." },
   { name: "lineWidth",       type: "number",  default: "1.5",       description: "Stroke line width." },
   { name: "speed",           type: "number",  default: "1",         description: "Rotation animation speed." },
   { name: "layers",          type: "number",  default: "5",         description: "Number of concentric petal layers." },
   { name: "radius",          type: "number",  default: "1",         description: "Outer radius as fraction of canvas min dimension." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background color." },
+  { name: "backgroundColor", type: "string",  default: '"#0c0005"', description: "Canvas background color." },
   { name: "animated",        type: "boolean", default: "true",      description: "Enable rotation animation." },
   { name: "glowEffect",      type: "boolean", default: "true",      description: "Glow effect on strokes." },
   { name: "glowBlur",        type: "number",  default: "10",        description: "Shadow blur for glow." },
   { name: "strokeOpacity",   type: "number",  default: "0.8",       description: "Layer stroke opacity 0–1." },
   { name: "mirror",          type: "boolean", default: "true",      description: "Mirror each arm for bilateral symmetry." },
   { name: "noiseAmount",     type: "number",  default: "0.3",       description: "Organic noise distortion 0–1." },
-  { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "lotus" | "cosmic" | "minimal"' },
+  { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "lotus" | "cosmic" | "minimal" | "monochrome"' },
 ];
 
 function MandalaPlayground({ onReset }: { onReset?: () => void }) {
@@ -26,8 +26,8 @@ function MandalaPlayground({ onReset }: { onReset?: () => void }) {
   const [symmetry, setSymmetry] = useState(8);
   const [layers, setLayers] = useState(5);
   const [speed, setSpeed] = useState(1);
-  const [bg, setBg] = useState("#111111");
-  const [colors, setColors] = useState(["#ffffff"]);
+  const [bg, setBg] = useState("#0c0005");
+  const [colors, setColors] = useState(["#f43f5e", "#fb7185", "#fda4af", "#fbbf24"]);
   const [mirror, setMirror] = useState(true);
   const [glow, setGlow] = useState(true);
 
@@ -60,7 +60,7 @@ function MandalaPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "lotus", "cosmic", "minimal", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />

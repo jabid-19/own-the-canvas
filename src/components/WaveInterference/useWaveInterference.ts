@@ -122,7 +122,7 @@ export function useWaveInterference(
       const dt = lastTime ? Math.min(timestamp - lastTime, 50) : 16;
       lastTime = timestamp;
 
-      const { wavelength, speed, colorHigh, colorLow, showSources, animated, decay } = optionsRef.current;
+      const { wavelength, speed, colorHigh, colorLow, showSources, animated, decay, backgroundColor } = optionsRef.current;
       const sources = sourcesRef.current;
 
       if (animated) timeRef.current += dt * 0.001 * speed;
@@ -130,6 +130,7 @@ export function useWaveInterference(
 
       const [loR, loG, loB] = parseHex(colorLow);
       const [hiR, hiG, hiB] = parseHex(colorHigh);
+      const [bgR, bgG, bgB] = parseHex(backgroundColor);
 
       const data = imageData!.data;
       const k = (2 * Math.PI) / wavelength;
@@ -145,23 +146,27 @@ export function useWaveInterference(
           const cx = (px + 0.5) * scaleX;
           const cy = (py + 0.5) * scaleY;
 
-          let sum = 0;
+          let sum = 0, env = 0;
           for (const src of sources) {
             const dx = cx - src.x;
             const dy = cy - src.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             const amp = Math.exp(-decay * dist);
             sum += amp * Math.cos(k * dist - omega * t);
+            env += amp;
           }
+          // where the waves have died out (< 15% amplitude) the water settles to backgroundColor
+          const e = Math.min(1, env / n / 0.15);
+          const show = e * e * (3 - 2 * e);
 
           // normalize to [0, 1]
           const normalized = (sum / n + 1) * 0.5;
           const val = Math.max(0, Math.min(1, normalized));
 
           const p = (py * gw + px) * 4;
-          data[p]     = Math.round(loR + (hiR - loR) * val);
-          data[p + 1] = Math.round(loG + (hiG - loG) * val);
-          data[p + 2] = Math.round(loB + (hiB - loB) * val);
+          data[p]     = Math.round(bgR + (loR + (hiR - loR) * val - bgR) * show);
+          data[p + 1] = Math.round(bgG + (loG + (hiG - loG) * val - bgG) * show);
+          data[p + 2] = Math.round(bgB + (loB + (hiB - loB) * val - bgB) * show);
           data[p + 3] = 255;
         }
       }

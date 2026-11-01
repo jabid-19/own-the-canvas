@@ -7,23 +7,24 @@ import { DragonCursor } from "../../../components/DragonCursor";
 const PROPS = [
   { name: "segmentCount",   type: "number",  default: "20",           description: "Number of body joint segments." },
   { name: "segmentSize",    type: "number",  default: "18",           description: "Head radius in px — body tapers from this." },
-  { name: "bodyColor",      type: "string",  default: '"#ffffff"',    description: "Dragon body and wing color." },
-  { name: "eyeColor",       type: "string",  default: '"#111111"',    description: "Eye pupil color." },
-  { name: "fireColor",      type: "string",  default: '"#ffffff"',    description: "Fire breath particle color." },
-  { name: "backgroundColor",type: "string",  default: '"transparent"',description: "Canvas background." },
+  { name: "bodyColor",      type: "string",  default: '"#35e0a1"',    description: "Dragon body and wing color." },
+  { name: "eyeColor",       type: "string",  default: '"#ffd24a"',    description: "Eye pupil color." },
+  { name: "fireColor",      type: "string",  default: '"#ff9d3c"',    description: "Fire breath particle color." },
+  { name: "backgroundColor",type: "string",  default: '"#07130f"',description: "Canvas background." },
   { name: "followSpeed",    type: "number",  default: "0.15",         description: "Cursor follow lerp factor 0–1." },
-  { name: "wingSpan",       type: "number",  default: "60",           description: "Wing length in px." },
+  { name: "wingSpan",       type: "number",  default: "80",           description: "Wing length in px." },
   { name: "showFire",       type: "boolean", default: "true",         description: "Show fire breath particles." },
   { name: "interactive",    type: "boolean", default: "true",         description: "Dragon follows cursor; false = autonomous wander." },
   { name: "starCount",      type: "number",  default: "60",           description: "Number of background stars." },
   { name: "starColor",      type: "string",  default: '"#ffffff"',    description: "Star color." },
   { name: "glowingStars",   type: "boolean", default: "false",        description: "Enable glow effect on ~28% of stars." },
   { name: "starGlowBlur",   type: "number",  default: "8",            description: "Shadow blur radius for glowing stars." },
-  { name: "preset",         type: "string",  default: "—",            description: '"default" | "emerald" | "inferno" | "void" | "ice"' },
+  { name: "preset",         type: "string",  default: "—",            description: '"default" | "emerald" | "inferno" | "void" | "ice" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, { bodyColor: string; eyeColor: string; fireColor: string; bg: string }> = {
-  default:  { bodyColor: "#ffffff", eyeColor: "#111111", fireColor: "#ffffff", bg: "#111111" },
+  default:  { bodyColor: "#35e0a1", eyeColor: "#ffd24a", fireColor: "#ff9d3c", bg: "#07130f" },
+  monochrome: { bodyColor: "#ffffff", eyeColor: "#111111", fireColor: "#ffffff", bg: "#111111" },
   emerald:  { bodyColor: "#00ff88", eyeColor: "#00ff00", fireColor: "#00ffaa", bg: "#0a1a0f" },
   inferno:  { bodyColor: "#ff6600", eyeColor: "#ff0000", fireColor: "#ffaa00", bg: "#1a0500" },
   void:     { bodyColor: "#9900ff", eyeColor: "#cc00ff", fireColor: "#6600cc", bg: "#050010" },
@@ -32,14 +33,14 @@ const PRESET_VALUES: Record<string, { bodyColor: string; eyeColor: string; fireC
 
 function DragonCursorPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [bodyColor, setBodyColor] = useState("#ffffff");
-  const [eyeColor, setEyeColor] = useState("#111111");
-  const [fireColor, setFireColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
+  const [bodyColor, setBodyColor] = useState("#35e0a1");
+  const [eyeColor, setEyeColor] = useState("#ffd24a");
+  const [fireColor, setFireColor] = useState("#ff9d3c");
+  const [bg, setBg] = useState("#07130f");
   const [segments, setSegments] = useState(20);
   const [segSize, setSegSize] = useState(18);
   const [followSpeed, setFollowSpeed] = useState(0.15);
-  const [wingSpan, setWingSpan] = useState(60);
+  const [wingSpan, setWingSpan] = useState(80);
   const [showFire, setShowFire] = useState(false);
   const [interactive, setInteractive] = useState(true);
   const [starCount, setStarCount] = useState(60);
@@ -106,7 +107,7 @@ function DragonCursorPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "emerald", "inferno", "void", "ice"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "emerald", "inferno", "void", "ice", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Body color" value={bodyColor} onChange={setBodyColor} />
         <PColor label="Fire color" value={fireColor} onChange={setFireColor} />

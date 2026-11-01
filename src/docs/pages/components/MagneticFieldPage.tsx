@@ -8,23 +8,24 @@ const PROPS = [
   { name: "fieldLineCount",  type: "number",  default: "16",      description: "Field lines seeded per positive pole." },
   { name: "stepSize",        type: "number",  default: "4",       description: "Euler integration step in px." },
   { name: "maxSteps",        type: "number",  default: "400",     description: "Max steps per field line." },
-  { name: "positiveColor",   type: "string",  default: '"#ef4444"', description: "N-pole color." },
-  { name: "negativeColor",   type: "string",  default: '"#3b82f6"', description: "S-pole color." },
-  { name: "lineColor",       type: "string",  default: '"#6b7280"', description: "Field line stroke color." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "positiveColor",   type: "string",  default: '"#ef5350"', description: "N-pole color." },
+  { name: "negativeColor",   type: "string",  default: '"#42a5f5"', description: "S-pole color." },
+  { name: "lineColor",       type: "string",  default: '"#e0f2fe"', description: "Field line stroke color." },
+  { name: "backgroundColor", type: "string",  default: '"#06101c"', description: "Canvas background." },
   { name: "lineWidth",       type: "number",  default: "1",       description: "Field line stroke width." },
   { name: "lineOpacity",     type: "number",  default: "0.6",     description: "Field line alpha." },
   { name: "poleRadius",      type: "number",  default: "12",      description: "Magnet circle radius in px." },
   { name: "glowEffect",      type: "boolean", default: "true",    description: "Glow on poles." },
   { name: "glowBlur",        type: "number",  default: "20",      description: "Shadow blur for glow." },
-  { name: "animated",        type: "boolean", default: "false",   description: "Continuously redraw vs. only on change." },
+  { name: "animated",        type: "boolean", default: "true",    description: "Current flowing along the field lines." },
   { name: "interactive",     type: "boolean", default: "true",    description: "Drag poles; click to add; right-click to remove." },
   { name: "maxPoles",        type: "number",  default: "6",       description: "Max total poles." },
-  { name: "preset",          type: "string",  default: "—",       description: '"default" | "neon" | "warm" | "mono" | "electric" | "minimal"' },
+  { name: "preset",          type: "string",  default: "—",       description: '"default" | "neon" | "warm" | "mono" | "electric" | "minimal" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default:  { positiveColor: "#ef4444", negativeColor: "#3b82f6", lineColor: "#6b7280", bg: "#111111", lineOpacity: 0.6, glowEffect: true,  glowBlur: 20, fieldLineCount: 16 },
+  default:  { positiveColor: "#ef5350", negativeColor: "#42a5f5", lineColor: "#e0f2fe", bg: "#06101c", lineOpacity: 0.6, glowEffect: true,  glowBlur: 20, fieldLineCount: 16 },
+  monochrome: { positiveColor: "#ef4444", negativeColor: "#3b82f6", lineColor: "#6b7280", bg: "#111111", lineOpacity: 0.6, glowEffect: true,  glowBlur: 20, fieldLineCount: 16 },
   neon:     { positiveColor: "#f43f5e", negativeColor: "#3b82f6", lineColor: "#00ffcc", bg: "#000000", lineOpacity: 0.8, glowEffect: true,  glowBlur: 25, fieldLineCount: 16 },
   warm:     { positiveColor: "#f97316", negativeColor: "#fbbf24", lineColor: "#fed7aa", bg: "#0c0500", lineOpacity: 0.6, glowEffect: true,  glowBlur: 18, fieldLineCount: 16 },
   mono:     { positiveColor: "#ffffff", negativeColor: "#6b7280", lineColor: "#9ca3af", bg: "#111111", lineOpacity: 0.5, glowEffect: false, glowBlur: 20, fieldLineCount: 16 },
@@ -37,16 +38,16 @@ function MagneticFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [fieldLines, setFieldLines] = useState(16);
   const [stepSize, setStepSize]     = useState(4);
   const [maxSteps, setMaxSteps]     = useState(400);
-  const [posColor, setPosColor]     = useState("#ef4444");
-  const [negColor, setNegColor]     = useState("#3b82f6");
-  const [lineColor, setLineColor]   = useState("#6b7280");
-  const [bg, setBg]                 = useState("#111111");
+  const [posColor, setPosColor]     = useState("#ef5350");
+  const [negColor, setNegColor]     = useState("#42a5f5");
+  const [lineColor, setLineColor]   = useState("#e0f2fe");
+  const [bg, setBg]                 = useState("#06101c");
   const [lineWidth, setLineWidth]   = useState(1);
   const [lineOpacity, setOpacity]   = useState(0.6);
   const [poleRadius, setPoleRadius] = useState(12);
   const [glowEffect, setGlow]       = useState(true);
   const [glowBlur, setGlowBlur]     = useState(20);
-  const [animated, setAnimated]     = useState(false);
+  const [animated, setAnimated]     = useState(true);
   const [interactive, setInteract]  = useState(true);
   const [maxPoles, setMaxPoles]     = useState(6);
 
@@ -118,7 +119,7 @@ function MagneticFieldPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "warm", "mono", "electric", "minimal"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "warm", "mono", "electric", "minimal", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="N-pole color"  value={posColor}  onChange={setPosColor} />
         <PColor label="S-pole color"  value={negColor}  onChange={setNegColor} />

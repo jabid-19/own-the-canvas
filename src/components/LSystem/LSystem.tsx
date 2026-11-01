@@ -61,19 +61,19 @@ export interface LSystemProps extends BaseCanvasProps {
   angle?: number;
   /** Stroke line width (default: 1) */
   lineWidth?: number;
-  /** Branch stroke color (default: "#ffffff") */
+  /** Branch stroke color (default: "#86efac") */
   color?: string;
-  /** Canvas background color (default: "#111111") */
+  /** Canvas background color (default: "#06120a") */
   backgroundColor?: string;
   /** Segments drawn per animation frame (default: 5) */
   speed?: number;
   /** Restart animation after full draw (default: true) */
   autoReset?: boolean;
-  /** Background fade opacity between cycles — 0 = hard clear (default: 0) */
+  /** Opacity of the previous cycle's ghost while the next regrows — 0 = hard clear (default: 0) */
   trailFade?: number;
   /** Enable glow shadow on branches (default: false) */
   glowEffect?: boolean;
-  /** Shadow blur radius when glowEffect is enabled (default: 8) */
+  /** Glow radius in px when glowEffect is enabled (default: 8) */
   glowBlur?: number;
   /** Named preset: "default" | "fern" | "dragon" | "sierpinski" | "bush" | "snowflake" */
   preset?: LSystemPreset | string;
@@ -100,8 +100,8 @@ export const LSystem = forwardRef<HTMLCanvasElement, LSystemProps>(
       iterations:      iterations      ?? p.iterations,
       angle:           angle           ?? p.angle,
       lineWidth:       lineWidth       ?? 1,
-      color:           color           ?? "#ffffff",
-      backgroundColor: backgroundColor ?? "#111111",
+      color:           color           ?? "#86efac",
+      backgroundColor: backgroundColor ?? "#06120a",
       speed:           speed           ?? 5,
       autoReset:       autoReset       ?? true,
       trailFade:       trailFade       ?? 0,

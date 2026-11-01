@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useAntColony } from "./useAntColony";
 
-type AntColonyPreset = "default" | "neon" | "desert" | "jungle" | "minimal" | "swarm";
+type AntColonyPreset = "default" | "neon" | "desert" | "jungle" | "minimal" | "swarm" | "monochrome";
 
 interface AntColonyPresetValues {
   antColor?: string;
@@ -17,7 +17,8 @@ interface AntColonyPresetValues {
 }
 
 const PRESETS: Record<AntColonyPreset, AntColonyPresetValues> = {
-  default: {},
+  default: { antColor: "#d9693a", pheromoneColor: "#6fdc8c", foodColor: "#f5c242", nestColor: "#9a6a3a", backgroundColor: "#1a140d" },
+  monochrome: {},
   neon: {
     antColor: "#ffffff",
     pheromoneColor: "#00ffcc",
@@ -83,15 +84,15 @@ export interface AntColonyProps extends BaseCanvasProps {
   sensorDistance?: number;
   /** Max turn per frame in radians (default: 0.3) */
   turnSpeed?: number;
-  /** Ant dot color (default: "#ffffff") */
+  /** Ant dot color (default: "#d9693a") */
   antColor?: string;
-  /** Pheromone trail color (default: "#6b7280") */
+  /** Pheromone trail color (default: "#6fdc8c") */
   pheromoneColor?: string;
-  /** Food source color (default: "#4ade80") */
+  /** Food source color (default: "#f5c242") */
   foodColor?: string;
-  /** Nest color (default: "#f59e0b") */
+  /** Nest color (default: "#9a6a3a") */
   nestColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#1a140d") */
   backgroundColor?: string;
   /** Pheromone grid resolution (default: 0.5) */
   resolution?: number;
@@ -114,7 +115,7 @@ export const AntColony = forwardRef<HTMLCanvasElement, AntColonyProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as AntColonyPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as AntColonyPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

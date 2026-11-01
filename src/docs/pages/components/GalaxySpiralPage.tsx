@@ -8,21 +8,22 @@ const PROPS = [
   { name: "starCount",     type: "number",  default: "3000",      description: "Total star particle count." },
   { name: "armCount",      type: "number",  default: "2",         description: "Number of spiral arms." },
   { name: "armTightness",  type: "number",  default: "0.5",       description: "Arm winding tightness." },
-  { name: "coreColor",     type: "string",  default: '"#ffffff"', description: "Galactic core color." },
-  { name: "diskColor",     type: "string",  default: '"#6b7280"', description: "Outer disk star color." },
-  { name: "backgroundColor",type: "string", default: '"#111111"', description: "Canvas background." },
+  { name: "coreColor",     type: "string",  default: '"#ffd8a8"', description: "Galactic core color." },
+  { name: "diskColor",     type: "string",  default: '"#a8c4ff"', description: "Outer disk star color." },
+  { name: "backgroundColor",type: "string", default: '"#020408"', description: "Canvas background." },
   { name: "rotationSpeed", type: "number",  default: "0.0003",    description: "Rotation speed in radians/frame." },
   { name: "tiltX",         type: "number",  default: "0.3",       description: "Initial disk tilt in radians." },
   { name: "interactive",   type: "boolean", default: "true",      description: "Cursor tilts the viewing angle." },
   { name: "coreGlow",      type: "boolean", default: "true",      description: "Core radial glow overlay." },
   { name: "glowBlur",      type: "number",  default: "30",        description: "Core glow shadow blur radius." },
-  { name: "preset",        type: "string",  default: "—",         description: '"default" | "andromeda" | "neon" | "void" | "golden"' },
+  { name: "preset",        type: "string",  default: "—",         description: '"default" | "andromeda" | "neon" | "void" | "golden" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, {
   coreColor: string; diskColor: string; bg: string; armCount: number; armTightness: number; rotSpeed: number;
 }> = {
-  default:  { coreColor: "#ffffff", diskColor: "#6b7280", bg: "#111111", armCount: 2, armTightness: 0.5,  rotSpeed: 0.3 },
+  default:  { coreColor: "#ffd8a8", diskColor: "#a8c4ff", bg: "#020408", armCount: 2, armTightness: 0.5,  rotSpeed: 0.3 },
+  monochrome: { coreColor: "#ffffff", diskColor: "#6b7280", bg: "#111111", armCount: 2, armTightness: 0.5,  rotSpeed: 0.3 },
   andromeda:{ coreColor: "#ffd8a8", diskColor: "#a8c4ff", bg: "#020408", armCount: 2, armTightness: 0.6,  rotSpeed: 0.3 },
   neon:     { coreColor: "#ff00ff", diskColor: "#00ffff", bg: "#000008", armCount: 2, armTightness: 0.5,  rotSpeed: 0.6 },
   void:     { coreColor: "#8866ff", diskColor: "#4433aa", bg: "#020005", armCount: 3, armTightness: 0.4,  rotSpeed: 0.3 },
@@ -34,9 +35,9 @@ function GalaxySpiralPlayground({ onReset }: { onReset?: () => void }) {
   const [starCount, setStarCount] = useState(3000);
   const [armCount, setArmCount] = useState(2);
   const [armTightness, setArmTightness] = useState(0.5);
-  const [coreColor, setCoreColor] = useState("#ffffff");
-  const [diskColor, setDiskColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [coreColor, setCoreColor] = useState("#ffd8a8");
+  const [diskColor, setDiskColor] = useState("#a8c4ff");
+  const [bg, setBg] = useState("#020408");
   const [rotSpeed, setRotSpeed] = useState(0.3);
   const [tiltX, setTiltX] = useState(0.3);
   const [interactive, setInteractive] = useState(true);
@@ -97,7 +98,7 @@ function GalaxySpiralPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "andromeda", "neon", "void", "golden"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "andromeda", "neon", "void", "golden", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Core color" value={coreColor} onChange={setCoreColor} />
         <PColor label="Disk color" value={diskColor} onChange={setDiskColor} />

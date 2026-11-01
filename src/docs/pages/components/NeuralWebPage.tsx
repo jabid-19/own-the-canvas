@@ -6,10 +6,10 @@ import { NeuralWeb } from "../../../components/NeuralWeb";
 
 const PROPS = [
   { name: "nodeCount",        type: "number",  default: "40",     description: "Number of network nodes." },
-  { name: "nodeColor",        type: "string",  default: '"#ffffff"', description: "Resting node color." },
-  { name: "edgeColor",        type: "string",  default: '"#6b7280"', description: "Edge line color." },
-  { name: "signalColor",      type: "string",  default: '"#ffffff"', description: "Traveling signal color." },
-  { name: "backgroundColor",  type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "nodeColor",        type: "string",  default: '"#5ce1e6"', description: "Resting node color." },
+  { name: "edgeColor",        type: "string",  default: '"#2a8c9e"', description: "Edge line color." },
+  { name: "signalColor",      type: "string",  default: '"#ffc857"', description: "Traveling signal color." },
+  { name: "backgroundColor",  type: "string",  default: '"#050b14"', description: "Canvas background." },
   { name: "connectionRadius", type: "number",  default: "150",    description: "Max px distance to draw edges." },
   { name: "nodeRadius",       type: "number",  default: "4",      description: "Node circle radius in px." },
   { name: "lineWidth",        type: "number",  default: "1",      description: "Edge stroke width." },
@@ -22,11 +22,12 @@ const PROPS = [
   { name: "animated",         type: "boolean", default: "true",   description: "Enable animation." },
   { name: "wander",           type: "boolean", default: "true",   description: "Nodes drift slowly." },
   { name: "wanderSpeed",      type: "number",  default: "0.3",    description: "Node drift speed." },
-  { name: "preset",           type: "string",  default: "—",      description: '"default" | "neon" | "brain" | "minimal" | "plasma" | "circuit"' },
+  { name: "preset",           type: "string",  default: "—",      description: '"default" | "neon" | "brain" | "minimal" | "plasma" | "circuit" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default: { nodeColor: "#ffffff", edgeColor: "#6b7280", signalColor: "#ffffff", bg: "#111111", connRadius: 150, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.85, glowEffect: true,  glowBlur: 15, wanderSpeed: 0.3 },
+  default: { nodeColor: "#5ce1e6", edgeColor: "#2a8c9e", signalColor: "#ffc857", bg: "#050b14", connRadius: 150, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.85, glowEffect: true,  glowBlur: 15, wanderSpeed: 0.3 },
+  monochrome: { nodeColor: "#ffffff", edgeColor: "#6b7280", signalColor: "#ffffff", bg: "#111111", connRadius: 150, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.85, glowEffect: true,  glowBlur: 15, wanderSpeed: 0.3 },
   neon:    { nodeColor: "#00ffcc", edgeColor: "#00ffcc", signalColor: "#ffffff", bg: "#000000", connRadius: 150, nodeRadius: 4, pulseInterval: 1500, pulseDecay: 0.9,  glowEffect: true,  glowBlur: 20, wanderSpeed: 0.3 },
   brain:   { nodeColor: "#f472b6", edgeColor: "#ec4899", signalColor: "#fbbf24", bg: "#0f0005", connRadius: 130, nodeRadius: 4, pulseInterval: 2000, pulseDecay: 0.88, glowEffect: true,  glowBlur: 18, wanderSpeed: 0.4 },
   minimal: { nodeColor: "#6b7280", edgeColor: "#374151", signalColor: "#9ca3af", bg: "#111111", connRadius: 150, nodeRadius: 3, pulseInterval: 3000, pulseDecay: 0.85, glowEffect: false, glowBlur: 15, wanderSpeed: 0.3 },
@@ -37,10 +38,10 @@ const PRESET_PARAMS = {
 function NeuralWebPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]             = useState("default");
   const [nodeCount, setNodeCount]       = useState(40);
-  const [nodeColor, setNodeColor]       = useState("#ffffff");
-  const [edgeColor, setEdgeColor]       = useState("#6b7280");
-  const [signalColor, setSignalColor]   = useState("#ffffff");
-  const [bg, setBg]                     = useState("#111111");
+  const [nodeColor, setNodeColor]       = useState("#5ce1e6");
+  const [edgeColor, setEdgeColor]       = useState("#2a8c9e");
+  const [signalColor, setSignalColor]   = useState("#ffc857");
+  const [bg, setBg]                     = useState("#050b14");
   const [connRadius, setConnRadius]     = useState(150);
   const [nodeRadius, setNodeRadius]     = useState(4);
   const [lineWidth, setLineWidth]       = useState(1);
@@ -129,7 +130,7 @@ function NeuralWebPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "brain", "minimal", "plasma", "circuit"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "brain", "minimal", "plasma", "circuit", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Node color"   value={nodeColor}   onChange={setNodeColor} />
         <PColor label="Edge color"   value={edgeColor}   onChange={setEdgeColor} />

@@ -6,19 +6,24 @@ import { SakuraBlossom } from "../../../components/SakuraBlossom";
 
 const PROPS = [
   { name: "petalCount",      type: "number",  default: "80",      description: "Number of petals." },
-  { name: "petalColor",      type: "string",  default: '"#ffffff"',description: "Petal fill color." },
+  { name: "petalColor",      type: "string",  default: '"#ffb7c5"',description: "Petal fill color." },
   { name: "petalSize",       type: "number",  default: "8",       description: "Petal radius in px." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"',description: "Canvas background color." },
+  { name: "backgroundColor", type: "string",  default: '"#1a0a10"',description: "Canvas background color." },
   { name: "gravity",         type: "number",  default: "0.06",    description: "Downward gravity force." },
   { name: "windStrength",    type: "number",  default: "0.8",     description: "Base horizontal wind strength." },
   { name: "windGusts",       type: "boolean", default: "true",    description: "Enable random wind gusts." },
   { name: "showAccumulation",type: "boolean", default: "true",    description: "Petals accumulate at bottom." },
   { name: "maxAccumulation", type: "number",  default: "40",      description: "Max accumulation height in px." },
-  { name: "preset",          type: "string",  default: "—",       description: '"default" | "sakura" | "autumn" | "snow" | "neon"' },
+  { name: "preset",          type: "string",  default: "—",       description: '"default" | "sakura" | "autumn" | "snow" | "neon" | "monochrome"' },
+  { name: "overlay",         type: "boolean", default: "false",   description: "Fixed full-viewport, click-through layer over the page; transparent background." },
+  { name: "collide",         type: "boolean", default: "false",   description: 'Petals land on elements marked data-otc-solid ("live" for sticky/animated ones).' },
+  { name: "restitution",     type: "number",  default: "0",       description: "0 = rest and slide off solids, > 0 = bounce." },
+  { name: "zIndex",          type: "number",  default: "10",      description: "Overlay stacking order." },
 ];
 
 const PRESET_VALUES: Record<string, { petalColor: string; bg: string; gravity: number; petalSize: number; windStrength: number }> = {
-  default: { petalColor: "#ffffff", bg: "#111111", gravity: 0.06, petalSize: 8,  windStrength: 0.8 },
+  default: { petalColor: "#ffb7c5", bg: "#0a0005", gravity: 0.06, petalSize: 8,  windStrength: 0.8 },
+  monochrome: { petalColor: "#ffffff", bg: "#111111", gravity: 0.06, petalSize: 8,  windStrength: 0.8 },
   sakura:  { petalColor: "#ffb7c5", bg: "#0a0005", gravity: 0.04, petalSize: 10, windStrength: 0.8 },
   autumn:  { petalColor: "#ff6633", bg: "#111111", gravity: 0.08, petalSize: 8,  windStrength: 1.2 },
   snow:    { petalColor: "#e8f0ff", bg: "#0a0a0a", gravity: 0.035,petalSize: 5,  windStrength: 0.8 },
@@ -27,8 +32,8 @@ const PRESET_VALUES: Record<string, { petalColor: string; bg: string; gravity: n
 
 function SakuraBlossomPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [petalColor, setPetalColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
+  const [petalColor, setPetalColor] = useState("#ffb7c5");
+  const [bg, setBg] = useState("#0a0005");
   const [petalCount, setPetalCount] = useState(80);
   const [petalSize, setPetalSize] = useState(8);
   const [gravity, setGravity] = useState(0.06);
@@ -86,7 +91,7 @@ function SakuraBlossomPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "sakura", "autumn", "snow", "neon"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "sakura", "autumn", "snow", "neon", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Petal color" value={petalColor} onChange={setPetalColor} />
         <PColor label="Background" value={bg} onChange={setBg} />

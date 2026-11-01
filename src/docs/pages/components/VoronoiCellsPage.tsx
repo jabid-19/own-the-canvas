@@ -8,16 +8,16 @@ import type { VoronoiColorMode } from "../../../components/VoronoiCells/useVoron
 const PROPS = [
   { name: "cellCount",      type: "number",          default: "20",         description: "Number of Voronoi seed points." },
   { name: "speed",          type: "number",          default: "1",          description: "Seed drift/animation speed." },
-  { name: "colorMode",      type: "VoronoiColorMode",default: '"solid"',    description: '"solid" | "gradient" | "cycle" — per-cell coloring.' },
+  { name: "colorMode",      type: "VoronoiColorMode",default: '"cycle"',    description: '"solid" | "gradient" | "cycle" — per-cell coloring.' },
   { name: "cellColor",      type: "string",          default: '"#ffffff"',  description: "Base cell color in solid/gradient mode." },
   { name: "backgroundColor",type: "string",          default: '"#111111"',  description: "Background / empty space color." },
   { name: "showEdges",      type: "boolean",         default: "true",       description: "Draw 1px cell boundary lines." },
-  { name: "edgeColor",      type: "string",          default: '"#333333"',  description: "Edge line color." },
+  { name: "edgeColor",      type: "string",          default: '"#111111"',  description: "Edge line color." },
   { name: "resolution",     type: "number",          default: "0.25",       description: "Render resolution fraction — lower is faster." },
   { name: "relaxation",     type: "number",          default: "0.05",       description: "Lloyd centroid pull strength per frame." },
   { name: "interactive",    type: "boolean",         default: "true",       description: "Click to add seed; drag to move nearest seed." },
   { name: "animated",       type: "boolean",         default: "true",       description: "Enable continuous drift animation." },
-  { name: "preset",         type: "string",          default: "—",          description: '"default" | "stained-glass" | "neon" | "frost" | "ember" | "void"' },
+  { name: "preset",         type: "string",          default: "—",          description: '"default" | "stained-glass" | "neon" | "frost" | "ember" | "void" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
@@ -33,11 +33,11 @@ function VoronoiCellsPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]         = useState("default");
   const [cellCount, setCellCount]   = useState(20);
   const [speed, setSpeed]           = useState(1);
-  const [colorMode, setColorMode]   = useState<VoronoiColorMode>("solid");
+  const [colorMode, setColorMode]   = useState<VoronoiColorMode>("cycle");
   const [cellColor, setCellColor]   = useState("#ffffff");
   const [bg, setBg]                 = useState("#111111");
   const [showEdges, setShowEdges]   = useState(true);
-  const [edgeColor, setEdgeColor]   = useState("#333333");
+  const [edgeColor, setEdgeColor]   = useState("#111111");
   const [resolution, setRes]        = useState(1.0);
   const [relaxation, setRelax]      = useState(0.05);
   const [interactive, setInteract]  = useState(true);
@@ -101,7 +101,7 @@ function VoronoiCellsPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset"     value={preset}    options={["default", "stained-glass", "neon", "frost", "ember", "void"]} onChange={handlePreset} />
+        <PSel label="Preset"     value={preset}    options={["default", "stained-glass", "neon", "frost", "ember", "void", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PSel label="Color mode" value={colorMode} options={["solid", "gradient", "cycle"]} onChange={(v) => setColorMode(v as VoronoiColorMode)} />
         <PDivider />

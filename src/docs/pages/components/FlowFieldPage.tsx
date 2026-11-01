@@ -29,8 +29,8 @@ function FlowFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [curl, setCurl] = useState(false);
   const [interactive, setInteractive] = useState(false);
   const [lineWidth, setLineWidth] = useState(1);
-  const [bg, setBg] = useState("#111111");
-  const [colors, setColors] = useState(["#ffffff"]);
+  const [bg, setBg] = useState("#020f1a");
+  const [colors, setColors] = useState(["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9", "#e0f2fe"]);
 
   function handlePreset(p: string) {
     setPreset(p);

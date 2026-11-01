@@ -6,23 +6,24 @@ import { TornadoVortex } from "../../../components/TornadoVortex";
 
 const PROPS = [
   { name: "particleCount",  type: "number",  default: "600",       description: "Number of funnel wall particles." },
-  { name: "funnelColor",    type: "string",  default: '"#ffffff"', description: "Funnel wall particle color." },
-  { name: "debrisColor",    type: "string",  default: '"#6b7280"', description: "Flying debris and ground dust color." },
+  { name: "funnelColor",    type: "string",  default: '"#c8d8e8"', description: "Funnel wall particle color." },
+  { name: "debrisColor",    type: "string",  default: '"#8898a8"', description: "Flying debris and ground dust color." },
   { name: "lightningColor", type: "string",  default: '"#ffffff"', description: "Internal lightning bolt color." },
-  { name: "backgroundColor",type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "backgroundColor",type: "string",  default: '"#0a1018"', description: "Canvas background." },
   { name: "rotationSpeed",  type: "number",  default: "3",         description: "Angular rotation speed." },
   { name: "funnelHeight",   type: "number",  default: "0.8",       description: "Funnel height as fraction of canvas height." },
   { name: "showLightning",  type: "boolean", default: "true",      description: "Show internal lightning bolts." },
   { name: "showGroundDust", type: "boolean", default: "true",      description: "Show ground dust cloud at base." },
   { name: "interactive",    type: "boolean", default: "true",      description: "Cursor moves the tornado." },
   { name: "speed",          type: "number",  default: "1",         description: "Animation speed multiplier." },
-  { name: "preset",         type: "string",  default: "—",         description: '"default" | "storm" | "fire" | "neon" | "void"' },
+  { name: "preset",         type: "string",  default: "—",         description: '"default" | "storm" | "fire" | "neon" | "void" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, {
   funnelColor: string; debrisColor: string; bg: string; rotSpeed: number; funnelHeight: number;
 }> = {
-  default: { funnelColor: "#ffffff", debrisColor: "#6b7280", bg: "#111111", rotSpeed: 3,   funnelHeight: 0.8  },
+  default: { funnelColor: "#c8d8e8", debrisColor: "#8898a8", bg: "#0a1018", rotSpeed: 3,   funnelHeight: 0.8  },
+  monochrome: { funnelColor: "#ffffff", debrisColor: "#6b7280", bg: "#111111", rotSpeed: 3,   funnelHeight: 0.8  },
   storm:   { funnelColor: "#c8d8e8", debrisColor: "#8898a8", bg: "#0a1018", rotSpeed: 3,   funnelHeight: 0.85 },
   fire:    { funnelColor: "#ff6600", debrisColor: "#cc3300", bg: "#0d0200", rotSpeed: 4,   funnelHeight: 0.8  },
   neon:    { funnelColor: "#00ffcc", debrisColor: "#ff00aa", bg: "#000810", rotSpeed: 5,   funnelHeight: 0.8  },
@@ -31,9 +32,9 @@ const PRESET_VALUES: Record<string, {
 
 function TornadoVortexPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [funnelColor, setFunnelColor] = useState("#ffffff");
-  const [debrisColor, setDebrisColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [funnelColor, setFunnelColor] = useState("#c8d8e8");
+  const [debrisColor, setDebrisColor] = useState("#8898a8");
+  const [bg, setBg] = useState("#0a1018");
   const [particleCount, setParticleCount] = useState(600);
   const [rotSpeed, setRotSpeed] = useState(3);
   const [funnelHeight, setFunnelHeight] = useState(0.8);
@@ -96,7 +97,7 @@ function TornadoVortexPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "storm", "fire", "neon", "void"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "storm", "fire", "neon", "void", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Funnel color" value={funnelColor} onChange={setFunnelColor} />
         <PColor label="Debris color" value={debrisColor} onChange={setDebrisColor} />

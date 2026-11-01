@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useFluidSimulation } from "./useFluidSimulation";
 
-type FluidPreset = "default" | "ink" | "neon" | "lava" | "ocean" | "smoke";
+type FluidPreset = "default" | "ink" | "neon" | "lava" | "ocean" | "smoke" | "monochrome";
 
 interface FluidPresetValues {
   resolution?: number;
@@ -21,6 +21,20 @@ interface FluidPresetValues {
 
 export const PRESETS: Record<FluidPreset, FluidPresetValues> = {
   default: {
+    resolution: 80,
+    viscosity: 0.0001,
+    diffusion: 0.0001,
+    dissipation: 0.995,
+    inkColors: ["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"],
+    glowEffect: true,
+    glowBlur: 0,
+    backgroundColor: "#020f1a",
+    autoInk: true,
+    autoInkInterval: 1500,
+    mouseForce: 5,
+    inkRadius: 4,
+  },
+  monochrome: {
     resolution: 80,
     viscosity: 0.0001,
     diffusion: 0.0001,
@@ -103,13 +117,13 @@ export interface FluidSimulationProps extends BaseCanvasProps {
   diffusion?: number;
   /** Density fade per frame 0–1 (default: 0.995) */
   dissipation?: number;
-  /** Ink colors painted by mouse and auto-ink (default: multi-color) */
+  /** Ink colors painted by mouse and auto-ink (default: ["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"]) */
   inkColors?: string[];
-  /** Glow on ink (default: true) */
+  /** Glow on ink; needs glowBlur > 0 (default: true) */
   glowEffect?: boolean;
-  /** Shadow blur for glow (default: 0 — handled by blending) */
+  /** Glow blur radius in px, 0 = no glow (default: 0) */
   glowBlur?: number;
-  /** Canvas background color (default: "#050010") */
+  /** Canvas background color (default: "#020f1a") */
   backgroundColor?: string;
   /** Auto-inject ink bursts without mouse (default: true) */
   autoInk?: boolean;
@@ -132,7 +146,7 @@ export const FluidSimulation = forwardRef<HTMLCanvasElement, FluidSimulationProp
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as FluidPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as FluidPreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

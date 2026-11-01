@@ -9,7 +9,7 @@ const PALETTES: Record<ConfettiPalette, string[]> = {
   colorful:   ["#ff6b6b", "#ffd93d", "#6bcb77", "#4d96ff", "#ff6fc8", "#ff9a3c", "#c77dff"],
 };
 
-type ConfettiPreset = "default" | "celebration" | "pastel" | "gold";
+type ConfettiPreset = "default" | "celebration" | "pastel" | "gold" | "monochrome";
 
 interface ConfettiPresetValues {
   palette?: ConfettiPalette;
@@ -21,7 +21,8 @@ interface ConfettiPresetValues {
 }
 
 const PRESETS: Record<ConfettiPreset, ConfettiPresetValues> = {
-  default: {},
+  default: { palette: "colorful" },
+  monochrome: { palette: "monochrome" },
   celebration: {
     palette: "colorful",
     shapes: ["square", "circle", "triangle", "strip"],
@@ -44,7 +45,7 @@ const PRESETS: Record<ConfettiPreset, ConfettiPresetValues> = {
 const DEFAULT_SHAPES: ConfettiShape[] = ["square", "circle", "triangle", "strip"];
 
 export interface ConfettiProps extends BaseCanvasProps {
-  /** Color variant: "monochrome" (default) or "colorful" */
+  /** Color variant: "colorful" (default) or "monochrome" */
   palette?: ConfettiPalette;
   /** Rising edge fires a burst (default: false) */
   trigger?: boolean;
@@ -118,10 +119,10 @@ export const Confetti = forwardRef<HTMLCanvasElement, ConfettiProps>(
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as ConfettiPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as ConfettiPreset] || {};
 
-    // palette prop > preset palette > default "monochrome"
-    const resolvedPalette: ConfettiPalette = palette ?? p.palette ?? "monochrome";
+    // palette prop > preset palette > default "colorful"
+    const resolvedPalette: ConfettiPalette = palette ?? p.palette ?? "colorful";
     // colors prop > preset colors > palette colors
     const resolvedColors = colors ?? p.colors ?? PALETTES[resolvedPalette];
 

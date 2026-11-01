@@ -4,7 +4,7 @@ import { useParticleField } from "./useParticleField";
 
 export type ParticleLineStyle = "solid" | "dashed";
 
-type ParticlePreset = "default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold";
+type ParticlePreset = "default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold" | "monochrome";
 
 interface ParticlePresetValues {
   particleColor?: string;
@@ -23,7 +23,8 @@ interface ParticlePresetValues {
 }
 
 const PRESETS: Record<ParticlePreset, ParticlePresetValues> = {
-  default: {},
+  default: { particleColor: "#9be7ff", lineColor: "#4aa8c7", backgroundColor: "#040a18", twinkle: true },
+  monochrome: {},
   galaxy: {
     particleColor: "#8B5CF6",
     lineColor: "#8B5CF6",
@@ -95,9 +96,9 @@ const PRESETS: Record<ParticlePreset, ParticlePresetValues> = {
 export interface ParticleFieldProps extends BaseCanvasProps {
   /** Number of particles (default: 120) */
   particleCount?: number;
-  /** Particle fill color (default: "#ffffff") */
+  /** Particle fill color (default: "#9be7ff") */
   particleColor?: string;
-  /** Connection line color (default: "#6b7280") */
+  /** Connection line color (default: "#4aa8c7") */
   lineColor?: string;
   /** Max distance for drawing lines (default: 120) */
   lineDistance?: number;
@@ -109,7 +110,7 @@ export interface ParticleFieldProps extends BaseCanvasProps {
   connectParticles?: boolean;
   /** Repel particles from mouse cursor (default: true) */
   interactive?: boolean;
-  /** Canvas background color (default: "transparent") */
+  /** Canvas background color (default: "#040a18") */
   backgroundColor?: string;
   /** Mouse repulsion radius in px (default: 80) */
   repelRadius?: number;
@@ -141,7 +142,7 @@ export interface ParticleFieldProps extends BaseCanvasProps {
   dragParticles?: boolean;
   /** Drag detection radius in px (default: 20) */
   dragRadius?: number;
-  /** Initial velocity multiplier — scales vx/vy at spawn (default: 2) */
+  /** Velocity multiplier — scales vx/vy (live changes rescale current motion) (default: 2) */
   velocityMultiplier?: number;
   /** Named preset: "default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold" */
   preset?: ParticlePreset | string;
@@ -182,7 +183,7 @@ export const ParticleField = forwardRef<HTMLCanvasElement, ParticleFieldProps>(
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as ParticlePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as ParticlePreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

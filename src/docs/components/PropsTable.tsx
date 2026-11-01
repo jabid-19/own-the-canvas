@@ -3,77 +3,68 @@ import React from "react";
 const CSS = `
 .props-table-wrap {
   overflow-x: auto;
-  border: 1px solid var(--border);
+  background: var(--bg);
   border-radius: var(--r);
+  box-shadow: 0 2px 0 var(--border-mid), 0 4px 0 rgba(var(--shadow-ink), .1), 0 12px 18px -8px rgba(var(--shadow-ink), .28);
 }
-
 .props-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
-
 .props-table th {
   text-align: left;
-  padding: 10px 14px;
+  padding: 11px 16px;
+  font-family: var(--mono);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-3);
-  background: var(--bg-subtle);
-  border-bottom: 1px solid var(--border);
+  color: var(--text-1);
+  background: var(--grain), var(--mustard);
 }
-
 .props-table td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
+  padding: 11px 16px;
+  border-bottom: 2px dotted var(--border);
   color: var(--text-2);
   vertical-align: top;
 }
-
 .props-table tr:last-child td {
   border-bottom: none;
 }
-
+.props-table tbody tr:nth-child(even) td { background: rgba(244,234,214,.55); }
 .props-table tr:hover td {
   background: var(--accent-soft);
 }
-
 .prop-name {
   font-family: var(--mono);
   font-size: 13px;
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 600;
 }
-
 .prop-type {
   font-family: var(--mono);
   font-size: 13px;
-  color: #0369a1;
+  color: var(--navy);
 }
-
 .prop-default {
   font-family: var(--mono);
   font-size: 13px;
   color: var(--text-3);
 }
-
 .prop-desc {
   color: var(--text-2);
-  line-height: 1.5;
+  line-height: 1.55;
 }
-
 .prop-required {
   display: inline-block;
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border: 1px solid var(--accent-mid);
-  border-radius: 3px;
-  padding: 1px 5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 2px;
+  padding: 1px 6px;
   margin-left: 6px;
   vertical-align: middle;
   text-transform: uppercase;

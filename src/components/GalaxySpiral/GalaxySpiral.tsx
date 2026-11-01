@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useGalaxySpiral } from "./useGalaxySpiral";
 
-type GalaxySpiralPreset = "default" | "andromeda" | "neon" | "void" | "golden";
+type GalaxySpiralPreset = "default" | "andromeda" | "neon" | "void" | "golden" | "monochrome";
 
 interface GalaxySpiralPresetValues {
   coreColor?: string;
@@ -14,7 +14,8 @@ interface GalaxySpiralPresetValues {
 }
 
 export const PRESETS: Record<GalaxySpiralPreset, GalaxySpiralPresetValues> = {
-  default: {},
+  default: { coreColor: "#ffd8a8", diskColor: "#a8c4ff", backgroundColor: "#020408" },
+  monochrome: {},
   andromeda: {
     coreColor: "#ffd8a8",
     diskColor: "#a8c4ff",
@@ -49,11 +50,11 @@ export interface GalaxySpiralProps extends BaseCanvasProps {
   armCount?: number;
   /** Arm winding tightness (default: 0.5) */
   armTightness?: number;
-  /** Galactic core color (default: "#ffffff") */
+  /** Galactic core color (default: "#ffd8a8") */
   coreColor?: string;
-  /** Outer disk star color (default: "#6b7280") */
+  /** Outer disk star color (default: "#a8c4ff") */
   diskColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#020408") */
   backgroundColor?: string;
   /** Rotation speed in radians/frame (default: 0.0003) */
   rotationSpeed?: number;
@@ -77,7 +78,7 @@ export const GalaxySpiral = forwardRef<HTMLCanvasElement, GalaxySpiralProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as GalaxySpiralPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as GalaxySpiralPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

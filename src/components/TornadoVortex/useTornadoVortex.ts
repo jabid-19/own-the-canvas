@@ -1,33 +1,7 @@
-import { useRef, useEffect, RefObject } from "react";
-import { hexToRgbString } from "../../utils/color";
-
-interface VortexParticle {
-  angle: number;      // current rotation angle
-  normY: number;      // 0=base, 1=top of funnel
-  speed: number;      // angular speed multiplier
-  alpha: number;
-  size: number;
-}
-
-interface Debris {
-  x: number; y: number;
-  vx: number; vy: number;
-  size: number; alpha: number; life: number;
-}
-
-interface LightningBolt {
-  points: Array<{ x: number; y: number }>;
-  alpha: number;
-  life: number;
-}
-
-interface DustParticle {
-  angle: number;
-  radius: number;
-  speed: number;
-  alpha: number;
-  size: number;
-}
+import { useRef } from "react";
+import { useCanvasSetup, type FrameInfo } from "../../hooks/useCanvasSetup";
+import { usePointer, readPointer, glowSprite } from "../../runtime/fx";
+import { hexToRgba, sampleGradient } from "../../utils/color";
 
 export interface UseTornadoVortexOptions {
   particleCount: number;
@@ -44,265 +18,258 @@ export interface UseTornadoVortexOptions {
   speed: number;
 }
 
-function midpointDisplace(
-  x1: number, y1: number, x2: number, y2: number,
-  roughness: number, depth: number
-): Array<{ x: number; y: number }> {
-  if (depth === 0) return [{ x: x1, y: y1 }, { x: x2, y: y2 }];
-  const mx = (x1 + x2) / 2 + (Math.random() - 0.5) * roughness;
-  const my = (y1 + y2) / 2 + (Math.random() - 0.5) * roughness * 0.3;
-  const half = roughness / 2;
-  return [
-    ...midpointDisplace(x1, y1, mx, my, half, depth - 1),
-    ...midpointDisplace(mx, my, x2, y2, half, depth - 1).slice(1),
-  ];
+interface Streak { u: number; theta: number; len: number; jitter: number; bright: number }
+interface Dust { x: number; y: number; theta: number; r: number; vy: number; life: number; size: number }
+interface Debris { x: number; y: number; vx: number; vy: number; rot: number; spin: number; size: number; life: number }
+interface Puff { theta: number; ring: number; size: number; shade: number }
+
+/**
+ * Funnel radius at height fraction u (0 = ground, 1 = cloud base).
+ * Narrow rope at the ground flaring into the wall cloud.
+ */
+export function funnelRadius(u: number, top: number, base: number): number {
+  return base + (top - base) * Math.pow(Math.max(0, Math.min(1, u)), 1.9);
 }
 
-export function useTornadoVortex(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseTornadoVortexOptions
-) {
+/** Angular speed by height: conservation of angular momentum spins the narrow base fastest. */
+export function spinAt(u: number, rotation: number): number {
+  return rotation * 0.012 * (0.55 + 1.6 * (1 - u));
+}
+
+export function useTornadoVortex(options: UseTornadoVortexOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
-  const particlesRef = useRef<VortexParticle[]>([]);
-  const debrisRef = useRef<Debris[]>([]);
-  const lightningRef = useRef<LightningBolt[]>([]);
-  const dustRef = useRef<DustParticle[]>([]);
-  const rafRef = useRef<number>(0);
-  const timeRef = useRef(0);
-  const funnelXRef = useRef(0);
-  const targetXRef = useRef(0);
-  const lightningTimerRef = useRef(0);
+  const s = useRef({
+    streaks: [] as Streak[],
+    dust: [] as Dust[],
+    debris: [] as Debris[],
+    puffs: [] as Puff[],
+    baseX: 0,
+    topX: 0,
+    t: 0,
+    flash: 0,
+    bolt: null as { pts: [number, number][]; life: number } | null,
+    nextBolt: 2,
+    sprite: { color: "", img: null as HTMLCanvasElement | null },
+    dustSprite: { color: "", img: null as HTMLCanvasElement | null },
+  }).current;
+  const pointer = usePointer();
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
-    let w = 0, h = 0;
+  function seed(w: number) {
+    s.baseX = s.topX = w / 2;
+    s.puffs = Array.from({ length: 70 }, (_, i) => ({
+      theta: Math.random() * Math.PI * 2,
+      ring: Math.pow(i / 70, 0.7),
+      size: 0.6 + Math.random() * 0.8,
+      shade: 0.35 + Math.random() * 0.4,
+    }));
+    s.streaks = [];
+  }
 
-    function initParticles() {
-      const { particleCount } = optionsRef.current;
-      particlesRef.current = Array.from({ length: particleCount }, () => ({
-        angle: Math.random() * Math.PI * 2,
-        normY: Math.random(),
-        speed: 0.7 + Math.random() * 0.6,
-        alpha: 0.3 + Math.random() * 0.5,
-        size: 1.5 + Math.random() * 3,
-      }));
-      dustRef.current = Array.from({ length: 80 }, () => ({
-        angle: Math.random() * Math.PI * 2,
-        radius: 10 + Math.random() * 80,
-        speed: 0.02 + Math.random() * 0.04,
-        alpha: 0.2 + Math.random() * 0.4,
-        size: 1.5 + Math.random() * 3,
-      }));
-    }
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number, frame: FrameInfo) {
+    const o = optionsRef.current;
+    const k = (dt / 16.67) * o.speed;
+    s.t += dt * 0.001 * o.speed;
+    const t = s.t;
 
-    function applyDpr(width: number, height: number) {
-      const dpr = window.devicePixelRatio || 1;
-      canvas!.width = Math.round(width * dpr);
-      canvas!.height = Math.round(height * dpr);
-      canvas!.style.width = `${width}px`;
-      canvas!.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
-      w = width;
-      h = height;
-      funnelXRef.current = w / 2;
-      targetXRef.current = w / 2;
-      initParticles();
-    }
+    const groundY = h * 0.94;
+    const cloudY = groundY - h * Math.min(0.92, Math.max(0.3, o.funnelHeight));
+    const H = groundY - cloudY;
+    const topR = Math.min(w * 0.2, H * 0.32);
+    const baseR = Math.max(5, topR * 0.07);
 
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) applyDpr(width, height);
-    });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
-
-    function onMouseMove(e: MouseEvent) {
-      if (!optionsRef.current.interactive) return;
-      const r = canvas!.getBoundingClientRect();
-      targetXRef.current = e.clientX - r.left;
-    }
-    window.addEventListener("mousemove", onMouseMove);
-
-    function spawnLightning(cx: number, funnelTop: number, funnelBase: number) {
-      const startY = funnelTop + Math.random() * (funnelBase - funnelTop) * 0.3;
-      const endY = startY + (funnelBase - funnelTop) * (0.3 + Math.random() * 0.4);
-      const pts = midpointDisplace(cx, startY, cx + (Math.random() - 0.5) * 20, endY, 30, 4);
-      lightningRef.current.push({ points: pts, alpha: 0.9, life: 8 + Math.random() * 8 });
-      if (lightningRef.current.length > 5) lightningRef.current.shift();
-    }
-
-    function funnelRadius(normY: number, maxR: number): number {
-      // Narrow at top (normY=1), wide at base (normY=0)
-      return maxR * Math.pow(1 - normY, 1.4) * 0.9 + maxR * 0.02;
-    }
-
-    function draw(dt: number) {
-      const {
-        funnelColor, debrisColor, lightningColor, backgroundColor,
-        rotationSpeed, funnelHeight, showLightning, showGroundDust, speed,
-      } = optionsRef.current;
-
-      timeRef.current += dt * 0.001;
-      const t = timeRef.current;
-
-      // Lerp funnel X
-      funnelXRef.current += (targetXRef.current - funnelXRef.current) * 0.05;
-      const cx = funnelXRef.current;
-
-      // Funnel sway
-      const sway = Math.sin(t * 0.8) * 15;
-
-      ctx.fillStyle = backgroundColor;
+    // Sky: storm light falling off toward the ground
+    if (!frame.overlay) {
+      ctx.fillStyle = o.backgroundColor;
       ctx.fillRect(0, 0, w, h);
-
-      const funnelTopY = h * (1 - funnelHeight);
-      const funnelBaseY = h - 20;
-      const maxRadius = Math.min(w * 0.35, 180);
-
-      const funnelRgb = hexToRgbString(funnelColor);
-      const debrisRgb = hexToRgbString(debrisColor);
-      const lightningRgb = hexToRgbString(lightningColor);
-
-      // Draw funnel silhouette — wide at top (cloud), narrow tip at bottom (ground)
-      const midY = (funnelTopY + funnelBaseY) * 0.5;
-      const funnelGrad = ctx.createLinearGradient(cx - maxRadius, funnelTopY, cx + maxRadius, funnelBaseY);
-      funnelGrad.addColorStop(0, `rgba(0,0,0,0)`);
-      funnelGrad.addColorStop(0.5, `rgba(0,0,0,0.35)`);
-      funnelGrad.addColorStop(1, `rgba(0,0,0,0)`);
-      ctx.beginPath();
-      ctx.moveTo(cx + sway, funnelBaseY);
-      ctx.quadraticCurveTo(cx + maxRadius * 0.5 + sway, midY, cx + maxRadius + sway * 0.3, funnelTopY);
-      ctx.lineTo(cx - maxRadius + sway * 0.3, funnelTopY);
-      ctx.quadraticCurveTo(cx - maxRadius * 0.5 + sway, midY, cx + sway, funnelBaseY);
-      ctx.closePath();
-      ctx.fillStyle = funnelGrad;
-      ctx.fill();
-
-      // Physics update — single pass
-      const particles = particlesRef.current;
-      for (const p of particles) {
-        p.angle += (rotationSpeed / (funnelRadius(p.normY, maxRadius) * 0.01 + 0.5)) * speed * dt * 0.001;
-        p.normY += 0.0004 * speed;
-        if (p.normY > 1) { p.normY = 0; p.angle = Math.random() * Math.PI * 2; }
-      }
-
-      // Back pass — particles behind funnel center (pz <= 0), dimmed
-      for (const p of particles) {
-        const pz = Math.sin(p.angle);
-        if (pz > 0) continue;
-        const r = funnelRadius(p.normY, maxRadius);
-        const py = funnelTopY + p.normY * (funnelBaseY - funnelTopY);
-        const px = cx + sway * p.normY + Math.cos(p.angle) * r;
-        const alpha = p.alpha * (0.3 + 0.3 * (-pz));
-        ctx.beginPath();
-        ctx.arc(px, py, p.size * (0.5 + 0.5 * (1 - p.normY)), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${funnelRgb},${alpha})`;
-        ctx.fill();
-      }
-
-      // Lightning inside funnel (middle layer)
-      if (showLightning) {
-        lightningTimerRef.current += dt;
-        if (lightningTimerRef.current > 800 + Math.random() * 1200) {
-          lightningTimerRef.current = 0;
-          spawnLightning(cx + sway * 0.5, funnelTopY, funnelBaseY);
-        }
-        for (let i = lightningRef.current.length - 1; i >= 0; i--) {
-          const bolt = lightningRef.current[i];
-          bolt.life -= 1;
-          bolt.alpha *= 0.85;
-          if (bolt.life <= 0) { lightningRef.current.splice(i, 1); continue; }
-          ctx.beginPath();
-          ctx.moveTo(bolt.points[0].x, bolt.points[0].y);
-          for (let j = 1; j < bolt.points.length; j++) {
-            ctx.lineTo(bolt.points[j].x, bolt.points[j].y);
-          }
-          ctx.strokeStyle = `rgba(${lightningRgb},${bolt.alpha})`;
-          ctx.lineWidth = 1.5;
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = `rgb(${lightningRgb})`;
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-        }
-      }
-
-      // Front pass — particles in front of funnel center (pz > 0), brighter
-      for (const p of particles) {
-        const pz = Math.sin(p.angle);
-        if (pz <= 0) continue;
-        const r = funnelRadius(p.normY, maxRadius);
-        const py = funnelTopY + p.normY * (funnelBaseY - funnelTopY);
-        const px = cx + sway * p.normY + Math.cos(p.angle) * r;
-        const alpha = p.alpha * (0.5 + 0.5 * pz);
-        ctx.beginPath();
-        ctx.arc(px, py, p.size * (0.5 + 0.5 * (1 - p.normY)), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${funnelRgb},${alpha})`;
-        ctx.fill();
-      }
-
-      // Ground dust cloud
-      if (showGroundDust) {
-        for (const d of dustRef.current) {
-          d.angle += d.speed * speed;
-          const dx = cx + sway * 0.3 + Math.cos(d.angle) * d.radius;
-          const dy = funnelBaseY + Math.sin(d.angle * 0.5) * 6;
-          ctx.beginPath();
-          ctx.arc(dx, dy, d.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${debrisRgb},${d.alpha})`;
-          ctx.fill();
-        }
-      }
-
-      // Flying debris
-      if (Math.random() < 0.05 * speed) {
-        const r = funnelRadius(Math.random() * 0.3, maxRadius);
-        const a = Math.random() * Math.PI * 2;
-        const py = funnelBaseY - Math.random() * (funnelBaseY - funnelTopY) * 0.3;
-        debrisRef.current.push({
-          x: cx + Math.cos(a) * r,
-          y: py,
-          vx: (Math.random() - 0.5) * 4 * speed,
-          vy: -(1 + Math.random() * 2) * speed,
-          size: 1 + Math.random() * 3,
-          alpha: 0.5 + Math.random() * 0.4,
-          life: 40 + Math.random() * 40,
-        });
-      }
-      for (let i = debrisRef.current.length - 1; i >= 0; i--) {
-        const d = debrisRef.current[i];
-        d.x += d.vx;
-        d.y += d.vy;
-        d.vy += 0.05; // gravity
-        d.alpha -= 0.008;
-        d.life -= 1;
-        if (d.alpha <= 0 || d.life <= 0) { debrisRef.current.splice(i, 1); continue; }
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${debrisRgb},${d.alpha})`;
-        ctx.fill();
-      }
+      // Faint storm light under the cloud deck
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, hexToRgba(o.funnelColor, 0.07));
+      sky.addColorStop(0.6, hexToRgba(o.funnelColor, 0));
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
     }
 
-    let lastTime = 0;
-    function loop(timestamp: number) {
-      const dt = lastTime ? timestamp - lastTime : 16;
-      lastTime = timestamp;
-      draw(dt);
-      rafRef.current = requestAnimationFrame(loop);
-    }
-    rafRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("mousemove", onMouseMove);
+    // Steering: the base chases the cursor, the top lags (the funnel leans and snakes)
+    const p = readPointer(pointer.current, canvasEl.current);
+    const target = o.interactive && p.inside ? p.x : w / 2 + Math.sin(t * 0.23) * w * 0.18;
+    s.baseX += (target - s.baseX) * (1 - Math.pow(0.975, k));
+    s.topX += (s.baseX - s.topX) * (1 - Math.pow(0.992, k));
+    const axisX = (u: number) => {
+      const lean = s.baseX + (s.topX - s.baseX) * u;
+      const snake = Math.sin(t * 0.9 + u * 4.2) * topR * 0.18 * Math.sin(u * Math.PI);
+      return lean + snake;
     };
-  }, [canvasRef]);
+    const yAt = (u: number) => groundY - u * H;
+
+    // Wall cloud is dark storm vapour: the funnel color sunk most of the way into the sky
+    const cloudRgb = sampleGradient([o.backgroundColor, o.funnelColor], 0.38);
+    const cloudHex = "#" + cloudRgb.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
+    if (spriteNeeded(s.sprite, cloudHex)) s.sprite = { color: cloudHex, img: glowSprite(cloudHex, 64) };
+    if (spriteNeeded(s.dustSprite, o.debrisColor)) s.dustSprite = { color: o.debrisColor, img: glowSprite(o.debrisColor, 64) };
+
+    // Lightning: occasional bolt inside the cloud, flashing the whole scene
+    if (o.showLightning && t > s.nextBolt) {
+      s.nextBolt = t + 1.5 + Math.random() * 4;
+      s.flash = 1;
+      const x0 = s.topX + (Math.random() - 0.5) * topR * 2.4;
+      const pts: [number, number][] = [[x0, cloudY - H * 0.12]];
+      let x = x0, y = cloudY - H * 0.12;
+      const steps = 7 + ((Math.random() * 5) | 0);
+      for (let i = 0; i < steps; i++) {
+        x += (Math.random() - 0.5) * topR * 0.5;
+        y += H * 0.035 + Math.random() * H * 0.03;
+        pts.push([x, y]);
+      }
+      s.bolt = { pts, life: 1 };
+    }
+    s.flash *= Math.pow(0.86, k);
+
+    // Wall cloud: rotating soft puffs, lit from inside by lightning
+    const cloudW = Math.min(w * 0.75, topR * 4.2);
+    if (s.sprite.img) {
+      for (const pf of s.puffs) {
+        pf.theta += spinAt(1, o.rotationSpeed) * 0.35 * k * (1.2 - pf.ring * 0.6);
+        const rx = cloudW * 0.5 * pf.ring, ry = H * 0.07 * pf.ring;
+        const px = s.topX + Math.cos(pf.theta) * rx;
+        const py = cloudY - H * 0.04 + Math.sin(pf.theta) * ry;
+        const sz = topR * (0.55 + pf.size * 0.55) * (1 - pf.ring * 0.3);
+        ctx.globalAlpha = Math.min(1, (0.1 + pf.shade * 0.14) * (1 + s.flash * 2.5));
+        ctx.drawImage(s.sprite.img, px - sz, py - sz * 0.55, sz * 2, sz * 1.1);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Funnel body: translucent cone, denser at the core
+    ctx.beginPath();
+    const N = 40;
+    for (let i = 0; i <= N; i++) {
+      const u = i / N;
+      const x = axisX(u) - funnelRadius(u, topR, baseR);
+      if (i === 0) ctx.moveTo(x, yAt(u)); else ctx.lineTo(x, yAt(u));
+    }
+    for (let i = N; i >= 0; i--) {
+      const u = i / N;
+      ctx.lineTo(axisX(u) + funnelRadius(u, topR, baseR), yAt(u));
+    }
+    ctx.closePath();
+    const body = ctx.createLinearGradient(0, cloudY, 0, groundY);
+    body.addColorStop(0, hexToRgba(o.funnelColor, 0.32));
+    body.addColorStop(0.6, hexToRgba(o.funnelColor, 0.16));
+    body.addColorStop(1, hexToRgba(o.funnelColor, 0.08));
+    ctx.fillStyle = body;
+    ctx.fill();
+
+    // Condensation streaks orbiting the axis: motion-blurred arcs, far side dimmer
+    const want = Math.ceil(o.particleCount * frame.quality);
+    while (s.streaks.length < want) {
+      s.streaks.push({ u: Math.pow(Math.random(), 0.8), theta: Math.random() * Math.PI * 2, len: 0.25 + Math.random() * 0.5, jitter: Math.random(), bright: 0.4 + Math.random() * 0.6 });
+    }
+    if (s.streaks.length > want) s.streaks.length = want;
+    const front = new Path2D(), back = new Path2D();
+    for (const st of s.streaks) {
+      st.theta += spinAt(st.u, o.rotationSpeed) * k * (0.8 + st.jitter * 0.4);
+      st.u += 0.0009 * o.vortexStrength * k * (0.5 + st.jitter);
+      if (st.u > 1) st.u -= 1;
+      const r = funnelRadius(st.u, topR, baseR) * (0.75 + st.jitter * 0.3);
+      const cx = axisX(st.u), cy = yAt(st.u);
+      const tilt = 0.22;
+      const a0 = st.theta - st.len, a1 = st.theta;
+      const path = Math.sin(st.theta) > 0 ? front : back;
+      const steps = 4;
+      for (let j = 0; j <= steps; j++) {
+        const a = a0 + (a1 - a0) * (j / steps);
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * tilt;
+        if (j === 0) path.moveTo(x, y); else path.lineTo(x, y);
+      }
+    }
+    ctx.lineCap = "round";
+    ctx.strokeStyle = hexToRgba(o.funnelColor, 0.22 + s.flash * 0.3);
+    ctx.lineWidth = 1;
+    ctx.stroke(back);
+    ctx.strokeStyle = hexToRgba(o.funnelColor, 0.6 + s.flash * 0.4);
+    ctx.lineWidth = 1.3;
+    ctx.stroke(front);
+
+    // Ground: dust skirt swirling up around the base, debris flung outward
+    if (o.showGroundDust) {
+      const spawn = 3 * frame.quality * k;
+      for (let i = 0; i < Math.floor(spawn) + (Math.random() < spawn % 1 ? 1 : 0); i++) {
+        s.dust.push({ x: s.baseX, y: groundY, theta: Math.random() * Math.PI * 2, r: baseR * (1 + Math.random() * 2), vy: -(0.3 + Math.random() * 0.6), life: 1, size: 8 + Math.random() * 18 });
+      }
+      if (Math.random() < 0.12 * o.vortexStrength * k) {
+        const a = Math.random() * Math.PI * 2;
+        const sp = (2 + Math.random() * 3) * o.vortexStrength;
+        s.debris.push({ x: s.baseX + Math.cos(a) * baseR * 2, y: groundY - 4, vx: Math.cos(a) * sp, vy: -(2 + Math.random() * 4) * o.vortexStrength, rot: 0, spin: (Math.random() - 0.5) * 0.4, size: 1.5 + Math.random() * 3, life: 1 });
+      }
+      let alive = 0;
+      for (const d of s.dust) {
+        d.theta += spinAt(0, o.rotationSpeed) * 0.8 * k;
+        d.r += 0.35 * k;
+        d.y += d.vy * k;
+        d.life -= 0.006 * k;
+        if (d.life <= 0) continue;
+        s.dust[alive++] = d;
+        if (s.dustSprite.img) {
+          const x = s.baseX + Math.cos(d.theta) * d.r;
+          const y = d.y + Math.sin(d.theta) * d.r * 0.2;
+          ctx.globalAlpha = d.life * 0.35;
+          ctx.drawImage(s.dustSprite.img, x - d.size, y - d.size * 0.6, d.size * 2, d.size * 1.2);
+        }
+      }
+      s.dust.length = alive;
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = o.debrisColor;
+      alive = 0;
+      for (const d of s.debris) {
+        d.vy += 0.12 * k;
+        d.vx *= Math.pow(0.99, k);
+        d.x += d.vx * k;
+        d.y += d.vy * k;
+        d.rot += d.spin * k;
+        if (d.y > groundY) { d.y = groundY; d.vy *= -0.3; d.vx *= 0.6; d.life -= 0.25; }
+        d.life -= 0.004 * k;
+        if (d.life <= 0) continue;
+        s.debris[alive++] = d;
+        ctx.save();
+        ctx.translate(d.x, d.y);
+        ctx.rotate(d.rot);
+        ctx.globalAlpha = Math.min(1, d.life * 1.5);
+        ctx.fillRect(-d.size, -d.size * 0.4, d.size * 2, d.size * 0.8);
+        ctx.restore();
+      }
+      s.debris.length = alive;
+      ctx.globalAlpha = 1;
+    }
+
+    // Bolt and flash
+    if (s.bolt && s.bolt.life > 0) {
+      ctx.strokeStyle = hexToRgba(o.lightningColor, s.bolt.life);
+      ctx.lineWidth = 1.6;
+      ctx.shadowColor = o.lightningColor;
+      ctx.shadowBlur = 12 * s.bolt.life;
+      ctx.beginPath();
+      s.bolt.pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      s.bolt.life -= 0.08 * k;
+    }
+    if (s.flash > 0.02) {
+      ctx.fillStyle = hexToRgba(o.lightningColor, s.flash * 0.12);
+      ctx.fillRect(0, 0, w, h);
+    }
+  }
+
+  const setup = useCanvasSetup({
+    onResize: (w) => seed(w),
+    onFrame: draw,
+  });
+  canvasEl.current = setup.canvas;
+  return setup;
+}
+
+function spriteNeeded(sp: { color: string }, color: string) {
+  return sp.color !== color;
 }

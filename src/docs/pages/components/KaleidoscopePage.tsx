@@ -7,19 +7,20 @@ import { Kaleidoscope } from "../../../components/Kaleidoscope";
 const PROPS = [
   { name: "segments",       type: "number",  default: "8",          description: "Number of mirror segments / symmetry (2–16)." },
   { name: "speed",          type: "number",  default: "1",          description: "Animation speed multiplier." },
-  { name: "colorA",         type: "string",  default: '"#e0e0ff"',  description: "Color at noise peak." },
-  { name: "colorB",         type: "string",  default: '"#1a0a2e"',  description: "Color at noise trough." },
-  { name: "backgroundColor",type: "string",  default: '"#111111"',  description: "Background color outside the pattern radius." },
+  { name: "colorA",         type: "string",  default: '"#ffb84d"',  description: "Color at noise peak." },
+  { name: "colorB",         type: "string",  default: '"#1f9e8f"',  description: "Color at noise trough." },
+  { name: "backgroundColor",type: "string",  default: '"#0a0710"',  description: "Background color outside the pattern radius." },
   { name: "noiseScale",     type: "number",  default: "2.5",        description: "Noise spatial frequency — higher = finer detail." },
   { name: "zoomSpeed",      type: "number",  default: "0.3",        description: "Radial zoom/pulse animation speed." },
   { name: "rotation",       type: "number",  default: "0.2",        description: "Whole-pattern rotation speed in degrees per frame." },
   { name: "resolution",     type: "number",  default: "0.5",        description: "Render resolution fraction — lower is faster." },
   { name: "animated",       type: "boolean", default: "true",       description: "Enable animation." },
-  { name: "preset",         type: "string",  default: "—",          description: '"default" | "neon" | "crystal" | "void" | "fire" | "ice"' },
+  { name: "preset",         type: "string",  default: "—",          description: '"default" | "neon" | "crystal" | "void" | "fire" | "ice" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default: { segments: 8,  colorA: "#e0e0ff", colorB: "#1a0a2e", bg: "#111111", noiseScale: 2.5, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
+  default: { segments: 8,  colorA: "#ffb84d", colorB: "#1f9e8f", bg: "#0a0710", noiseScale: 2.5, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
+  monochrome: { segments: 8,  colorA: "#e0e0ff", colorB: "#1a0a2e", bg: "#111111", noiseScale: 2.5, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
   neon:    { segments: 8,  colorA: "#00ffff", colorB: "#ff00ff", bg: "#000000", noiseScale: 3, zoomSpeed: 0.3, rotation: 0.2, speed: 1.5 },
   crystal: { segments: 12, colorA: "#88ccff", colorB: "#002244", bg: "#000510", noiseScale: 4, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
   void:    { segments: 6,  colorA: "#cc00ff", colorB: "#000000", bg: "#000000", noiseScale: 3, zoomSpeed: 0.3, rotation: 0.4, speed: 1   },
@@ -31,9 +32,9 @@ function KaleidoscopePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]       = useState("default");
   const [segments, setSegments]   = useState(8);
   const [speed, setSpeed]         = useState(1);
-  const [colorA, setColorA]       = useState("#e0e0ff");
-  const [colorB, setColorB]       = useState("#1a0a2e");
-  const [bg, setBg]               = useState("#111111");
+  const [colorA, setColorA]       = useState("#ffb84d");
+  const [colorB, setColorB]       = useState("#1f9e8f");
+  const [bg, setBg]               = useState("#0a0710");
   const [noiseScale, setNoise]    = useState(2.5);
   const [zoomSpeed, setZoom]      = useState(0.3);
   const [rotation, setRotation]   = useState(0.2);
@@ -98,7 +99,7 @@ function KaleidoscopePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "crystal", "void", "fire", "ice"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "crystal", "void", "fire", "ice", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Color A (peak)"   value={colorA} onChange={setColorA} />
         <PColor label="Color B (trough)" value={colorB} onChange={setColorB} />
@@ -126,7 +127,7 @@ export function KaleidoscopePage() {
     <PageShell
       eyebrow="Component"
       title="Kaleidoscope"
-      lead="Animated fractal noise folded into rotationally symmetric kaleidoscope patterns. Segments, rotation speed, and color pairing transform the same underlying noise into infinite visual variations."
+      lead="Coloured glass shards and beads tumble inside a mirrored wedge, reflected around the centre into an ever-changing rosette that fills the whole canvas edge to edge."
     >
       <KaleidoscopePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

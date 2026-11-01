@@ -13,18 +13,3 @@ export interface BaseCanvasProps {
   /** Named preset — sets themed defaults; explicit props override preset values */
   preset?: string;
 }
-
-export interface CanvasSetupOptions {
-  width?: number | string;
-  height?: number | string;
-  /** Provide a custom draw callback; if omitted the consumer drives the loop */
-  onFrame?: (ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => void;
-  /** Skip the built-in rAF loop (component manages its own) */
-  noLoop?: boolean;
-}
-
-export interface CanvasSetupResult {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  width: number;
-  height: number;
-}

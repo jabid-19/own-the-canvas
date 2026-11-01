@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 
 const CSS = `
+/* Code sits on a sheet of dark ink-brown paper, stacked on the page */
 .codeblock {
-  background: var(--code-bg);
-  border: 1px solid var(--code-border);
+  background: var(--grain), var(--code-bg);
   border-radius: 0 0 var(--r) var(--r);
   overflow: hidden;
   font-family: var(--mono);
   font-size: 13.5px;
-  line-height: 1.65;
+  line-height: 1.7;
+  color: #d9c9ac;
+  box-shadow: 0 3px 0 #1c150f, 0 6px 0 rgba(var(--shadow-ink), .2), 0 12px 16px -6px rgba(var(--shadow-ink), .35);
 }
 
 .codeblock-header {
@@ -16,37 +18,37 @@ const CSS = `
   align-items: center;
   justify-content: space-between;
   padding: 8px 14px;
-  border-bottom: 1px solid var(--code-border);
-  background: rgba(0,0,0,0.025);
+  border-bottom: 2px dashed rgba(217,201,172,.18);
 }
 
 .codeblock-lang {
   font-size: 11px;
-  font-weight: 500;
-  color: var(--text-3);
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--mustard);
+  padding: 2px 12px 2px 8px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 5px) 50%, 100% 100%, 0 100%);
 }
 
 .codeblock-copy {
   font-size: 12px;
-  font-weight: 500;
-  color: var(--text-2);
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 2px 10px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: var(--bg);
+  border: none;
+  border-radius: 3px;
+  padding: 3px 12px;
+  min-height: 28px;
   cursor: pointer;
   font-family: var(--font);
-  transition: all 150ms var(--ease);
-  line-height: 1.8;
+  box-shadow: 0 2px 0 var(--border-mid);
+  transition: transform 150ms var(--ease), box-shadow 150ms var(--ease), background 150ms var(--ease);
 }
-.codeblock-copy:hover { color: var(--text-1); border-color: var(--border-mid); }
-.codeblock-copy.copied {
-  color: var(--success);
-  border-color: rgba(22, 163, 74, 0.35);
-  background: rgba(22, 163, 74, 0.06);
-}
+.codeblock-copy:hover { background: #fff; }
+.codeblock-copy:active { transform: translateY(2px); box-shadow: none; }
+.codeblock-copy.copied { background: var(--sage); }
 
 .codeblock-pre {
   padding: 16px 18px;
@@ -59,23 +61,22 @@ const CSS = `
   border-radius: var(--r);
   padding: 10px 14px;
   background: var(--code-bg);
-  border: 1px solid var(--code-border);
   font-family: var(--mono);
   font-size: 13.5px;
   display: inline-block;
   width: 100%;
 }
 
-/* Syntax token colors (monochrome) */
-.tok-kw   { color: #111111; font-weight: 600; }
-.tok-fn   { color: #333333; }
-.tok-str  { color: #555555; }
-.tok-tag  { color: #333333; }
-.tok-attr { color: #444444; }
-.tok-val  { color: #555555; }
-.tok-dim  { color: var(--text-2); }
-.tok-cmt  { color: var(--text-3); font-style: italic; }
-.tok-num  { color: #333333; }
+/* Syntax colours, tuned for warm dark paper */
+.tok-kw   { color: #f6c453; font-weight: 600; }
+.tok-fn   { color: #9ed8b8; }
+.tok-str  { color: #f2a58f; }
+.tok-tag  { color: #86cfd0; }
+.tok-attr { color: #e8d3a8; }
+.tok-val  { color: #f6c453; }
+.tok-dim  { color: #d9c9ac; }
+.tok-cmt  { color: #a08f75; font-style: italic; }
+.tok-num  { color: #9ed8b8; }
 `;
 
 function tokenizeLine(line: string) {
@@ -176,11 +177,11 @@ export function InlineCode({ children }: { children: React.ReactNode }) {
     <code style={{
       fontFamily: "var(--mono)",
       fontSize: "0.875em",
-      background: "var(--code-bg)",
-      border: "1px solid var(--code-border)",
-      borderRadius: "4px",
-      padding: "1px 5px",
-      color: "var(--accent)",
+      background: "var(--accent-soft)",
+      borderRadius: "3px",
+      padding: "1px 6px",
+      color: "var(--accent-deep)",
+      boxShadow: "0 1px 0 var(--accent-mid)",
     }}>
       {children}
     </code>

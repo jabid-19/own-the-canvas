@@ -12,18 +12,19 @@ const PROPS = [
   { name: "rotateSpeed",    type: "number",  default: "45",         description: "Max rotation toward strongest sensor in degrees." },
   { name: "trailDecay",     type: "number",  default: "0.92",       description: "Trail evaporation multiplier per frame — lower fades faster." },
   { name: "diffuseStrength",type: "number",  default: "0.2",        description: "3×3 blur weight for trail diffusion." },
-  { name: "trailColor",     type: "string",  default: '"#ffffff"',  description: "Color at max trail concentration." },
-  { name: "backgroundColor",type: "string",  default: '"#111111"',  description: "Color at zero trail." },
+  { name: "trailColor",     type: "string",  default: '"#ffcc44"',  description: "Color at max trail concentration." },
+  { name: "backgroundColor",type: "string",  default: '"#0a0800"',  description: "Color at zero trail." },
   { name: "resolution",     type: "number",  default: "0.35",       description: "Trail grid resolution fraction — lower is faster." },
   { name: "interactive",    type: "boolean", default: "true",       description: "Mouse deposits pheromone attracting agents." },
   { name: "mouseRadius",    type: "number",  default: "20",         description: "Mouse pheromone deposit radius in px." },
   { name: "mouseStrength",  type: "number",  default: "3",          description: "Pheromone deposit amount per frame." },
   { name: "animated",       type: "boolean", default: "true",       description: "Enable animation." },
-  { name: "preset",         type: "string",  default: "—",          description: '"default" | "neon" | "coral" | "vein" | "frost" | "gold"' },
+  { name: "preset",         type: "string",  default: "—",          description: '"default" | "neon" | "coral" | "vein" | "frost" | "gold" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default: { trailColor: "#ffffff", bg: "#111111", trailDecay: 0.92, agentCount: 1800 },
+  default: { trailColor: "#ffcc44", bg: "#0a0800", trailDecay: 0.92, agentCount: 1800 },
+  monochrome: { trailColor: "#ffffff", bg: "#111111", trailDecay: 0.92, agentCount: 1800 },
   neon:    { trailColor: "#00ffff", bg: "#000000", trailDecay: 0.92, agentCount: 1800 },
   coral:   { trailColor: "#ff8844", bg: "#0a0200", trailDecay: 0.92, agentCount: 1800 },
   vein:    { trailColor: "#ff2244", bg: "#080000", trailDecay: 0.92, agentCount: 3000 },
@@ -40,8 +41,8 @@ function SlimeMoldPlayground({ onReset }: { onReset?: () => void }) {
   const [rotateSpeed, setRotate]      = useState(45);
   const [trailDecay, setDecay]        = useState(0.92);
   const [diffuse, setDiffuse]         = useState(0.2);
-  const [trailColor, setTrailColor]   = useState("#ffffff");
-  const [bg, setBg]                   = useState("#111111");
+  const [trailColor, setTrailColor]   = useState("#ffcc44");
+  const [bg, setBg]                   = useState("#0a0800");
   const [resolution, setRes]          = useState(0.35);
   const [interactive, setInteract]    = useState(true);
   const [mouseRadius, setMouseRadius] = useState(20);
@@ -110,7 +111,7 @@ function SlimeMoldPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "coral", "vein", "frost", "gold"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "coral", "vein", "frost", "gold", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Trail color" value={trailColor} onChange={setTrailColor} />
         <PColor label="Background"  value={bg}         onChange={setBg} />

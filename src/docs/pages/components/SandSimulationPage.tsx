@@ -9,14 +9,15 @@ const PROPS = [
   { name: "cellSize",        type: "number",  default: "4",        description: "Cell size in pixels — smaller = higher resolution grid." },
   { name: "brushSize",       type: "number",  default: "3",        description: "Paint brush radius in cells." },
   { name: "material",        type: "string",  default: '"sand"',   description: '"sand" | "water" | "fire" | "wall" | "erase" — active material.' },
-  { name: "sandColor",       type: "string",  default: '"#ffffff"', description: "Sand cell color." },
-  { name: "waterColor",      type: "string",  default: '"#6b7280"', description: "Water cell color." },
-  { name: "fireColor",       type: "string",  default: '"#ffffff"', description: "Fire cell hot color." },
-  { name: "wallColor",       type: "string",  default: '"#4b5563"', description: "Wall cell color." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Empty cell background color." },
+  { name: "sandColor",       type: "string",  default: '"#c8a85a"', description: "Sand cell color." },
+  { name: "waterColor",      type: "string",  default: '"#0088cc"', description: "Water cell color." },
+  { name: "fireColor",       type: "string",  default: '"#ff4400"', description: "Fire cell hot color." },
+  { name: "wallColor",       type: "string",  default: '"#6b4c1a"', description: "Wall cell color." },
+  { name: "backgroundColor", type: "string",  default: '"#1a1200"', description: "Empty cell background color." },
   { name: "interactive",     type: "boolean", default: "true",     description: "Enable mouse painting." },
   { name: "gravity",         type: "number",  default: "1",        description: "Gravity strength multiplier." },
-  { name: "preset",          type: "string",  default: "—",        description: '"default" | "desert" | "ocean" | "inferno" | "neon"' },
+  { name: "autoPour",        type: "boolean", default: "true",       description: "Pour sand on its own in drifting colour bands; the floor drains when the pile gets high." },
+  { name: "preset",          type: "string",  default: "—",        description: '"default" | "desert" | "ocean" | "inferno" | "neon" | "monochrome"' },
 ];
 
 function SandSimulationPlayground({ onReset }: { onReset?: () => void }) {
@@ -24,11 +25,11 @@ function SandSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [cellSize, setCellSize] = useState(4);
   const [brushSize, setBrushSize] = useState(3);
   const [material, setMaterial] = useState<SandMaterial>("sand");
-  const [sandColor, setSandColor] = useState("#ffffff");
-  const [waterColor, setWaterColor] = useState("#6b7280");
-  const [fireColor, setFireColor] = useState("#ffffff");
-  const [wallColor, setWallColor] = useState("#4b5563");
-  const [bg, setBg] = useState("#111111");
+  const [sandColor, setSandColor] = useState("#c8a85a");
+  const [waterColor, setWaterColor] = useState("#0088cc");
+  const [fireColor, setFireColor] = useState("#ff4400");
+  const [wallColor, setWallColor] = useState("#6b4c1a");
+  const [bg, setBg] = useState("#1a1200");
   const [interactive, setInteractive] = useState(true);
 
   const code = [
@@ -73,7 +74,7 @@ function SandSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "desert", "ocean", "inferno", "neon"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "desert", "ocean", "inferno", "neon", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PSel label="Material" value={material} options={["sand", "water", "fire", "wall", "erase"]} onChange={(v) => setMaterial(v as SandMaterial)} />
         <PDivider />
@@ -101,7 +102,7 @@ export function SandSimulationPage() {
     <PageShell
       eyebrow="Component"
       title="SandSimulation"
-      lead="Falling-sand cellular automaton. Paint sand, water, fire, and walls with your mouse and watch physics unfold — sand piles, water flows, fire rises and extinguishes on contact with water."
+      lead="Falling-sand cellular automaton that pours itself: drifting streams build banded dunes of ochre, rust and cream, and the floor drains when the pile gets high. Paint sand, water, fire, and walls with your mouse."
     >
       <SandSimulationPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

@@ -15,10 +15,10 @@ const CSS = `
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 16px;
+  padding: 0 14px;
   height: var(--topbar-h);
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--grain), var(--bg);
+  box-shadow: 0 2px 0 var(--mustard), 0 5px 0 rgba(var(--shadow-ink), .14), 0 8px 12px -4px rgba(var(--shadow-ink), .25);
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -29,17 +29,18 @@ const CSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  background: transparent;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r);
+  border: none;
+  background: var(--bg-subtle);
+  box-shadow: 0 2px 0 var(--border-mid), 0 4px 6px -1px rgba(var(--shadow-ink), .25);
   cursor: pointer;
-  color: var(--text-2);
+  color: var(--text-1);
   flex-shrink: 0;
-  transition: background 150ms var(--ease), color 150ms var(--ease);
+  transition: transform 150ms var(--ease), box-shadow 150ms var(--ease);
 }
-.docs-topbar-hamburger:hover { background: var(--accent-soft); color: var(--text-1); }
+.docs-topbar-hamburger:active { transform: translateY(2px); box-shadow: none; }
 
 .docs-main {
   flex: 1;
@@ -58,18 +59,17 @@ const CSS = `
 .docs-topbar-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
   color: var(--text-1);
   text-decoration: none;
 }
 
 .docs-topbar-logo-img {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -105,7 +105,22 @@ export function Layout({ children }: LayoutProps) {
     }
     rafId = requestAnimationFrame(raf);
 
+    // Lenis only watches `content`, which is the page's <style> tag (zero height), so it never
+    // noticed a new page or late-loading fonts and kept the first page's height as the scroll
+    // limit. Re-measure whenever any child of the scroller changes size or is swapped.
+    const ro = new ResizeObserver(() => lenis.resize());
+    const observeChildren = () => {
+      ro.disconnect();
+      Array.from(wrapper.children).forEach((c) => ro.observe(c));
+      lenis.resize();
+    };
+    observeChildren();
+    const mo = new MutationObserver(observeChildren);
+    mo.observe(wrapper, { childList: true });
+
     return () => {
+      ro.disconnect();
+      mo.disconnect();
       cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
@@ -137,7 +152,7 @@ export function Layout({ children }: LayoutProps) {
               </svg>
             </button>
             <Link to="/" className="docs-topbar-logo">
-              <img className="docs-topbar-logo-img" src="/logo.png" alt="own-the-canvas logo" />
+              <img className="docs-topbar-logo-img" src="/logo.svg" alt="own-the-canvas logo" />
               own-the-canvas
             </Link>
           </header>

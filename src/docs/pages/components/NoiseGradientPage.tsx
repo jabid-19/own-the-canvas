@@ -5,7 +5,7 @@ import { PlaygroundShell, PSel, PSlider, PToggle, PDivider, PLiveLabel } from ".
 import { NoiseGradient } from "../../../components/NoiseGradient";
 
 const PROPS = [
-  { name: "colors",   type: "string[]", default: "—",     description: "Array of 2–6 hex colors to blend between.", required: true },
+  { name: "colors",   type: "string[]", default: '["#0d1117", "#0d4f3c", "#00ff87", "#00cfff", "#7C3AED"]',     description: "Array of 2–6 hex colors to blend between.", required: true },
   { name: "speed",    type: "number",   default: "0.3",   description: "Animation speed (0 = static)." },
   { name: "scale",    type: "number",   default: "1",     description: "Noise zoom level." },
   { name: "octaves",  type: "number",   default: "3",     description: "Perlin noise octaves (detail level)." },
@@ -13,6 +13,7 @@ const PROPS = [
 ];
 
 const NOISE_PRESETS: Record<string, string[]> = {
+  "Aurora":      ["#0d1117", "#0d4f3c", "#00ff87", "#00cfff", "#7C3AED"],
   "Monochrome": ["#0a0a0a", "#2d2d2d", "#6b7280", "#d1d5db", "#f5f5f5"],
   "Deep Space":  ["#0d0221", "#2d1b69", "#11998e", "#38ef7d"],
   "Sunset":      ["#0f0c29", "#ff6b6b", "#ffd89b"],
@@ -22,7 +23,7 @@ const NOISE_PRESETS: Record<string, string[]> = {
 };
 
 function NoiseGradientPlayground({ onReset }: { onReset?: () => void }) {
-  const [preset, setPreset] = useState("Monochrome");
+  const [preset, setPreset] = useState("Aurora");
   const [speed, setSpeed] = useState(0.3);
   const [scale, setScale] = useState(1);
   const [octaves, setOctaves] = useState(3);

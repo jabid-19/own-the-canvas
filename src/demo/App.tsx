@@ -4,29 +4,20 @@ import { MatrixRain, PRESETS as MATRIX_PRESETS } from "../components/MatrixRain"
 import { ParticleField } from "../components/ParticleField";
 import { Starfield } from "../components/Starfield";
 import { FireEffect } from "../components/FireEffect";
-import { AudioVisualizer } from "../components/AudioVisualizer";
 import { Confetti } from "../components/Confetti";
 import { NoiseGradient } from "../components/NoiseGradient";
-import { PixelDissolve } from "../components/PixelDissolve";
 import { FlowField, PRESETS as FLOWFIELD_PRESETS } from "../components/FlowField";
-import { Shockwave, PRESETS as SHOCKWAVE_PRESETS } from "../components/Shockwave";
 import { Fireworks, PRESETS as FIREWORKS_PRESETS } from "../components/Fireworks";
-import { GlitchOverlay, PRESETS as GLITCH_PRESETS } from "../components/GlitchOverlay";
 import { Mandala, PRESETS as MANDALA_PRESETS } from "../components/Mandala";
-import { MagneticBlob, PRESETS as BLOB_PRESETS } from "../components/MagneticBlob";
-import { ClothSimulation, PRESETS as CLOTH_PRESETS } from "../components/ClothSimulation";
 import { FluidSimulation, PRESETS as FLUID_PRESETS } from "../components/FluidSimulation";
 import { Rain, PRESETS as RAIN_PRESETS } from "../components/Rain";
 import { Lightning, PRESETS as LIGHTNING_PRESETS } from "../components/Lightning";
 import { GameOfLife, PRESETS as GOL_PRESETS } from "../components/GameOfLife";
-import { Wormhole, PRESETS as WORMHOLE_PRESETS } from "../components/Wormhole";
 import { Boids, PRESETS as BOIDS_PRESETS } from "../components/Boids";
 import type { FirePalette } from "../components/FireEffect";
 import type { ConfettiPalette } from "../components/Confetti";
-import type { VisualizerMode } from "../components/AudioVisualizer";
 import type { StarfieldPerspective } from "../components/Starfield";
 import type { ParticleLineStyle } from "../components/ParticleField";
-import type { DissolveDirection } from "../components/PixelDissolve";
 import { DragonCursor } from "../components/DragonCursor";
 import { KoiPond } from "../components/KoiPond";
 import { BubbleUniverse } from "../components/BubbleUniverse";
@@ -39,25 +30,20 @@ import type { SandMaterial } from "../components/SandSimulation";
 import { WaveInterference, PRESETS as WAVE_PRESETS } from "../components/WaveInterference";
 import { DiffusionAggregation, PRESETS as DLA_PRESETS } from "../components/DiffusionAggregation";
 import type { DLASeedMode } from "../components/DiffusionAggregation";
-import { Lissajous } from "../components/Lissajous";
-import type { LissajousColorMode } from "../components/Lissajous";
 import { LSystem } from "../components/LSystem";
 import { Kaleidoscope } from "../components/Kaleidoscope";
 import { VoronoiCells } from "../components/VoronoiCells";
 import type { VoronoiColorMode } from "../components/VoronoiCells";
 import { SlimeMold } from "../components/SlimeMold";
-import { InkBleed } from "../components/InkBleed";
 import { WatercolorBloom } from "../components/WatercolorBloom";
 import { PendulaWave } from "../components/PendulaWave";
 import type { PendulaWaveColorMode } from "../components/PendulaWave";
 import { CrystalGrowth } from "../components/CrystalGrowth";
 import type { CrystalGrowthColorMode } from "../components/CrystalGrowth";
 import { NeuralWeb } from "../components/NeuralWeb";
-import { ParticleText } from "../components/ParticleText";
 import { Metaballs } from "../components/Metaballs";
 import { AntColony } from "../components/AntColony";
 import { MagneticField } from "../components/MagneticField";
-import { TerrainMesh } from "../components/TerrainMesh";
 import { BlackHole, PRESETS as BLACKHOLE_PRESETS } from "../components/BlackHole";
 import { GalaxySpiral, PRESETS as GALAXY_PRESETS } from "../components/GalaxySpiral";
 import { TornadoVortex, PRESETS as TORNADO_PRESETS } from "../components/TornadoVortex";
@@ -73,28 +59,28 @@ const GLOBAL_CSS = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg-base:      #ffffff;
-    --bg-elevated:  #f8fafc;
-    --bg-overlay:   #f1f5f9;
-    --surface:      rgba(0,0,0,0.04);
-    --surface-hov:  rgba(0,0,0,0.07);
-    --border:       #e2e8f0;
-    --border-mid:   #cbd5e1;
-    --text-1:       #0f172a;
-    --text-2:       #475569;
-    --text-3:       #94a3b8;
-    --purple:       #6b7280;
-    --purple-light: #9ca3af;
-    --cyan:         #4b5563;
-    --cyan-light:   #d1d5db;
-    --gradient:     linear-gradient(135deg, #374151 0%, #6b7280 100%);
-    --glow-purple:  rgba(107,114,128,0.3);
-    --glow-cyan:    rgba(107,114,128,0.2);
+    --bg-base:      #fbf5e8;
+    --bg-elevated:  #f4ead6;
+    --bg-overlay:   #ebdfc5;
+    --surface:      rgba(60,35,10,0.05);
+    --surface-hov:  rgba(60,35,10,0.09);
+    --border:       #dccbab;
+    --border-mid:   #c4ae88;
+    --text-1:       #2b2118;
+    --text-2:       #4f4136;
+    --text-3:       #6f5f4d;
+    --purple:       #c4442a;
+    --purple-light: #e8795a;
+    --cyan:         #2f6f73;
+    --cyan-light:   #8fbf9f;
+    --gradient:     linear-gradient(135deg, #c4442a 0%, #e8795a 100%);
+    --glow-purple:  rgba(196,68,42,0.25);
+    --glow-cyan:    rgba(47,111,115,0.2);
     --r-sm:         8px;
     --r:            12px;
     --r-lg:         16px;
     --ease:         cubic-bezier(0.16,1,0.3,1);
-    --font:         'Inter', system-ui, -apple-system, sans-serif;
+    --font:         'DM Sans', system-ui, -apple-system, sans-serif;
     --mono:         'JetBrains Mono', 'Fira Code', monospace;
   }
 
@@ -109,7 +95,7 @@ const GLOBAL_CSS = `
     -moz-osx-font-smoothing: grayscale;
   }
 
-  ::selection { background: rgba(107,114,128,0.35); }
+  ::selection { background: #f2b134; }
 
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -124,7 +110,7 @@ const GLOBAL_CSS = `
     display: flex; align-items: center; gap: 16px;
     padding: 0 24px; height: 52px; flex-shrink: 0;
     border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.9);
+    background: rgba(251,245,232,0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     position: relative; z-index: 10;
@@ -566,14 +552,6 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M6 9c0 1.1.9 2 2 2s2-.9 2-2c0-.5-.2-1-.5-1.3C9.3 8.7 9 9.3 9 10c-.3-.3-.5-.9-.5-1.5C7.5 8.7 7 8 7 8c-.6.2-1 .6-1 1z" fill="currentColor" opacity=".6" />
     </svg>
   ),
-  AudioVisualizer: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="8" width="2" height="6" rx="1" fill="currentColor" opacity=".5" />
-      <rect x="4.5" y="5" width="2" height="9" rx="1" fill="currentColor" opacity=".7" />
-      <rect x="8" y="2" width="2" height="12" rx="1" fill="currentColor" />
-      <rect x="11.5" y="5" width="2" height="9" rx="1" fill="currentColor" opacity=".7" />
-    </svg>
-  ),
   Confetti: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <rect x="2" y="6" width="3" height="2" rx="0.5" fill="currentColor" transform="rotate(-30 2 6)" />
@@ -596,29 +574,11 @@ const icons: Record<string, React.ReactNode> = {
       </defs>
     </svg>
   ),
-  PixelDissolve: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="3" height="3" rx="0.5" fill="currentColor" />
-      <rect x="5.5" y="1" width="3" height="3" rx="0.5" fill="currentColor" opacity=".6" />
-      <rect x="10" y="1" width="3" height="3" rx="0.5" fill="currentColor" opacity=".2" />
-      <rect x="1" y="5.5" width="3" height="3" rx="0.5" fill="currentColor" opacity=".8" />
-      <rect x="5.5" y="5.5" width="3" height="3" rx="0.5" fill="currentColor" opacity=".4" />
-      <rect x="1" y="10" width="3" height="3" rx="0.5" fill="currentColor" opacity=".3" />
-      <rect x="10" y="10" width="3" height="3" rx="0.5" fill="currentColor" opacity=".1" />
-    </svg>
-  ),
   FlowField: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M2 8c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
       <path d="M2 11c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".5" />
       <path d="M2 5c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".5" />
-    </svg>
-  ),
-  Shockwave: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="8" cy="8" r="4.5" stroke="currentColor" strokeWidth="1" opacity=".6" />
-      <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="0.75" opacity=".3" />
     </svg>
   ),
   Fireworks: (
@@ -635,15 +595,6 @@ const icons: Record<string, React.ReactNode> = {
       <circle cx="12" cy="11" r="1" fill="currentColor" opacity=".5" />
     </svg>
   ),
-  GlitchOverlay: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="3" width="14" height="2" rx="0.5" fill="currentColor" opacity=".8" />
-      <rect x="1" y="7" width="10" height="2" rx="0.5" fill="currentColor" opacity=".5" transform="translate(2 0)" />
-      <rect x="1" y="11" width="14" height="2" rx="0.5" fill="currentColor" opacity=".7" />
-      <rect x="3" y="5" width="6" height="1" fill="currentColor" opacity=".3" />
-      <rect x="8" y="9" width="5" height="1" fill="currentColor" opacity=".3" />
-    </svg>
-  ),
   Mandala: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="0.75" opacity=".4" />
@@ -653,23 +604,6 @@ const icons: Record<string, React.ReactNode> = {
       <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="0.5" opacity=".3" />
       <line x1="3.5" y1="3.5" x2="12.5" y2="12.5" stroke="currentColor" strokeWidth="0.5" opacity=".3" />
       <line x1="12.5" y1="3.5" x2="3.5" y2="12.5" stroke="currentColor" strokeWidth="0.5" opacity=".3" />
-    </svg>
-  ),
-  MagneticBlob: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="6" cy="7" r="3.5" fill="currentColor" opacity=".7" />
-      <circle cx="10.5" cy="9" r="3" fill="currentColor" opacity=".6" />
-      <circle cx="8" cy="6" r="2" fill="currentColor" opacity=".5" />
-    </svg>
-  ),
-  ClothSimulation: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <line x1="2" y1="3" x2="7" y2="3" stroke="currentColor" strokeWidth="1" opacity=".8" />
-      <line x1="9" y1="3" x2="14" y2="3" stroke="currentColor" strokeWidth="1" opacity=".8" />
-      <path d="M2 3 C3 7, 4 9, 4 13" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".6" />
-      <path d="M7 3 C7.5 7, 8 9, 8 13" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".6" />
-      <path d="M14 3 C13 7, 12 9, 12 13" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".6" />
-      <path d="M2 7 C5 7.5, 11 7.5, 14 7" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".4" />
     </svg>
   ),
   FluidSimulation: (
@@ -703,14 +637,6 @@ const icons: Record<string, React.ReactNode> = {
       <rect x="2" y="11" width="3" height="3" rx="0.5" fill="currentColor" opacity=".7" />
       <rect x="6" y="11" width="3" height="3" rx="0.5" fill="currentColor" opacity=".2" />
       <rect x="11" y="11" width="3" height="3" rx="0.5" fill="currentColor" opacity=".9" />
-    </svg>
-  ),
-  Wormhole: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <ellipse cx="8" cy="8" rx="6" ry="6" stroke="currentColor" strokeWidth="1" opacity=".8" fill="none" />
-      <ellipse cx="8" cy="8" rx="4" ry="3.5" stroke="currentColor" strokeWidth="0.9" opacity=".6" fill="none" />
-      <ellipse cx="8" cy="8" rx="2" ry="1.8" stroke="currentColor" strokeWidth="0.8" opacity=".4" fill="none" />
-      <circle cx="8" cy="8" r="0.8" fill="currentColor" opacity=".9" />
     </svg>
   ),
   Boids: (
@@ -806,11 +732,6 @@ const icons: Record<string, React.ReactNode> = {
       <circle cx="8" cy="12" r="0.75" fill="currentColor" opacity=".5" />
     </svg>
   ),
-  Lissajous: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M8 8 C8 4, 12 4, 12 8 C12 12, 8 12, 8 8 C8 4, 4 4, 4 8 C4 12, 8 12, 8 8" stroke="currentColor" strokeWidth="1" fill="none" opacity=".8" />
-    </svg>
-  ),
   LSystem: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <line x1="8" y1="14" x2="8" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -844,14 +765,6 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M3 8 C3 5, 5 3, 8 3 C11 3, 13 5, 13 8" stroke="currentColor" strokeWidth="1" fill="none" opacity=".4" />
       <path d="M4 10 C5 7, 8 6, 11 7 C13 8, 13 11, 11 12 C9 13, 6 13, 4 12" stroke="currentColor" strokeWidth="1" fill="none" opacity=".6" />
       <path d="M6 8 C7 6, 9 6, 10 8 C11 10, 9 12, 7 11 C5 10, 5 9, 6 8" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".9" />
-    </svg>
-  ),
-  InkBleed: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="2" fill="currentColor" />
-      <circle cx="8" cy="8" r="4" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".5" />
-      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="0.5" fill="none" opacity=".25" />
-      <path d="M8 6 C9 5, 11 5, 11 7" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".6" />
     </svg>
   ),
   WatercolorBloom: (
@@ -901,17 +814,6 @@ const icons: Record<string, React.ReactNode> = {
       <line x1="3" y1="12" x2="13" y2="12" stroke="currentColor" strokeWidth="0.5" opacity=".2" />
     </svg>
   ),
-  ParticleText: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <rect x="2" y="4" width="2" height="8" rx="0.5" fill="currentColor" opacity=".8" />
-      <rect x="2" y="4" width="6" height="2" rx="0.5" fill="currentColor" opacity=".8" />
-      <rect x="2" y="7.5" width="5" height="2" rx="0.5" fill="currentColor" opacity=".6" />
-      <circle cx="11" cy="6" r="1" fill="currentColor" opacity=".5" />
-      <circle cx="13" cy="8" r="0.75" fill="currentColor" opacity=".4" />
-      <circle cx="12" cy="11" r="1" fill="currentColor" opacity=".5" />
-      <circle cx="10" cy="13" r="0.75" fill="currentColor" opacity=".3" />
-    </svg>
-  ),
   Metaballs: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <circle cx="6" cy="8" r="3.5" fill="currentColor" opacity=".6" />
@@ -938,14 +840,6 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M7 8 C7 11, 9 11, 9 8" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".6" />
       <path d="M5 6 C3 3, 13 3, 11 6" stroke="currentColor" strokeWidth="0.5" fill="none" opacity=".3" />
       <path d="M5 10 C3 13, 13 13, 11 10" stroke="currentColor" strokeWidth="0.5" fill="none" opacity=".3" />
-    </svg>
-  ),
-  TerrainMesh: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <polyline points="1,12 4,7 7,9 10,5 13,8 15,6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity=".8" />
-      <polyline points="1,14 4,10 7,12 10,8 13,11 15,9" stroke="currentColor" strokeWidth="0.75" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity=".4" />
-      <line x1="4" y1="7" x2="4" y2="10" stroke="currentColor" strokeWidth="0.5" opacity=".3" />
-      <line x1="10" y1="5" x2="10" y2="8" stroke="currentColor" strokeWidth="0.5" opacity=".3" />
     </svg>
   ),
   BlackHole: (
@@ -1016,27 +910,20 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   MatrixRain: { desc: "Falling character rain — Katakana, Latin, or binary", accent: "#00ff41" },
   ParticleField: { desc: "Particles with connections, repulsion, drag-to-move, twinkling, and glow", accent: "#8888ff" },
   Starfield: { desc: "2D twinkle or 3D warp-speed star tunnel", accent: "#b8bfff" },
-  FireEffect: { desc: "Pixel-level fire simulation with 4 palettes", accent: "#ff6b35" },
-  AudioVisualizer: { desc: "Real-time Web Audio API visualizer, 4 modes", accent: "#9ca3af" },
+  FireEffect: { desc: "Licking flame tongues with glow and rising sparks", accent: "#ff6b35" },
   Confetti: { desc: "Physics-based celebration burst or continuous rain", accent: "#ffd700" },
   NoiseGradient: { desc: "Animated Perlin noise color gradient", accent: "#38ef7d" },
-  PixelDissolve: { desc: "Pixelated dissolve transition overlay for any content", accent: "#bf5fff" },
   FlowField: { desc: "Perlin noise vector field with particle streams", accent: "#9ca3af" },
-  Shockwave: { desc: "Click-triggered radial ring blast with glow", accent: "#9ca3af" },
-  Fireworks: { desc: "Physics shells, burst particles, and gravity trails", accent: "#f59e0b" },
-  GlitchOverlay: { desc: "CRT scanlines, RGB shift, and block glitch", accent: "#00ffff" },
+  Fireworks: { desc: "Six shell types bursting over a city skyline", accent: "#f59e0b" },
   Mandala: { desc: "N-fold rotational symmetry with organic petal layers", accent: "#f43f5e" },
-  MagneticBlob: { desc: "Metaballs that merge and follow the cursor", accent: "#a78bfa" },
-  ClothSimulation: { desc: "Verlet spring-mass fabric with wind and tearing", accent: "#67e8f9" },
   FluidSimulation: { desc: "Navier-Stokes ink fluid reacting to mouse movement", accent: "#06b6d4" },
-  Rain: { desc: "Rainfall with wind drift, drop streaks, and splash particles", accent: "#9ca3af" },
+  Rain: { desc: "Rainy night street with mist and wet reflections", accent: "#9ca3af" },
   Lightning: { desc: "Recursive fractal bolts with glow, flicker, and branches", accent: "#c084fc" },
   GameOfLife: { desc: "Conway's cellular automata — emergent life from simple rules", accent: "#00ff41" },
-  Wormhole: { desc: "3D perspective tunnel with twisting rings and star field", accent: "#9ca3af" },
   Boids: { desc: "Craig Reynolds' flocking — separation, alignment, cohesion", accent: "#f59e0b" },
   DragonCursor: { desc: "Segmented dragon that follows the cursor with fire breath", accent: "#ff4500" },
   KoiPond: { desc: "Koi fish pond with ripples, lily pads, and caustic lighting", accent: "#67e8f9" },
-  BubbleUniverse: { desc: "Iridescent bubbles that float, merge, and pop on click", accent: "#a5f3fc" },
+  BubbleUniverse: { desc: "Rainbow soap bubbles that rise, merge and pop", accent: "#a5f3fc" },
   SakuraBlossom: { desc: "Cherry blossom petals drifting with wind and accumulation", accent: "#fda4af" },
   ReactionDiffusion: { desc: "Gray-Scott reaction-diffusion pattern formation", accent: "#d1d5db" },
   AuroraBorealis: { desc: "Animated northern lights with star background", accent: "#6ee7b7" },
@@ -1044,21 +931,17 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   SandSimulation: { desc: "Falling-sand physics with sand, water, fire, and walls", accent: "#fbbf24" },
   WaveInterference: { desc: "Click to add wave sources and watch interference patterns", accent: "#7dd3fc" },
   DiffusionAggregation: { desc: "Diffusion-limited aggregation grows fractal crystal trees", accent: "#e2e8f0" },
-  Lissajous: { desc: "Animated Lissajous figures with trail fade and color cycling", accent: "#a78bfa" },
   LSystem: { desc: "Lindenmayer system turtle-graphics fractals with presets", accent: "#86efac" },
-  Kaleidoscope: { desc: "Perlin noise kaleidoscope with N-fold mirror symmetry", accent: "#f9a8d4" },
+  Kaleidoscope: { desc: "Glass shards mirrored into an N-fold rosette", accent: "#f9a8d4" },
   VoronoiCells: { desc: "Animated Voronoi tessellation — click to add seeds", accent: "#fde68a" },
   SlimeMold: { desc: "Physarum polycephalum slime mold trail simulation", accent: "#d9f99d" },
-  InkBleed: { desc: "Ink drop diffusion on paper — click to drop", accent: "#94a3b8" },
   WatercolorBloom: { desc: "Organic watercolor blooms with wet-edge and layering", accent: "#93c5fd" },
   PendulaWave: { desc: "Coupled harmonic pendula drawing Lissajous-like traces", accent: "#f0abfc" },
   CrystalGrowth: { desc: "Snowflake-like crystal growth with rotational symmetry", accent: "#bae6fd" },
   NeuralWeb: { desc: "Neural network graph with traveling signal pulses", accent: "#a3e635" },
-  ParticleText: { desc: "Text sampled into particles that scatter from the cursor", accent: "#fb923c" },
-  Metaballs: { desc: "Organic metaballs that merge and flow — drag to move", accent: "#34d399" },
+  Metaballs: { desc: "Glossy lava-lamp blobs — drag to move", accent: "#34d399" },
   AntColony: { desc: "Ant colony optimization with pheromone trails", accent: "#fbbf24" },
   MagneticField: { desc: "Interactive magnetic dipoles with live field line rendering", accent: "#f87171" },
-  TerrainMesh: { desc: "3D Perlin noise terrain wireframe with orbit control", accent: "#9ca3af" },
   BlackHole: { desc: "Accretion disk simulation with jets and gravitational lensing", accent: "#6b7280" },
   GalaxySpiral: { desc: "Spiral galaxy particle system with core glow", accent: "#c4b5fd" },
   TornadoVortex: { desc: "Tornado funnel with debris, lightning, and dust cloud", accent: "#d1d5db" },
@@ -1070,32 +953,32 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
 
 type ComponentId =
   | "MatrixRain" | "FluidSimulation" | "FlowField" | "Boids"
-  | "GlitchOverlay" | "PixelDissolve" | "Confetti" | "AudioVisualizer" | "Mandala"
-  | "Starfield" | "NoiseGradient" | "Shockwave"
-  | "Fireworks" | "Wormhole" | "ClothSimulation" | "MagneticBlob" | "GameOfLife"
+  | "Confetti" | "Mandala"
+  | "Starfield" | "NoiseGradient"
+  | "Fireworks" | "GameOfLife"
   | "Rain" | "Lightning" | "FireEffect" | "ParticleField"
   | "DragonCursor" | "KoiPond" | "BubbleUniverse" | "SakuraBlossom"
   | "ReactionDiffusion" | "AuroraBorealis" | "Spirograph" | "SandSimulation"
-  | "WaveInterference" | "DiffusionAggregation" | "Lissajous" | "LSystem"
-  | "Kaleidoscope" | "VoronoiCells" | "SlimeMold" | "InkBleed"
+  | "WaveInterference" | "DiffusionAggregation" | "LSystem"
+  | "Kaleidoscope" | "VoronoiCells" | "SlimeMold"
   | "WatercolorBloom" | "PendulaWave" | "CrystalGrowth" | "NeuralWeb"
-  | "ParticleText" | "Metaballs" | "AntColony" | "MagneticField"
-  | "TerrainMesh" | "BlackHole" | "GalaxySpiral" | "TornadoVortex" | "SolarFlare"
+  | "Metaballs" | "AntColony" | "MagneticField"
+  | "BlackHole" | "GalaxySpiral" | "TornadoVortex" | "SolarFlare"
   | "ButterflySwarm" | "DeepSeaBioluminescence" | "SpiderWeb";
 
 const ALL_COMPONENTS: ComponentId[] = [
   "DragonCursor", "KoiPond", "MatrixRain", "FluidSimulation", "FlowField", "Boids",
-  "GlitchOverlay", "PixelDissolve", "Confetti", "AudioVisualizer", "Mandala",
-  "Starfield", "NoiseGradient", "Shockwave",
-  "Fireworks", "Wormhole", "BubbleUniverse", "SakuraBlossom",
-  "ClothSimulation", "MagneticBlob", "GameOfLife",
+  "Confetti", "Mandala",
+  "Starfield", "NoiseGradient", 
+  "Fireworks", "BubbleUniverse", "SakuraBlossom",
+  "GameOfLife",
   "Rain", "Lightning", "FireEffect", "ParticleField",
   "ReactionDiffusion", "AuroraBorealis", "Spirograph", "SandSimulation",
-  "WaveInterference", "DiffusionAggregation", "Lissajous", "LSystem",
-  "Kaleidoscope", "VoronoiCells", "SlimeMold", "InkBleed",
+  "WaveInterference", "DiffusionAggregation", "LSystem",
+  "Kaleidoscope", "VoronoiCells", "SlimeMold",
   "WatercolorBloom", "PendulaWave", "CrystalGrowth", "NeuralWeb",
-  "ParticleText", "Metaballs", "AntColony", "MagneticField",
-  "TerrainMesh", "BlackHole", "GalaxySpiral", "TornadoVortex", "SolarFlare",
+  "Metaballs", "AntColony", "MagneticField",
+  "BlackHole", "GalaxySpiral", "TornadoVortex", "SolarFlare",
   "ButterflySwarm", "DeepSeaBioluminescence", "SpiderWeb",
 ];
 
@@ -1566,105 +1449,6 @@ function FireEffectPanel() {
   );
 }
 
-function AudioVisualizerPanel() {
-  const [mode, setMode] = useState<VisualizerMode>("bars");
-  const [barColor, setBarColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [barCount, setBarCount] = useState(64);
-  const [sensitivity, setSensitivity] = useState(1);
-  const [rounded, setRounded] = useState(true);
-  const [gradient, setGradient] = useState(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [micActive, setMicActive] = useState(false);
-
-  async function toggleMic() {
-    if (micActive) {
-      stream?.getTracks().forEach((t) => t.stop());
-      setStream(null); setMicActive(false);
-    } else {
-      try {
-        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-        setStream(s); setMicActive(true);
-      } catch { alert("Mic access denied"); }
-    }
-  }
-
-  const code = [
-    `import { AudioVisualizer } from 'own-the-canvas';`,
-    `import { useState } from 'react';`,
-    ``,
-    `function App() {`,
-    `  const [stream, setStream] = useState<MediaStream | null>(null);`,
-    ``,
-    `  async function startMic() {`,
-    `    const s = await navigator.mediaDevices.getUserMedia({ audio: true });`,
-    `    setStream(s);`,
-    `  }`,
-    ``,
-    `  return (`,
-    `    <>`,
-    `      <button onClick={startMic}>Start microphone</button>`,
-    `      <AudioVisualizer`,
-    `        audioSource={stream}`,
-    `        mode="${mode}"`,
-    `        barColor="${barColor}"`,
-    `        barCount={${barCount}}`,
-    `        sensitivity={${sensitivity}}`,
-    rounded ? null : `        rounded={false}`,
-    gradient ? `        gradient` : null,
-    `        width="100%"`,
-    `        height="100%"`,
-    `      />`,
-    `    </>`,
-    `  );`,
-    `}`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap" style={{ background: "#030305" }}>
-        <div className="canvas-wrap-inner">
-          <AudioVisualizer audioSource={stream} mode={mode}
-            barColor={barColor} waveColor={barColor} barCount={barCount}
-            sensitivity={sensitivity}
-            rounded={rounded} gradient={gradient}
-            backgroundColor={bg}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label">
-          {micActive
-            ? <span className="mic-badge"><span className="mic-dot" />Microphone active</span>
-            : <><div className="canvas-dot" /><span>Idle animation — start mic to visualize</span></>
-          }
-        </div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="AudioVisualizer" />
-        <div className="ctrl-body">
-          <button
-            className={`ctl-action-btn ${micActive ? "secondary" : "primary"}`}
-            onClick={toggleMic}
-          >
-            {micActive ? "Stop microphone" : "Start microphone"}
-          </button>
-          <Sel label="Mode" value={mode} options={["bars", "wave", "circular", "mirror"]} onChange={setMode} />
-          <Divider />
-          <div className="ctl-section">
-            <ColorPicker label="Bar color" value={barColor} onChange={setBarColor} />
-            <ColorPicker label="Background" value={bg} onChange={setBg} />
-            <Slider label="Bar count" value={barCount} min={8} max={128} step={8} onChange={setBarCount} />
-            <Slider label="Sensitivity" value={sensitivity} min={0.2} max={5} step={0.1} onChange={setSensitivity} />
-          </div>
-          <Divider />
-          <Toggle label="Rounded caps" value={rounded} onChange={setRounded} />
-          <Toggle label="Gradient fill" value={gradient} onChange={setGradient} />
-        </div>
-      </div>
-    </>
-  );
-}
-
 function ConfettiPanel() {
   const [trigger, setTrigger] = useState(false);
   const [palette, setPalette] = useState<ConfettiPalette>("monochrome");
@@ -1807,75 +1591,6 @@ function NoiseGradientPanel() {
   );
 }
 
-function PixelDissolvePanel() {
-  const [pixelSize, setPixelSize] = useState(8);
-  const [speed, setSpeed] = useState(0.5);
-  const [dir, setDir] = useState<DissolveDirection>("out");
-  const [trigger, setTrigger] = useState(false);
-  const [color, setColor] = useState("#ffffff");
-
-  function fire() { setTrigger(false); setTimeout(() => setTrigger(true), 50); }
-
-  const code = [
-    `import { PixelDissolve } from 'own-the-canvas';`,
-    `import { useState } from 'react';`,
-    ``,
-    `function App() {`,
-    `  const [show, setShow] = useState(false);`,
-    ``,
-    `  return (`,
-    `    <PixelDissolve`,
-    `      trigger={show}`,
-    `      direction="${dir}"`,
-    `      pixelSize={${pixelSize}}`,
-    `      speed={${speed}}`,
-    color !== "#ffffff" ? `      color="${color}"` : null,
-    `      width={400}`,
-    `      height={300}`,
-    `    >`,
-    `      <YourContent />`,
-    `    </PixelDissolve>`,
-    `  );`,
-    `}`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#030308" }}>
-        <PixelDissolve pixelSize={pixelSize} speed={speed}
-          direction={dir} trigger={trigger} color={color}
-          width={440} height={280}>
-          <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#374151 0%,#6b7280 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", gap: 10 }}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect x="2" y="2" width="28" height="28" rx="6" fill="white" fillOpacity=".15" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
-              <rect x="8" y="12" width="4" height="8" rx="1" fill="white" />
-              <rect x="14" y="8" width="4" height="12" rx="1" fill="white" fillOpacity=".7" />
-              <rect x="20" y="15" width="4" height="5" rx="1" fill="white" fillOpacity=".5" />
-            </svg>
-            <span style={{ fontSize: 20, fontWeight: 600, letterSpacing: 3, fontFamily: "inherit" }}>DISSOLVE</span>
-            <span style={{ fontSize: 12, opacity: 0.5, fontFamily: "inherit" }}>own-the-canvas</span>
-          </div>
-        </PixelDissolve>
-        <div className="canvas-label" style={{ zIndex: 4 }}><div className="canvas-dot" /><span>Click "Trigger" in controls</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="PixelDissolve" />
-        <div className="ctrl-body">
-          <button className="ctl-action-btn primary" onClick={fire}>Trigger dissolve</button>
-          <Divider />
-          <Sel label="Direction" value={dir} options={["out", "in", "both"]} onChange={setDir} />
-          <div className="ctl-section">
-            <ColorPicker label="Pixel color" value={color} onChange={setColor} />
-            <Slider label="Pixel size" value={pixelSize} min={2} max={32} step={2} onChange={setPixelSize} />
-            <Slider label="Speed" value={speed} min={0.1} max={2} step={0.05} onChange={setSpeed} />
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
 // ─── New component panels ─────────────────────────────────────────────────────
 function FlowFieldPanel() {
   const [preset, setPreset] = useState("default");
@@ -1940,69 +1655,6 @@ function FlowFieldPanel() {
           <Toggle label="Curl noise" value={curl} onChange={setCurl} />
           <Divider />
           <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
-        </div>
-      </div>
-    </>
-  );
-}
-
-function ShockwavePanel() {
-  const [preset, setPreset] = useState("default");
-  const [ringCount, setRingCount] = useState(3);
-  const [speed, setSpeed] = useState(4);
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [glow, setGlow] = useState(true);
-  const [autoFire, setAutoFire] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = SHOCKWAVE_PRESETS[p as keyof typeof SHOCKWAVE_PRESETS] ?? {};
-    if (v.ringCount !== undefined)  setRingCount(v.ringCount);
-    if (v.speed !== undefined)      setSpeed(v.speed);
-    if (v.color)                    setColor(v.color);
-    if (v.backgroundColor)          setBg(v.backgroundColor);
-    if (v.glowEffect !== undefined)  setGlow(v.glowEffect);
-  }
-
-  const code = [
-    `import { Shockwave } from 'own-the-canvas';`,
-    ``,
-    `<Shockwave`,
-    `  preset="${preset}"`,
-    `  color="${color}"`,
-    `  ringCount={${ringCount}}`,
-    `  speed={${speed}}`,
-    glow ? null : `  glowEffect={false}`,
-    autoFire ? `  autoFire` : null,
-    `  backgroundColor="${bg}"`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <Shockwave preset={preset} ringCount={ringCount} speed={speed} color={color}
-            backgroundColor={bg} glowEffect={glow}
-            autoFire={autoFire} autoInterval={1500} width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Click anywhere to fire</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="Shockwave" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "explosion", "ripple", "minimal"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Ring color" value={color} onChange={setColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Ring count" value={ringCount} min={1} max={8} step={1} onChange={setRingCount} />
-          <Slider label="Speed" value={speed} min={1} max={12} step={0.5} onChange={setSpeed} />
-          <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-          <Toggle label="Auto-fire" value={autoFire} onChange={setAutoFire} />
         </div>
       </div>
     </>
@@ -2086,81 +1738,6 @@ function FireworksPanel() {
   );
 }
 
-function GlitchOverlayPanel() {
-  const [preset, setPreset] = useState("default");
-  const [intensity, setIntensity] = useState(0.6);
-  const [speed, setSpeed] = useState(1);
-  const [rgbShift, setRgbShift] = useState(8);
-  const [color, setColor] = useState("#ffffff");
-  const [rgbShiftColor, setRgbShiftColor] = useState("#ff0000");
-  const [scanlines, setScanlines] = useState(true);
-  const [blockGlitch, setBlockGlitch] = useState(true);
-  const [animated, setAnimated] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = GLITCH_PRESETS[p as keyof typeof GLITCH_PRESETS] ?? {};
-    if (v.intensity !== undefined)   setIntensity(v.intensity);
-    if (v.speed !== undefined)       setSpeed(v.speed);
-    if (v.rgbShift !== undefined)    setRgbShift(v.rgbShift);
-    if (v.color)                     setColor(v.color);
-    if (v.scanlines !== undefined)   setScanlines(v.scanlines);
-    if (v.blockGlitch !== undefined) setBlockGlitch(v.blockGlitch);
-  }
-
-  const code = [
-    `import { GlitchOverlay } from 'own-the-canvas';`,
-    ``,
-    `// Overlay over any content`,
-    `<div style={{ position: "relative" }}>`,
-    `  <YourContent />`,
-    `  <GlitchOverlay`,
-    `    preset="${preset}"`,
-    `    intensity={${intensity}}`,
-    `    speed={${speed}}`,
-    `    rgbShift={${rgbShift}}`,
-    `    color="${color}"`,
-    `    rgbShiftColor="${rgbShiftColor}"`,
-    !scanlines ? `    scanlines={false}` : null,
-    !blockGlitch ? `    blockGlitch={false}` : null,
-    !animated ? `    animated={false}` : null,
-    `    style={{ position: "absolute", inset: 0 }}`,
-    `  />`,
-    `</div>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap" style={{ position: "relative" }}>
-        <div className="canvas-wrap-inner" style={{ background: "#111111", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ textAlign: "center", color: "#fff", fontFamily: "monospace", userSelect: "none" }}>
-            <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2, marginBottom: 8 }}>GLITCH</div>
-            <div style={{ fontSize: 14, opacity: 0.4, letterSpacing: 6 }}>OVERLAY EFFECT</div>
-          </div>
-          <GlitchOverlay preset={preset} intensity={intensity} speed={speed} rgbShift={rgbShift} color={color} scanlines={scanlines} blockGlitch={blockGlitch} rgbShiftColor={rgbShiftColor} animated={animated} style={{ position: "absolute", inset: 0 }} />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Overlay composited on content</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="GlitchOverlay" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "crt", "cyberpunk", "subtle", "corrupt"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Accent color" value={color} onChange={setColor} />
-          <ColorPicker label="RGB Shift Color" value={rgbShiftColor} onChange={setRgbShiftColor} />
-          <Slider label="Intensity" value={intensity} min={0} max={1} step={0.05} onChange={setIntensity} />
-          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
-          <Slider label="RGB shift" value={rgbShift} min={0} max={30} step={1} onChange={setRgbShift} />
-          <Toggle label="Scanlines" value={scanlines} onChange={setScanlines} />
-          <Toggle label="Block glitch" value={blockGlitch} onChange={setBlockGlitch} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
-        </div>
-      </div>
-    </>
-  );
-}
-
 function MandalaPanel() {
   const [preset, setPreset] = useState("default");
   const [symmetry, setSymmetry] = useState(8);
@@ -2225,140 +1802,6 @@ function MandalaPanel() {
           <Slider label="Speed" value={speed} min={0} max={3} step={0.1} onChange={setSpeed} />
           <Toggle label="Bilateral mirror" value={mirror} onChange={setMirror} />
           <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-        </div>
-      </div>
-    </>
-  );
-}
-
-function MagneticBlobPanel() {
-  const [preset, setPreset] = useState("default");
-  const [count, setCount] = useState(5);
-  const [radius, setRadius] = useState(80);
-  const [threshold, setThreshold] = useState(1.8);
-  const [bg, setBg] = useState("#111111");
-  const [colors, setColors] = useState(["#ffffff"]);
-  const [followMouse, setFollowMouse] = useState(true);
-  const [glow, setGlow] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = BLOB_PRESETS[p as keyof typeof BLOB_PRESETS] ?? {};
-    if (v.count !== undefined)       setCount(v.count);
-    if (v.radius !== undefined)      setRadius(v.radius);
-    if (v.threshold !== undefined)   setThreshold(v.threshold);
-    if (v.backgroundColor)           setBg(v.backgroundColor);
-    if (v.colors)                    setColors(v.colors);
-    if (v.followMouse !== undefined) setFollowMouse(v.followMouse);
-    if (v.glowEffect !== undefined)  setGlow(v.glowEffect);
-  }
-
-  const code = [
-    `import { MagneticBlob } from 'own-the-canvas';`,
-    ``,
-    `<MagneticBlob`,
-    `  preset="${preset}"`,
-    `  count={${count}}`,
-    `  radius={${radius}}`,
-    `  threshold={${threshold}}`,
-    `  colors={${JSON.stringify(colors)}}`,
-    followMouse ? null : `  followMouse={false}`,
-    glow ? null : `  glowEffect={false}`,
-    `  backgroundColor="${bg}"`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <MagneticBlob preset={preset} count={count} radius={radius}
-            threshold={threshold} colors={colors} followMouse={followMouse} glowEffect={glow}
-            backgroundColor={bg} width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to attract blobs</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="MagneticBlob" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "plasma", "ocean", "lava", "minimal"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Divider />
-          <ColorArrayPicker label="Blob Colors" value={colors} onChange={setColors} />
-          <Divider />
-          <Slider label="Blob count" value={count} min={2} max={10} step={1} onChange={setCount} />
-          <Slider label="Radius" value={radius} min={30} max={150} step={5} onChange={setRadius} />
-          <Slider label="Merge threshold" value={threshold} min={1} max={3} step={0.05} onChange={setThreshold} />
-          <Toggle label="Follow mouse" value={followMouse} onChange={setFollowMouse} />
-          <Toggle label="Glow effect" value={glow} onChange={setGlow} />
-        </div>
-      </div>
-    </>
-  );
-}
-
-function ClothSimulationPanel() {
-  const [preset, setPreset] = useState("default");
-  const [cols, setCols] = useState(25);
-  const [gravity, setGravity] = useState(0.4);
-  const [wind, setWind] = useState(0.3);
-  const [tearable, setTearable] = useState(false);
-  const [lineColor, setLineColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = CLOTH_PRESETS[p as keyof typeof CLOTH_PRESETS] ?? {};
-    if (v.cols !== undefined)          setCols(v.cols);
-    if (v.gravity !== undefined)       setGravity(v.gravity);
-    if (v.wind !== undefined)          setWind(v.wind);
-    if (v.tearable !== undefined)      setTearable(v.tearable);
-    if (v.lineColor)                   setLineColor(v.lineColor);
-    if (v.backgroundColor)             setBg(v.backgroundColor);
-  }
-
-  const code = [
-    `import { ClothSimulation } from 'own-the-canvas';`,
-    ``,
-    `<ClothSimulation`,
-    `  preset="${preset}"`,
-    `  cols={${cols}}`,
-    `  gravity={${gravity}}`,
-    `  wind={${wind}}`,
-    tearable ? `  tearable` : null,
-    `  lineColor="${lineColor}"`,
-    `  backgroundColor="${bg}"`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <ClothSimulation preset={preset} cols={cols} gravity={gravity} wind={wind} tearable={tearable}
-            lineColor={lineColor} backgroundColor={bg}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>{tearable ? "Click to tear cloth" : "Hover to push cloth"}</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="ClothSimulation" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "silk", "net", "heavy", "spider"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Cloth color" value={lineColor} onChange={setLineColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Columns" value={cols} min={10} max={40} step={1} onChange={setCols} />
-          <Slider label="Gravity" value={gravity} min={0.05} max={1.5} step={0.05} onChange={setGravity} />
-          <Slider label="Wind" value={wind} min={0} max={1} step={0.05} onChange={setWind} />
-          <Toggle label="Tearable" value={tearable} onChange={setTearable} />
         </div>
       </div>
     </>
@@ -2628,75 +2071,6 @@ function GameOfLifePanel() {
           <Slider label="Cell size" value={cellSize} min={4} max={24} step={2} onChange={setCellSize} />
           <Slider label="Speed (fps)" value={speed} min={1} max={30} step={1} onChange={setSpeed} />
           <Toggle label="Show age gradient" value={showAge} onChange={setShowAge} />
-        </div>
-      </div>
-    </>
-  );
-}
-
-function WormholePanel() {
-  const [preset, setPreset] = useState("default");
-  const [speed, setSpeed] = useState(1);
-  const [twist, setTwist] = useState(0.3);
-  const [ringCount, setRingCount] = useState(30);
-  const [starCount, setStarCount] = useState(100);
-  const [colors, setColors] = useState(["#ffffff", "#6b7280"]);
-  const [starColor, setStarColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = WORMHOLE_PRESETS[p as keyof typeof WORMHOLE_PRESETS] ?? {};
-    if (v.speed !== undefined)      setSpeed(v.speed);
-    if (v.twist !== undefined)      setTwist(v.twist);
-    if (v.starCount !== undefined)  setStarCount(v.starCount);
-    if (v.colors)                   setColors(v.colors);
-    if (v.backgroundColor)          setBg(v.backgroundColor);
-  }
-
-  const code = [
-    `import { Wormhole } from 'own-the-canvas';`,
-    ``,
-    `<Wormhole`,
-    `  preset="${preset}"`,
-    `  speed={${speed}}`,
-    `  twist={${twist}}`,
-    `  ringCount={${ringCount}}`,
-    `  starCount={${starCount}}`,
-    `  colors={${JSON.stringify(colors)}}`,
-    `  starColor="${starColor}"`,
-    `  backgroundColor="${bg}"`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <Wormhole preset={preset} speed={speed} twist={twist}
-            ringCount={ringCount} starCount={starCount}
-            colors={colors} starColor={starColor}
-            backgroundColor={bg} width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Mouse X controls speed</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="Wormhole" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "hyperspace", "neon", "vortex", "minimal"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <ColorPicker label="Star color" value={starColor} onChange={setStarColor} />
-          <Divider />
-          <ColorArrayPicker label="Ring Colors" value={colors} onChange={setColors} />
-          <Divider />
-          <Slider label="Speed" value={speed} min={0.2} max={5} step={0.1} onChange={setSpeed} />
-          <Slider label="Twist" value={twist} min={0} max={2} step={0.05} onChange={setTwist} />
-          <Slider label="Ring count" value={ringCount} min={10} max={60} step={5} onChange={setRingCount} />
-          <Slider label="Star count" value={starCount} min={0} max={300} step={10} onChange={setStarCount} />
         </div>
       </div>
     </>
@@ -3558,104 +2932,6 @@ function DiffusionAggregationPanel() {
   );
 }
 
-const LISSAJOUS_PRESET_PARAMS = {
-  default:   { freqX: 3, freqY: 2, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "solid" as LissajousColorMode, bg: "#111111" },
-  butterfly: { freqX: 3, freqY: 2, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "solid" as LissajousColorMode, bg: "#111111" },
-  star:      { freqX: 5, freqY: 4, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "solid" as LissajousColorMode, bg: "#111111" },
-  web:       { freqX: 7, freqY: 6, phaseSpeed: 0.5, lineWidth: 1.5, glowEffect: false, colorMode: "cycle" as LissajousColorMode, bg: "#111111" },
-  neon:      { freqX: 3, freqY: 2, phaseSpeed: 0.5, lineWidth: 2,   glowEffect: true,  colorMode: "cycle" as LissajousColorMode, bg: "#000000" },
-  crystal:   { freqX: 5, freqY: 3, phaseSpeed: 0.5, lineWidth: 2,   glowEffect: true,  colorMode: "cycle" as LissajousColorMode, bg: "#000510" },
-};
-
-function LissajousPanel() {
-  const [preset, setPreset] = useState("default");
-  const [freqX, setFreqX] = useState(3);
-  const [freqY, setFreqY] = useState(2);
-  const [phaseSpeed, setPhaseSpeed] = useState(0.5);
-  const [amplitude, setAmplitude] = useState(0.9);
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [lineWidth, setLineWidth] = useState(1.5);
-  const [trailFade, setTrailFade] = useState(0.04);
-  const [glowEffect, setGlowEffect] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(12);
-  const [colorMode, setColorMode] = useState<LissajousColorMode>("solid");
-  const [animated, setAnimated] = useState(true);
-  const [speed, setSpeed] = useState(1);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const pp = LISSAJOUS_PRESET_PARAMS[p as keyof typeof LISSAJOUS_PRESET_PARAMS];
-    if (!pp) return;
-    setFreqX(pp.freqX);
-    setFreqY(pp.freqY);
-    setPhaseSpeed(pp.phaseSpeed);
-    setLineWidth(pp.lineWidth);
-    setGlowEffect(pp.glowEffect);
-    setColorMode(pp.colorMode);
-    setBg(pp.bg);
-  }
-
-  const code = [
-    `import { Lissajous } from 'own-the-canvas';`,
-    ``,
-    `<Lissajous`,
-    `  preset="${preset}"`,
-    `  freqX={${freqX}}`,
-    `  freqY={${freqY}}`,
-    `  phaseSpeed={${phaseSpeed}}`,
-    `  amplitude={${amplitude}}`,
-    `  color="${color}"`,
-    `  backgroundColor="${bg}"`,
-    `  lineWidth={${lineWidth}}`,
-    `  trailFade={${trailFade}}`,
-    colorMode !== "solid" ? `  colorMode="${colorMode}"` : null,
-    glowEffect ? `  glowEffect` : null,
-    glowEffect && glowBlur !== 12 ? `  glowBlur={${glowBlur}}` : null,
-    speed !== 1 ? `  speed={${speed}}` : null,
-    !animated ? `  animated={false}` : null,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <Lissajous preset={preset} freqX={freqX} freqY={freqY} phaseSpeed={phaseSpeed}
-            amplitude={amplitude} color={color} backgroundColor={bg}
-            lineWidth={lineWidth} trailFade={trailFade} glowEffect={glowEffect}
-            glowBlur={glowBlur} colorMode={colorMode} animated={animated} speed={speed}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="Lissajous" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "butterfly", "star", "web", "neon", "crystal"]} onChange={handlePreset} />
-          <Sel label="Color mode" value={colorMode} options={["solid", "cycle"]} onChange={(v) => setColorMode(v as LissajousColorMode)} />
-          <Divider />
-          <ColorPicker label="Color" value={color} onChange={setColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Freq X" value={freqX} min={1} max={12} step={1} onChange={setFreqX} />
-          <Slider label="Freq Y" value={freqY} min={1} max={12} step={1} onChange={setFreqY} />
-          <Slider label="Phase speed" value={phaseSpeed} min={0} max={3} step={0.05} onChange={setPhaseSpeed} />
-          <Slider label="Amplitude" value={amplitude} min={0.3} max={1} step={0.01} onChange={setAmplitude} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={6} step={0.1} onChange={setLineWidth} />
-          <Slider label="Trail fade" value={trailFade} min={0} max={0.2} step={0.005} onChange={setTrailFade} />
-          <Slider label="Speed" value={speed} min={0.1} max={5} step={0.1} onChange={setSpeed} />
-          {glowEffect && <Slider label="Glow blur" value={glowBlur} min={2} max={40} step={1} onChange={setGlowBlur} />}
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
-        </div>
-      </div>
-    </>
-  );
-}
-
 const LSYSTEM_PRESET_PARAMS = {
   default:    { angle: 25 },
   fern:       { angle: 22 },
@@ -4024,99 +3300,6 @@ const INKBLEED_PRESET_PARAMS = {
   frost:    { inkColor: "#bae6fd", paperColor: "#0c1428", diffusionRate: 0.25, viscosity: 0.85, evaporationRate: 0.001, glowEffect: false, glowBlur: 8 },
 };
 
-function InkBleedPanel() {
-  const [preset, setPreset] = useState("default");
-  const [inkColor, setInkColor] = useState("#ffffff");
-  const [paperColor, setPaper] = useState("#111111");
-  const [diffusion, setDiffusion] = useState(0.3);
-  const [viscosity, setViscosity] = useState(0.8);
-  const [evapRate, setEvapRate] = useState(0.002);
-  const [inkRadius, setInkRadius] = useState(8);
-  const [inkStrength, setInkStr] = useState(1);
-  const [interactive, setInteract] = useState(true);
-  const [autoInk, setAutoInk] = useState(true);
-  const [autoInterval, setAutoInterval] = useState(2000);
-  const [resolution, setRes] = useState(0.5);
-  const [glowEffect, setGlow] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(8);
-  const [animated, setAnimated] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const pp = INKBLEED_PRESET_PARAMS[p as keyof typeof INKBLEED_PRESET_PARAMS];
-    if (!pp) return;
-    setInkColor(pp.inkColor);
-    setPaper(pp.paperColor);
-    setDiffusion(pp.diffusionRate);
-    setViscosity(pp.viscosity);
-    setEvapRate(pp.evaporationRate);
-    setGlow(pp.glowEffect);
-    setGlowBlur(pp.glowBlur);
-  }
-
-  const code = [
-    `import { InkBleed } from 'own-the-canvas';`,
-    ``,
-    `<InkBleed`,
-    `  preset="${preset}"`,
-    `  inkColor="${inkColor}"`,
-    `  paperColor="${paperColor}"`,
-    `  diffusionRate={${diffusion}}`,
-    `  viscosity={${viscosity}}`,
-    `  evaporationRate={${evapRate}}`,
-    `  inkRadius={${inkRadius}}`,
-    `  inkStrength={${inkStrength}}`,
-    `  interactive={${interactive}}`,
-    `  autoInk={${autoInk}}`,
-    `  autoInkInterval={${autoInterval}}`,
-    `  resolution={${resolution}}`,
-    `  glowEffect={${glowEffect}}`,
-    `  glowBlur={${glowBlur}}`,
-    `  animated={${animated}}`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <InkBleed preset={preset} inkColor={inkColor} paperColor={paperColor}
-            diffusionRate={diffusion} viscosity={viscosity}
-            evaporationRate={evapRate} inkRadius={inkRadius} inkStrength={inkStrength}
-            interactive={interactive} autoInk={autoInk} autoInkInterval={autoInterval}
-            resolution={resolution} glowEffect={glowEffect} glowBlur={glowBlur}
-            animated={animated}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Click/drag to drop ink</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="InkBleed" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "midnight", "sepia", "toxic", "neon", "frost"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Ink color" value={inkColor} onChange={setInkColor} />
-          <ColorPicker label="Paper color" value={paperColor} onChange={setPaper} />
-          <Slider label="Diffusion rate" value={diffusion} min={0.01} max={0.9} step={0.01} onChange={setDiffusion} />
-          <Slider label="Viscosity" value={viscosity} min={0} max={0.99} step={0.01} onChange={setViscosity} />
-          <Slider label="Evaporation rate" value={evapRate} min={0} max={0.02} step={0.0005} onChange={setEvapRate} />
-          <Slider label="Ink radius" value={inkRadius} min={2} max={40} step={1} onChange={setInkRadius} />
-          <Slider label="Ink strength" value={inkStrength} min={0.1} max={2} step={0.05} onChange={setInkStr} />
-          <Slider label="Auto interval ms" value={autoInterval} min={500} max={5000} step={100} onChange={setAutoInterval} />
-          <Slider label="Resolution" value={resolution} min={0.1} max={1} step={0.05} onChange={setRes} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={40} step={1} onChange={setGlowBlur} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
-          <Toggle label="Auto ink" value={autoInk} onChange={setAutoInk} />
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
-        </div>
-      </div>
-    </>
-  );
-}
 
 const WATERCOLOR_PRESET_PARAMS = {
   default:    { color1: "#ffffff", color2: "#6b7280", color3: "#9ca3af", bg: "#111111", bloomRadius: 80,  opacity: 0.15, wetEdge: 0.4, layerCount: 6, noiseAmount: 0.5 },
@@ -4576,106 +3759,6 @@ const PARTICLETEXT_PRESET_PARAMS = {
   minimal: { color: "#6b7280", bg: "#111111", particleSize: 1.5, repelRadius: 80,  repelForce: 3, snapSpeed: 0.12, glowEffect: false, glowBlur: 6 },
 };
 
-function ParticleTextPanel() {
-  const [preset, setPreset] = useState("default");
-  const [text, setText] = useState("hello");
-  const [fontSize, setFontSize] = useState(120);
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [particleSize, setPSize] = useState(2);
-  const [particleGap, setPGap] = useState(4);
-  const [repelRadius, setRepRad] = useState(80);
-  const [repelForce, setRepForce] = useState(5);
-  const [snapSpeed, setSnap] = useState(0.12);
-  const [friction, setFriction] = useState(0.85);
-  const [glowEffect, setGlow] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(6);
-  const [animated, setAnimated] = useState(true);
-  const [interactive, setInteract] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const pp = PARTICLETEXT_PRESET_PARAMS[p as keyof typeof PARTICLETEXT_PRESET_PARAMS];
-    if (!pp) return;
-    setColor(pp.color);
-    setBg(pp.bg);
-    setPSize(pp.particleSize);
-    setRepRad(pp.repelRadius);
-    setRepForce(pp.repelForce);
-    setSnap(pp.snapSpeed);
-    setGlow(pp.glowEffect);
-    setGlowBlur(pp.glowBlur);
-  }
-
-  const code = [
-    `import { ParticleText } from 'own-the-canvas';`,
-    ``,
-    `<ParticleText`,
-    `  preset="${preset}"`,
-    `  text="${text}"`,
-    `  fontSize={${fontSize}}`,
-    `  color="${color}"`,
-    `  backgroundColor="${bg}"`,
-    `  particleSize={${particleSize}}`,
-    `  particleGap={${particleGap}}`,
-    `  repelRadius={${repelRadius}}`,
-    `  repelForce={${repelForce}}`,
-    `  snapSpeed={${snapSpeed}}`,
-    `  friction={${friction}}`,
-    `  glowEffect={${glowEffect}}`,
-    `  glowBlur={${glowBlur}}`,
-    `  interactive={${interactive}}`,
-    `  animated={${animated}}`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <ParticleText preset={preset} text={text} fontSize={fontSize}
-            color={color} backgroundColor={bg}
-            particleSize={particleSize} particleGap={particleGap}
-            repelRadius={repelRadius} repelForce={repelForce}
-            snapSpeed={snapSpeed} friction={friction}
-            glowEffect={glowEffect} glowBlur={glowBlur}
-            animated={animated} interactive={interactive}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to scatter particles</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="ParticleText" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "neon", "fire", "frost", "gold", "minimal"]} onChange={handlePreset} />
-          <div className="ctrl-row">
-            <label className="ctrl-label">Text</label>
-            <input className="ctrl-text-input" value={text}
-              onChange={e => e.target.value && setText(e.target.value)}
-              spellCheck={false} />
-          </div>
-          <Divider />
-          <ColorPicker label="Particle color" value={color} onChange={setColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Font size" value={fontSize} min={40} max={200} step={10} onChange={setFontSize} />
-          <Slider label="Particle size" value={particleSize} min={0.5} max={5} step={0.5} onChange={setPSize} />
-          <Slider label="Particle gap" value={particleGap} min={2} max={12} step={1} onChange={setPGap} />
-          <Slider label="Repel radius" value={repelRadius} min={20} max={200} step={10} onChange={setRepRad} />
-          <Slider label="Repel force" value={repelForce} min={1} max={20} step={0.5} onChange={setRepForce} />
-          <Slider label="Snap speed" value={snapSpeed} min={0.01} max={0.5} step={0.01} onChange={setSnap} />
-          <Slider label="Friction" value={friction} min={0.5} max={0.99} step={0.01} onChange={setFriction} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={1} onChange={setGlowBlur} />
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
-        </div>
-      </div>
-    </>
-  );
-}
 
 const METABALLS_PRESET_PARAMS = {
   default: { color: "#ffffff", bg: "#111111", threshold: 1,   speed: 1,   minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 20 },
@@ -5002,104 +4085,6 @@ const TERRAINMESH_PRESET_PARAMS = {
   golden:   { wireColor: "#fbbf24", bg: "#0a0800", heightScale: 100, noiseScale: 0.12, glowEffect: true,  glowBlur: 8,  colorByHeight: true, lineWidth: 0.5 },
   minimal:  { wireColor: "#4b5563", bg: "#111111", heightScale: 60,  noiseScale: 0.12, glowEffect: false, glowBlur: 8,  colorByHeight: false, lineWidth: 0.5 },
 };
-
-function TerrainMeshPanel() {
-  const [preset, setPreset] = useState("default");
-  const [gridCols, setGridCols] = useState(40);
-  const [gridRows, setGridRows] = useState(30);
-  const [noiseScale, setNoiseScale] = useState(0.12);
-  const [heightScale, setHeightScale] = useState(120);
-  const [wireColor, setWireColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [fov, setFov] = useState(500);
-  const [autoRotate, setAutoRotate] = useState(true);
-  const [autoRotSpeed, setAutoRotSpd] = useState(0.003);
-  const [glowEffect, setGlow] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(8);
-  const [interactive, setInteract] = useState(true);
-  const [animated, setAnimated] = useState(true);
-  const [lineWidth, setLineWidth] = useState(0.5);
-  const [colorByH, setColorByH] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const pp = TERRAINMESH_PRESET_PARAMS[p as keyof typeof TERRAINMESH_PRESET_PARAMS];
-    if (!pp) return;
-    setWireColor(pp.wireColor);
-    setBg(pp.bg);
-    setHeightScale(pp.heightScale);
-    setNoiseScale(pp.noiseScale);
-    setGlow(pp.glowEffect);
-    setGlowBlur(pp.glowBlur);
-    setColorByH(pp.colorByHeight);
-    setLineWidth(pp.lineWidth);
-  }
-
-  const code = [
-    `import { TerrainMesh } from 'own-the-canvas';`,
-    ``,
-    `<TerrainMesh`,
-    `  preset="${preset}"`,
-    `  gridCols={${gridCols}}`,
-    `  gridRows={${gridRows}}`,
-    `  noiseScale={${noiseScale}}`,
-    `  heightScale={${heightScale}}`,
-    `  wireColor="${wireColor}"`,
-    `  backgroundColor="${bg}"`,
-    `  fov={${fov}}`,
-    `  autoRotate={${autoRotate}}`,
-    `  autoRotateSpeed={${autoRotSpeed}}`,
-    `  glowEffect={${glowEffect}}`,
-    `  glowBlur={${glowBlur}}`,
-    `  lineWidth={${lineWidth}}`,
-    `  colorByHeight={${colorByH}}`,
-    `  interactive={${interactive}}`,
-    `  animated={${animated}}`,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <TerrainMesh preset={preset} gridCols={gridCols} gridRows={gridRows}
-            noiseScale={noiseScale} heightScale={heightScale} wireColor={wireColor}
-            backgroundColor={bg} fov={fov} autoRotate={autoRotate}
-            autoRotateSpeed={autoRotSpeed} glowEffect={glowEffect} glowBlur={glowBlur}
-            lineWidth={lineWidth} colorByHeight={colorByH}
-            animated={animated} interactive={interactive}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Drag to orbit</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="TerrainMesh" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "volcanic", "arctic", "neon", "golden", "minimal"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Wire color" value={wireColor} onChange={setWireColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Grid columns" value={gridCols} min={5} max={80} step={5} onChange={setGridCols} />
-          <Slider label="Grid rows" value={gridRows} min={5} max={60} step={5} onChange={setGridRows} />
-          <Slider label="Noise scale" value={noiseScale} min={0.02} max={0.5} step={0.01} onChange={setNoiseScale} />
-          <Slider label="Height scale" value={heightScale} min={10} max={300} step={10} onChange={setHeightScale} />
-          <Slider label="FOV" value={fov} min={100} max={1000} step={50} onChange={setFov} />
-          <Slider label="Rotate speed" value={autoRotSpeed} min={0} max={0.02} step={0.001} onChange={setAutoRotSpd} />
-          <Slider label="Line width" value={lineWidth} min={0.25} max={3} step={0.25} onChange={setLineWidth} />
-          <Slider label="Glow blur" value={glowBlur} min={0} max={30} step={1} onChange={setGlowBlur} />
-          <Toggle label="Auto-rotate" value={autoRotate} onChange={setAutoRotate} />
-          <Toggle label="Color by height" value={colorByH} onChange={setColorByH} />
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlow} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteract} />
-          <Toggle label="Animated" value={animated} onChange={setAnimated} />
-        </div>
-      </div>
-    </>
-  );
-}
 
 function BlackHolePanel() {
   const [preset, setPreset] = useState("default");
@@ -5654,22 +4639,15 @@ const PANELS: Record<ComponentId, React.FC> = {
   ParticleField: ParticleFieldPanel,
   Starfield: StarfieldPanel,
   FireEffect: FireEffectPanel,
-  AudioVisualizer: AudioVisualizerPanel,
   Confetti: ConfettiPanel,
   NoiseGradient: NoiseGradientPanel,
-  PixelDissolve: PixelDissolvePanel,
   FlowField: FlowFieldPanel,
-  Shockwave: ShockwavePanel,
   Fireworks: FireworksPanel,
-  GlitchOverlay: GlitchOverlayPanel,
   Mandala: MandalaPanel,
-  MagneticBlob: MagneticBlobPanel,
-  ClothSimulation: ClothSimulationPanel,
   FluidSimulation: FluidSimulationPanel,
   Rain: RainPanel,
   Lightning: LightningPanel,
   GameOfLife: GameOfLifePanel,
-  Wormhole: WormholePanel,
   Boids: BoidsPanel,
   BubbleUniverse: BubbleUniversePanel,
   SakuraBlossom: SakuraBlossomPanel,
@@ -5679,21 +4657,17 @@ const PANELS: Record<ComponentId, React.FC> = {
   SandSimulation: SandSimulationPanel,
   WaveInterference: WaveInterferencePanel,
   DiffusionAggregation: DiffusionAggregationPanel,
-  Lissajous: LissajousPanel,
   LSystem: LSystemPanel,
   Kaleidoscope: KaleidoscopePanel,
   VoronoiCells: VoronoiCellsPanel,
   SlimeMold: SlimeMoldPanel,
-  InkBleed: InkBleedPanel,
   WatercolorBloom: WatercolorBloomPanel,
   PendulaWave: PendulaWavePanel,
   CrystalGrowth: CrystalGrowthPanel,
   NeuralWeb: NeuralWebPanel,
-  ParticleText: ParticleTextPanel,
   Metaballs: MetaballsPanel,
   AntColony: AntColonyPanel,
   MagneticField: MagneticFieldPanel,
-  TerrainMesh: TerrainMeshPanel,
   BlackHole: BlackHolePanel,
   GalaxySpiral: GalaxySpiralPanel,
   TornadoVortex: TornadoVortexPanel,
@@ -5743,7 +4717,7 @@ export default function App() {
             own-the-canvas
           </div>
           <div className="header-divider" aria-hidden="true" />
-          <span className="header-tag">52 components</span>
+          <span className="header-tag">50+ components</span>
           <div className="header-spacer" />
           {/* <span className="header-badge">5</span> */}
         </header>

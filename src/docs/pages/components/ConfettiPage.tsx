@@ -5,7 +5,7 @@ import { PlaygroundShell, PSel, PSlider, PToggle, PDivider, PButton, PLiveLabel 
 import { Confetti } from "../../../components/Confetti";
 
 const PROPS = [
-  { name: "palette",       type: '"monochrome" | "colorful"', default: '"monochrome"', description: 'Color variant. "monochrome" uses white/gray shades; "colorful" uses vibrant multi-color.' },
+  { name: "palette",       type: '"monochrome" | "colorful"', default: '"colorful"', description: 'Color variant. "monochrome" uses white/gray shades; "colorful" uses vibrant multi-color.' },
   { name: "trigger",       type: "boolean", default: "false", description: "Rising edge fires a burst." },
   { name: "particleCount", type: "number",  default: "150",   description: "Number of confetti pieces per burst." },
   { name: "spread",        type: "number",  default: "0.8",   description: "Horizontal spread (0–1)." },
@@ -16,7 +16,7 @@ const PROPS = [
 
 function ConfettiPlayground({ onReset }: { onReset?: () => void }) {
   const [trigger, setTrigger] = useState(false);
-  const [palette, setPalette] = useState<"monochrome" | "colorful">("monochrome");
+  const [palette, setPalette] = useState<"monochrome" | "colorful">("colorful");
   const [particleCount, setParticleCount] = useState(150);
   const [spread, setSpread] = useState(0.8);
   const [gravity, setGravity] = useState(0.5);

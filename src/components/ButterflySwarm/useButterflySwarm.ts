@@ -1,6 +1,7 @@
 // src/components/ButterflySwarm/useButterflySwarm.ts
 import { useRef, useEffect, RefObject } from "react";
 import { hexToRgba } from "../../utils/color";
+import { pointerInCanvas } from "../../runtime/fx";
 
 interface Butterfly {
   x: number; y: number;
@@ -110,10 +111,11 @@ export function useButterflySwarm(
     if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
 
     function onMouseMove(e: MouseEvent) {
-      const r = canvas!.getBoundingClientRect();
+      const p = pointerInCanvas(e, canvas!);
+      if (!p) return onMouseLeave();
       mouse.prevX = mouse.x; mouse.prevY = mouse.y;
-      mouse.x = e.clientX - r.left;
-      mouse.y = e.clientY - r.top;
+      mouse.x = p.x;
+      mouse.y = p.y;
     }
     function onMouseLeave() { mouse.x = -9999; mouse.y = -9999; }
     window.addEventListener("mousemove", onMouseMove);

@@ -3,7 +3,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSpiderWeb } from "./useSpiderWeb";
 
-type SpiderWebPreset = "default" | "night" | "forest" | "neon" | "frost";
+type SpiderWebPreset = "default" | "night" | "forest" | "neon" | "frost" | "monochrome";
 
 interface SpiderWebPresetValues {
   webColor?: string;
@@ -13,7 +13,8 @@ interface SpiderWebPresetValues {
 }
 
 export const PRESETS: Record<SpiderWebPreset, SpiderWebPresetValues> = {
-  default: { webColor: "#d8d8d8", backgroundColor: "#0a0a0a", spiderColor: "#c0c0c0", glowColor: "#e0e0e0" },
+  default: { webColor: "#c0c8e0", backgroundColor: "#04081a", spiderColor: "#404060", glowColor: "#8899cc" },
+  monochrome: { webColor: "#d8d8d8", backgroundColor: "#0a0a0a", spiderColor: "#c0c0c0", glowColor: "#e0e0e0" },
   night:   { webColor: "#c0c8e0", backgroundColor: "#04081a", spiderColor: "#404060", glowColor: "#8899cc" },
   forest:  { webColor: "#90b890", backgroundColor: "#050f05", spiderColor: "#2a4a2a", glowColor: "#66aa66" },
   neon:    { webColor: "#00ffcc", backgroundColor: "#000000", spiderColor: "#003322", glowColor: "#00ffff" },
@@ -23,17 +24,17 @@ export const PRESETS: Record<SpiderWebPreset, SpiderWebPresetValues> = {
 export interface SpiderWebProps extends BaseCanvasProps {
   /** Number of radial spokes (default: 12) */
   spokeCount?: number;
-  /** Number of concentric rings (default: 10) */
+  /** Turns of the capture spiral (default: 10) */
   ringCount?: number;
-  /** Strand color (default: "#d8d8d8") */
+  /** Strand color (default: "#c0c8e0") */
   webColor?: string;
-  /** Canvas background color (default: "#0a0a0a") */
+  /** Canvas background color (default: "#04081a") */
   backgroundColor?: string;
-  /** Spider body color (default: "#c0c0c0") */
+  /** Spider body color (default: "#404060") */
   spiderColor?: string;
   /** Show dew drop glow points (default: true) */
   dewDrops?: boolean;
-  /** Dew drop glow color (default: "#e0e0e0") */
+  /** Dew drop glow color (default: "#8899cc") */
   glowColor?: string;
   /** Ambient sway speed multiplier (default: 1) */
   swaySpeed?: number;
@@ -55,7 +56,7 @@ export const SpiderWeb = forwardRef<HTMLCanvasElement, SpiderWebProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as SpiderWebPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as SpiderWebPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

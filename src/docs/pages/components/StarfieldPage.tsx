@@ -6,10 +6,10 @@ import { Starfield } from "../../../components/Starfield";
 
 const PROPS = [
   { name: "starCount",         type: "number",       default: "200",       description: "Number of stars to render." },
-  { name: "starColor",         type: "string",       default: '"#ffffff"', description: "Star color." },
+  { name: "starColor",         type: "string",       default: '"#c4b5fd"', description: "Star color." },
   { name: "shootingStarColor", type: "string",       default: '"#ffffff"', description: "Shooting star trail color." },
   { name: "speed",             type: "number",       default: "0.5",       description: "Star movement speed." },
-  { name: "backgroundColor",   type: "string",       default: '"#111111"', description: "Sky background color." },
+  { name: "backgroundColor",   type: "string",       default: '"#0d0118"', description: "Sky background color." },
   { name: "perspective",       type: '"2D" | "3D"',  default: '"2D"',      description: "2D twinkle field or 3D warp tunnel." },
   { name: "twinkle",           type: "boolean",      default: "true",      description: "Enable star twinkle animation." },
   { name: "shootingStars",     type: "boolean",      default: "false",     description: "Enable random shooting star events." },
@@ -19,8 +19,8 @@ function StarfieldPlayground({ onReset }: { onReset?: () => void }) {
   const [persp, setPersp] = useState<"2D" | "3D">("2D");
   const [count, setCount] = useState(200);
   const [speed, setSpeed] = useState(0.5);
-  const [bg, setBg] = useState("#111111");
-  const [starColor, setStarColor] = useState("#ffffff");
+  const [bg, setBg] = useState("#0d0118");
+  const [starColor, setStarColor] = useState("#c4b5fd");
   const [shootingStarColor, setShootingStarColor] = useState("#ffffff");
   const [twinkle, setTwinkle] = useState(true);
   const [shooting, setShooting] = useState(true);

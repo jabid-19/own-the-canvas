@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useBubbleUniverse } from "./useBubbleUniverse";
 
-type BubbleUniversePreset = "default" | "soap" | "neon" | "deep" | "minimal";
+type BubbleUniversePreset = "default" | "soap" | "neon" | "deep" | "minimal" | "monochrome";
 
 interface BubbleUniversePresetValues {
   backgroundColor?: string;
@@ -14,7 +14,8 @@ interface BubbleUniversePresetValues {
 }
 
 const PRESETS: Record<BubbleUniversePreset, BubbleUniversePresetValues> = {
-  default: {},
+  default: { backgroundColor: "#050a12", shimmerColor: "#ffffff" },
+  monochrome: {},
   soap: {
     backgroundColor: "#050a12",
     shimmerColor: "#ffffff",
@@ -53,13 +54,13 @@ export interface BubbleUniverseProps extends BaseCanvasProps {
   minRadius?: number;
   /** Maximum bubble radius in px (default: 50) */
   maxRadius?: number;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#050a12") */
   backgroundColor?: string;
   /** Specular highlight color (default: "#ffffff") */
   shimmerColor?: string;
   /** Click to pop bubbles with particle burst (default: true) */
   popEffect?: boolean;
-  /** Downward gravity force (default: 0.02) */
+  /** Pull on the bubbles against their buoyancy; below 0.03 they rise, above it they sink (default: 0.02) */
   gravity?: number;
   /** Velocity friction per frame (default: 0.995) */
   friction?: number;
@@ -81,7 +82,7 @@ export const BubbleUniverse = forwardRef<HTMLCanvasElement, BubbleUniverseProps>
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as BubbleUniversePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as BubbleUniversePreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useDiffusionAggregation, DLASeedMode } from "./useDiffusionAggregation";
 
-type DiffusionAggregationPreset = "default" | "coral" | "snowflake" | "lightning" | "neon" | "frost";
+type DiffusionAggregationPreset = "default" | "coral" | "snowflake" | "lightning" | "neon" | "frost" | "monochrome";
 
 interface DiffusionAggregationPresetValues {
   particleColor?: string;
@@ -15,7 +15,8 @@ interface DiffusionAggregationPresetValues {
 }
 
 export const PRESETS: Record<DiffusionAggregationPreset, DiffusionAggregationPresetValues> = {
-  default: {},
+  default: { particleColor: "#ff7043", walkerColor: "#ff7043", backgroundColor: "#0a0500" },
+  monochrome: {},
   coral: {
     particleColor: "#ff7043",
     walkerColor: "#ff7043",
@@ -57,11 +58,11 @@ export const PRESETS: Record<DiffusionAggregationPreset, DiffusionAggregationPre
 };
 
 export interface DiffusionAggregationProps extends BaseCanvasProps {
-  /** Aggregated cluster color (default: "#ffffff") */
+  /** Aggregated cluster color (default: "#ff7043") */
   particleColor?: string;
-  /** Active walker color (default: "#6b7280") */
+  /** Active walker color (default: "#ff7043") */
   walkerColor?: string;
-  /** Canvas background color (default: "#111111") */
+  /** Canvas background color (default: "#0a0500") */
   backgroundColor?: string;
   /** Particle/cell size in pixels (default: 3) */
   particleSize?: number;
@@ -104,7 +105,7 @@ export const DiffusionAggregation = forwardRef<HTMLCanvasElement, DiffusionAggre
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as DiffusionAggregationPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as DiffusionAggregationPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

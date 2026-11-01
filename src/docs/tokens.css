@@ -1,42 +1,92 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/*
+  Paper-cut system
+  ----------------
+  Everything on the site is a sheet of paper lying on a kraft desk.
+  Depth comes from stacked offset shadows (sheets under sheets), not blur alone.
+*/
 :root {
-  --bg:           #ffffff;
-  --bg-subtle:    #f8fafc;
-  --sidebar-bg:   #f8fafc;
-  --border:       #e2e8f0;
-  --border-mid:   #cbd5e1;
-  --text-1:       #0f172a;
-  --text-2:       #475569;
-  --text-3:       #94a3b8;
-  --accent:       #111111;
-  --accent-hover: #000000;
-  --accent-soft:  #f4f4f4;
-  --accent-mid:   #e0e0e0;
-  --code-bg:      #f1f5f9;
-  --code-border:  #e2e8f0;
-  --success:      #16a34a;
+  /* paper stock */
+  --desk:         #e4d3b3;   /* kraft board the sheets lie on */
+  --bg:           #fbf5e8;   /* cream sheet */
+  --bg-subtle:    #f4ead6;   /* second sheet, a shade deeper */
+  --sidebar-bg:   #fbf5e8;
+  --border:       #dccbab;
+  --border-mid:   #c4ae88;
 
-  --font:  'Inter', system-ui, -apple-system, sans-serif;
-  --mono:  'JetBrains Mono', 'Fira Code', monospace;
+  /* ink */
+  --text-1:       #2b2118;
+  --text-2:       #4f4136;
+  --text-3:       #6f5f4d;
 
-  --r-sm: 6px;
-  --r:    10px;
-  --r-lg: 14px;
+  /* colored paper */
+  --terracotta:   #c4442a;
+  --coral:        #e8795a;
+  --mustard:      #f2b134;
+  --sage:         #8fbf9f;
+  --teal:         #2f6f73;
+  --navy:         #27406b;
+  --blush:        #f2b5a6;
+
+  /* semantic accent = terracotta paper */
+  --accent:       #c4442a;
+  --accent-hover: #a93720;
+  --accent-soft:  #fbe4d8;
+  --accent-mid:   #f0b9a0;
+  --accent-deep:  #7e2614;   /* the shadow-sheet under accent paper */
+  --code-bg:      #2b2118;
+  --code-border:  #1c150f;
+  --success:      #2f7a4d;
+
+  --font:         'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --mono:         'JetBrains Mono', 'Fira Code', monospace;
+
+  /* hand-cut corners: tiny, uneven radii */
+  --r-sm: 4px;
+  --r:    6px;
+  --r-lg: 8px;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --sidebar-w: 260px;
-  --topbar-h:  52px;
+  /* light comes from the top-left; shadows fall down-right, in warm brown */
+  --shadow-ink:   60, 35, 10;
+  --lift-1: 0 1px 0 rgba(255,255,255,.7) inset,
+            0 1px 1px rgba(var(--shadow-ink), .22),
+            0 2px 3px rgba(var(--shadow-ink), .14);
+  --lift-2: 0 1px 0 rgba(255,255,255,.7) inset,
+            0 2px 1px rgba(var(--shadow-ink), .2),
+            0 5px 8px -2px rgba(var(--shadow-ink), .2),
+            0 10px 18px -6px rgba(var(--shadow-ink), .16);
+  --lift-3: 0 1px 0 rgba(255,255,255,.7) inset,
+            0 3px 1px rgba(var(--shadow-ink), .2),
+            0 9px 14px -3px rgba(var(--shadow-ink), .24),
+            0 22px 34px -10px rgba(var(--shadow-ink), .22);
+
+  /* primed linen: a fine woven grid over a little fibre noise. Use as `background: var(--grain), <color>` */
+  --weave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 .5H4' stroke='rgba(60,35,10,.045)'/%3E%3Cpath d='M.5 0V4' stroke='rgba(60,35,10,.045)'/%3E%3Cpath d='M0 2.5H4M2.5 0V4' stroke='rgba(255,255,255,.14)'/%3E%3C/svg%3E");
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .28 0 0 0 0 .18 0 0 0 0 .08 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain: var(--weave), var(--noise);
+
+  /* scissor-cut outlines: near-rectangles with slightly wandering edges */
+  --cut-a: polygon(0 1.4%, 2.2% 0, 48% .5%, 97% 0, 100% 1.6%, 99.6% 52%, 100% 98%, 97.6% 100%, 51% 99.4%, 3% 100%, 0 97.8%, .4% 46%);
+  --cut-b: polygon(.6% 0, 52% 1%, 98.4% .4%, 100% 2.4%, 99.2% 49%, 100% 97.6%, 96.8% 100%, 47% 99%, 1.8% 100%, 0 96.6%, .8% 54%, 0 2%);
+  --cut-c: polygon(0 0, 46% .8%, 100% 0, 99% 48%, 100% 100%, 54% 99.2%, 1.2% 100%, .8% 52%);
+  --cut-d: polygon(2.8% 0, 97% .6%, 100% 3%, 99.4% 96%, 97.2% 100%, 2% 99.4%, 0 97%, .6% 3.6%);
+
+  /* a whole page sheet: px offsets so the wander stays small on tall pages */
+  --cut-sheet: polygon(0 4px, 14px 0, 38% 3px, calc(100% - 20px) 0, 100% 5px, calc(100% - 3px) 30%, 100% 62%, calc(100% - 4px) 100%, 65% calc(100% - 3px), 24px 100%, 0 calc(100% - 5px), 3px 58%);
+
+  --sidebar-w: 268px;
+  --topbar-h:  56px;
 }
 
 html, body, #root {
   height: 100%;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, #c8c8c8 1px, transparent 1px);
-  background-size: 20px 20px;
+  background: var(--grain), var(--desk);
   color: var(--text-1);
   font-family: var(--font);
   font-size: 16px;
@@ -45,16 +95,56 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection { background: var(--accent-mid); }
+::selection { background: var(--mustard); color: var(--text-1); }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); background-clip: padding-box; }
+
+:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Page loader: the logo's paper enso drawing itself ── */
+.otc-loader {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; height: 100%; min-height: 320px;
+  animation: otc-in 300ms 200ms var(--ease) both; /* skip the flash on fast loads */
+}
+.otc-loader-mark {
+  width: 104px; height: 104px; overflow: visible;
+  filter: drop-shadow(1px 2px 0 rgba(var(--shadow-ink), .18)) drop-shadow(2px 6px 8px rgba(var(--shadow-ink), .22));
+  animation: otc-bob 2.8s ease-in-out infinite;
+}
+.otc-loader-spin { transform-origin: 64px 64px; animation: otc-spin 2.4s linear infinite; }
+.otc-loader-spin--rev { animation-duration: 3.2s; animation-direction: reverse; }
+.otc-loader-arc, .otc-loader-ink { fill: none; stroke-linecap: round; filter: drop-shadow(.6px 1px .6px rgba(var(--shadow-ink), .35)); }
+.otc-loader-arc { stroke-width: 12; stroke-dasharray: 239 239; animation: otc-cut 2.4s var(--ease) infinite; }
+.otc-loader-ink { stroke-width: 3; stroke-dasharray: 170 170; animation: otc-cut-ink 3.2s ease-in-out infinite; }
+.otc-loader-stars circle { transform-box: fill-box; transform-origin: center; animation: otc-pop 2.4s var(--ease) infinite; }
+.otc-loader-stars path { stroke-dasharray: 110; animation: otc-thread 2.4s ease-in-out infinite; }
+.otc-loader-caption {
+  font-family: var(--font-display); font-size: 15px; font-weight: 500; font-style: italic;
+  color: var(--text-3); min-height: 1.4em;
+}
+
+@keyframes otc-in    { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes otc-bob   { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(3deg) translateY(-3px); } }
+@keyframes otc-spin  { to { transform: rotate(360deg); } }
+@keyframes otc-cut   { 0% { stroke-dashoffset: 239; } 55% { stroke-dashoffset: 36; } 100% { stroke-dashoffset: -239; } }
+@keyframes otc-cut-ink { 0% { stroke-dashoffset: 170; } 50% { stroke-dashoffset: 60; } 100% { stroke-dashoffset: -170; } }
+@keyframes otc-pop   { 0%, 10% { transform: scale(0); } 25%, 75% { transform: scale(1); } 90%, 100% { transform: scale(0); } }
+@keyframes otc-thread { 0%, 15% { stroke-dashoffset: 110; } 50%, 75% { stroke-dashoffset: 0; } 95%, 100% { stroke-dashoffset: -110; } }
+
+/* reduced motion: hold a finished, still frame of the logo */
+@media (prefers-reduced-motion: reduce) {
+  .otc-loader, .otc-loader *, .otc-loader-mark { animation: none !important; }
+  .otc-loader-arc { stroke-dashoffset: 36; }
+  .otc-loader-ink { stroke-dashoffset: 60; }
 }

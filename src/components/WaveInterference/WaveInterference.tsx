@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useWaveInterference } from "./useWaveInterference";
 
-type WaveInterferencePreset = "default" | "ripple" | "plasma" | "neon" | "cosmic";
+type WaveInterferencePreset = "default" | "ripple" | "plasma" | "neon" | "cosmic" | "monochrome";
 
 interface WaveInterferencePresetValues {
   colorHigh?: string;
@@ -13,7 +13,8 @@ interface WaveInterferencePresetValues {
 }
 
 export const PRESETS: Record<WaveInterferencePreset, WaveInterferencePresetValues> = {
-  default: {},
+  default: { colorHigh: "#88ccff", colorLow: "#001133" },
+  monochrome: {},
   ripple: { colorHigh: "#88ccff", colorLow: "#001133", wavelength: 100 },
   plasma: { colorHigh: "#ff4400", colorLow: "#000033", wavelength: 60, decay: 0.001 },
   neon: { colorHigh: "#00ffff", colorLow: "#000000", wavelength: 70 },
@@ -27,9 +28,9 @@ export interface WaveInterferenceProps extends BaseCanvasProps {
   wavelength?: number;
   /** Wave propagation speed (default: 1) */
   speed?: number;
-  /** Constructive interference color (default: "#ffffff") */
+  /** Constructive interference color (default: "#88ccff") */
   colorHigh?: string;
-  /** Destructive interference color (default: "#111111") */
+  /** Destructive interference color (default: "#001133") */
   colorLow?: string;
   /** Canvas background color (default: "#111111") */
   backgroundColor?: string;
@@ -65,7 +66,7 @@ export const WaveInterference = forwardRef<HTMLCanvasElement, WaveInterferencePr
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as WaveInterferencePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as WaveInterferencePreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

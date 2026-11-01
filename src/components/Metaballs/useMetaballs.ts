@@ -22,6 +22,9 @@ interface Blob {
   vx: number;
   vy: number;
   radius: number;
+  /** 0–1 position between minRadius and maxRadius; radius re-resolves live from it. */
+  rt: number;
+  phase: number;
 }
 
 export function useMetaballs(
@@ -40,6 +43,8 @@ export function useMetaballs(
 
     let cssW = 0;
     let cssH = 0;
+    let t = 0;
+    let fieldBuf = new Float32Array(0);
     let rafId = 0;
     let blobs: Blob[] = [];
     let dragIdx = -1;
@@ -63,6 +68,8 @@ export function useMetaballs(
           vx: (Math.random() - 0.5) * speed * 2,
           vy: (Math.random() - 0.5) * speed * 2,
           radius: r,
+          rt: (r - minRadius) / Math.max(1e-6, maxRadius - minRadius),
+          phase: Math.random() * Math.PI * 2,
         };
       });
     }
@@ -123,7 +130,7 @@ export function useMetaballs(
         // Add new blob
         const { minRadius, maxRadius } = optionsRef.current;
         const radius = minRadius + Math.random() * (maxRadius - minRadius);
-        blobs.push({ x: mx, y: my, vx: 0, vy: 0, radius });
+        blobs.push({ x: mx, y: my, vx: 0, vy: 0, radius, rt: (radius - minRadius) / Math.max(1e-6, maxRadius - minRadius), phase: Math.random() * Math.PI * 2 });
       }
     }
     function onMouseMove(e: MouseEvent) {
@@ -186,9 +193,15 @@ export function useMetaballs(
             vx: (Math.random() - 0.5) * speed * 2,
             vy: (Math.random() - 0.5) * speed * 2,
             radius: r,
+            rt: (r - minRadius) / Math.max(1e-6, maxRadius - minRadius),
+            phase: Math.random() * Math.PI * 2,
           });
         }
         while (blobs.length > blobCount) blobs.pop();
+      }
+      { // live minRadius / maxRadius
+        const { minRadius, maxRadius } = optionsRef.current;
+        for (const b of blobs) b.radius = minRadius + b.rt * (maxRadius - minRadius);
       }
 
       ctx.fillStyle = backgroundColor;
@@ -203,62 +216,91 @@ export function useMetaballs(
       const scaleX = cssW / gridW;
       const scaleY = cssH / gridH;
 
+      t += 1 / 60;
       for (let i = 0; i < blobs.length; i++) {
         if (i === dragIdx) continue;
         const b = blobs[i];
-        b.vx += (Math.random() - 0.5) * 0.1 * speed;
-        b.vy += (Math.random() - 0.5) * 0.1 * speed;
-        const maxV = speed * 2;
-        if (b.vx > maxV) b.vx = maxV; else if (b.vx < -maxV) b.vx = -maxV;
-        if (b.vy > maxV) b.vy = maxV; else if (b.vy < -maxV) b.vy = -maxV;
+        // lava-lamp convection: each blob slowly rises and sinks, drifting sideways
+        const targetVy = Math.sin(t * 0.35 * speed + b.phase) * speed * 1.1;
+        b.vy += (targetVy - b.vy) * 0.02;
+        b.vx += ((Math.sin(t * 0.21 + b.phase * 1.7) * 0.6) * speed - b.vx) * 0.02;
         b.x += b.vx;
         b.y += b.vy;
-        if (b.x < b.radius) { b.x = b.radius; b.vx = Math.abs(b.vx); }
-        else if (b.x > cssW - b.radius) { b.x = cssW - b.radius; b.vx = -Math.abs(b.vx); }
-        if (b.y < b.radius) { b.y = b.radius; b.vy = Math.abs(b.vy); }
-        else if (b.y > cssH - b.radius) { b.y = cssH - b.radius; b.vy = -Math.abs(b.vy); }
+        if (b.x < b.radius * 0.6) { b.x = b.radius * 0.6; b.vx = Math.abs(b.vx); }
+        else if (b.x > cssW - b.radius * 0.6) { b.x = cssW - b.radius * 0.6; b.vx = -Math.abs(b.vx); }
+        if (b.y < b.radius * 0.4) { b.y = b.radius * 0.4; b.vy = Math.abs(b.vy); }
+        else if (b.y > cssH - b.radius * 0.4) { b.y = cssH - b.radius * 0.4; b.vy = -Math.abs(b.vy); }
       }
 
-      // Pre-parse colors once
+      // Colour: the field's gradient is the surface normal, so each blob is lit like a glossy
+      // drop of wax: hot bright core, cooler deep edge, specular highlight, soft rim glow.
       const [bgR, bgG, bgB] = sampleGradient([backgroundColor], 0);
       const [fgR, fgG, fgB] = sampleGradient([color], 0);
-
+      // saturated core (pushed toward yellow-white), dark rich edge (pushed toward the
+      // colour's own shadow) so the blobs glow from inside like lamp wax
+      const hot = [Math.min(255, fgR + (255 - fgR) * 0.6), Math.min(255, fgG + (255 - fgG) * 0.55), Math.min(255, fgB + (255 - fgB) * 0.35)];
+      const deep = [fgR * 0.6, fgG * 0.3, fgB * 0.45];
       const data = imgData.data;
-      const tLow = threshold * 0.8;
-      const tRange = threshold * 0.2;
+      const tLow = threshold * 0.82;
+      const tRange = threshold * 0.18;
+      const avgR = blobs.reduce((m, bb) => m + bb.radius, 0) / Math.max(1, blobs.length);
+      const field = fieldBuf.length === gridW * gridH ? fieldBuf : (fieldBuf = new Float32Array(gridW * gridH));
 
       for (let py = 0; py < gridH; py++) {
         const cy = py * scaleY;
         for (let px = 0; px < gridW; px++) {
           const cx = px * scaleX;
-          let field = 0;
-          for (const b of blobs) {
-            const dx = cx - b.x;
-            const dy = cy - b.y;
-            const distSq = dx * dx + dy * dy;
-            if (distSq < 1) { field = 99; break; }
-            field += (b.radius * b.radius) / distSq;
+          let f = 0;
+          for (const bb of blobs) {
+            const dx = cx - bb.x, dy = cy - bb.y;
+            f += (bb.radius * bb.radius) / Math.max(1, dx * dx + dy * dy);
           }
-          const alpha = Math.min(1, Math.max(0, (field - tLow) / tRange));
-          const i4 = (py * gridW + px) * 4;
-          data[i4]     = (bgR + (fgR - bgR) * alpha) | 0;
-          data[i4 + 1] = (bgG + (fgG - bgG) * alpha) | 0;
-          data[i4 + 2] = (bgB + (fgB - bgB) * alpha) | 0;
+          field[py * gridW + px] = f;
+        }
+      }
+      for (let py = 0; py < gridH; py++) {
+        for (let px = 0; px < gridW; px++) {
+          const i = py * gridW + px;
+          const f = field[i];
+          const i4 = i * 4;
+          const inside = Math.min(1, Math.max(0, (f - tLow) / tRange));
+          // halo outside the surface
+          const halo = glowEffect ? Math.max(0, Math.min(1, f / threshold)) ** 3 * 0.35 * (glowBlur / 20) : 0;
+          let r = bgR + (fgR - bgR) * halo, g = bgG + (fgG - bgG) * halo, bl = bgB + (fgB - bgB) * halo;
+          if (inside > 0) {
+            // height map: 0 at the surface, rising smoothly toward each blob's centre
+            const hgt = Math.max(0, 1 - threshold / f);
+            const fx1 = field[px < gridW - 1 ? i + 1 : i], fx0 = field[px > 0 ? i - 1 : i];
+            const fy1 = field[py < gridH - 1 ? i + gridW : i], fy0 = field[py > 0 ? i - gridW : i];
+            // d(height)/dx in css px, scaled by a typical blob radius so it's a dome, not a plateau
+            const hx = (threshold * (fx1 - fx0)) / (2 * scaleX * f * f) * avgR;
+            const hy = (threshold * (fy1 - fy0)) / (2 * scaleY * f * f) * avgR;
+            const nl = Math.sqrt(hx * hx + hy * hy + 1);
+            const nx = -hx / nl, ny = -hy / nl, nz = 1 / nl;
+            const diff = Math.max(0, nx * -0.5 + ny * -0.6 + nz * 0.62);
+            // highlight: reflect the light toward the viewer
+            const rz = 2 * (nx * -0.5 + ny * -0.6 + nz * 0.62) * nz - 0.62;
+            const spec = Math.pow(Math.max(0, rz), 18) * 0.8 * Math.min(1, hgt * 5);
+            const k = Math.pow(hgt, 0.55);
+            const lit = 0.35 + diff * 0.85;
+            const sr = (deep[0] + (hot[0] - deep[0]) * k) * lit + spec * 255;
+            const sg = (deep[1] + (hot[1] - deep[1]) * k) * lit + spec * 255;
+            const sb = (deep[2] + (hot[2] - deep[2]) * k) * lit + spec * 255;
+            r = r + (Math.min(255, sr) - r) * inside;
+            g = g + (Math.min(255, sg) - g) * inside;
+            bl = bl + (Math.min(255, sb) - bl) * inside;
+          }
+          data[i4] = r | 0;
+          data[i4 + 1] = g | 0;
+          data[i4 + 2] = bl | 0;
           data[i4 + 3] = 255;
         }
       }
 
       offCtx.putImageData(imgData, 0, 0);
-
-      ctx.save();
-      if (glowEffect) {
-        ctx.shadowBlur = glowBlur;
-        ctx.shadowColor = color;
-      }
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "medium";
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(offscreen, 0, 0, cssW, cssH);
-      ctx.restore();
 
       rafId = requestAnimationFrame(loop);
     }

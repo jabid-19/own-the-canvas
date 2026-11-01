@@ -3,7 +3,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useButterflySwarm } from "./useButterflySwarm";
 
-type ButterflySwarmPreset = "default" | "monarch" | "morpho" | "meadow" | "night";
+type ButterflySwarmPreset = "default" | "monarch" | "morpho" | "meadow" | "night" | "monochrome";
 
 interface ButterflySwarmPresetValues {
   wingColor?: string;
@@ -12,7 +12,8 @@ interface ButterflySwarmPresetValues {
 }
 
 export const PRESETS: Record<ButterflySwarmPreset, ButterflySwarmPresetValues> = {
-  default:  { wingColor: "#c8c8c8", patternColor: "#444444", backgroundColor: "#0a0a0a" },
+  default:  { wingColor: "#e06010", patternColor: "#111111", backgroundColor: "#0a0800" },
+  monochrome: { wingColor: "#c8c8c8", patternColor: "#444444", backgroundColor: "#0a0a0a" },
   monarch:  { wingColor: "#e06010", patternColor: "#111111", backgroundColor: "#0a0800" },
   morpho:   { wingColor: "#1060ff", patternColor: "#0030aa", backgroundColor: "#000508" },
   meadow:   { wingColor: "#f0c030", patternColor: "#804000", backgroundColor: "#0a1405" },
@@ -22,11 +23,11 @@ export const PRESETS: Record<ButterflySwarmPreset, ButterflySwarmPresetValues> =
 export interface ButterflySwarmProps extends BaseCanvasProps {
   /** Number of butterflies (default: 12) */
   butterflyCount?: number;
-  /** Primary wing color (default: "#f97316") */
+  /** Primary wing color (default: "#e06010") */
   wingColor?: string;
   /** Wing pattern and body color (default: "#111111") */
   patternColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#0a0800") */
   backgroundColor?: string;
   /** Wing flap speed multiplier (default: 1) */
   flapSpeed?: number;
@@ -50,7 +51,7 @@ export const ButterflySwarm = forwardRef<HTMLCanvasElement, ButterflySwarmProps>
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as ButterflySwarmPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as ButterflySwarmPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useCrystalGrowth, CrystalGrowthColorMode } from "./useCrystalGrowth";
 
-type CrystalGrowthPreset = "default" | "snowflake" | "gem" | "neon" | "frost" | "gold";
+type CrystalGrowthPreset = "default" | "snowflake" | "gem" | "neon" | "frost" | "gold" | "monochrome";
 
 interface CrystalGrowthPresetValues {
   crystalColor?: string;
@@ -18,7 +18,8 @@ interface CrystalGrowthPresetValues {
 }
 
 const PRESETS: Record<CrystalGrowthPreset, CrystalGrowthPresetValues> = {
-  default: {},
+  default: { crystalColor: "#e0f2fe", activeColor: "#7dd3fc", backgroundColor: "#0c1a2e" },
+  monochrome: {},
   snowflake: {
     crystalColor: "#e0f2fe",
     activeColor: "#7dd3fc",
@@ -76,21 +77,21 @@ const PRESETS: Record<CrystalGrowthPreset, CrystalGrowthPresetValues> = {
 };
 
 export interface CrystalGrowthProps extends BaseCanvasProps {
-  /** Color of crystallized cells (default: "#ffffff") */
+  /** Color of crystallized cells (default: "#e0f2fe") */
   crystalColor?: string;
-  /** Color of actively growing frontier (default: "#6b7280") */
+  /** Color of actively growing frontier (default: "#7dd3fc") */
   activeColor?: string;
-  /** Background color (default: "#111111") */
+  /** Background color (default: "#0c1a2e") */
   backgroundColor?: string;
-  /** Cells crystallized per frame (default: 3) */
+  /** Growth speed of the ice arms (default: 3) */
   growthSpeed?: number;
   /** Rotational symmetry arms 2–12 (default: 6) */
   symmetry?: number;
   /** Probability a frontier cell spawns a branch (default: 0.3) */
   branchProbability?: number;
-  /** Random noise in growth direction 0–1 (default: 0.2) */
+  /** Random variation in branch length 0–1 (default: 0.2) */
   noiseAmount?: number;
-  /** Cell size in px (default: 3) */
+  /** Thickness of the ice branches (default: 3) */
   cellSize?: number;
   /** Glow on crystal (default: true) */
   glowEffect?: boolean;
@@ -115,7 +116,7 @@ export const CrystalGrowth = forwardRef<HTMLCanvasElement, CrystalGrowthProps>(
       interactive, autoReset, colorMode, animated, width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as CrystalGrowthPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as CrystalGrowthPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

@@ -6,6 +6,8 @@ export interface GameOfLifeHandle {
   clear: () => void;
   pause: () => void;
   resume: () => void;
+  /** The underlying <canvas> (every other component's ref is the canvas itself). */
+  canvas: HTMLCanvasElement | null;
 }
 
 export interface UseGameOfLifeOptions {
@@ -43,6 +45,7 @@ export function useGameOfLife(
     if (!parent) return;
     const ctx = canvas.getContext("2d")!;
     let w = 0, h = 0;
+    let gridKey = "";
 
     function initGrid(randomize = true) {
       const { cellSize, initialDensity } = optionsRef.current;
@@ -69,6 +72,7 @@ export function useGameOfLife(
       ctx.scale(dpr, dpr);
       w = width; h = height;
       initGrid(true);
+      gridKey = `${optionsRef.current.cellSize}|${optionsRef.current.initialDensity}`;
     }
 
     const ro = new ResizeObserver(entries => {
@@ -88,6 +92,7 @@ export function useGameOfLife(
         },
         pause: () => { pausedRef.current = true; },
         resume: () => { pausedRef.current = false; },
+        canvas,
       };
     }
 
@@ -130,7 +135,10 @@ export function useGameOfLife(
     }
 
     function draw(ts: number) {
-      const { cellSize, speed, aliveColor, oldColor, deadColor, showAge, backgroundColor } = optionsRef.current;
+      const { cellSize, speed, aliveColor, oldColor, deadColor, showAge, backgroundColor, initialDensity } = optionsRef.current;
+      // live cellSize / initialDensity: rebuild the grid so it always fits the canvas
+      const key = `${cellSize}|${initialDensity}`;
+      if (key !== gridKey) { gridKey = key; initGrid(true); }
 
       if (!pausedRef.current) {
         const interval = 1000 / speed;
@@ -148,6 +156,15 @@ export function useGameOfLife(
       const rows = rowsRef.current;
       const grid = gridRef.current;
       const maxAge = 60;
+
+      // dead cells: deadColor tiles with background gutters (skipped when identical)
+      if (deadColor !== backgroundColor && cols > 0 && rows > 0) {
+        ctx.fillStyle = deadColor;
+        ctx.fillRect(0, 0, cols * cellSize, rows * cellSize);
+        ctx.fillStyle = backgroundColor;
+        for (let c = 0; c <= cols; c++) ctx.fillRect(c * cellSize - 0.5, 0, 1, rows * cellSize);
+        for (let r = 0; r <= rows; r++) ctx.fillRect(0, r * cellSize - 0.5, cols * cellSize, 1);
+      }
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {

@@ -16,11 +16,11 @@ const componentNames = [
   "ParticleField",
   "Starfield",
   "FireEffect",
-  "AudioVisualizer",
+  "IvyGrowth",
   "Confetti",
   "DragonCursor",
   "NoiseGradient",
-  "PixelDissolve",
+  "Fireflies",
   "KoiPond",
 ];
 

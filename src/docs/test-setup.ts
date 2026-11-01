@@ -8,6 +8,19 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
+// matchMedia stub for jsdom (Lenis + reduced-motion checks). Never matches.
+// Tests that need a match override window.matchMedia locally.
+window.matchMedia = ((query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addEventListener: () => {},
+  removeEventListener: () => {},
+  addListener: () => {},
+  removeListener: () => {},
+  dispatchEvent: () => false,
+})) as unknown as typeof window.matchMedia;
+
 // Canvas getContext mock
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
   clearRect: vi.fn(),
@@ -21,6 +34,9 @@ HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
   save: vi.fn(),
   restore: vi.fn(),
   scale: vi.fn(),
+  setTransform: vi.fn(),
+  rotate: vi.fn(),
+  quadraticCurveTo: vi.fn(),
   translate: vi.fn(),
   drawImage: vi.fn(),
   createImageData: vi.fn(() => ({ data: new Uint8ClampedArray(4) })),

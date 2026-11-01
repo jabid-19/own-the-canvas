@@ -11,11 +11,11 @@ const PROPS = [
   { name: "diffusionV",     type: "number",  default: "0.1",      description: "Diffusion rate for chemical V." },
   { name: "resolution",     type: "number",  default: "0.5",      description: "Render resolution fraction — lower is faster, higher is sharper." },
   { name: "speed",          type: "number",  default: "8",        description: "Simulation steps per frame — higher = faster pattern growth." },
-  { name: "colorA",         type: "string",  default: '"#111111"', description: "Color at low V concentration." },
-  { name: "colorB",         type: "string",  default: '"#ffffff"', description: "Color at high V concentration." },
-  { name: "backgroundColor",type: "string",  default: '"#111111"', description: "Canvas background color." },
+  { name: "colorA",         type: "string",  default: '"#04121f"', description: "Color at low V concentration." },
+  { name: "colorB",         type: "string",  default: '"#5eead4"', description: "Color at high V concentration." },
+  { name: "backgroundColor",type: "string",  default: '"#04121f"', description: "Canvas background color." },
   { name: "interactive",    type: "boolean", default: "true",     description: "Mouse click+drag disturbs the chemical field." },
-  { name: "preset",         type: "string",  default: "—",        description: '"default" | "coral" | "spots" | "maze" | "waves" | "neon"' },
+  { name: "preset",         type: "string",  default: "—",        description: '"default" | "coral" | "spots" | "maze" | "waves" | "neon" | "monochrome"' },
 ];
 
 const PRESET_PARAMS: Record<string, { feedRate: number; killRate: number; colorA?: string; colorB?: string; backgroundColor?: string }> = {
@@ -33,9 +33,9 @@ function ReactionDiffusionPlayground({ onReset }: { onReset?: () => void }) {
   const [killRate, setKillRate] = useState(0.062);
   const [speed, setSpeed] = useState(8);
   const [resolution, setResolution] = useState(0.5);
-  const [colorA, setColorA] = useState("#111111");
-  const [colorB, setColorB] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
+  const [colorA, setColorA] = useState("#04121f");
+  const [colorB, setColorB] = useState("#5eead4");
+  const [bg, setBg] = useState("#04121f");
   const [interactive, setInteractive] = useState(true);
 
   function handlePreset(p: string) {
@@ -89,7 +89,7 @@ function ReactionDiffusionPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "coral", "spots", "maze", "waves", "neon"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "coral", "spots", "maze", "waves", "neon", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Color A (low)" value={colorA} onChange={setColorA} />
         <PColor label="Color B (high)" value={colorB} onChange={setColorB} />

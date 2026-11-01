@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useFireEffect, FirePalette } from "./useFireEffect";
 
-type FirePreset = "default" | "inferno" | "toxic" | "ice" | "plasma";
+type FirePreset = "default" | "inferno" | "toxic" | "ice" | "plasma" | "monochrome";
 
 interface FirePresetValues {
   palette?: FirePalette;
@@ -14,7 +14,8 @@ interface FirePresetValues {
 }
 
 const PRESETS: Record<FirePreset, FirePresetValues> = {
-  default: { palette: "smoke" },
+  default: { palette: "inferno" },
+  monochrome: { palette: "smoke" },
   inferno: {
     palette: "inferno",
     intensity: 0.95,
@@ -44,7 +45,7 @@ const PRESETS: Record<FirePreset, FirePresetValues> = {
 };
 
 export interface FireEffectProps extends BaseCanvasProps {
-  /** Color theme (default: "smoke") */
+  /** Color theme (default: "inferno") */
   palette?: FirePalette;
   /** Custom gradient colors — overrides palette when ≥2 colors provided (default: undefined) */
   customColors?: string[];
@@ -88,7 +89,7 @@ export const FireEffect = forwardRef<HTMLCanvasElement, FireEffectProps>(
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as FirePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as FirePreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

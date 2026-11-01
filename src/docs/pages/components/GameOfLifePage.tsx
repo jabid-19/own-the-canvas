@@ -8,23 +8,23 @@ const PROPS = [
   { name: "cellSize",        type: "number",  default: "8",         description: "Cell size in px." },
   { name: "speed",           type: "number",  default: "10",        description: "Simulation updates per second." },
   { name: "initialDensity",  type: "number",  default: "0.3",       description: "Initial alive cell density 0–1." },
-  { name: "aliveColor",      type: "string",  default: '"#ffffff"', description: "Color of newly born cells." },
-  { name: "oldColor",        type: "string",  default: '"#6b7280"', description: "Color of aged cells." },
-  { name: "deadColor",       type: "string",  default: '"#111111"', description: "Color of dead cells." },
+  { name: "aliveColor",      type: "string",  default: '"#00ff41"', description: "Color of newly born cells." },
+  { name: "oldColor",        type: "string",  default: '"#004d14"', description: "Color of aged cells." },
+  { name: "deadColor",       type: "string",  default: '"#000000"', description: "Color of dead cells." },
   { name: "showAge",         type: "boolean", default: "true",      description: "Color cells by generation age." },
   { name: "wrapEdges",       type: "boolean", default: "true",      description: "Wrap cells at canvas edges (toroidal)." },
   { name: "interactive",     type: "boolean", default: "true",      description: "Click to toggle cells alive/dead." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background color." },
-  { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "matrix" | "minimal" | "fire"' },
+  { name: "backgroundColor", type: "string",  default: '"#000000"', description: "Canvas background color." },
+  { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "matrix" | "minimal" | "fire" | "monochrome"' },
 ];
 
 function GameOfLifePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [cellSize, setCellSize] = useState(8);
   const [speed, setSpeed] = useState(10);
-  const [aliveColor, setAliveColor] = useState("#ffffff");
-  const [oldColor, setOldColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [aliveColor, setAliveColor] = useState("#00ff41");
+  const [oldColor, setOldColor] = useState("#004d14");
+  const [bg, setBg] = useState("#000000");
   const [showAge, setShowAge] = useState(true);
 
   function handlePreset(p: string) {
@@ -66,7 +66,7 @@ function GameOfLifePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "matrix", "minimal", "fire"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "matrix", "minimal", "fire", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Alive color" value={aliveColor} onChange={setAliveColor} />
         <PColor label="Old cell color" value={oldColor} onChange={setOldColor} />

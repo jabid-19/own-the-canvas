@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSlimeMold } from "./useSlimeMold";
 
-type SlimeMoldPreset = "default" | "neon" | "coral" | "vein" | "frost" | "gold";
+type SlimeMoldPreset = "default" | "neon" | "coral" | "vein" | "frost" | "gold" | "monochrome";
 
 interface SlimeMoldPresetValues {
   trailColor?: string;
@@ -12,7 +12,8 @@ interface SlimeMoldPresetValues {
 }
 
 const PRESETS: Record<SlimeMoldPreset, SlimeMoldPresetValues> = {
-  default: {},
+  default: { trailColor: "#ffcc44", backgroundColor: "#0a0800" },
+  monochrome: {},
   neon:    { trailColor: "#00ffff", backgroundColor: "#000000" },
   coral:   { trailColor: "#ff8844", backgroundColor: "#0a0200" },
   vein:    { trailColor: "#ff2244", backgroundColor: "#080000", agentCount: 3000 },
@@ -35,9 +36,9 @@ export interface SlimeMoldProps extends BaseCanvasProps {
   trailDecay?: number;
   /** 3×3 blur weight for trail diffusion (default: 0.2) */
   diffuseStrength?: number;
-  /** Color at max trail concentration (default: "#ffffff") */
+  /** Color at max trail concentration (default: "#ffcc44") */
   trailColor?: string;
-  /** Color at zero trail (default: "#111111") */
+  /** Color at zero trail (default: "#0a0800") */
   backgroundColor?: string;
   /** Trail grid resolution fraction (default: 0.35) */
   resolution?: number;
@@ -63,7 +64,7 @@ export const SlimeMold = forwardRef<HTMLCanvasElement, SlimeMoldProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as SlimeMoldPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as SlimeMoldPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

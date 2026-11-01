@@ -9,8 +9,8 @@ const PROPS = [
   { name: "innerRadius",     type: "number",   default: "0.4",       description: "Inner circle r as fraction of outerRadius." },
   { name: "penDistance",     type: "number",   default: "0.9",       description: "Pen arm d as fraction of innerRadius." },
   { name: "speed",           type: "number",   default: "2",         description: "Degrees of angle drawn per frame." },
-  { name: "colors",          type: "string[]", default: '["#ffffff"]', description: "Stroke colors — each layer picks cyclically." },
-  { name: "backgroundColor", type: "string",   default: '"#111111"', description: "Canvas background fill color." },
+  { name: "colors",          type: "string[]", default: '["#ff2244", "#22aaff", "#44ff88"]', description: "Stroke colors — each layer picks cyclically." },
+  { name: "backgroundColor", type: "string",   default: '"#050005"', description: "Canvas background fill color." },
   { name: "lineWidth",       type: "number",   default: "1",         description: "Stroke line width." },
   { name: "trailFade",       type: "number",   default: "0.003",     description: "Background fade opacity per frame — lower = longer trails." },
   { name: "animated",        type: "boolean",  default: "true",      description: "Enable animation." },
@@ -19,11 +19,12 @@ const PROPS = [
   { name: "symmetry",        type: "number",   default: "1",         description: "Draw N rotationally symmetric copies around center." },
   { name: "glowEffect",      type: "boolean",  default: "false",     description: "Enable glow / shadow blur on strokes." },
   { name: "glowBlur",        type: "number",   default: "10",        description: "Shadow blur radius when glowEffect is enabled." },
-  { name: "preset",          type: "string",   default: "—",         description: '"default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal"' },
+  { name: "preset",          type: "string",   default: "—",         description: '"default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default:   { colors: ["#ffffff"],                              bg: "#111111", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
+  default:   { colors: ["#ff2244", "#22aaff", "#44ff88"],                              bg: "#050005", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
+  monochrome: { colors: ["#ffffff"],                              bg: "#111111", lineWidth: 1,   layerCount: 2, symmetry: 1, glowEffect: false, glowBlur: 10, trailFade: 0.003, speed: 2   },
   neon:      { colors: ["#00ffff", "#ff00ff"],                   bg: "#000000", lineWidth: 1.5, layerCount: 1, symmetry: 1, glowEffect: true,  glowBlur: 15, trailFade: 0.005, speed: 2   },
   prismatic: { colors: ["#ff2244", "#22aaff", "#44ff88"],        bg: "#050005", lineWidth: 1,   layerCount: 3, symmetry: 2, glowEffect: false, glowBlur: 10, trailFade: 0.004, speed: 2   },
   mandala:   { colors: ["#ff00ff", "#00ffff"],                   bg: "#000000", lineWidth: 1,   layerCount: 2, symmetry: 6, glowEffect: true,  glowBlur: 12, trailFade: 0.002, speed: 2   },
@@ -36,8 +37,8 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
   const [innerRadius, setInnerRadius] = useState(0.4);
   const [penDistance, setPenDistance] = useState(0.9);
   const [speed, setSpeed]             = useState(2);
-  const [colors, setColors]           = useState(["#ffffff"]);
-  const [bg, setBg]                   = useState("#111111");
+  const [colors, setColors]           = useState(["#ff2244", "#22aaff", "#44ff88"]);
+  const [bg, setBg]                   = useState("#050005");
   const [lineWidth, setLineWidth]     = useState(1);
   const [trailFade, setTrailFade]     = useState(0.003);
   const [animated, setAnimated]       = useState(true);
@@ -112,7 +113,7 @@ function SpirographPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "prismatic", "mandala", "cosmic", "minimal"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "prismatic", "mandala", "cosmic", "minimal", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColorArray label="Colors" value={colors} onChange={setColors} />
         <PDivider />

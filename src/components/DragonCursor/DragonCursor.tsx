@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useDragonCursor } from "./useDragonCursor";
 
-type DragonCursorPreset = "default" | "emerald" | "inferno" | "void" | "ice";
+type DragonCursorPreset = "default" | "emerald" | "inferno" | "void" | "ice" | "monochrome";
 
 interface DragonCursorPresetValues {
   bodyColor?: string;
@@ -14,7 +14,8 @@ interface DragonCursorPresetValues {
 }
 
 const PRESETS: Record<DragonCursorPreset, DragonCursorPresetValues> = {
-  default: {},
+  default: { bodyColor: "#35e0a1", eyeColor: "#ffd24a", fireColor: "#ff9d3c", backgroundColor: "#07130f" },
+  monochrome: {},
   emerald: {
     bodyColor: "#00ff88",
     eyeColor: "#00ff00",
@@ -46,17 +47,17 @@ export interface DragonCursorProps extends BaseCanvasProps {
   segmentCount?: number;
   /** Head radius in px (default: 18) */
   segmentSize?: number;
-  /** Dragon body color (default: "#ffffff") */
+  /** Dragon body color (default: "#35e0a1") */
   bodyColor?: string;
-  /** Eye pupil color (default: "#111111") */
+  /** Eye color (default: "#ffd24a") */
   eyeColor?: string;
-  /** Fire breath color (default: "#ffffff") */
+  /** Fire breath color (default: "#ff9d3c") */
   fireColor?: string;
-  /** Canvas background (default: "transparent") */
+  /** Canvas background (default: "#07130f") */
   backgroundColor?: string;
   /** Cursor follow lerp speed 0–1 (default: 0.15) */
   followSpeed?: number;
-  /** Wing length in px (default: 60) */
+  /** Wing length in px (default: 80) */
   wingSpan?: number;
   /** Show fire breath particles (default: true) */
   showFire?: boolean;
@@ -83,7 +84,7 @@ export const DragonCursor = forwardRef<HTMLCanvasElement, DragonCursorProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as DragonCursorPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as DragonCursorPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
@@ -95,7 +96,7 @@ export const DragonCursor = forwardRef<HTMLCanvasElement, DragonCursorProps>(
       fireColor:       fireColor       ?? p.fireColor       ?? "#ffffff",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "transparent",
       followSpeed:     followSpeed      ?? 0.15,
-      wingSpan:        wingSpan         ?? p.wingSpan        ?? 60,
+      wingSpan:        wingSpan         ?? p.wingSpan        ?? 80,
       showFire:        showFire         ?? false,
       interactive:     interactive      ?? true,
       starCount:       starCount        ?? 60,

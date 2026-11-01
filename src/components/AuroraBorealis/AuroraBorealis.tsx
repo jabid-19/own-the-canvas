@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useAuroraBorealis } from "./useAuroraBorealis";
 
-type AuroraBorealisPreset = "default" | "arctic" | "solar" | "tropical" | "neon" | "midnight";
+type AuroraBorealisPreset = "default" | "arctic" | "solar" | "tropical" | "neon" | "midnight" | "monochrome";
 
 interface AuroraBorealisPresetValues {
   colors?: string[];
@@ -12,7 +12,8 @@ interface AuroraBorealisPresetValues {
 }
 
 export const PRESETS: Record<AuroraBorealisPreset, AuroraBorealisPresetValues> = {
-  default: {},
+  default: { colors: ["#00ff88", "#00ccff", "#88ff00"], backgroundColor: "#050a0f" },
+  monochrome: {},
   arctic: { colors: ["#00ff88", "#00ccff", "#88ff00"], backgroundColor: "#050a0f" },
   solar: { colors: ["#ff4400", "#ff8800", "#cc00ff"], backgroundColor: "#0a0005" },
   tropical: { colors: ["#00ffcc", "#0088ff", "#00ff44"], backgroundColor: "#030a0a" },
@@ -21,7 +22,7 @@ export const PRESETS: Record<AuroraBorealisPreset, AuroraBorealisPresetValues> =
 };
 
 export interface AuroraBorealisProps extends BaseCanvasProps {
-  /** Aurora band colors (default: monochrome whites/grays) */
+  /** Aurora band colors (default: ["#00ff88", "#00ccff", "#88ff00"]) */
   colors?: string[];
   /** Animation speed multiplier (default: 1) */
   speed?: number;
@@ -29,7 +30,7 @@ export interface AuroraBorealisProps extends BaseCanvasProps {
   intensity?: number;
   /** Number of aurora layers (default: 5) */
   layers?: number;
-  /** Sky background color (default: "#111111") */
+  /** Sky background color (default: "#050a0f") */
   backgroundColor?: string;
   /** Wave height as fraction of canvas height (default: 0.15) */
   waveAmplitude?: number;
@@ -62,7 +63,7 @@ export const AuroraBorealis = forwardRef<HTMLCanvasElement, AuroraBorealisProps>
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as AuroraBorealisPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as AuroraBorealisPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

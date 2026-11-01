@@ -15,8 +15,8 @@ interface FlowFieldPresetValues {
 
 export const PRESETS: Record<FlowFieldPreset, FlowFieldPresetValues> = {
   default: {
-    colors: ["#ffffff", "#6b7280", "#9ca3af"],
-    backgroundColor: "#111111",
+    colors: ["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9", "#e0f2fe"],
+    backgroundColor: "#020f1a",
   },
   neon: {
     colors: ["#7C3AED", "#e0b0ff", "#0891B2", "#67e8f9"],
@@ -53,19 +53,19 @@ export const PRESETS: Record<FlowFieldPreset, FlowFieldPresetValues> = {
 export interface FlowFieldProps extends BaseCanvasProps {
   /** Number of flow particles (default: 800) */
   particleCount?: number;
-  /** Particle stroke colors — one is picked per particle (default: multi-color) */
+  /** Particle stroke colors — one is picked per particle (default: ["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9", "#e0f2fe"]) */
   colors?: string[];
   /** Flow speed multiplier (default: 1) */
   speed?: number;
   /** Noise sampling scale — lower = larger flow structures (default: 0.004) */
   noiseScale?: number;
-  /** Particle trail fade length — lower = longer trails (default: 0.04) */
+  /** Alias of `fadeStrength` (fadeStrength wins if both set) — lower = longer trails (default: 0.04) */
   trailLength?: number;
   /** Background fade opacity per frame (default: 0.04) */
   fadeStrength?: number;
   /** Stroke line width (default: 1) */
   lineWidth?: number;
-  /** Canvas background color (default: "#050010") */
+  /** Canvas background color (default: "#020f1a") */
   backgroundColor?: string;
   /** Enable animation (default: true) */
   animated?: boolean;
@@ -92,7 +92,7 @@ export const FlowField = forwardRef<HTMLCanvasElement, FlowFieldProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as FlowFieldPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as FlowFieldPreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
@@ -103,7 +103,7 @@ export const FlowField = forwardRef<HTMLCanvasElement, FlowFieldProps>(
       speed: speed ?? p.speed ?? 1,
       noiseScale: noiseScale ?? p.noiseScale ?? 0.004,
       trailLength: trailLength ?? 0.04,
-      fadeStrength: fadeStrength ?? 0.04,
+      fadeStrength: fadeStrength ?? trailLength ?? 0.04, // trailLength is an alias
       lineWidth: lineWidth ?? 1,
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       animated: animated ?? true,

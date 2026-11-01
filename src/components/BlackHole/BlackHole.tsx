@@ -1,8 +1,9 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useBlackHole } from "./useBlackHole";
 
-type BlackHolePreset = "default" | "cosmic" | "inferno" | "neon" | "void";
+type BlackHolePreset = "default" | "cosmic" | "inferno" | "neon" | "void" | "monochrome";
 
 interface BlackHolePresetValues {
   diskColor?: string;
@@ -15,7 +16,8 @@ interface BlackHolePresetValues {
 }
 
 export const PRESETS: Record<BlackHolePreset, BlackHolePresetValues> = {
-  default: {},
+  default: { diskColor: "#ff6600", backgroundColor: "#0d0200", jetColor: "#ff3300" },
+  monochrome: {},
   cosmic: {
     diskColor: "#aaccff",
     backgroundColor: "#020510",
@@ -44,9 +46,9 @@ export const PRESETS: Record<BlackHolePreset, BlackHolePresetValues> = {
 };
 
 export interface BlackHoleProps extends BaseCanvasProps {
-  /** Accretion disk particle color (default: "#ffffff") */
+  /** Accretion disk particle color (default: "#ff6600") */
   diskColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#0d0200") */
   backgroundColor?: string;
   /** Number of disk particles (default: 300) */
   particleCount?: number;
@@ -56,7 +58,7 @@ export interface BlackHoleProps extends BaseCanvasProps {
   eventHorizonRadius?: number;
   /** Accretion disk radial extent in px (default: 120) */
   diskWidth?: number;
-  /** Polar jet stream color (default: "#6b7280") */
+  /** Polar jet stream color (default: "#ff3300") */
   jetColor?: string;
   /** Show polar particle jets (default: true) */
   showJets?: boolean;
@@ -87,11 +89,9 @@ export const BlackHole = forwardRef<HTMLCanvasElement, BlackHoleProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as BlackHolePreset]) || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
+    const p = PRESETS[(preset ?? "default") as BlackHolePreset] || {};
 
-    useBlackHole(internalRef, {
+    const { canvasRef, canvas } = useBlackHole({
       diskColor:           diskColor           ?? p.diskColor           ?? "#ffffff",
       backgroundColor:     backgroundColor     ?? p.backgroundColor     ?? "#111111",
       particleCount:       particleCount       ?? p.particleCount       ?? 300,
@@ -109,24 +109,16 @@ export const BlackHole = forwardRef<HTMLCanvasElement, BlackHoleProps>(
       starGlowBlur:        starGlowBlur        ?? 8,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
+      <RuntimeCanvas
+        canvasRef={canvasRef}
+        width={width}
+        height={height}
         className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+        style={style}
+      />
     );
   }
 );

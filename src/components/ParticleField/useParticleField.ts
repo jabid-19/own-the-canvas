@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { hexToRgbString } from "../../utils/color";
+import { pointerInCanvas, glowSprite } from "../../runtime/fx";
 
 interface Particle {
   x: number;
@@ -9,6 +10,7 @@ interface Particle {
   size: number;
   opacity: number;
   twinklePhase?: number;
+  tint?: number; // 0 = particle colour, 1 = line colour, so the field isn't one flat hue
 }
 
 export interface UseParticleFieldOptions {
@@ -39,6 +41,12 @@ export interface UseParticleFieldOptions {
   velocityMultiplier: number;
 }
 
+function mixRgb(a: string, b: string, k: number): string {
+  const A = a.split(",").map(Number), B = b.split(",").map(Number);
+  if (A.length < 3 || B.length < 3) return a;
+  return A.slice(0, 3).map((v, i) => Math.round(v + (B[i] - v) * k)).join(",");
+}
+
 export function useParticleField(
   canvasRef: RefObject<HTMLCanvasElement | null>,
   options: UseParticleFieldOptions
@@ -55,6 +63,7 @@ export function useParticleField(
   const lastParticleColorRef = useRef<string>("");
   const lastLineColorRef = useRef<string>("");
   const reinitRef = useRef<(() => void) | null>(null);
+  const glowRef = useRef<{ sprite: HTMLCanvasElement | null; color: string }>({ sprite: null, color: "" }).current;
 
   useEffect(() => {
     reinitRef.current?.();
@@ -72,8 +81,10 @@ export function useParticleField(
     let w = 0;
     let h = 0;
 
+    let appliedVm = optionsRef.current.velocityMultiplier;
     function initParticles(width: number, height: number) {
       const { particleCount, particleSize, speed, velocityMultiplier, twinkle } = optionsRef.current;
+      appliedVm = velocityMultiplier;
       particlesRef.current = Array.from({ length: particleCount }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -81,6 +92,7 @@ export function useParticleField(
         vy: (Math.random() - 0.5) * speed * velocityMultiplier,
         size: Math.random() * particleSize + particleSize * 0.4,
         opacity: Math.random() * 0.5 + 0.5,
+        tint: Math.random() < 0.7 ? Math.random() * 0.25 : 0.5 + Math.random() * 0.5,
         twinklePhase: twinkle ? Math.random() * Math.PI * 2 : undefined,
       }));
     }
@@ -131,7 +143,9 @@ export function useParticleField(
     }
 
     function onMouseMove(e: MouseEvent) {
-      const { x, y } = getPos(e);
+      const p = pointerInCanvas(e, canvas);
+      if (!p) return onMouseLeave(); // also ends a drag that left the canvas
+      const { x, y } = p;
       if (dragRef.current) {
         const p = particlesRef.current[dragRef.current.particleIndex];
         p.x = x + dragRef.current.offsetX;
@@ -160,7 +174,7 @@ export function useParticleField(
       const {
         particleColor, lineColor, lineDistance, connectParticles, backgroundColor,
         speed, repelRadius, repelStrength, friction, maxVelocityMultiplier, lineWidth, lineOpacity,
-        wrapEdges, twinkle, twinkleSpeed, twinkleAmplitude, glowParticles, glowBlur, lineStyle,
+        wrapEdges, twinkle, twinkleSpeed, twinkleAmplitude, glowParticles, glowBlur, lineStyle, interactive,
       } = optionsRef.current;
 
       if (particleColor !== lastParticleColorRef.current) {
@@ -179,8 +193,20 @@ export function useParticleField(
 
       ctx.clearRect(0, 0, w, h);
       if (backgroundColor && backgroundColor !== "transparent") {
-        ctx.fillStyle = backgroundColor;
+        const bgRgb = hexToRgbString(backgroundColor);
+        const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.hypot(w, h) / 2);
+        bg.addColorStop(0, `rgb(${mixRgb(bgRgb, lineRgb, 0.1)})`);
+        bg.addColorStop(1, `rgb(${bgRgb})`);
+        ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
+      }
+
+      // live velocityMultiplier: rescale current velocities by the change
+      const vm = optionsRef.current.velocityMultiplier;
+      if (vm !== appliedVm) {
+        const r = appliedVm ? vm / appliedVm : 1;
+        if (Number.isFinite(r)) for (const p of particles) { p.vx *= r; p.vy *= r; }
+        appliedVm = vm;
       }
 
       // Physics update
@@ -232,23 +258,37 @@ export function useParticleField(
         }
       }
 
-      // Draw connection lines
+      // Connection lines: close pairs are brighter, thicker and shift toward the particle colour
       if (connectParticles) {
         if (lineStyle === "dashed") ctx.setLineDash([4, 6]);
         else ctx.setLineDash([]);
-
         for (let i = 0; i < particles.length; i++) {
           for (let j = i + 1; j < particles.length; j++) {
             const dx = particles[i].x - particles[j].x;
             const dy = particles[i].y - particles[j].y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < lineDistance) {
-              const alpha = (1 - dist / lineDistance) * lineOpacity;
+              const k = 1 - dist / lineDistance;
               ctx.beginPath();
               ctx.moveTo(particles[i].x, particles[i].y);
               ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(${lineRgb},${alpha})`;
-              ctx.lineWidth = lineWidth;
+              ctx.strokeStyle = `rgba(${mixRgb(lineRgb, particleRgb, k * 0.6)},${k * k * lineOpacity * 1.2})`;
+              ctx.lineWidth = lineWidth * (0.6 + k * 0.9);
+              ctx.stroke();
+            }
+          }
+        }
+        // the cursor joins the constellation
+        if (mouse && interactive) {
+          for (const p of particles) {
+            const d = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+            if (d < lineDistance * 1.3) {
+              const k = 1 - d / (lineDistance * 1.3);
+              ctx.beginPath();
+              ctx.moveTo(mouse.x, mouse.y);
+              ctx.lineTo(p.x, p.y);
+              ctx.strokeStyle = `rgba(${particleRgb},${k * lineOpacity})`;
+              ctx.lineWidth = lineWidth * (0.6 + k);
               ctx.stroke();
             }
           }
@@ -256,24 +296,31 @@ export function useParticleField(
         ctx.setLineDash([]);
       }
 
-      // Draw particles on top of lines
+      // Particles: a soft halo (always on, stronger with glowParticles) and a bright core
+      if (!glowRef.sprite || glowRef.color !== particleColor) {
+        glowRef.sprite = glowSprite(particleColor.startsWith("#") ? particleColor : "#ffffff", 64);
+        glowRef.color = particleColor;
+      }
+      const maxSize = Math.max(0.01, optionsRef.current.particleSize * 1.4);
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const alpha = twinkle && p.twinklePhase !== undefined
           ? (1 - twinkleAmplitude) + twinkleAmplitude * Math.sin(p.twinklePhase)
           : p.opacity;
-
-        if (glowParticles) {
-          ctx.shadowColor = particleColor;
-          ctx.shadowBlur = glowBlur;
+        const depth = Math.min(1, p.size / maxSize);
+        const rgb = mixRgb(particleRgb, lineRgb, p.tint ?? 0);
+        if (glowRef.sprite) {
+          const hs = p.size * (glowParticles ? 5 + glowBlur / 6 : 5) * (0.6 + depth * 0.6);
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = alpha * (glowParticles ? 0.75 : 0.4) * (0.5 + depth * 0.5);
+          ctx.drawImage(glowRef.sprite, p.x - hs, p.y - hs, hs * 2, hs * 2);
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = "source-over";
         }
-
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${particleRgb},${alpha})`;
+        ctx.arc(p.x, p.y, p.size * (0.7 + depth * 0.3), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${mixRgb(rgb, "255,255,255", 0.35 * depth)},${alpha})`;
         ctx.fill();
-
-        if (glowParticles) ctx.shadowBlur = 0;
       }
 
       rafRef.current = requestAnimationFrame(draw);

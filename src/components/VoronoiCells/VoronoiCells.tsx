@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useVoronoiCells, VoronoiColorMode } from "./useVoronoiCells";
 
-type VoronoiPreset = "default" | "stained-glass" | "neon" | "frost" | "ember" | "void";
+type VoronoiPreset = "default" | "stained-glass" | "neon" | "frost" | "ember" | "void" | "monochrome";
 
 interface VoronoiPresetValues {
   colorMode?: VoronoiColorMode;
@@ -14,7 +14,8 @@ interface VoronoiPresetValues {
 }
 
 const PRESETS: Record<VoronoiPreset, VoronoiPresetValues> = {
-  "default":       {},
+  "default":       { colorMode: "cycle" }, // edges follow backgroundColor
+  "monochrome": { edgeColor: "#333333" },
   "stained-glass": { colorMode: "cycle", edgeColor: "#111111", cellCount: 25 },
   "neon":          { colorMode: "cycle", backgroundColor: "#000000", edgeColor: "#000000", showEdges: false },
   "frost":         { colorMode: "gradient", cellColor: "#88ccff", backgroundColor: "#001833", edgeColor: "#ffffff" },
@@ -27,15 +28,15 @@ export interface VoronoiCellsProps extends BaseCanvasProps {
   cellCount?: number;
   /** Seed drift/animation speed (default: 1) */
   speed?: number;
-  /** "solid" | "gradient" | "cycle" — per-cell coloring (default: "solid") */
+  /** "solid" | "gradient" | "cycle" — per-cell coloring (default: "cycle") */
   colorMode?: VoronoiColorMode;
   /** Base cell color in solid/gradient mode (default: "#ffffff") */
   cellColor?: string;
-  /** Background / empty space color (default: "#111111") */
+  /** Background color, also the edge color unless edgeColor is set (default: "#111111") */
   backgroundColor?: string;
   /** Draw 1px cell boundary lines (default: true) */
   showEdges?: boolean;
-  /** Edge line color (default: "#333333") */
+  /** Edge line color; follows backgroundColor when unset (default: backgroundColor) */
   edgeColor?: string;
   /** Render resolution fraction — lower is faster (default: 0.25) */
   resolution?: number;
@@ -58,7 +59,7 @@ export const VoronoiCells = forwardRef<HTMLCanvasElement, VoronoiCellsProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as VoronoiPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as VoronoiPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
@@ -69,7 +70,8 @@ export const VoronoiCells = forwardRef<HTMLCanvasElement, VoronoiCellsProps>(
       cellColor:       cellColor       ?? p.cellColor       ?? "#ffffff",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       showEdges:       showEdges       ?? p.showEdges       ?? true,
-      edgeColor:       edgeColor       ?? p.edgeColor       ?? "#333333",
+      // edges are the gaps between cells: unset edgeColor follows backgroundColor
+      edgeColor:       edgeColor       ?? p.edgeColor       ?? backgroundColor ?? p.backgroundColor ?? "#111111",
       resolution:      resolution      ?? 1.0,
       relaxation:      relaxation      ?? 0.05,
       interactive:     interactive     ?? true,

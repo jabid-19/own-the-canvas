@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useReactionDiffusion } from "./useReactionDiffusion";
 
-type ReactionDiffusionPreset = "default" | "coral" | "spots" | "maze" | "waves" | "neon";
+type ReactionDiffusionPreset = "default" | "coral" | "spots" | "maze" | "waves" | "neon" | "monochrome";
 
 interface ReactionDiffusionPresetValues {
   feedRate?: number;
@@ -17,7 +17,8 @@ interface ReactionDiffusionPresetValues {
 }
 
 const PRESETS: Record<ReactionDiffusionPreset, ReactionDiffusionPresetValues> = {
-  default: {},
+  default: { colorA: "#04121f", colorB: "#5eead4", backgroundColor: "#04121f" },
+  monochrome: {},
   coral: { feedRate: 0.055, killRate: 0.062 },
   spots: { feedRate: 0.035, killRate: 0.065 },
   maze: { feedRate: 0.029, killRate: 0.057 },
@@ -38,11 +39,11 @@ export interface ReactionDiffusionProps extends BaseCanvasProps {
   resolution?: number;
   /** Simulation steps per frame (default: 8) */
   speed?: number;
-  /** Color at low V concentration (default: "#111111") */
+  /** Color at low V concentration (default: "#04121f") */
   colorA?: string;
-  /** Color at high V concentration (default: "#ffffff") */
+  /** Color at high V concentration (default: "#5eead4") */
   colorB?: string;
-  /** Canvas background color (default: "#111111") */
+  /** Canvas background color (default: "#04121f") */
   backgroundColor?: string;
   /** Mouse disturbs the field (default: true) */
   interactive?: boolean;
@@ -70,7 +71,7 @@ export const ReactionDiffusion = forwardRef<HTMLCanvasElement, ReactionDiffusion
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as ReactionDiffusionPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as ReactionDiffusionPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

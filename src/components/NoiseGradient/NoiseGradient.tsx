@@ -1,8 +1,9 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useNoiseGradient } from "./useNoiseGradient";
 
-type NoiseGradientPreset = "default" | "aurora" | "sunset" | "ocean" | "forest" | "neon";
+type NoiseGradientPreset = "default" | "aurora" | "sunset" | "ocean" | "forest" | "neon" | "monochrome";
 
 interface NoiseGradientPresetValues {
   colors?: string[];
@@ -12,7 +13,8 @@ interface NoiseGradientPresetValues {
 }
 
 const PRESETS: Record<NoiseGradientPreset, NoiseGradientPresetValues> = {
-  default: {},
+  default: { colors: ["#0d1117", "#0d4f3c", "#00ff87", "#00cfff", "#7C3AED"] },
+  monochrome: {},
   aurora: {
     colors: ["#0d1117", "#0d4f3c", "#00ff87", "#00cfff", "#7C3AED"],
     speed: 0.2,
@@ -46,7 +48,7 @@ const PRESETS: Record<NoiseGradientPreset, NoiseGradientPresetValues> = {
 };
 
 export interface NoiseGradientProps extends BaseCanvasProps {
-  /** 2–5 hex color stops for the gradient (default: monochrome) */
+  /** 2–5 hex color stops for the gradient (default: ["#0d1117", "#0d4f3c", "#00ff87", "#00cfff", "#7C3AED"]) */
   colors?: string[];
   /** Animation speed multiplier (default: 0.3) */
   speed?: number;
@@ -87,12 +89,10 @@ export const NoiseGradient = forwardRef<HTMLCanvasElement, NoiseGradientProps>(
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as NoiseGradientPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as NoiseGradientPreset] || {};
 
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
-    useNoiseGradient(internalRef, {
+    const { canvasRef, canvas } = useNoiseGradient({
       colors: colors ?? p.colors ?? ["#0a0a0a", "#2d2d2d", "#6b7280", "#d1d5db", "#f5f5f5"],
       speed: speed ?? p.speed ?? 0.25,
       scale: scale ?? p.scale ?? 1,
@@ -104,13 +104,16 @@ export const NoiseGradient = forwardRef<HTMLCanvasElement, NoiseGradientProps>(
       resolution: resolution ?? 0.25,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
+      <RuntimeCanvas
+        canvasRef={canvasRef}
+        width={width}
+        height={height}
         className={className}
-        style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", ...style }}
-      >
-        <canvas ref={internalRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
-      </div>
+        style={style}
+      />
     );
   }
 );

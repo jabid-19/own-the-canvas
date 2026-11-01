@@ -6,14 +6,14 @@ import { ParticleField } from "../../../components/ParticleField";
 
 const PROPS = [
   { name: "particleCount",        type: "number",              default: "120",           description: "Number of particles." },
-  { name: "particleColor",        type: "string",              default: '"#ffffff"',     description: "Particle fill color." },
-  { name: "lineColor",            type: "string",              default: '"#6b7280"',     description: "Connection line color." },
+  { name: "particleColor",        type: "string",              default: '"#9be7ff"',     description: "Particle fill color." },
+  { name: "lineColor",            type: "string",              default: '"#4aa8c7"',     description: "Connection line color." },
   { name: "lineDistance",         type: "number",              default: "120",           description: "Max distance between connected particles." },
   { name: "particleSize",         type: "number",              default: "2.5",           description: "Particle radius in pixels." },
   { name: "speed",                type: "number",              default: "0.8",           description: "Particle movement speed." },
   { name: "connectParticles",     type: "boolean",             default: "true",          description: "Draw lines between nearby particles." },
   { name: "interactive",          type: "boolean",             default: "true",          description: "Enable mouse repulsion effect." },
-  { name: "backgroundColor",      type: "string",              default: '"transparent"', description: "Canvas background color." },
+  { name: "backgroundColor",      type: "string",              default: '"#040a18"', description: "Canvas background color." },
   { name: "repelRadius",          type: "number",              default: "80",            description: "Mouse repulsion radius in px." },
   { name: "repelStrength",        type: "number",              default: "0.3",           description: "Mouse repulsion force strength." },
   { name: "friction",             type: "number",              default: "0.99",          description: "Velocity friction per frame (0–1)." },
@@ -30,13 +30,13 @@ const PROPS = [
   { name: "dragParticles",        type: "boolean",             default: "false",         description: "Enable drag-to-reposition individual particles." },
   { name: "dragRadius",           type: "number",              default: "20",            description: "Drag detection radius in px." },
   { name: "velocityMultiplier",   type: "number",              default: "2",             description: "Initial velocity multiplier (0.3 for slow constellation drift, 2 for active field)." },
-  { name: "preset",               type: "string",              default: '"default"',     description: '"default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold"' },
+  { name: "preset",               type: "string",              default: '"default"',     description: '"default" | "galaxy" | "snow" | "minimal" | "ocean" | "cosmos" | "aurora" | "gold" | "monochrome"' },
 ];
 
 function ParticleFieldPlayground({ onReset }: { onReset?: () => void }) {
-  const [pc, setPc] = useState("#ffffff");
-  const [lc, setLc] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [pc, setPc] = useState("#9be7ff");
+  const [lc, setLc] = useState("#4aa8c7");
+  const [bg, setBg] = useState("#040a18");
   const [count, setCount] = useState(120);
   const [dist, setDist] = useState(120);
   const [size, setSize] = useState(2.5);
@@ -44,7 +44,7 @@ function ParticleFieldPlayground({ onReset }: { onReset?: () => void }) {
   const [connect, setConnect] = useState(true);
   const [interact, setInteract] = useState(true);
   const [wrapEdges, setWrapEdges] = useState(false);
-  const [twinkle, setTwinkle] = useState(false);
+  const [twinkle, setTwinkle] = useState(true);
   const [glowParticles, setGlowParticles] = useState(false);
   const [lineStyle, setLineStyle] = useState<"solid" | "dashed">("solid");
   const [dragParticles, setDragParticles] = useState(false);

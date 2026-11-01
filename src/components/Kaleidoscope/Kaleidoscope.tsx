@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useKaleidoscope } from "./useKaleidoscope";
 
-type KaleidoscopePreset = "default" | "neon" | "crystal" | "void" | "fire" | "ice";
+type KaleidoscopePreset = "default" | "neon" | "crystal" | "void" | "fire" | "ice" | "monochrome";
 
 interface KaleidoscopePresetValues {
   segments?: number;
@@ -16,7 +16,8 @@ interface KaleidoscopePresetValues {
 }
 
 const PRESETS: Record<KaleidoscopePreset, KaleidoscopePresetValues> = {
-  default: {},
+  default: { colorA: "#ffb84d", colorB: "#1f9e8f", backgroundColor: "#0a0710" },
+  monochrome: {},
   neon:    { colorA: "#00ffff", colorB: "#ff00ff", backgroundColor: "#000000", segments: 8, speed: 1.5 },
   crystal: { colorA: "#88ccff", colorB: "#002244", backgroundColor: "#000510", segments: 12, noiseScale: 4 },
   void:    { colorA: "#cc00ff", colorB: "#000000", backgroundColor: "#000000", segments: 6, rotation: 0.4 },
@@ -25,15 +26,15 @@ const PRESETS: Record<KaleidoscopePreset, KaleidoscopePresetValues> = {
 };
 
 export interface KaleidoscopeProps extends BaseCanvasProps {
-  /** Number of mirror segments / symmetry (default: 6) */
+  /** Number of mirror segments / symmetry (default: 8) */
   segments?: number;
   /** Animation speed (default: 1) */
   speed?: number;
-  /** Color at noise peak (default: "#ffffff") */
+  /** Color at noise peak (default: "#ffb84d") */
   colorA?: string;
-  /** Color at noise trough (default: "#333333") */
+  /** Color at noise trough (default: "#1f9e8f") */
   colorB?: string;
-  /** Background color outside the pattern radius (default: "#111111") */
+  /** Background color outside the pattern radius (default: "#0a0710") */
   backgroundColor?: string;
   /** Noise spatial frequency (default: 3) */
   noiseScale?: number;
@@ -57,7 +58,7 @@ export const Kaleidoscope = forwardRef<HTMLCanvasElement, KaleidoscopeProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as KaleidoscopePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as KaleidoscopePreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

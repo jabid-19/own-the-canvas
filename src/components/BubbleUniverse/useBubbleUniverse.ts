@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { hexToRgbString } from "../../utils/color";
+import { pointerInCanvas } from "../../runtime/fx";
 
 interface Bubble {
   x: number; y: number;
@@ -45,6 +46,7 @@ export function useBubbleUniverse(
     if (!parent) return;
     const ctx = canvas.getContext("2d")!;
     let w = 0, h = 0;
+    const bokeh = Array.from({ length: 14 }, () => ({ x: Math.random(), y: Math.random(), r: 20 + Math.random() * 60, a: 0.03 + Math.random() * 0.05, hue: Math.random() * 360 }));
 
     function makeBubble(rx?: number, ry?: number): Bubble {
       const { minRadius, maxRadius } = optionsRef.current;
@@ -69,12 +71,12 @@ export function useBubbleUniverse(
     }
 
     function applyDpr(width: number, height: number) {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
       canvas!.width = Math.round(width * dpr);
       canvas!.height = Math.round(height * dpr);
       canvas!.style.width = `${width}px`;
       canvas!.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(Math.min(2, dpr), 0, 0, Math.min(2, dpr), 0, 0);
       w = width;
       h = height;
       initBubbles();
@@ -90,8 +92,9 @@ export function useBubbleUniverse(
 
     function onMouseMove(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
-      const r = canvas!.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+      const p = pointerInCanvas(e, canvas!);
+      if (!p) return onMouseLeave();
+      mouseRef.current = p;
     }
     function onMouseLeave() { mouseRef.current = null; }
 
@@ -133,59 +136,82 @@ export function useBubbleUniverse(
       }
     }
 
+    /**
+     * A soap bubble: almost clear, with the thin-film rainbow swirling around its rim, a
+     * curved window reflection, a bright glint and a faint glow.
+     */
     function drawBubble(b: Bubble, t: number, shimmerColor: string, glowEffect: boolean) {
-      const shimmer = Math.sin(t * 2 + b.shimmerOffset);
+      const { x, y, r } = b;
       const shimmerRgb = hexToRgbString(shimmerColor);
-
-      // Iridescent body — radial gradient with hue shift
-      const h1 = (b.hue + shimmer * 30) % 360;
-      const h2 = (b.hue + 120 + shimmer * 20) % 360;
-      const h3 = (b.hue + 240) % 360;
-
-      const bodyGrad = ctx.createRadialGradient(
-        b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.05,
-        b.x, b.y, b.r
-      );
-      bodyGrad.addColorStop(0, `hsla(${h1},70%,90%,0.15)`);
-      bodyGrad.addColorStop(0.4, `hsla(${h2},80%,60%,0.08)`);
-      bodyGrad.addColorStop(0.7, `hsla(${h3},90%,50%,0.12)`);
-      bodyGrad.addColorStop(1, `hsla(${h1},60%,30%,0.25)`);
+      const hue = b.hue;
 
       if (glowEffect) {
-        ctx.shadowBlur = b.r * 0.4;
-        ctx.shadowColor = `hsla(${h1},100%,70%,0.3)`;
+        ctx.globalCompositeOperation = "lighter";
+        const halo = ctx.createRadialGradient(x, y, r * 0.8, x, y, r * 1.45);
+        halo.addColorStop(0, `hsla(${hue},90%,70%,0.1)`);
+        halo.addColorStop(1, `hsla(${hue},90%,70%,0)`);
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(x, y, r * 1.45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
       }
 
+      // the film is clear in the middle and thickens toward the edge
+      const body = ctx.createRadialGradient(x - r * 0.3, y - r * 0.35, r * 0.1, x, y, r);
+      body.addColorStop(0, "rgba(255,255,255,0.025)");
+      body.addColorStop(0.72, `rgba(${shimmerRgb},0.035)`);
+      body.addColorStop(1, `rgba(${shimmerRgb},0.14)`);
+      ctx.fillStyle = body;
       ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fillStyle = bodyGrad;
+      ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Rim highlight
+      // thin-film interference: bands of colour swirling around the rim
+      const swirl = t * 0.6 + b.shimmerOffset;
+      let film: CanvasGradient | string = `hsla(${hue},85%,68%,0.5)`;
+      if (typeof ctx.createConicGradient === "function") {
+        const g = ctx.createConicGradient(swirl, x, y);
+        if (g) {
+          const stops: [number, number, number][] = [[0, 0, 0.6], [0.18, 60, 0.15], [0.38, 150, 0.55], [0.58, 220, 0.12], [0.8, 300, 0.5], [1, 360, 0.6]];
+          for (const [o, dh, a] of stops) g.addColorStop(o, `hsla(${hue + dh},90%,66%,${a})`);
+          film = g;
+        }
+      }
+      const lw = Math.max(1.5, r * 0.09);
+      ctx.strokeStyle = film;
+      ctx.lineWidth = lw;
       ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.strokeStyle = `hsla(${h2},80%,75%,0.4)`;
-      ctx.lineWidth = 1.5;
+      ctx.arc(x, y, r - lw / 2, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 0.28;
+      ctx.lineWidth = r * 0.2;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.84, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "rgba(255,255,255,0.32)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.stroke();
 
-      if (glowEffect) ctx.shadowBlur = 0;
-
-      // Specular highlight (top-left catch light)
-      const hlX = b.x - b.r * 0.32;
-      const hlY = b.y - b.r * 0.32;
-      const hlGrad = ctx.createRadialGradient(hlX, hlY, 0, hlX, hlY, b.r * 0.4);
-      hlGrad.addColorStop(0, `rgba(${shimmerRgb},0.7)`);
-      hlGrad.addColorStop(1, `rgba(${shimmerRgb},0)`);
+      // reflections: a curved window on the upper left, a glint, a faint one lower right
+      ctx.lineCap = "round";
+      ctx.strokeStyle = `rgba(${shimmerRgb},0.75)`;
+      ctx.lineWidth = Math.max(1.2, r * 0.07);
       ctx.beginPath();
-      ctx.ellipse(hlX, hlY, b.r * 0.22, b.r * 0.14, -0.5, 0, Math.PI * 2);
-      ctx.fillStyle = hlGrad;
-      ctx.fill();
-
-      // Secondary smaller highlight
+      ctx.arc(x, y, r * 0.72, Math.PI * 1.06, Math.PI * 1.38);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(${shimmerRgb},0.9)`;
       ctx.beginPath();
-      ctx.ellipse(b.x + b.r * 0.25, b.y + b.r * 0.28, b.r * 0.06, b.r * 0.04, 0.8, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${shimmerRgb},0.3)`;
+      ctx.arc(x - r * 0.3, y - r * 0.6, Math.max(1, r * 0.055), 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = `rgba(${shimmerRgb},0.22)`;
+      ctx.lineWidth = Math.max(1, r * 0.05);
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.78, Math.PI * 0.12, Math.PI * 0.36);
+      ctx.stroke();
     }
 
     function draw(dt: number) {
@@ -197,18 +223,35 @@ export function useBubbleUniverse(
       timeRef.current += dt * 0.001;
       const t = timeRef.current;
 
-      ctx.fillStyle = backgroundColor;
+      const bgRgb = hexToRgbString(backgroundColor);
+      const bg = ctx.createLinearGradient(0, 0, w, h);
+      bg.addColorStop(0, `rgb(${bgRgb.split(",").map((v) => Math.min(255, +v + 14)).join(",")})`);
+      bg.addColorStop(1, `rgb(${bgRgb})`);
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
+      // out-of-focus lights behind, so the bubbles read as transparent
+      ctx.globalCompositeOperation = "lighter";
+      for (const k of bokeh) {
+        const bx = k.x * w + Math.sin(t * 0.1 + k.hue) * 12, by = k.y * h;
+        const g = ctx.createRadialGradient(bx, by, 0, bx, by, k.r);
+        g.addColorStop(0, `hsla(${k.hue},70%,65%,${k.a})`);
+        g.addColorStop(0.7, `hsla(${k.hue},70%,65%,${k.a * 0.6})`);
+        g.addColorStop(1, `hsla(${k.hue},70%,65%,0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(bx, by, k.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
 
       const bubbles = bubblesRef.current;
       const mouse = mouseRef.current;
 
       // Spawn missing bubbles
       while (bubbles.filter(b => !b.popping).length < bubbleCount) {
-        bubbles.push(makeBubble(
-          Math.random() < 0.5 ? -20 : w + 20,
-          h * 0.7 + Math.random() * h * 0.3
-        ));
+        const nb = makeBubble();
+        nb.y = h + nb.r + Math.random() * 30;
+        bubbles.push(nb);
       }
 
       // Update physics
@@ -225,9 +268,12 @@ export function useBubbleUniverse(
           continue;
         }
 
-        b.vy += gravity;
+        // buoyancy against the gravity setting, plus a gentle breeze
+        b.vy += gravity - 0.03;
+        b.vx += Math.sin(t * 0.5 + b.shimmerOffset) * 0.012;
         b.vx *= friction;
         b.vy *= friction;
+        b.vy = Math.max(-1.1, Math.min(1.1, b.vy));
         b.x += b.vx;
         b.y += b.vy;
         b.hue = (b.hue + 0.3) % 360;
@@ -245,10 +291,11 @@ export function useBubbleUniverse(
         }
 
         // Wall bounce
-        if (b.x - b.r < 0) { b.x = b.r; b.vx = Math.abs(b.vx) * 0.6; }
-        if (b.x + b.r > w) { b.x = w - b.r; b.vx = -Math.abs(b.vx) * 0.6; }
-        if (b.y - b.r < 0) { b.y = b.r; b.vy = Math.abs(b.vy) * 0.6; }
-        if (b.y + b.r > h) { b.y = h - b.r; b.vy = -Math.abs(b.vy) * 0.8; }
+        // drift off one edge, come back in from the other
+        if (b.x + b.r < -4) b.x = w + b.r;
+        else if (b.x - b.r > w + 4) b.x = -b.r;
+        if (b.y + b.r < -4) { b.y = h + b.r + 2; b.x = Math.random() * w; }
+        else if (b.y - b.r > h + 4) { b.y = -b.r - 2; b.x = Math.random() * w; }
 
         // Bubble-bubble collision / merge
         for (let j = i + 1; j < bubbles.length; j++) {

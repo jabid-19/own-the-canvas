@@ -24,7 +24,7 @@ const PROPS = [
 ];
 
 const PRESET_PARAMS = {
-  default:    { color1: "#ffffff", color2: "#6b7280", color3: "#9ca3af", bg: "#111111", bloomRadius: 80,  opacity: 0.15, wetEdge: 0.4, layerCount: 6, noiseAmount: 0.5 },
+  default:    { color1: "#f97316", color2: "#ec4899", color3: "#8b5cf6", bg: "#0a0005", bloomRadius: 80,  opacity: 0.15, wetEdge: 0.4, layerCount: 6, noiseAmount: 0.5 },
   sunset:     { color1: "#f97316", color2: "#ec4899", color3: "#8b5cf6", bg: "#0a0005", bloomRadius: 100, opacity: 0.18, wetEdge: 0.5, layerCount: 6, noiseAmount: 0.5 },
   ocean:      { color1: "#0ea5e9", color2: "#06b6d4", color3: "#6366f1", bg: "#020b18", bloomRadius: 90,  opacity: 0.15, wetEdge: 0.35,layerCount: 6, noiseAmount: 0.5 },
   spring:     { color1: "#86efac", color2: "#fde68a", color3: "#fbcfe8", bg: "#0a0f05", bloomRadius: 80,  opacity: 0.2,  wetEdge: 0.4, layerCount: 8, noiseAmount: 0.5 },
@@ -34,10 +34,10 @@ const PRESET_PARAMS = {
 
 function WatercolorBloomPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]           = useState("default");
-  const [color1, setColor1]           = useState("#ffffff");
-  const [color2, setColor2]           = useState("#6b7280");
-  const [color3, setColor3]           = useState("#9ca3af");
-  const [bg, setBg]                   = useState("#111111");
+  const [color1, setColor1]           = useState("#f97316");
+  const [color2, setColor2]           = useState("#ec4899");
+  const [color3, setColor3]           = useState("#8b5cf6");
+  const [bg, setBg]                   = useState("#0a0005");
   const [bloomRadius, setBloomRadius] = useState(80);
   const [bloomSpeed, setBloomSpeed]   = useState(0.5);
   const [opacity, setOpacity]         = useState(0.15);

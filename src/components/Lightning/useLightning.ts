@@ -51,7 +51,6 @@ export function useLightning(
   optionsRef.current = options;
   const boltsRef = useRef<Bolt[]>([]);
   const rafRef = useRef<number>(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashRef = useRef(0); // 0–1 screen flash that decays each frame
 
   useEffect(() => {
@@ -127,7 +126,10 @@ export function useLightning(
     }
 
     function strike(targetX?: number, targetY?: number) {
-      const { segments, roughness, branchChance, branchDecay, flickerCount } = optionsRef.current;
+      const { roughness, branchChance, branchDecay, flickerCount } = optionsRef.current;
+      // segments is recursion depth (2^n points): clamp so a large value can't hang the tab
+      const segments = Math.max(1, Math.min(12, Math.round(optionsRef.current.segments)));
+      const MAX_BRANCHES = 48;
       const { startX, startY, endY } = optionsRef.current;
 
       const sx = targetX !== undefined ? targetX : startX * w;
@@ -142,9 +144,13 @@ export function useLightning(
         generateBolt(x1, y1, x2, y2, segments, roughness, pts);
         newBolts.push({ points: pts, energy, alpha: 1 });
 
-        // Branches: spread in the direction of travel, not random ±40px
-        for (let i = 2; i < pts.length - 1; i++) {
-          if (Math.random() >= branchChance) continue;
+        // Branches: spread in the direction of travel, not random ±40px.
+        // Chance is per original-depth-8 segment, so deeper bolts don't sprout 2^n branches.
+        const perPoint = branchChance * Math.min(1, 256 / pts.length);
+        let branches = 0;
+        for (let i = 2; i < pts.length - 1 && branches < MAX_BRANCHES; i++) {
+          if (Math.random() >= perPoint) continue;
+          branches++;
           // Direction bias: follow the main bolt direction + fan out
           const bAngle = (Math.random() - 0.5) * Math.PI * 0.65;
           const bLen = (ey - pts[i].y) * (0.25 + Math.random() * 0.4);
@@ -170,16 +176,11 @@ export function useLightning(
       flashRef.current = 0.35; // trigger screen flash
     }
 
-    function scheduleAuto() {
-      const { autoInterval } = optionsRef.current;
-      timerRef.current = setTimeout(() => {
-        strike();
-        scheduleAuto();
-      }, autoInterval * (0.5 + Math.random()));
-    }
-
-    scheduleAuto();
+    // Auto strikes on the frame clock: live autoInterval, pauses with the loop.
+    let lastNow = 0, sinceStrike = 0, nextGap = 0;
+    const gap = () => Math.max(50, optionsRef.current.autoInterval) * (0.5 + Math.random());
     strike();
+    nextGap = gap();
 
     function onClick(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
@@ -188,8 +189,11 @@ export function useLightning(
     }
     canvas.addEventListener("click", onClick);
 
-    function draw() {
+    function draw(now: number) {
       const { backgroundColor } = optionsRef.current;
+      sinceStrike += lastNow ? Math.min(now - lastNow, 64) : 16;
+      lastNow = now;
+      if (sinceStrike >= nextGap) { strike(); sinceStrike = 0; nextGap = gap(); }
 
       // Full clear each frame — no accumulated overlay drift
       if (!backgroundColor || backgroundColor === "transparent") {
@@ -228,7 +232,6 @@ export function useLightning(
     return () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
-      if (timerRef.current) clearTimeout(timerRef.current);
       canvas.removeEventListener("click", onClick);
     };
   }, [canvasRef]);
