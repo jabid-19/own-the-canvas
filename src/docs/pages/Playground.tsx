@@ -37,8 +37,8 @@ const CSS = `
 .playground-topbar-badge {
   font-size: 11px;
   font-weight: 500;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
+  color: #1f7a45;
+  background: rgba(47,158,95,0.16);
   border: 1px solid rgba(34, 197, 94, 0.25);
   padding: 2px 8px;
   border-radius: 20px;

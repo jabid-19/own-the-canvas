@@ -6,9 +6,9 @@ import { PendulaWave } from "../../../components/PendulaWave";
 import type { PendulaWaveColorMode } from "../../../components/PendulaWave";
 
 const PROPS = [
-  { name: "color",           type: "string",                          default: '"#ffffff"',  description: "Stroke color." },
-  { name: "color2",          type: "string",                          default: '"#6b7280"',  description: "Secondary color used in gradient colorMode." },
-  { name: "backgroundColor", type: "string",                          default: '"#111111"',  description: "Canvas background." },
+  { name: "color",           type: "string",                          default: '"#ffb347"',  description: "Stroke color." },
+  { name: "color2",          type: "string",                          default: '"#2ec4b6"',  description: "Secondary color used in gradient colorMode." },
+  { name: "backgroundColor", type: "string",                          default: '"#06101a"',  description: "Canvas background." },
   { name: "lineWidth",       type: "number",                          default: "1",          description: "Stroke line width." },
   { name: "trailFade",       type: "number",                          default: "0.01",       description: "Background fade per frame — lower = longer trails." },
   { name: "speed",           type: "number",                          default: "1",          description: "Animation speed multiplier." },
@@ -17,16 +17,17 @@ const PROPS = [
   { name: "freq2",           type: "number",                          default: "3",          description: "Frequency of pendulum 2 (y-axis)." },
   { name: "freq3",           type: "number",                          default: "0.01",       description: "Frequency of phase-shift pendulum." },
   { name: "amplitude",       type: "number",                          default: "0.9",        description: "Max swing as fraction of canvas half-size." },
-  { name: "colorMode",       type: '"solid" | "cycle" | "gradient"', default: '"solid"',    description: "How stroke color is computed." },
+  { name: "colorMode",       type: '"solid" | "cycle" | "gradient"', default: '"cycle"',    description: "How stroke color is computed." },
   { name: "glowEffect",      type: "boolean",                         default: "false",      description: "Enable glow." },
   { name: "glowBlur",        type: "number",                          default: "10",         description: "Shadow blur for glow." },
   { name: "animated",        type: "boolean",                         default: "true",       description: "Enable animation." },
   { name: "autoReset",       type: "boolean",                         default: "true",       description: "Restart after damping decays to near-zero." },
-  { name: "preset",          type: "string",                          default: "—",          description: '"default" | "neon" | "crystal" | "sand" | "minimal" | "cosmic"' },
+  { name: "preset",          type: "string",                          default: "—",          description: '"default" | "neon" | "crystal" | "sand" | "minimal" | "cosmic" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default: { color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "solid",    glowEffect: false, glowBlur: 10 },
+  default: { color: "#ffb347", color2: "#2ec4b6", bg: "#06101a", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "gradient", glowEffect: true,  glowBlur: 10 },
+  monochrome: { color: "#ffffff", color2: "#6b7280", bg: "#111111", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "solid",    glowEffect: false, glowBlur: 10 },
   neon:    { color: "#00ffcc", color2: "#ff00aa", bg: "#000000", lineWidth: 1,   trailFade: 0.015, damping: 0.9995, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "cycle",    glowEffect: true,  glowBlur: 12 },
   crystal: { color: "#88ccff", color2: "#ffffff", bg: "#000510", lineWidth: 1,   trailFade: 0.01,  damping: 0.9995, freq1: 3, freq2: 5, freq3: 0.01, colorMode: "gradient", glowEffect: true,  glowBlur: 8 },
   sand:    { color: "#d4a76a", color2: "#7c5c2e", bg: "#1a1005", lineWidth: 1.5, trailFade: 0.005, damping: 0.9998, freq1: 2, freq2: 3, freq3: 0.01, colorMode: "gradient", glowEffect: false, glowBlur: 10 },
@@ -36,9 +37,9 @@ const PRESET_PARAMS = {
 
 function PendulaWavePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]       = useState("default");
-  const [color, setColor]         = useState("#ffffff");
-  const [color2, setColor2]       = useState("#6b7280");
-  const [bg, setBg]               = useState("#111111");
+  const [color, setColor]         = useState("#ffb347");
+  const [color2, setColor2]       = useState("#2ec4b6");
+  const [bg, setBg]               = useState("#06101a");
   const [lineWidth, setLineWidth] = useState(1);
   const [trailFade, setTrailFade] = useState(0.01);
   const [speed, setSpeed]         = useState(1);
@@ -47,8 +48,8 @@ function PendulaWavePlayground({ onReset }: { onReset?: () => void }) {
   const [freq2, setFreq2]         = useState(3);
   const [freq3, setFreq3]         = useState(0.01);
   const [amplitude, setAmplitude] = useState(0.9);
-  const [colorMode, setColorMode] = useState<PendulaWaveColorMode>("solid");
-  const [glowEffect, setGlow]     = useState(false);
+  const [colorMode, setColorMode] = useState<PendulaWaveColorMode>("gradient");
+  const [glowEffect, setGlow]     = useState(true);
   const [glowBlur, setGlowBlur]   = useState(10);
   const [animated, setAnimated]   = useState(true);
   const [autoReset, setAutoReset] = useState(true);
@@ -127,7 +128,7 @@ function PendulaWavePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset"     value={preset}    options={["default", "neon", "crystal", "sand", "minimal", "cosmic"]} onChange={handlePreset} />
+        <PSel label="Preset"     value={preset}    options={["default", "neon", "crystal", "sand", "minimal", "cosmic", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Color"      value={color}  onChange={setColor} />
         <PColor label="Color 2"    value={color2} onChange={setColor2} />

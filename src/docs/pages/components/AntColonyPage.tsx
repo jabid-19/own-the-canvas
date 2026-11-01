@@ -13,20 +13,21 @@ const PROPS = [
   { name: "sensorAngle",       type: "number",  default: "0.4",     description: "Ant sensor angle offset in radians." },
   { name: "sensorDistance",    type: "number",  default: "6",       description: "Pheromone sensor lookahead in px." },
   { name: "turnSpeed",         type: "number",  default: "0.3",     description: "Max turn per frame in radians." },
-  { name: "antColor",          type: "string",  default: '"#ffffff"', description: "Ant dot color." },
-  { name: "pheromoneColor",    type: "string",  default: '"#6b7280"', description: "Pheromone trail color." },
-  { name: "foodColor",         type: "string",  default: '"#4ade80"', description: "Food source color." },
-  { name: "nestColor",         type: "string",  default: '"#f59e0b"', description: "Nest color." },
-  { name: "backgroundColor",   type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "antColor",          type: "string",  default: '"#d9693a"', description: "Ant dot color." },
+  { name: "pheromoneColor",    type: "string",  default: '"#6fdc8c"', description: "Pheromone trail color." },
+  { name: "foodColor",         type: "string",  default: '"#f5c242"', description: "Food source color." },
+  { name: "nestColor",         type: "string",  default: '"#9a6a3a"', description: "Nest color." },
+  { name: "backgroundColor",   type: "string",  default: '"#1a140d"', description: "Canvas background." },
   { name: "resolution",        type: "number",  default: "0.5",     description: "Pheromone grid resolution fraction." },
   { name: "animated",          type: "boolean", default: "true",    description: "Enable animation." },
   { name: "interactive",       type: "boolean", default: "true",    description: "Click to place food sources." },
   { name: "maxFood",           type: "number",  default: "5",       description: "Max simultaneous food sources." },
-  { name: "preset",            type: "string",  default: "—",       description: '"default" | "neon" | "desert" | "jungle" | "minimal" | "swarm"' },
+  { name: "preset",            type: "string",  default: "—",       description: '"default" | "neon" | "desert" | "jungle" | "minimal" | "swarm" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default: { antColor: "#ffffff", pheromoneColor: "#6b7280", foodColor: "#4ade80", nestColor: "#f59e0b", bg: "#111111", antCount: 150, antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 5 },
+  default: { antColor: "#d9693a", pheromoneColor: "#6fdc8c", foodColor: "#f5c242", nestColor: "#9a6a3a", bg: "#1a140d", antCount: 150, antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 5 },
+  monochrome: { antColor: "#ffffff", pheromoneColor: "#6b7280", foodColor: "#4ade80", nestColor: "#f59e0b", bg: "#111111", antCount: 150, antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 5 },
   neon:    { antColor: "#ffffff", pheromoneColor: "#00ffcc", foodColor: "#f0abfc", nestColor: "#fbbf24", bg: "#000000", antCount: 150, antSpeed: 1.5, evaporationRate: 0.003, pheromoneStrength: 8 },
   desert:  { antColor: "#451a03", pheromoneColor: "#d97706", foodColor: "#84cc16", nestColor: "#b45309", bg: "#fef3c7", antCount: 150, antSpeed: 2,   evaporationRate: 0.005, pheromoneStrength: 5 },
   jungle:  { antColor: "#1a0a00", pheromoneColor: "#4ade80", foodColor: "#fbbf24", nestColor: "#7c3aed", bg: "#052e16", antCount: 200, antSpeed: 1,   evaporationRate: 0.003, pheromoneStrength: 5 },
@@ -44,11 +45,11 @@ function AntColonyPlayground({ onReset }: { onReset?: () => void }) {
   const [sensorAngle, setSensorAng]   = useState(0.4);
   const [sensorDist, setSensorDist]   = useState(6);
   const [turnSpeed, setTurnSpeed]     = useState(0.3);
-  const [antColor, setAntColor]       = useState("#ffffff");
-  const [phColor, setPhColor]         = useState("#6b7280");
-  const [foodColor, setFoodColor]     = useState("#4ade80");
-  const [nestColor, setNestColor]     = useState("#f59e0b");
-  const [bg, setBg]                   = useState("#111111");
+  const [antColor, setAntColor]       = useState("#d9693a");
+  const [phColor, setPhColor]         = useState("#6fdc8c");
+  const [foodColor, setFoodColor]     = useState("#f5c242");
+  const [nestColor, setNestColor]     = useState("#9a6a3a");
+  const [bg, setBg]                   = useState("#1a140d");
   const [maxFood, setMaxFood]         = useState(5);
   const [animated, setAnimated]       = useState(true);
   const [interactive, setInteract]    = useState(true);
@@ -124,7 +125,7 @@ function AntColonyPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "desert", "jungle", "minimal", "swarm"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "desert", "jungle", "minimal", "swarm", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Ant color"       value={antColor}  onChange={setAntColor} />
         <PColor label="Pheromone color" value={phColor}   onChange={setPhColor} />

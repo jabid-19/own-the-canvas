@@ -26,7 +26,7 @@ For a component named `MyEffect`:
 Before writing any code, decide:
 - What does each prop visually control?
 - What is the sensible default for someone who just drops in `<MyEffect />`?
-- **Defaults must be monochrome**: use `"#111111"` (background), `"#ffffff"` (primary), `"#6b7280"` (secondary)
+- **Defaults are colorful**: the `default` preset carries the component's signature palette. Hard-coded fallbacks stay neutral (`"#111111"` background, `"#ffffff"` primary, `"#6b7280"` secondary) and are what the `monochrome: {}` preset resolves to
 - What 5 named presets cover the most useful visual styles?
 
 Write down your props interface and preset map before opening any files.
@@ -203,7 +203,7 @@ import { BaseCanvasProps } from "../../types";
 import { useMyEffect, MyEffectMode } from "./useMyEffect";
 
 // 1. Preset union type
-type MyEffectPreset = "default" | "neon" | "minimal" | "dark" | "vivid";
+type MyEffectPreset = "default" | "monochrome" | "neon" | "minimal" | "dark" | "vivid";
 
 // 2. Preset values — only props that differ from component defaults
 interface MyEffectPresetValues {
@@ -213,9 +213,11 @@ interface MyEffectPresetValues {
   // Only include props the preset actually changes
 }
 
-// 3. Preset map — "default" preset is always empty {}
+// 3. Preset map — "default" holds the signature colors; "monochrome" is always empty {}
+//    so it falls through to the neutral hard defaults below
 const PRESETS: Record<MyEffectPreset, MyEffectPresetValues> = {
-  default: {},
+  default: { color: "#67e8f9", backgroundColor: "#020f1a" },
+  monochrome: {},
   neon: {
     color: "#00ffff",
     backgroundColor: "#000000",
@@ -239,15 +241,15 @@ const PRESETS: Record<MyEffectPreset, MyEffectPresetValues> = {
 
 // 4. Props interface — extends BaseCanvasProps
 export interface MyEffectProps extends BaseCanvasProps {
-  /** Primary color (default: "#ffffff") */
+  /** Primary color (default: "#67e8f9") */
   color?: string;
-  /** Background color (default: "#111111") */
+  /** Background color (default: "#020f1a") */
   backgroundColor?: string;
   /** Animation speed multiplier (default: 1) */
   speed?: number;
   /** Visualization mode (default: "mode-a") */
   mode?: MyEffectMode;
-  /** Named preset: "default" | "neon" | "minimal" | "dark" | "vivid" */
+  /** Named preset: "default" | "monochrome" | "neon" | "minimal" | "dark" | "vivid" */
   preset?: MyEffectPreset | string;
 }
 
@@ -266,8 +268,8 @@ export const MyEffect = forwardRef<HTMLCanvasElement, MyEffectProps>(
       style,
     } = props;
 
-    // 6. Preset resolution — always this pattern
-    const p = (preset && PRESETS[preset as MyEffectPreset]) || {};
+    // 6. Preset resolution — always this pattern (no preset = "default")
+    const p = PRESETS[(preset ?? "default") as MyEffectPreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
@@ -315,7 +317,7 @@ MyEffect.displayName = "MyEffect";
 </div>
 ```
 
-**Overlay (Spotlight, GlitchOverlay — canvas floats over children):**
+**Overlay (canvas floats over children):**
 ```tsx
 <div style={{ position: "relative", width, height, display: "block", overflow: "hidden", ...style }}>
   <canvas
@@ -327,7 +329,7 @@ MyEffect.displayName = "MyEffect";
 </div>
 ```
 
-**With children (PixelDissolve pattern — content under the canvas):**
+**With children (content under the canvas):**
 ```tsx
 <div style={{ position: "relative", width, height, overflow: "hidden", ...style }}>
   {children && (
@@ -401,18 +403,18 @@ import { MyEffect } from "../../../components/MyEffect";
 
 // 1. Props table data — one entry per public prop
 const PROPS = [
-  { name: "color",           type: "string",              default: '"#ffffff"',  description: "Primary color." },
-  { name: "backgroundColor", type: "string",              default: '"#111111"',  description: "Canvas background color." },
+  { name: "color",           type: "string",              default: '"#67e8f9"',  description: "Primary color." },
+  { name: "backgroundColor", type: "string",              default: '"#020f1a"',  description: "Canvas background color." },
   { name: "speed",           type: "number",              default: "1",          description: "Animation speed multiplier." },
   { name: "mode",            type: '"mode-a" | "mode-b"', default: '"mode-a"',   description: "Visualization mode." },
-  { name: "preset",          type: '"default" | "neon" | "minimal" | "dark" | "vivid"', default: '"default"', description: "Named preset shorthand." },
+  { name: "preset",          type: '"default" | "monochrome" | "neon" | "minimal" | "dark" | "vivid"', default: '"default"', description: "Named preset shorthand." },
 ];
 
 // 2. Playground component — all state lives here
 function MyEffectPlayground() {
   const [preset, setPreset]   = useState("default");
-  const [color, setColor]     = useState("#ffffff");
-  const [bg, setBg]           = useState("#111111");
+  const [color, setColor]     = useState("#67e8f9");
+  const [bg, setBg]           = useState("#020f1a");
   const [speed, setSpeed]     = useState(1);
   const [mode, setMode]       = useState<"mode-a" | "mode-b">("mode-a");
 
@@ -551,7 +553,7 @@ The array is displayed as-is — put your component where it makes sense alphabe
 Copy this into a scratch note and check off as you go:
 
 ```
-[ ] Props designed — monochrome defaults, 5 presets planned
+[ ] Props designed — signature-color default preset, monochrome preset, 5 presets planned
 [ ] src/components/MyEffect/useMyEffect.ts — hook created
     [ ] optionsRef pattern used
     [ ] DPR-aware resize (canvas.width = size * dpr, ctx.scale(dpr, dpr))
@@ -614,13 +616,14 @@ ro.observe(canvas); // canvas has no natural size
 ro.observe(parent); // parent div drives the size
 ```
 
-**Wrong: colorful defaults**
+**Wrong: grey default preset**
 ```ts
-color: "#7C3AED" // jarring on unknown backgrounds
+default: {} // falls through to #ffffff on #111111 — the showcase looks dead
 ```
 **Right:**
 ```ts
-color: "#ffffff" // neutral — works anywhere
+default: { color: "#67e8f9", backgroundColor: "#020f1a" }, // signature look
+monochrome: {},                                             // neutral opt-in
 ```
 
 **Wrong: missing cleanup**

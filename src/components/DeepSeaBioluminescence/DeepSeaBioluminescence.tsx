@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useDeepSeaBioluminescence } from "./useDeepSeaBioluminescence";
 
-type DeepSeaBioluminescencePreset = "default" | "abyssal" | "coral" | "aurora" | "crimson";
+type DeepSeaBioluminescencePreset = "default" | "abyssal" | "coral" | "aurora" | "crimson" | "monochrome";
 
 interface DeepSeaBioluminescencePresetValues {
   jellyfishColor?: string;
@@ -11,7 +11,8 @@ interface DeepSeaBioluminescencePresetValues {
 }
 
 export const PRESETS: Record<DeepSeaBioluminescencePreset, DeepSeaBioluminescencePresetValues> = {
-  default:  {},
+  default:  { jellyfishColor: "#7fd8ff", glowColor: "#3fe0d0", waterColor: "#020a16" },
+  monochrome: {},
   abyssal:  { jellyfishColor: "#8855cc", glowColor: "#aa55ff", waterColor: "#020008" },
   coral:    { jellyfishColor: "#ff8855", glowColor: "#ffaa44", waterColor: "#040a0c" },
   aurora:   { jellyfishColor: "#44ffaa", glowColor: "#00ff88", waterColor: "#020c08" },
@@ -23,11 +24,11 @@ export interface DeepSeaBioluminescenceProps extends BaseCanvasProps {
   jellyfishCount?: number;
   /** Number of plankton particles (default: 200) */
   planktonCount?: number;
-  /** Jellyfish bell color (default: "#88ccff") */
+  /** Jellyfish bell color (default: "#7fd8ff") */
   jellyfishColor?: string;
-  /** Bioluminescent glow color (default: "#00ffcc") */
+  /** Bioluminescent glow color (default: "#3fe0d0") */
   glowColor?: string;
-  /** Background water color (default: "#020c14") */
+  /** Background water color (default: "#020a16") */
   waterColor?: string;
   /** Cursor movement spawns bioluminescent ripples (default: true) */
   interactive?: boolean;
@@ -45,7 +46,7 @@ export const DeepSeaBioluminescence = forwardRef<HTMLCanvasElement, DeepSeaBiolu
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as DeepSeaBioluminescencePreset]) || {};
+    const p = PRESETS[(preset ?? "default") as DeepSeaBioluminescencePreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

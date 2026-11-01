@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { hexToRgbString, hexToRgba } from "../../utils/color";
+import { pointerInCanvas } from "../../runtime/fx";
 
 interface KoiFish {
   x: number;
@@ -7,13 +8,14 @@ interface KoiFish {
   vx: number;
   vy: number;
   angle: number;
-  speed: number;
+  /** Per-fish speed multiplier (0.5–1.3); times options.speed each frame. */
+  speedMul: number;
   length: number;
   // Body segments for smooth shape
   segments: Array<{ x: number; y: number }>;
   tailPhase: number;
-  color: string;
-  accentColor: string;
+  /** Accent fish swap fishColor/scaleColor; colors resolve live from options. */
+  isAccent: boolean;
   wanderAngle: number;
 }
 
@@ -76,9 +78,10 @@ export function useKoiPond(
     const ctx = canvas.getContext("2d")!;
     let w = 0, h = 0;
 
-    function makeFish(fishColor: string, scaleColor: string): KoiFish {
+    function makeFish(): KoiFish {
       const angle = Math.random() * Math.PI * 2;
-      const baseSpeed = (0.5 + Math.random() * 0.8) * optionsRef.current.speed;
+      const speedMul = 0.5 + Math.random() * 0.8;
+      const baseSpeed = speedMul * optionsRef.current.speed;
       const length = 40 + Math.random() * 30;
       const x = Math.random() * w;
       const y = Math.random() * h;
@@ -89,15 +92,14 @@ export function useKoiPond(
         vx: Math.cos(angle) * baseSpeed,
         vy: Math.sin(angle) * baseSpeed,
         angle,
-        speed: baseSpeed,
+        speedMul,
         length,
         segments: Array.from({ length: 8 }, (_, i) => ({
           x: x - Math.cos(angle) * i * (length / 8),
           y: y - Math.sin(angle) * i * (length / 8),
         })),
         tailPhase: Math.random() * Math.PI * 2,
-        color: isAccent ? scaleColor : fishColor,
-        accentColor: isAccent ? fishColor : scaleColor,
+        isAccent,
         wanderAngle: angle,
       };
     }
@@ -113,8 +115,8 @@ export function useKoiPond(
     }
 
     function initPond() {
-      const { fishCount, fishColor, scaleColor } = optionsRef.current;
-      fishRef.current = Array.from({ length: fishCount }, () => makeFish(fishColor, scaleColor));
+      const { fishCount } = optionsRef.current;
+      fishRef.current = Array.from({ length: fishCount }, makeFish);
       makeLilies();
     }
 
@@ -140,9 +142,10 @@ export function useKoiPond(
 
     function onMouseMove(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
-      const r = canvas!.getBoundingClientRect();
-      const nx = e.clientX - r.left;
-      const ny = e.clientY - r.top;
+      const p = pointerInCanvas(e, canvas!);
+      if (!p) return onMouseLeave();
+      const nx = p.x;
+      const ny = p.y;
       const prev = mouseRef.current;
       if (prev) {
         const dx = nx - prev.x;
@@ -162,8 +165,9 @@ export function useKoiPond(
       const segs = fish.segments;
       if (segs.length < 2) return;
 
-      const fishRgb = hexToRgbString(fish.color);
-      const accentRgb = hexToRgbString(fish.accentColor);
+      const { fishColor, scaleColor } = optionsRef.current;
+      const fishRgb = hexToRgbString(fish.isAccent ? scaleColor : fishColor);
+      const accentRgb = hexToRgbString(fish.isAccent ? fishColor : scaleColor);
 
       // Body as tapered path through segments
       ctx.save();
@@ -279,7 +283,7 @@ export function useKoiPond(
       }
 
       // Update fish
-      while (fishRef.current.length < fishCount) fishRef.current.push(makeFish(fishColor, scaleColor));
+      while (fishRef.current.length < fishCount) fishRef.current.push(makeFish());
       if (fishRef.current.length > fishCount) fishRef.current.length = fishCount;
 
       const mouse = mouseRef.current;
@@ -287,8 +291,9 @@ export function useKoiPond(
       for (const fish of fishRef.current) {
         // Gentle wander steering
         fish.wanderAngle += (Math.random() - 0.5) * 0.05;
-        const targetVx = Math.cos(fish.wanderAngle) * fish.speed;
-        const targetVy = Math.sin(fish.wanderAngle) * fish.speed;
+        const fishSpeed = fish.speedMul * speed;
+        const targetVx = Math.cos(fish.wanderAngle) * fishSpeed;
+        const targetVy = Math.sin(fish.wanderAngle) * fishSpeed;
         fish.vx += (targetVx - fish.vx) * 0.02;
         fish.vy += (targetVy - fish.vy) * 0.02;
 
@@ -325,7 +330,7 @@ export function useKoiPond(
 
         // Clamp speed
         const spd = Math.sqrt(fish.vx * fish.vx + fish.vy * fish.vy) || 0.001;
-        const maxSpd = fish.speed * 1.8;
+        const maxSpd = fishSpeed * 1.8;
         if (spd > maxSpd) { fish.vx = (fish.vx / spd) * maxSpd; fish.vy = (fish.vy / spd) * maxSpd; }
 
         fish.angle = Math.atan2(fish.vy, fish.vx);

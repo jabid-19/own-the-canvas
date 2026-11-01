@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useKoiPond } from "./useKoiPond";
 
-type KoiPondPreset = "default" | "koi" | "night" | "lotus" | "neon";
+type KoiPondPreset = "default" | "koi" | "night" | "lotus" | "neon" | "monochrome";
 
 interface KoiPondPresetValues {
   fishColor?: string;
@@ -14,7 +14,8 @@ interface KoiPondPresetValues {
 }
 
 const PRESETS: Record<KoiPondPreset, KoiPondPresetValues> = {
-  default: {},
+  default: { fishColor: "#ff6030", scaleColor: "#ffffff", waterColor: "#0a1520", rippleColor: "#60a8d0", lilyColor: "#50aa50" },
+  monochrome: {},
   koi: {
     fishColor: "#ff6030",
     scaleColor: "#ffffff",
@@ -51,15 +52,15 @@ const PRESETS: Record<KoiPondPreset, KoiPondPresetValues> = {
 export interface KoiPondProps extends BaseCanvasProps {
   /** Number of koi fish (default: 6) */
   fishCount?: number;
-  /** Primary fish body color (default: "#ffffff") */
+  /** Primary fish body color (default: "#ff6030") */
   fishColor?: string;
-  /** Scale accent color (default: "#6b7280") */
+  /** Scale accent color (default: "#ffffff") */
   scaleColor?: string;
-  /** Water background color (default: "#111111") */
+  /** Water background color (default: "#0a1520") */
   waterColor?: string;
-  /** Ripple ring color (default: "#6b7280") */
+  /** Ripple ring color (default: "#60a8d0") */
   rippleColor?: string;
-  /** Lily pad color (default: "#ffffff") */
+  /** Lily pad color (default: "#50aa50") */
   lilyColor?: string;
   /** Fish movement speed multiplier (default: 1) */
   speed?: number;
@@ -81,7 +82,7 @@ export const KoiPond = forwardRef<HTMLCanvasElement, KoiPondProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as KoiPondPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as KoiPondPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

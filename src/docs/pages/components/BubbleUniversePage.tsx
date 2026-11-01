@@ -8,21 +8,22 @@ const PROPS = [
   { name: "bubbleCount",    type: "number",  default: "15",        description: "Number of simultaneous bubbles." },
   { name: "minRadius",      type: "number",  default: "20",        description: "Minimum bubble radius in px." },
   { name: "maxRadius",      type: "number",  default: "80",        description: "Maximum bubble radius in px." },
-  { name: "backgroundColor",type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "backgroundColor",type: "string",  default: '"#050a12"', description: "Canvas background." },
   { name: "shimmerColor",   type: "string",  default: '"#ffffff"', description: "Specular highlight color." },
   { name: "popEffect",      type: "boolean", default: "true",      description: "Click bubbles to pop them." },
-  { name: "gravity",        type: "number",  default: "0.02",      description: "Downward gravity force." },
+  { name: "gravity",        type: "number",  default: "0.02",      description: "Pull against buoyancy: below 0.03 bubbles rise, above it they sink." },
   { name: "friction",       type: "number",  default: "0.995",     description: "Velocity friction per frame." },
   { name: "interactive",    type: "boolean", default: "true",      description: "Hover pushes bubbles; click to pop." },
   { name: "mergeOnCollide", type: "boolean", default: "true",      description: "Bubbles merge when overlapping significantly." },
   { name: "glowEffect",     type: "boolean", default: "true",      description: "Iridescent glow on bubbles." },
-  { name: "preset",         type: "string",  default: "—",         description: '"default" | "soap" | "neon" | "deep" | "minimal"' },
+  { name: "preset",         type: "string",  default: "—",         description: '"default" | "soap" | "neon" | "deep" | "minimal" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, {
   bg: string; shimmerColor: string; gravity: number; bubbleCount: number; minRadius: number; maxRadius: number;
 }> = {
-  default: { bg: "#111111", shimmerColor: "#ffffff", gravity: 0.02,  bubbleCount: 15, minRadius: 20, maxRadius: 50  },
+  default: { bg: "#050a12", shimmerColor: "#ffffff", gravity: 0.02,  bubbleCount: 15, minRadius: 20, maxRadius: 50  },
+  monochrome: { bg: "#111111", shimmerColor: "#ffffff", gravity: 0.02,  bubbleCount: 15, minRadius: 20, maxRadius: 50  },
   soap:    { bg: "#050a12", shimmerColor: "#ffffff", gravity: 0.01,  bubbleCount: 15, minRadius: 25, maxRadius: 90  },
   neon:    { bg: "#000008", shimmerColor: "#00ffff", gravity: 0.015, bubbleCount: 12, minRadius: 20, maxRadius: 80  },
   deep:    { bg: "#010510", shimmerColor: "#88aaff", gravity: 0.008, bubbleCount: 20, minRadius: 15, maxRadius: 60  },
@@ -31,7 +32,7 @@ const PRESET_VALUES: Record<string, {
 
 function BubbleUniversePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [bg, setBg] = useState("#111111");
+  const [bg, setBg] = useState("#050a12");
   const [shimmerColor, setShimmerColor] = useState("#ffffff");
   const [bubbleCount, setBubbleCount] = useState(15);
   const [minRadius, setMinRadius] = useState(20);
@@ -94,7 +95,7 @@ function BubbleUniversePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "soap", "neon", "deep", "minimal"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "soap", "neon", "deep", "minimal", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PColor label="Shimmer color" value={shimmerColor} onChange={setShimmerColor} />
@@ -120,7 +121,7 @@ export function BubbleUniversePage() {
     <PageShell
       eyebrow="Component"
       title="BubbleUniverse"
-      lead="Iridescent soap bubbles with elastic collision physics, merge mechanics, and satisfying pop animations. Click to pop, hover to push."
+      lead="Soap bubbles drifting up through soft bokeh, each with a swirling thin-film rainbow, window reflections and a bright glint. They bump, merge and pop. Click to pop, hover to push."
     >
       <BubbleUniversePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

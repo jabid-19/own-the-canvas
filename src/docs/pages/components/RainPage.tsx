@@ -12,15 +12,15 @@ const PROPS = [
   { name: "dropLength",      type: "number",  default: "20",        description: "Drop streak length in px." },
   { name: "dropWidth",       type: "number",  default: "1",         description: "Drop stroke width in px." },
   { name: "dropOpacity",     type: "number",  default: "0.6",       description: "Drop opacity 0–1." },
-  { name: "dropColor",       type: "string",  default: '"#000000"', description: "Drop streak color." },
-  { name: "splashColor",     type: "string",  default: '"#000000"', description: "Splash particle color." },
+  { name: "dropColor",       type: "string",  default: '"#a9c2e8"', description: "Drop streak color." },
+  { name: "splashColor",     type: "string",  default: '"#dbe7ff"', description: "Splash particle color." },
   { name: "showSplashes",    type: "boolean", default: "true",      description: "Show splash particles when drops hit bottom." },
-  { name: "backgroundColor", type: "string",  default: '"#ffffff"', description: 'Canvas background color. Use "transparent" to overlay on another element.' },
+  { name: "backgroundColor", type: "string",  default: '"#0b1424"', description: 'Canvas background color. Use "transparent" to overlay on another element.' },
   { name: "starCount",       type: "number",  default: "60",        description: "Number of background stars." },
   { name: "starColor",       type: "string",  default: '"#ffffff"', description: "Star color." },
   { name: "glowingStars",    type: "boolean", default: "false",     description: "Enable glow effect on ~28% of stars." },
   { name: "starGlowBlur",    type: "number",  default: "8",         description: "Shadow blur radius for glowing stars." },
-  { name: "preset",          type: "string",  default: "—",         description: '"default" | "storm" | "drizzle" | "neon" | "golden"' },
+  { name: "preset",          type: "string",  default: "—",         description: '"default" | "storm" | "drizzle" | "neon" | "golden" | "monochrome"' },
 ];
 
 function RainPlayground({ onReset }: { onReset?: () => void }) {
@@ -28,9 +28,9 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
   const [dropCount, setDropCount] = useState(200);
   const [speed, setSpeed] = useState(15);
   const [wind, setWind] = useState(0.3);
-  const [dropColor, setDropColor] = useState("#000000");
-  const [splashColor, setSplashColor] = useState("#000000");
-  const [bg, setBg] = useState("#ffffff");
+  const [dropColor, setDropColor] = useState("#a9c2e8");
+  const [splashColor, setSplashColor] = useState("#dbe7ff");
+  const [bg, setBg] = useState("#0b1424");
   const [showSplashes, setShowSplashes] = useState(true);
   const [starCount, setStarCount] = useState(60);
   const [starColor, setStarColor] = useState("#ffffff");
@@ -72,7 +72,7 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "storm", "drizzle", "neon", "golden"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "storm", "drizzle", "neon", "golden", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Drop color" value={dropColor} onChange={setDropColor} />
         <PColor label="Splash color" value={splashColor} onChange={setSplashColor} />
@@ -102,7 +102,7 @@ export function RainPage() {
     <PageShell
       eyebrow="Component"
       title="Rain"
-      lead="Animated rainfall with wind drift, variable drop length, and splash particles. Perfect for atmospheric hero sections and mood-setting backgrounds."
+      lead="A rainy night street: rain in three depth layers slanted by a gusting wind, lamps glowing in the mist and mirrored on wet asphalt, ripples and spray where drops land, and lightning when the rain is heavy."
     >
       <RainPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

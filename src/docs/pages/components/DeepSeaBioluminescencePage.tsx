@@ -7,16 +7,17 @@ import { DeepSeaBioluminescence } from "../../../components/DeepSeaBioluminescen
 const PROPS = [
   { name: "jellyfishCount",  type: "number",  default: "5",          description: "Number of drifting jellyfish." },
   { name: "planktonCount",   type: "number",  default: "200",        description: "Number of bioluminescent plankton particles." },
-  { name: "jellyfishColor",  type: "string",  default: '"#99bbcc"',  description: "Jellyfish bell and silhouette color." },
-  { name: "glowColor",       type: "string",  default: '"#aaccdd"',  description: "Bioluminescent glow and ripple color." },
-  { name: "waterColor",      type: "string",  default: '"#060c10"',  description: "Deep water background color." },
+  { name: "jellyfishColor",  type: "string",  default: '"#7fd8ff"',  description: "Jellyfish bell and silhouette color." },
+  { name: "glowColor",       type: "string",  default: '"#3fe0d0"',  description: "Bioluminescent glow and ripple color." },
+  { name: "waterColor",      type: "string",  default: '"#020a16"',  description: "Deep water background color." },
   { name: "interactive",     type: "boolean", default: "true",       description: "Mouse movement spawns glowing ripples." },
   { name: "speed",           type: "number",  default: "1",          description: "Overall animation speed multiplier." },
-  { name: "preset",          type: "string",  default: "—",          description: '"default" | "abyssal" | "coral" | "aurora" | "crimson"' },
+  { name: "preset",          type: "string",  default: "—",          description: '"default" | "abyssal" | "coral" | "aurora" | "crimson" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, { jellyfishColor: string; glowColor: string; waterColor: string }> = {
-  default:  { jellyfishColor: "#99bbcc", glowColor: "#aaccdd", waterColor: "#060c10" },
+  default:  { jellyfishColor: "#7fd8ff", glowColor: "#3fe0d0", waterColor: "#020a16" },
+  monochrome: { jellyfishColor: "#99bbcc", glowColor: "#aaccdd", waterColor: "#060c10" },
   abyssal:  { jellyfishColor: "#8855cc", glowColor: "#aa55ff", waterColor: "#020008" },
   coral:    { jellyfishColor: "#ff8855", glowColor: "#ffaa44", waterColor: "#040a0c" },
   aurora:   { jellyfishColor: "#44ffaa", glowColor: "#00ff88", waterColor: "#020c08" },
@@ -25,9 +26,9 @@ const PRESET_VALUES: Record<string, { jellyfishColor: string; glowColor: string;
 
 function DeepSeaBioluminescencePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]               = useState("default");
-  const [jellyfishColor, setJellyfishColor] = useState("#99bbcc");
-  const [glowColor, setGlowColor]         = useState("#aaccdd");
-  const [waterColor, setWaterColor]       = useState("#060c10");
+  const [jellyfishColor, setJellyfishColor] = useState("#7fd8ff");
+  const [glowColor, setGlowColor]         = useState("#3fe0d0");
+  const [waterColor, setWaterColor]       = useState("#020a16");
   const [jellyfishCount, setJellyfishCount] = useState(5);
   const [planktonCount, setPlanktonCount] = useState(200);
   const [speed, setSpeed]                 = useState(1);
@@ -79,7 +80,7 @@ function DeepSeaBioluminescencePlayground({ onReset }: { onReset?: () => void })
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "abyssal", "coral", "aurora", "crimson"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "abyssal", "coral", "aurora", "crimson", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Jellyfish color" value={jellyfishColor} onChange={setJellyfishColor} />
         <PColor label="Glow color" value={glowColor} onChange={setGlowColor} />

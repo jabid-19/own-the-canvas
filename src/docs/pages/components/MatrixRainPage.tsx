@@ -5,7 +5,7 @@ import { PlaygroundShell, PSel, PSlider, PColor, PDivider, PLiveLabel } from "..
 import { MatrixRain, PRESETS as MATRIX_PRESETS } from "../../../components/MatrixRain";
 
 const PROPS = [
-  { name: "color", type: "string", default: '"#ffffff"', description: "Color of the falling characters." },
+  { name: "color", type: "string", default: '"#00ff41"', description: "Color of the falling characters." },
   { name: "backgroundColor", type: "string", default: '"rgba(17,17,17,0.1)"', description: "Per-frame overlay — lower opacity = longer trails." },
   { name: "fontSize", type: "number", default: "14", description: "Character size in px; controls column count." },
   { name: "speed", type: "number", default: "33", description: "Ms per frame — lower = faster animation." },
@@ -16,7 +16,7 @@ const PROPS = [
 
 function MatrixRainPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [color, setColor] = useState("#ffffff");
+  const [color, setColor] = useState("#00ff41");
   const [trailOpacity, setTrailOpacity] = useState(0.1);
   const [fontSize, setFontSize] = useState(14);
   const [speed, setSpeed] = useState(33);
@@ -71,7 +71,7 @@ function MatrixRainPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "cyberpunk", "binary", "minimal", "blood"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "cyberpunk", "binary", "minimal", "blood", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Color" value={color} onChange={setColor} />
         <PColor label="Background" value={bgColor} onChange={setBgColor} />

@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { sampleGradient } from "../../utils/color";
+import { noise1, fbm1, fbm2 } from "../../runtime/noise";
 
 export type FirePalette = "inferno" | "toxic" | "ice" | "plasma" | "smoke";
 
@@ -16,106 +17,42 @@ export interface UseFireEffectOptions {
   resolution: number;
 }
 
-function buildCustomPalette(colors: string[]): Uint32Array {
-  const palette = new Uint32Array(256);
+/** Colour stops per palette, coolest → hottest. Index 0 is always transparent. */
+const STOPS: Record<FirePalette, string[]> = {
+  inferno: ["#1a0200", "#7a0d02", "#c92a06", "#f26b0f", "#ffb02e", "#ffe28a", "#fffbe8"],
+  toxic:   ["#001a05", "#06520f", "#13a017", "#58d61a", "#c4f53a", "#f2ffb0", "#ffffff"],
+  ice:     ["#000b1f", "#032a66", "#0b5fb8", "#1fa8e6", "#79e2ff", "#d4f8ff", "#ffffff"],
+  plasma:  ["#12001f", "#4a0570", "#9c13a8", "#e0388f", "#ff7f8f", "#ffd0c4", "#ffffff"],
+  smoke:   ["#0d0d0d", "#2b2b2b", "#555555", "#808080", "#b0b0b0", "#dcdcdc", "#ffffff"],
+};
+
+/** 256-entry ABGR lookup. Alpha ramps up over the cool end so faint flame edges fade out. */
+function buildLut(colors: string[]): Uint32Array {
+  const lut = new Uint32Array(256);
   for (let i = 1; i < 256; i++) {
     const t = i / 255;
     const [r, g, b] = sampleGradient(colors, t);
-    const ri = Math.round(r), gi = Math.round(g), bi = Math.round(b);
-    const alpha = Math.min(255, i * 8);
-    palette[i] = (alpha << 24) | (bi << 16) | (gi << 8) | ri;
+    const a = Math.min(255, Math.round(Math.pow(t, 0.55) * 255 * 1.35));
+    lut[i] = (a << 24) | (Math.round(b) << 16) | (Math.round(g) << 8) | Math.round(r);
   }
-  palette[0] = 0;
-  return palette;
+  return lut;
 }
 
-function buildPalette(type: FirePalette): Uint32Array {
-  const palette = new Uint32Array(256);
+interface Ember { x: number; y: number; vx: number; vy: number; life: number; max: number; size: number; seed: number }
 
-  for (let i = 1; i < 256; i++) {
-    let r = 0, g = 0, b = 0;
-    const t = i / 255;
-
-    if (type === "inferno") {
-      // black → dark red → red → orange → yellow → white
-      if (t < 0.33) {
-        r = Math.round((t / 0.33) * 200); g = 0; b = 0;
-      } else if (t < 0.66) {
-        const s = (t - 0.33) / 0.33;
-        r = Math.round(200 + s * 55); g = Math.round(s * 165); b = 0;
-      } else {
-        const s = (t - 0.66) / 0.34;
-        r = 255; g = Math.round(165 + s * 90); b = Math.round(s * 255);
-      }
-    } else if (type === "toxic") {
-      // black → dark green → green → yellow-green
-      if (t < 0.4) {
-        r = 0; g = Math.round((t / 0.4) * 180); b = 0;
-      } else if (t < 0.75) {
-        const s = (t - 0.4) / 0.35;
-        r = Math.round(s * 180); g = Math.round(180 + s * 75); b = 0;
-      } else {
-        const s = (t - 0.75) / 0.25;
-        r = Math.round(180 + s * 75); g = 255; b = Math.round(s * 100);
-      }
-    } else if (type === "ice") {
-      // black → deep blue → cyan → white
-      if (t < 0.4) {
-        r = 0; g = 0; b = Math.round((t / 0.4) * 200);
-      } else if (t < 0.7) {
-        const s = (t - 0.4) / 0.3;
-        r = 0; g = Math.round(s * 200); b = Math.round(200 + s * 55);
-      } else {
-        const s = (t - 0.7) / 0.3;
-        r = Math.round(s * 255); g = Math.round(200 + s * 55); b = 255;
-      }
-    } else if (type === "plasma") {
-      // black → deep purple → magenta → pink → white
-      if (t < 0.3) {
-        const s = t / 0.3;
-        r = Math.round(s * 150); g = 0; b = Math.round(s * 200);
-      } else if (t < 0.6) {
-        const s = (t - 0.3) / 0.3;
-        r = Math.round(150 + s * 105); g = 0; b = Math.round(200 + s * 55);
-      } else {
-        const s = (t - 0.6) / 0.4;
-        r = 255; g = Math.round(s * 200); b = 255;
-      }
-    } else {
-      // smoke: dark gray → white (monochrome)
-      const v = Math.round(t < 0.5 ? t * 2 * 180 : 180 + (t - 0.5) * 2 * 75);
-      r = g = b = Math.min(255, v);
-    }
-
-    // Fade alpha for low-intensity pixels so weak fire is transparent, not black
-    const alpha = Math.min(255, i * 8);
-    palette[i] = (alpha << 24) | (b << 16) | (g << 8) | r;
-  }
-  palette[0] = 0;
-  return palette;
-}
-
+/**
+ * Flames as a smooth heat field: each cell's heat falls off with height, broken up by
+ * rising fractal noise and a per-column flame envelope, so tongues lick and split
+ * instead of fizzing per pixel. The field is computed on a coarse grid and upscaled
+ * with smoothing, then a blurry copy is added on top for glow, with sparks rising
+ * above.
+ */
 export function useFireEffect(
   canvasRef: RefObject<HTMLCanvasElement | null>,
   options: UseFireEffectOptions
 ) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
-  const rafRef = useRef<number>(0);
-  const fireBufferRef = useRef<Uint8Array | null>(null);
-  const paletteRef = useRef<Uint32Array>(
-    options.customColors && options.customColors.length >= 2
-      ? buildCustomPalette(options.customColors)
-      : buildPalette(options.palette)
-  );
-  const lastPaletteRef = useRef<FirePalette>(options.palette);
-  const lastCustomColorsRef = useRef<string>(JSON.stringify(options.customColors ?? []));
-
-  // Cached offscreen canvas — reused every frame, rebuilt only on resize
-  const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const tempCtxRef = useRef<CanvasRenderingContext2D | null>(null);
-  const imageDataRef = useRef<ImageData | null>(null);
-  const pixelDataRef = useRef<Uint32Array | null>(null);
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
@@ -125,125 +62,150 @@ export function useFireEffect(
     if (!parent) return;
     const ctx = canvas.getContext("2d")!;
 
-    let fw = 0;
-    let fh = 0;
+    const field = document.createElement("canvas");
+    const fctx = field.getContext("2d")!;
+    const glow = document.createElement("canvas");
+    const gctx = glow.getContext("2d")!;
 
-    if (!tempCanvasRef.current) {
-      tempCanvasRef.current = document.createElement("canvas");
-      tempCtxRef.current = tempCanvasRef.current.getContext("2d")!;
-    }
+    let w = 0, h = 0, cols = 0, rows = 0, cell = 5;
+    let image: ImageData | null = null;
+    let pixels: Uint32Array<ArrayBufferLike> | null = null;
+    let lut: Uint32Array = new Uint32Array(256);
+    let lutKey = "";
+    let emberRgb = "255,200,120";
+    const embers: Ember[] = [];
 
-    function applyDpr(width: number, height: number) {
-      const { resolution } = optionsRef.current;
-      const dpr = window.devicePixelRatio || 1;
-      const res = Math.max(0.1, Math.min(1, resolution));
+    let appliedRes = NaN;
+    function applySize(width: number, height: number) {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-      fw = Math.max(1, Math.round(width * res));
-      fh = Math.max(1, Math.round(height * res));
-      fireBufferRef.current = new Uint8Array(fw * fh);
-
-      const tc = tempCanvasRef.current!;
-      tc.width = fw;
-      tc.height = fh;
-      imageDataRef.current = tempCtxRef.current!.createImageData(fw, fh);
-      pixelDataRef.current = new Uint32Array(imageDataRef.current.data.buffer);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      w = width;
+      h = height;
+      appliedRes = optionsRef.current.resolution;
+      const res = Math.max(0.2, Math.min(1, appliedRes));
+      // ponytail: ~16k cells max, so full-screen fire costs the same as a small one; smoothing hides the coarser grid
+      cell = Math.max(3, Math.round(5 / res), Math.ceil(Math.sqrt((width * height) / 16000)));
+      cols = Math.max(2, Math.ceil(w / cell) + 1);
+      rows = Math.max(2, Math.ceil(h / cell) + 1);
+      field.width = cols;
+      field.height = rows;
+      glow.width = Math.max(1, Math.ceil(cols / 4));
+      glow.height = Math.max(1, Math.ceil(rows / 4));
+      image = fctx.createImageData(cols, rows);
+      pixels = new Uint32Array(image.data.buffer);
     }
 
     const ro = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) applyDpr(width, height);
+      if (width > 0 && height > 0) applySize(width, height);
     });
     ro.observe(parent);
     const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
+    if (rect.width > 0 && rect.height > 0) applySize(rect.width, rect.height);
 
-    function draw() {
-      const { palette, customColors, intensity, windStrength, windDirection, spread, cooling, noiseStrength, coolingScale } =
-        optionsRef.current;
+    let raf = 0;
+    let last = 0;
+    let t = 0;
 
-      const hasCustom = customColors && customColors.length >= 2;
-      const customKey = JSON.stringify(customColors ?? []);
-      if (hasCustom) {
-        if (customKey !== lastCustomColorsRef.current) {
-          lastCustomColorsRef.current = customKey;
-          paletteRef.current = buildCustomPalette(customColors!);
-        }
-      } else if (palette !== lastPaletteRef.current || lastCustomColorsRef.current !== "[]") {
-        lastPaletteRef.current = palette;
-        lastCustomColorsRef.current = "[]";
-        paletteRef.current = buildPalette(palette);
+    function frame(now: number) {
+      raf = requestAnimationFrame(frame);
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
+      last = now;
+      t += dt;
+      if (!image || !pixels || w === 0) return;
+
+      const o = optionsRef.current;
+      if (o.resolution !== appliedRes) applySize(w, h); // live resolution
+      const colors = o.customColors && o.customColors.length >= 2 ? o.customColors : STOPS[o.palette] ?? STOPS.inferno;
+      const key = colors.join(",");
+      if (key !== lutKey) {
+        lutKey = key;
+        lut = buildLut(colors);
+        const [r, g, b] = sampleGradient(colors, 0.66);
+        emberRgb = `${Math.round(r)},${Math.round(g)},${Math.round(b)}`;
       }
 
-      const fire = fireBufferRef.current;
-      const pixelData = pixelDataRef.current;
-      const imageData = imageDataRef.current;
-      if (!fire || !pixelData || !imageData || fw === 0 || fh === 0) {
-        rafRef.current = requestAnimationFrame(draw);
-        return;
-      }
+      const wind = Math.max(-1, Math.min(1, o.windStrength * o.windDirection));
+      const spread = Math.max(0, Math.min(1, o.spread));
+      const coolF = Math.min(0.9, o.cooling * (o.coolingScale / 3));
+      const reach = Math.max(0.08, o.intensity) * (1 - coolF * 0.85) * 1.3; // tallest tongue, as a fraction of height
+      const rough = 0.8 + Math.max(0, o.noiseStrength) / 110;
+      const xs = 0.0105 * (1.35 - spread * 0.6); // horizontal noise frequency: wider tongues when spread is high
+      const rise = t * 1.7;
 
-      // Seed bottom row at full intensity — always solid base
-      const baseIntensity = Math.round(intensity * 255);
-      for (let x = 0; x < fw; x++) {
-        fire[(fh - 1) * fw + x] = 255;
-      }
-      // Seed second-to-bottom row with noise to create distinct flame column starts
-      const halfNoise = noiseStrength / 2;
-      for (let x = 0; x < fw; x++) {
-        const noise = Math.random() * noiseStrength - halfNoise;
-        fire[(fh - 2) * fw + x] = Math.max(80, Math.min(255, baseIntensity + noise));
-      }
-
-      const wind = Math.round(windStrength * windDirection);
-      const coolBase = Math.max(1, Math.round(cooling * coolingScale));
-
-      // Classic 3-neighbor propagation: no twoBelow, spread weights sides smoothly
-      for (let y = 0; y < fh - 1; y++) {
-        const rowBelow = (y + 1) * fw;
-        for (let x = 0; x < fw; x++) {
-          const center = fire[rowBelow + x];
-          const left   = x > 0       ? fire[rowBelow + x - 1] : center;
-          const right  = x < fw - 1  ? fire[rowBelow + x + 1] : center;
-
-          // Weighted avg: spread=0 → pure vertical, spread=1 → equal 3-neighbor
-          const avg = (left * spread + center * 2 + right * spread) / (2 + spread * 2);
-
-          // Random per-pixel cooling variation creates organic flame texture
-          const cool = coolBase + (Math.random() * coolBase | 0);
-
-          // Height-weighted turbulence: kills some upper pixels suddenly → jagged tips
-          const yRatio = 1 - y / fh;
-          const turbulence = Math.random() < yRatio * yRatio ? avg * 0.25 * Math.random() : 0;
-
-          const cooled = avg - cool - turbulence;
-
-          const wx = x + wind;
-          const targetX = wx >= 0 && wx < fw ? wx : x;
-          fire[y * fw + targetX] = Math.max(0, Math.min(255, cooled));
+      for (let j = 0; j < rows; j++) {
+        const yPx = j * cell;
+        const up = 1 - yPx / h; // 0 at the bottom, 1 at the top
+        const sway = (noise1(t * 0.45 + up * 1.8, 3) - 0.5) * up * 34;
+        const lean = wind * up * up * h * 0.32;
+        const ny = yPx * 0.0125 + rise;
+        const rowOff = j * cols;
+        for (let i = 0; i < cols; i++) {
+          const sx = i * cell - lean - sway;
+          const env = 0.38 + 0.62 * fbm1(sx * 0.0042 + t * 0.12, 3, 5);
+          const top = reach * env;
+          const k = up / top;
+          if (k > 1.6) { pixels[rowOff + i] = 0; continue; }
+          const n = fbm2(sx * xs, ny, 3, 1);
+          let heat = 1 - k + (n - 0.5) * rough * (0.3 + k) - Math.max(0, k - 0.85) * 0.9;
+          if (up < 0.035) heat = Math.max(heat, 0.88 - up * 4);
+          heat = heat < 0 ? 0 : heat > 1 ? 1 : heat;
+          pixels[rowOff + i] = lut[(Math.pow(heat, 1.75) * 255) | 0];
         }
       }
 
-      // Render to cached imageData
-      const pal = paletteRef.current;
-      for (let i = 0; i < fw * fh; i++) {
-        pixelData[i] = pal[fire[i]];
+      fctx.putImageData(image, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(field, 0, 0, cols * cell, rows * cell);
+
+      // glow: a quarter-size copy upscaled is naturally soft
+      gctx.clearRect(0, 0, glow.width, glow.height);
+      gctx.imageSmoothingEnabled = true;
+      gctx.drawImage(field, 0, 0, glow.width, glow.height);
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.36;
+      ctx.drawImage(glow, -cell * 2, -cell * 3, cols * cell + cell * 4, rows * cell + cell * 3);
+      ctx.globalAlpha = 1;
+
+      // sparks
+      const spawn = o.intensity * 28 * dt;
+      for (let s = 0; s < spawn || Math.random() < spawn - s; s++) {
+        if (embers.length > 90) break;
+        const max = 1.2 + Math.random() * 1.8;
+        embers.push({
+          x: Math.random() * w,
+          y: h * (1 - Math.random() * reach * 0.5),
+          vx: wind * 30 + (Math.random() - 0.5) * 20,
+          vy: -(45 + Math.random() * 85),
+          life: max, max, size: 1 + Math.random() * 1.6, seed: Math.random() * 100,
+        });
       }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      tempCtxRef.current!.putImageData(imageData, 0, 0);
-      ctx.drawImage(tempCanvasRef.current!, 0, 0, canvas.width, canvas.height);
-
-      rafRef.current = requestAnimationFrame(draw);
+      for (let e = embers.length - 1; e >= 0; e--) {
+        const p = embers[e];
+        p.life -= dt;
+        if (p.life <= 0 || p.y < -10) { embers.splice(e, 1); continue; }
+        p.x += (p.vx + (noise1(t * 1.4 + p.seed) - 0.5) * 60) * dt;
+        p.y += p.vy * dt;
+        const a = Math.min(1, p.life / p.max * 1.4) * (0.65 + 0.35 * Math.sin(t * 18 + p.seed));
+        ctx.fillStyle = `rgba(${emberRgb},${a})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
     }
 
-    rafRef.current = requestAnimationFrame(draw);
+    raf = requestAnimationFrame(frame);
 
     return () => {
       ro.disconnect();
-      cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(raf);
     };
   }, [canvasRef]);
 }

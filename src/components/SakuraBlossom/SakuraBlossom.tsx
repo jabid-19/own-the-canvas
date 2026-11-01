@@ -1,8 +1,9 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSakuraBlossom } from "./useSakuraBlossom";
 
-type SakuraBlossomPreset = "default" | "sakura" | "autumn" | "snow" | "neon";
+type SakuraBlossomPreset = "default" | "sakura" | "autumn" | "snow" | "neon" | "monochrome";
 
 interface SakuraBlossomPresetValues {
   petalColor?: string;
@@ -13,7 +14,8 @@ interface SakuraBlossomPresetValues {
 }
 
 const PRESETS: Record<SakuraBlossomPreset, SakuraBlossomPresetValues> = {
-  default: {},
+  default: { petalColor: "#ffb7c5", backgroundColor: "#1a0a10" },
+  monochrome: {},
   sakura: {
     petalColor: "#ffb7c5",
     backgroundColor: "#1a0a10",
@@ -42,11 +44,11 @@ const PRESETS: Record<SakuraBlossomPreset, SakuraBlossomPresetValues> = {
 export interface SakuraBlossomProps extends BaseCanvasProps {
   /** Number of petals (default: 80) */
   petalCount?: number;
-  /** Petal color (default: "#ffffff") */
+  /** Petal color (default: "#ffb7c5") */
   petalColor?: string;
   /** Petal size in px (default: 8) */
   petalSize?: number;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#1a0a10") */
   backgroundColor?: string;
   /** Downward gravity force (default: 0.06) */
   gravity?: number;
@@ -60,6 +62,14 @@ export interface SakuraBlossomProps extends BaseCanvasProps {
   maxAccumulation?: number;
   /** Named preset */
   preset?: SakuraBlossomPreset | string;
+  /** Fixed full-viewport, click-through layer over the page; background is transparent (default: false) */
+  overlay?: boolean;
+  /** Petals land on elements marked `data-otc-solid` (default: false) */
+  collide?: boolean;
+  /** Bounce on solids: 0 = petals rest and slide off, >0 = bounce (default: 0) */
+  restitution?: number;
+  /** Overlay z-index (default: 10) */
+  zIndex?: number;
 }
 
 export const SakuraBlossom = forwardRef<HTMLCanvasElement, SakuraBlossomProps>(
@@ -67,14 +77,13 @@ export const SakuraBlossom = forwardRef<HTMLCanvasElement, SakuraBlossomProps>(
     const {
       preset, petalCount, petalColor, petalSize, backgroundColor,
       gravity, windStrength, windGusts, showAccumulation, maxAccumulation,
+      overlay, collide, restitution, zIndex,
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as SakuraBlossomPreset]) || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
+    const p = PRESETS[(preset ?? "default") as SakuraBlossomPreset] || {};
 
-    useSakuraBlossom(internalRef, {
+    const { canvasRef, canvas } = useSakuraBlossom({
       petalCount:       petalCount       ?? 80,
       petalColor:       petalColor       ?? p.petalColor       ?? "#ffffff",
       petalSize:        petalSize        ?? p.petalSize        ?? 8,
@@ -84,26 +93,23 @@ export const SakuraBlossom = forwardRef<HTMLCanvasElement, SakuraBlossomProps>(
       windGusts:        windGusts        ?? true,
       showAccumulation: showAccumulation ?? true,
       maxAccumulation:  maxAccumulation  ?? 40,
+      overlay:          overlay          ?? false,
+      collide:          collide          ?? false,
+      restitution:      restitution      ?? 0,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
+      <RuntimeCanvas
+        canvasRef={canvasRef}
+        overlay={overlay}
+        zIndex={zIndex}
+        width={width}
+        height={height}
         className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+        style={style}
+      />
     );
   }
 );

@@ -121,6 +121,7 @@ export function useReactionDiffusion(
 
     // mouse disturbance
     let isMouseDown = false;
+    let tapPending = false; // a click shorter than a frame still seeds once
     let mouseGX = -1;
     let mouseGY = -1;
 
@@ -142,10 +143,11 @@ export function useReactionDiffusion(
     function onMouseDown(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
       isMouseDown = true;
+      tapPending = true;
       updateMouseGrid(e.clientX, e.clientY);
     }
 
-    function onMouseUp() { isMouseDown = false; mouseGX = -1; mouseGY = -1; }
+    function onMouseUp() { isMouseDown = false; if (!tapPending) { mouseGX = -1; mouseGY = -1; } }
     function onMouseLeave() { isMouseDown = false; mouseGX = -1; mouseGY = -1; }
 
     parent.addEventListener("mousemove", onMouseMove);
@@ -160,7 +162,8 @@ export function useReactionDiffusion(
       const { feedRate: f, killRate: k, diffusionU: dU, diffusionV: dV } = optionsRef.current;
 
       // disturb with mouse
-      if (isMouseDown && mouseGX >= 0 && mouseGY >= 0) {
+      if ((isMouseDown || tapPending) && mouseGX >= 0 && mouseGY >= 0) {
+        tapPending = false;
         const br = 3;
         for (let dy = -br; dy <= br; dy++) {
           for (let dx = -br; dx <= br; dx++) {
@@ -206,16 +209,25 @@ export function useReactionDiffusion(
       const [ar, ag, ab] = parseHexToRgb(colorA);
       const [br, bg, bb] = parseHexToRgb(colorB);
 
+      // Lit like a wet relief: the slope of v is the surface normal, lit from the upper left,
+      // with a glossy highlight on the ridges and a deeper tone in the troughs.
       const data = imageData.data;
-      for (let i = 0; i < gw * gh; i++) {
-        // map v concentration to color; clamp generously
-        const t = Math.max(0, Math.min(1, v[i] * 3.5));
-        // subtle u-based shading for depth
-        const shade = 1 - u[i] * 0.15;
-        const p = i * 4;
-        data[p]     = Math.round((ar + (br - ar) * t) * shade);
-        data[p + 1] = Math.round((ag + (bg - ag) * t) * shade);
-        data[p + 2] = Math.round((ab + (bb - ab) * t) * shade);
+      const lx = -0.6, ly = -0.8;
+      for (let y = 0; y < gh; y++) {
+        const ym = y > 0 ? -gw : 0, yp = y < gh - 1 ? gw : 0;
+        for (let x = 0; x < gw; x++) {
+          const i = y * gw + x;
+          const t = Math.max(0, Math.min(1, v[i] * 3.5));
+          const dx = (v[x < gw - 1 ? i + 1 : i] - v[x > 0 ? i - 1 : i]) * 3.5;
+          const dy = (v[i + yp] - v[i + ym]) * 3.5;
+          const diff = Math.max(0.35, Math.min(1.35, 0.95 - (dx * lx + dy * ly) * 2.2));
+          const spec = Math.pow(Math.max(0, -(dx * lx + dy * ly) * 2.4 - 0.25), 3) * t * 0.75;
+          const shade = (1 - u[i] * 0.12) * diff;
+          const p = i * 4;
+          data[p]     = Math.min(255, (ar + (br - ar) * t) * shade + spec * 255);
+          data[p + 1] = Math.min(255, (ag + (bg - ag) * t) * shade + spec * 255);
+          data[p + 2] = Math.min(255, (ab + (bb - ab) * t) * shade + spec * 255);
+        }
       }
 
       offCtx.putImageData(imageData, 0, 0);
@@ -224,7 +236,7 @@ export function useReactionDiffusion(
         ctx.fillRect(0, 0, w, h);
       }
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "low";
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(offscreen, 0, 0, w, h);
     }
 

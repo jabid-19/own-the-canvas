@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { hexToRgbString } from "../../utils/color";
+import { pointerInCanvas } from "../../runtime/fx";
 
 // Simplified 2D fluid simulation (Jos Stam "Real-Time Fluid Dynamics for Games")
 // Grid-based Eulerian approach with velocity diffusion, advection, and pressure projection
@@ -115,7 +116,6 @@ export function useFluidSimulation(
   optionsRef.current = options;
   const rafRef = useRef<number>(0);
   const mouseRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
-  const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const colorIndexRef = useRef<number>(0);
 
   useEffect(() => {
@@ -196,9 +196,10 @@ export function useFluidSimulation(
     }
 
     function onMouseMove(e: MouseEvent) {
-      const bounding = canvasRef.current!.getBoundingClientRect();
-      const mx = e.clientX - bounding.left;
-      const my = e.clientY - bounding.top;
+      const p = pointerInCanvas(e, canvasRef.current!);
+      if (!p) return onMouseLeave();
+      const mx = p.x;
+      const my = p.y;
       const prev = mouseRef.current;
       mouseRef.current = {
         x: mx, y: my,
@@ -210,26 +211,28 @@ export function useFluidSimulation(
     window.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseleave", onMouseLeave);
 
-    function scheduleAuto() {
-      const { autoInk, autoInkInterval } = optionsRef.current;
-      if (!autoInk) return;
-      autoTimerRef.current = setTimeout(() => {
-        const { inkColors } = optionsRef.current;
-        const color = inkColors[colorIndexRef.current % inkColors.length];
-        colorIndexRef.current++;
-        const rgb = hexToRgbString(color).split(",").map(Number);
-        const gx = Math.floor(N * 0.2 + Math.random() * N * 0.6);
-        const gy = Math.floor(N * 0.2 + Math.random() * N * 0.6);
-        const angle = Math.random() * Math.PI * 2;
-        addInkAt(gx, gy, Math.cos(angle) * 2, Math.sin(angle) * 2, rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, 3, 3);
-        scheduleAuto();
-      }, autoInkInterval * (0.6 + Math.random() * 0.8));
+    // Auto ink runs on the frame clock: live autoInk/autoInkInterval, pauses with the loop.
+    let clockMs = 0, nextAutoAt = -1;
+    function autoSplash() {
+      const { inkColors } = optionsRef.current;
+      const color = inkColors[colorIndexRef.current % inkColors.length];
+      colorIndexRef.current++;
+      const rgb = hexToRgbString(color).split(",").map(Number);
+      const gx = Math.floor(N * 0.2 + Math.random() * N * 0.6);
+      const gy = Math.floor(N * 0.2 + Math.random() * N * 0.6);
+      const angle = Math.random() * Math.PI * 2;
+      addInkAt(gx, gy, Math.cos(angle) * 2, Math.sin(angle) * 2, rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, 3, 3);
     }
-    scheduleAuto();
 
     function draw() {
-      const { viscosity, diffusion, dissipation, inkColors, backgroundColor, mouseForce, inkRadius } = optionsRef.current;
+      const { viscosity, diffusion, dissipation, inkColors, backgroundColor, mouseForce, inkRadius, autoInk, autoInkInterval, glowEffect, glowBlur } = optionsRef.current;
       const dt = 0.016;
+
+      clockMs += 16;
+      const nextGap = () => Math.max(50, autoInkInterval) * (0.6 + Math.random() * 0.8);
+      if (!autoInk) nextAutoAt = -1;
+      else if (nextAutoAt < 0) nextAutoAt = clockMs + nextGap();
+      else if (clockMs >= nextAutoAt) { autoSplash(); nextAutoAt = clockMs + nextGap(); }
 
       // Mouse → inject velocity + ink
       const mouse = mouseRef.current;
@@ -297,6 +300,15 @@ export function useFluidSimulation(
       // Synchronous: write pixels to offscreen canvas then scale to main canvas
       offCtx.putImageData(imageData, 0, 0);
       ctx.drawImage(offscreen, 0, 0, w, h);
+      // Glow: blurred additive copy of the ink. Skipped where ctx.filter is unsupported.
+      if (glowEffect && glowBlur > 0 && typeof ctx.filter === "string") {
+        ctx.save();
+        ctx.filter = `blur(${glowBlur}px)`;
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = 0.6;
+        ctx.drawImage(offscreen, 0, 0, w, h);
+        ctx.restore();
+      }
 
       rafRef.current = requestAnimationFrame(draw);
     }
@@ -307,7 +319,6 @@ export function useFluidSimulation(
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
-      if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
     };
   }, [canvasRef, options.resolution]);
 }

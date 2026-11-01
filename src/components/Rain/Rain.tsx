@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useRain } from "./useRain";
 
-type RainPreset = "default" | "storm" | "drizzle" | "neon" | "golden";
+type RainPreset = "default" | "storm" | "drizzle" | "neon" | "golden" | "monochrome";
 
 interface RainPresetValues {
   dropCount?: number;
@@ -20,6 +20,11 @@ interface RainPresetValues {
 
 export const PRESETS: Record<RainPreset, RainPresetValues> = {
   default: {
+    dropColor: "#a9c2e8",
+    splashColor: "#dbe7ff",
+    backgroundColor: "#0b1424",
+  },
+  monochrome: {
     dropColor: "#000000",
     splashColor: "#000000",
     backgroundColor: "#ffffff",
@@ -76,13 +81,13 @@ export interface RainProps extends BaseCanvasProps {
   dropWidth?: number;
   /** Drop opacity 0–1. (default: 0.6) */
   dropOpacity?: number;
-  /** Drop color. (default: "#2563eb") */
+  /** Drop color. (default: "#a9c2e8") */
   dropColor?: string;
-  /** Splash particle color. (default: "#1e40af") */
+  /** Splash particle color. (default: "#dbe7ff") */
   splashColor?: string;
   /** Show splash particles when drops hit bottom. (default: true) */
   showSplashes?: boolean;
-  /** Canvas background color. (default: "#ffffff") */
+  /** Canvas background color. (default: "#0b1424") */
   backgroundColor?: string;
   /** Number of background stars (default: 0) */
   starCount?: number;
@@ -105,7 +110,7 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
     width, height, className, style,
   } = props;
 
-  const p = (preset && PRESETS[preset as RainPreset]) || {};
+  const p = PRESETS[(preset ?? "default") as RainPreset] || {};
 
   const internalRef = useRef<HTMLCanvasElement | null>(null);
   useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

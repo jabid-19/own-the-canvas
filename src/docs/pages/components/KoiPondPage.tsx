@@ -6,22 +6,23 @@ import { KoiPond } from "../../../components/KoiPond";
 
 const PROPS = [
   { name: "fishCount",   type: "number",  default: "6",        description: "Number of koi fish." },
-  { name: "fishColor",   type: "string",  default: '"#ffffff"',description: "Primary fish body color." },
-  { name: "scaleColor",  type: "string",  default: '"#6b7280"',description: "Scale accent color." },
-  { name: "waterColor",  type: "string",  default: '"#111111"',description: "Water background color." },
-  { name: "rippleColor", type: "string",  default: '"#6b7280"',description: "Ripple ring color." },
-  { name: "lilyColor",   type: "string",  default: '"#ffffff"',description: "Lily pad color." },
+  { name: "fishColor",   type: "string",  default: '"#ff6030"',description: "Primary fish body color." },
+  { name: "scaleColor",  type: "string",  default: '"#ffffff"',description: "Scale accent color." },
+  { name: "waterColor",  type: "string",  default: '"#0a1520"',description: "Water background color." },
+  { name: "rippleColor", type: "string",  default: '"#60a8d0"',description: "Ripple ring color." },
+  { name: "lilyColor",   type: "string",  default: '"#50aa50"',description: "Lily pad color." },
   { name: "speed",       type: "number",  default: "1",        description: "Fish movement speed multiplier." },
   { name: "interactive", type: "boolean", default: "true",     description: "Cursor movement causes ripples." },
   { name: "showLilies",  type: "boolean", default: "true",     description: "Show lily pads." },
   { name: "caustics",    type: "boolean", default: "true",     description: "Animated caustic light patterns." },
-  { name: "preset",      type: "string",  default: "—",        description: '"default" | "koi" | "night" | "lotus" | "neon"' },
+  { name: "preset",      type: "string",  default: "—",        description: '"default" | "koi" | "night" | "lotus" | "neon" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, {
   fishColor: string; scaleColor: string; waterColor: string; lilyColor: string;
 }> = {
-  default: { fishColor: "#ffffff", scaleColor: "#6b7280", waterColor: "#111111", lilyColor: "#ffffff" },
+  default: { fishColor: "#ff6633", scaleColor: "#ffffff", waterColor: "#0a1a14", lilyColor: "#50aa50" },
+  monochrome: { fishColor: "#ffffff", scaleColor: "#6b7280", waterColor: "#111111", lilyColor: "#ffffff" },
   koi:     { fishColor: "#ff6633", scaleColor: "#ffffff", waterColor: "#0a1a14", lilyColor: "#50aa50" },
   night:   { fishColor: "#88aaff", scaleColor: "#4466aa", waterColor: "#050810", lilyColor: "#304030" },
   lotus:   { fishColor: "#ffccdd", scaleColor: "#ff80a0", waterColor: "#0a0a14", lilyColor: "#ff80a0" },
@@ -30,10 +31,10 @@ const PRESET_VALUES: Record<string, {
 
 function KoiPondPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [fishColor, setFishColor] = useState("#ffffff");
-  const [scaleColor, setScaleColor] = useState("#6b7280");
-  const [waterColor, setWaterColor] = useState("#111111");
-  const [lilyColor, setLilyColor] = useState("#ffffff");
+  const [fishColor, setFishColor] = useState("#ff6633");
+  const [scaleColor, setScaleColor] = useState("#ffffff");
+  const [waterColor, setWaterColor] = useState("#0a1a14");
+  const [lilyColor, setLilyColor] = useState("#50aa50");
   const [fishCount, setFishCount] = useState(6);
   const [speed, setSpeed] = useState(1);
   const [showLilies, setShowLilies] = useState(true);
@@ -87,7 +88,7 @@ function KoiPondPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "koi", "night", "lotus", "neon"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "koi", "night", "lotus", "neon", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Fish color" value={fishColor} onChange={setFishColor} />
         <PColor label="Scale color" value={scaleColor} onChange={setScaleColor} />

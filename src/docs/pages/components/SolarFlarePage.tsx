@@ -5,10 +5,10 @@ import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel }
 import { SolarFlare } from "../../../components/SolarFlare";
 
 const PROPS = [
-  { name: "sunColor",          type: "string",  default: '"#ffffff"', description: "Photosphere color." },
-  { name: "coronaColor",       type: "string",  default: '"#6b7280"', description: "Corona glow color." },
-  { name: "flareColor",        type: "string",  default: '"#ffffff"', description: "Eruption/flare color." },
-  { name: "backgroundColor",   type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "sunColor",          type: "string",  default: '"#ff6600"', description: "Photosphere color." },
+  { name: "coronaColor",       type: "string",  default: '"#ff3300"', description: "Corona glow color." },
+  { name: "flareColor",        type: "string",  default: '"#ffaa00"', description: "Eruption/flare color." },
+  { name: "backgroundColor",   type: "string",  default: '"#0a0200"', description: "Canvas background." },
   { name: "sunRadius",         type: "number",  default: "0.25",      description: "Sun radius as fraction of min(w,h)/2." },
   { name: "convectionCells",   type: "number",  default: "20",        description: "Number of surface convection cells." },
   { name: "flareCount",        type: "number",  default: "3",         description: "Simultaneous active flares." },
@@ -18,13 +18,14 @@ const PROPS = [
   { name: "glowEffect",        type: "boolean", default: "true",      description: "Corona glow." },
   { name: "glowBlur",          type: "number",  default: "40",        description: "Glow blur radius in px." },
   { name: "speed",             type: "number",  default: "1",         description: "Animation speed multiplier." },
-  { name: "preset",            type: "string",  default: "—",         description: '"default" | "inferno" | "plasma" | "neon" | "white-dwarf"' },
+  { name: "preset",            type: "string",  default: "—",         description: '"default" | "inferno" | "plasma" | "neon" | "white-dwarf" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, {
   sunColor: string; coronaColor: string; flareColor: string; bg: string; sunRadius: number; glowBlur: number;
 }> = {
-  "default":    { sunColor: "#ffffff", coronaColor: "#6b7280", flareColor: "#ffffff", bg: "#111111", sunRadius: 0.35, glowBlur: 40 },
+  "default":    { sunColor: "#ff6600", coronaColor: "#ff3300", flareColor: "#ffaa00", bg: "#0a0200", sunRadius: 0.35, glowBlur: 40 },
+  monochrome: { sunColor: "#ffffff", coronaColor: "#6b7280", flareColor: "#ffffff", bg: "#111111", sunRadius: 0.35, glowBlur: 40 },
   "inferno":    { sunColor: "#ff6600", coronaColor: "#ff3300", flareColor: "#ffaa00", bg: "#0a0200", sunRadius: 0.25, glowBlur: 60 },
   "plasma":     { sunColor: "#cc44ff", coronaColor: "#8800cc", flareColor: "#ff88ff", bg: "#050008", sunRadius: 0.25, glowBlur: 50 },
   "neon":       { sunColor: "#00ffcc", coronaColor: "#00aaff", flareColor: "#ffffff",  bg: "#000810", sunRadius: 0.25, glowBlur: 45 },
@@ -33,10 +34,10 @@ const PRESET_VALUES: Record<string, {
 
 function SolarFlarePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [sunColor, setSunColor] = useState("#ffffff");
-  const [coronaColor, setCoronaColor] = useState("#6b7280");
-  const [flareColor, setFlareColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
+  const [sunColor, setSunColor] = useState("#ff6600");
+  const [coronaColor, setCoronaColor] = useState("#ff3300");
+  const [flareColor, setFlareColor] = useState("#ffaa00");
+  const [bg, setBg] = useState("#0a0200");
   const [sunRadius, setSunRadius] = useState(0.35);
   const [flareCount, setFlareCount] = useState(3);
   const [autoFlareInterval, setAutoFlareInterval] = useState(3000);
@@ -102,7 +103,7 @@ function SolarFlarePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "inferno", "plasma", "neon", "white-dwarf"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "inferno", "plasma", "neon", "white-dwarf", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Sun color" value={sunColor} onChange={setSunColor} />
         <PColor label="Corona color" value={coronaColor} onChange={setCoronaColor} />

@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useFireworks } from "./useFireworks";
 
-type FireworksPreset = "default" | "celebration" | "subtle" | "neon" | "golden";
+type FireworksPreset = "default" | "celebration" | "subtle" | "neon" | "golden" | "monochrome";
 
 interface FireworksPresetValues {
   colors?: string[];
@@ -21,6 +21,14 @@ interface FireworksPresetValues {
 
 export const PRESETS: Record<FireworksPreset, FireworksPresetValues> = {
   default: {
+    colors: ["#f43f5e", "#f59e0b", "#4ade80", "#06b6d4", "#ffd166", "#ffffff"],
+    particleCount: 80,
+    gravity: 0.08,
+    glowEffect: true,
+    glowBlur: 8,
+    backgroundColor: "#04060f",
+  },
+  monochrome: {
     colors: ["#ffffff", "#e2e8f0", "#6b7280", "#9ca3af"],
     particleCount: 80,
     gravity: 0.08,
@@ -66,7 +74,7 @@ export const PRESETS: Record<FireworksPreset, FireworksPresetValues> = {
 };
 
 export interface FireworksProps extends BaseCanvasProps {
-  /** Particle burst colors (default: multi-color) */
+  /** Particle burst colors (default: ["#f43f5e", "#f59e0b", "#4ade80", "#06b6d4", "#ffd166", "#ffffff"]) */
   colors?: string[];
   /** Particles per explosion (default: 80) */
   particleCount?: number;
@@ -90,7 +98,7 @@ export interface FireworksProps extends BaseCanvasProps {
   glowEffect?: boolean;
   /** Shadow blur for glow (default: 8) */
   glowBlur?: number;
-  /** Canvas background (default: "#050010") */
+  /** Canvas background (default: "#04060f") */
   backgroundColor?: string;
   /** Shell upward speed (default: 12) */
   shellSpeed?: number;
@@ -116,7 +124,7 @@ export const Fireworks = forwardRef<HTMLCanvasElement, FireworksProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as FireworksPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as FireworksPreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSpirograph } from "./useSpirograph";
 
-type SpirographPreset = "default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal";
+type SpirographPreset = "default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal" | "monochrome";
 
 interface SpirographPresetValues {
   colors?: string[];
@@ -19,7 +19,8 @@ interface SpirographPresetValues {
 }
 
 const PRESETS: Record<SpirographPreset, SpirographPresetValues> = {
-  default: {},
+  default: { colors: ["#ff2244", "#22aaff", "#44ff88"], backgroundColor: "#050005" },
+  monochrome: {},
   neon: {
     colors: ["#00ffff", "#ff00ff"],
     backgroundColor: "#000000",
@@ -71,9 +72,9 @@ export interface SpirographProps extends BaseCanvasProps {
   penDistance?: number;
   /** Degrees drawn per frame (default: 2) */
   speed?: number;
-  /** Stroke colors — each layer picks cyclically (default: ["#ffffff"]) */
+  /** Stroke colors — each layer picks cyclically (default: ["#ff2244", "#22aaff", "#44ff88"]) */
   colors?: string[];
-  /** Background fill color (default: "#111111") */
+  /** Background fill color (default: "#050005") */
   backgroundColor?: string;
   /** Stroke line width (default: 1) */
   lineWidth?: number;
@@ -119,7 +120,7 @@ export const Spirograph = forwardRef<HTMLCanvasElement, SpirographProps>(
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as SpirographPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as SpirographPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

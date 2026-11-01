@@ -6,25 +6,26 @@ import { CrystalGrowth } from "../../../components/CrystalGrowth";
 import type { CrystalGrowthColorMode } from "../../../components/CrystalGrowth";
 
 const PROPS = [
-  { name: "crystalColor",      type: "string",                     default: '"#ffffff"', description: "Color of crystallized cells." },
-  { name: "activeColor",       type: "string",                     default: '"#6b7280"', description: "Color of actively growing frontier." },
-  { name: "backgroundColor",   type: "string",                     default: '"#111111"', description: "Background color." },
-  { name: "growthSpeed",       type: "number",                     default: "3",         description: "Cells crystallized per frame." },
+  { name: "crystalColor",      type: "string",                     default: '"#e0f2fe"', description: "Color of crystallized cells." },
+  { name: "activeColor",       type: "string",                     default: '"#7dd3fc"', description: "Color of actively growing frontier." },
+  { name: "backgroundColor",   type: "string",                     default: '"#0c1a2e"', description: "Background color." },
+  { name: "growthSpeed",       type: "number",                     default: "3",         description: "Growth speed of the ice arms." },
   { name: "symmetry",          type: "number",                     default: "6",         description: "Rotational symmetry arms (2–12)." },
   { name: "branchProbability", type: "number",                     default: "0.3",       description: "Probability a frontier cell spawns a branch." },
-  { name: "noiseAmount",       type: "number",                     default: "0.2",       description: "Random noise in growth direction 0–1." },
-  { name: "cellSize",          type: "number",                     default: "3",         description: "Cell size in px." },
+  { name: "noiseAmount",       type: "number",                     default: "0.2",       description: "Random variation in branch length 0–1." },
+  { name: "cellSize",          type: "number",                     default: "3",         description: "Thickness of the ice branches." },
   { name: "glowEffect",        type: "boolean",                    default: "true",      description: "Glow on crystal." },
   { name: "glowBlur",          type: "number",                     default: "12",        description: "Shadow blur for glow." },
   { name: "interactive",       type: "boolean",                    default: "true",      description: "Click to seed new growth." },
   { name: "autoReset",         type: "boolean",                    default: "true",      description: "Restart after growth completes." },
   { name: "colorMode",         type: '"solid" | "age" | "cycle"', default: '"solid"',   description: "How crystal cells are colored." },
   { name: "animated",          type: "boolean",                    default: "true",      description: "Enable animation." },
-  { name: "preset",            type: "string",                     default: "—",         description: '"default" | "snowflake" | "gem" | "neon" | "frost" | "gold"' },
+  { name: "preset",            type: "string",                     default: "—",         description: '"default" | "snowflake" | "gem" | "neon" | "frost" | "gold" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default:   { crystalColor: "#ffffff", activeColor: "#6b7280", bg: "#111111", symmetry: 6,  branchProb: 0.3,  noise: 0.2,  cellSize: 3, glowEffect: true,  glowBlur: 12, colorMode: "solid" },
+  default:   { crystalColor: "#e0f2fe", activeColor: "#7dd3fc", bg: "#0c1a2e", symmetry: 6,  branchProb: 0.3,  noise: 0.2,  cellSize: 3, glowEffect: true,  glowBlur: 12, colorMode: "solid" },
+  monochrome: { crystalColor: "#ffffff", activeColor: "#6b7280", bg: "#111111", symmetry: 6,  branchProb: 0.3,  noise: 0.2,  cellSize: 3, glowEffect: true,  glowBlur: 12, colorMode: "solid" },
   snowflake: { crystalColor: "#e0f2fe", activeColor: "#7dd3fc", bg: "#0c1a2e", symmetry: 6,  branchProb: 0.4,  noise: 0.15, cellSize: 3, glowEffect: true,  glowBlur: 10, colorMode: "solid" },
   gem:       { crystalColor: "#c084fc", activeColor: "#e879f9", bg: "#09000f", symmetry: 8,  branchProb: 0.2,  noise: 0.1,  cellSize: 3, glowEffect: true,  glowBlur: 15, colorMode: "age" },
   neon:      { crystalColor: "#00ffcc", activeColor: "#ff00aa", bg: "#000000", symmetry: 4,  branchProb: 0.35, noise: 0.3,  cellSize: 3, glowEffect: true,  glowBlur: 18, colorMode: "cycle" },
@@ -34,9 +35,9 @@ const PRESET_PARAMS = {
 
 function CrystalGrowthPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]           = useState("default");
-  const [crystalColor, setCrystal]    = useState("#ffffff");
-  const [activeColor, setActive]      = useState("#6b7280");
-  const [bg, setBg]                   = useState("#111111");
+  const [crystalColor, setCrystal]    = useState("#e0f2fe");
+  const [activeColor, setActive]      = useState("#7dd3fc");
+  const [bg, setBg]                   = useState("#0c1a2e");
   const [growthSpeed, setSpeed]       = useState(3);
   const [symmetry, setSymmetry]       = useState(6);
   const [branchProb, setBranchProb]   = useState(0.3);
@@ -117,7 +118,7 @@ function CrystalGrowthPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "snowflake", "gem", "neon", "frost", "gold"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "snowflake", "gem", "neon", "frost", "gold", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Crystal color" value={crystalColor} onChange={setCrystal} />
         <PColor label="Active color"  value={activeColor}  onChange={setActive} />
@@ -150,7 +151,7 @@ export function CrystalGrowthPage() {
     <PageShell
       eyebrow="Component"
       title="CrystalGrowth"
-      lead="A cellular automaton that grows rotationally symmetric crystal lattices outward from a seed. Click the canvas to plant new seed points and watch fractal branches emerge. Each symmetry setting produces a completely different crystal species."
+      lead="Snowflakes that grow: ice arms reach outward and sprout mirrored side branches in faceted, glowing prisms, then melt away and regrow with a new design. Click to seed a flake of your own."
     >
       <CrystalGrowthPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

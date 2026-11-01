@@ -6,21 +6,22 @@ import { SpiderWeb } from "../../../components/SpiderWeb";
 
 const PROPS = [
   { name: "spokeCount",     type: "number",  default: "12",         description: "Number of radial spokes." },
-  { name: "ringCount",      type: "number",  default: "10",         description: "Number of concentric rings." },
-  { name: "webColor",       type: "string",  default: '"#c8c8c8"',  description: "Silk strand color." },
-  { name: "backgroundColor",type: "string",  default: '"#111111"',  description: "Canvas background color." },
-  { name: "spiderColor",    type: "string",  default: '"#333333"',  description: "Spider body and leg color." },
+  { name: "ringCount",      type: "number",  default: "10",         description: "Turns of the capture spiral." },
+  { name: "webColor",       type: "string",  default: '"#c0c8e0"',  description: "Silk strand color." },
+  { name: "backgroundColor",type: "string",  default: '"#04081a"',  description: "Canvas background color." },
+  { name: "spiderColor",    type: "string",  default: '"#404060"',  description: "Spider body and leg color." },
   { name: "dewDrops",       type: "boolean", default: "true",       description: "Show glowing dew drop points on strands." },
-  { name: "glowColor",      type: "string",  default: '"#aaddff"',  description: "Dew drop glow color." },
+  { name: "glowColor",      type: "string",  default: '"#8899cc"',  description: "Dew drop glow color." },
   { name: "swaySpeed",      type: "number",  default: "1",          description: "Ambient sway speed multiplier." },
   { name: "disturbRadius",  type: "number",  default: "80",         description: "Cursor disturbance radius in px." },
   { name: "interactive",    type: "boolean", default: "true",       description: "Cursor pulls web strands." },
   { name: "showSpider",     type: "boolean", default: "true",       description: "Show the spider." },
-  { name: "preset",         type: "string",  default: "—",          description: '"default" | "night" | "forest" | "neon" | "frost"' },
+  { name: "preset",         type: "string",  default: "—",          description: '"default" | "night" | "forest" | "neon" | "frost" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, { webColor: string; backgroundColor: string; spiderColor: string; glowColor: string }> = {
-  default: { webColor: "#c8c8c8", backgroundColor: "#111111", spiderColor: "#333333", glowColor: "#aaddff" },
+  default: { webColor: "#c0c8e0", backgroundColor: "#04081a", spiderColor: "#404060", glowColor: "#8899cc" },
+  monochrome: { webColor: "#c8c8c8", backgroundColor: "#111111", spiderColor: "#333333", glowColor: "#aaddff" },
   night:   { webColor: "#c0c8e0", backgroundColor: "#04081a", spiderColor: "#404060", glowColor: "#8899cc" },
   forest:  { webColor: "#90b890", backgroundColor: "#050f05", spiderColor: "#2a4a2a", glowColor: "#66aa66" },
   neon:    { webColor: "#00ffcc", backgroundColor: "#000000", spiderColor: "#003322", glowColor: "#00ffff" },
@@ -29,10 +30,10 @@ const PRESET_VALUES: Record<string, { webColor: string; backgroundColor: string;
 
 function SpiderWebPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]             = useState("default");
-  const [webColor, setWebColor]         = useState("#c8c8c8");
-  const [bg, setBg]                     = useState("#111111");
-  const [spiderColor, setSpiderColor]   = useState("#333333");
-  const [glowColor, setGlowColor]       = useState("#aaddff");
+  const [webColor, setWebColor]         = useState("#c0c8e0");
+  const [bg, setBg]                     = useState("#04081a");
+  const [spiderColor, setSpiderColor]   = useState("#404060");
+  const [glowColor, setGlowColor]       = useState("#8899cc");
   const [spokeCount, setSpokeCount]     = useState(12);
   const [ringCount, setRingCount]       = useState(10);
   const [swaySpeed, setSwaySpeed]       = useState(1);
@@ -96,7 +97,7 @@ function SpiderWebPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "night", "forest", "neon", "frost"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "night", "forest", "neon", "frost", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Web color" value={webColor} onChange={setWebColor} />
         <PColor label="Background" value={bg} onChange={setBg} />

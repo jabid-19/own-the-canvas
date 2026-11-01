@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { HelmetProvider } from "react-helmet-async";
@@ -20,10 +20,10 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders 50 component cards", () => {
+  it("renders 60 component cards", () => {
     render(<Wrapper />);
     const cards = screen.getAllByTestId("component-card");
-    expect(cards).toHaveLength(50);
+    expect(cards).toHaveLength(60);
   });
 
   it("renders install command", () => {
@@ -31,13 +31,16 @@ describe("Home", () => {
     expect(screen.getAllByText(/npm install own-the-canvas/i).length).toBeGreaterThan(0);
   });
 
+  // Scoped to the hero: role queries over all 60 cards are slow enough to time out.
+  const hero = (container: HTMLElement) => within(container.querySelector<HTMLElement>(".home-hero")!);
+
   it("has Get Started link", () => {
-    render(<Wrapper />);
-    expect(screen.getByRole("link", { name: /get started/i })).toBeInTheDocument();
+    const { container } = render(<Wrapper />);
+    expect(hero(container).getByRole("link", { name: /get started/i })).toBeInTheDocument();
   });
 
   it("has View Playground link", () => {
-    render(<Wrapper />);
-    expect(screen.getByRole("link", { name: /playground/i })).toBeInTheDocument();
+    const { container } = render(<Wrapper />);
+    expect(hero(container).getByRole("link", { name: /playground/i })).toBeInTheDocument();
   });
 });

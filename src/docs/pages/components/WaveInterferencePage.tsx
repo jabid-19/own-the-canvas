@@ -8,14 +8,14 @@ const PROPS = [
   { name: "maxSources",      type: "number",  default: "6",        description: "Maximum number of wave sources that can be placed." },
   { name: "wavelength",      type: "number",  default: "80",       description: "Wave wavelength in pixels." },
   { name: "speed",           type: "number",  default: "1",        description: "Wave propagation speed multiplier." },
-  { name: "colorHigh",       type: "string",  default: '"#ffffff"', description: "Color at constructive interference peaks." },
-  { name: "colorLow",        type: "string",  default: '"#111111"', description: "Color at destructive interference troughs." },
+  { name: "colorHigh",       type: "string",  default: '"#88ccff"', description: "Color at constructive interference peaks." },
+  { name: "colorLow",        type: "string",  default: '"#001133"', description: "Color at destructive interference troughs." },
   { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background color." },
   { name: "showSources",     type: "boolean", default: "true",     description: "Show circular markers at wave source positions." },
   { name: "resolution",      type: "number",  default: "0.4",      description: "Render resolution fraction — lower is faster." },
   { name: "animated",        type: "boolean", default: "true",     description: "Enable animation loop." },
   { name: "decay",           type: "number",  default: "0.003",    description: "Amplitude decay rate with distance from source." },
-  { name: "preset",          type: "string",  default: "—",        description: '"default" | "ripple" | "plasma" | "neon" | "cosmic"' },
+  { name: "preset",          type: "string",  default: "—",        description: '"default" | "ripple" | "plasma" | "neon" | "cosmic" | "monochrome"' },
 ];
 
 function WaveInterferencePlayground({ onReset }: { onReset?: () => void }) {
@@ -24,8 +24,8 @@ function WaveInterferencePlayground({ onReset }: { onReset?: () => void }) {
   const [speed, setSpeed] = useState(1);
   const [decay, setDecay] = useState(0.003);
   const [resolution, setResolution] = useState(0.4);
-  const [colorHigh, setColorHigh] = useState("#ffffff");
-  const [colorLow, setColorLow] = useState("#111111");
+  const [colorHigh, setColorHigh] = useState("#88ccff");
+  const [colorLow, setColorLow] = useState("#001133");
   const [showSources, setShowSources] = useState(false);
   const [animated, setAnimated] = useState(true);
 
@@ -78,7 +78,7 @@ function WaveInterferencePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "ripple", "plasma", "neon", "cosmic"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "ripple", "plasma", "neon", "cosmic", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="High color" value={colorHigh} onChange={setColorHigh} />
         <PColor label="Low color" value={colorLow} onChange={setColorLow} />

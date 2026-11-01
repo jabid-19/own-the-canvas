@@ -1,16 +1,7 @@
-import { useRef, useEffect, RefObject } from "react";
+import { useRef } from "react";
+import { useCanvasSetup, type FrameInfo } from "../../hooks/useCanvasSetup";
+import { usePointer, readPointer } from "../../runtime/fx";
 import { hexToRgba } from "../../utils/color";
-
-interface Bloom {
-  x: number;
-  y: number;
-  colorIdx: number;
-  radius: number;
-  maxRadius: number;
-  opacity: number;
-  noiseRadii: number[];
-  born: boolean;
-}
 
 export interface UseWatercolorBloomOptions {
   colors: string[];
@@ -30,176 +21,199 @@ export interface UseWatercolorBloomOptions {
   maxBlooms: number;
 }
 
-const NOISE_POINTS = 24;
-
-function makeNoiseRadii(noiseAmount: number): number[] {
-  return Array.from({ length: NOISE_POINTS }, () => 1 + (Math.random() * 2 - 1) * noiseAmount);
+interface Bloom {
+  x: number;
+  y: number;
+  color: string;
+  /** Base shape (unit radius), flat [x0, y0, x1, y1, ...] with per-vertex variance. */
+  base: number[];
+  vari: number[];
+  drawn: number;
+  total: number;
+  radius: number;
 }
 
-function drawBlob(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  radius: number,
-  noiseRadii: number[]
-) {
-  const n = NOISE_POINTS;
-  ctx.beginPath();
-  for (let i = 0; i <= n; i++) {
-    const idx = i % n;
-    const angle = (idx / n) * Math.PI * 2;
-    const r = radius * noiseRadii[idx];
-    const x = cx + Math.cos(angle) * r;
-    const y = cy + Math.sin(angle) * r;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+function gauss(): number {
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+/**
+ * Recursive midpoint displacement (the generative watercolor technique):
+ * every edge gets a new midpoint pushed by a gaussian scaled to the edge
+ * length and that region's variance. Each pass doubles the vertex count.
+ */
+export function deform(pts: number[], vari: number[], amount: number, depth: number): { pts: number[]; vari: number[] } {
+  let p = pts, v = vari;
+  for (let d = 0; d < depth; d++) {
+    const np: number[] = [], nv: number[] = [];
+    const n = p.length / 2;
+    for (let i = 0; i < n; i++) {
+      const ax = p[i * 2], ay = p[i * 2 + 1];
+      const j = (i + 1) % n;
+      const bx = p[j * 2], by = p[j * 2 + 1];
+      const len = Math.hypot(bx - ax, by - ay);
+      const va = (v[i] + v[j]) / 2;
+      np.push(ax, ay);
+      nv.push(v[i]);
+      np.push((ax + bx) / 2 + gauss() * len * amount * va, (ay + by) / 2 + gauss() * len * amount * va);
+      nv.push(va * (0.8 + Math.random() * 0.4));
+    }
+    p = np;
+    v = nv;
   }
-  ctx.closePath();
+  return { pts: p, vari: v };
 }
 
-export function useWatercolorBloom(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseWatercolorBloomOptions
-) {
+function makeBase(noise: number): { pts: number[]; vari: number[] } {
+  const n = 10;
+  const pts: number[] = [], vari: number[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    pts.push(Math.cos(a), Math.sin(a));
+    vari.push(0.4 + Math.random() * 0.8);
+  }
+  return deform(pts, vari, 0.25 + noise * 0.35, 3);
+}
+
+export function useWatercolorBloom(options: UseWatercolorBloomOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
+  const s = useRef({
+    paper: null as HTMLCanvasElement | null,
+    pctx: null as CanvasRenderingContext2D | null,
+    grain: null as HTMLCanvasElement | null,
+    scale: 1,
+    blooms: [] as Bloom[],
+    nextAuto: 0.3,
+    t: 0,
+    key: "",
+  }).current;
+  const pointer = usePointer();
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
 
-    let cssW = 0;
-    let cssH = 0;
-    let rafId = 0;
-    let lastAutoBloom = 0;
-    const blooms: Bloom[] = [];
-
-    function resize(w: number, h: number) {
-      const dpr = window.devicePixelRatio || 1;
-      cssW = w;
-      cssH = h;
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
-      canvas!.style.width = `${w}px`;
-      canvas!.style.height = `${h}px`;
-      ctx.scale(dpr, dpr);
+  function setupPaper(w: number, h: number) {
+    const o = optionsRef.current;
+    s.key = `${w}|${h}|${o.resolution}|${o.backgroundColor}`;
+    s.blooms = [];
+    if (typeof document === "undefined") return;
+    const res = Math.min(1, Math.max(0.2, o.resolution));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(w * res));
+    c.height = Math.max(1, Math.round(h * res));
+    s.paper = c;
+    s.scale = res;
+    s.pctx = c.getContext("2d");
+    if (s.pctx) {
+      s.pctx.fillStyle = o.backgroundColor;
+      s.pctx.fillRect(0, 0, c.width, c.height);
     }
+    // Cold-press paper grain, rendered once
+    const g = document.createElement("canvas");
+    g.width = 128; g.height = 128;
+    const gx = g.getContext("2d");
+    const img = gx?.createImageData?.(128, 128);
+    if (gx && img) {
+      for (let i = 0; i < 128 * 128; i++) {
+        const v = 128 + (Math.random() - 0.5) * 90;
+        img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v;
+        img.data[i * 4 + 3] = 255;
+      }
+      gx.putImageData(img, 0, 0);
+      s.grain = g;
+    }
+  }
 
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) resize(width, height);
+  function spawn(x: number, y: number) {
+    const o = optionsRef.current;
+    if (s.blooms.length >= Math.max(1, o.maxBlooms)) return;
+    const palette = o.colors.length ? o.colors : ["#ffffff"];
+    const { pts, vari } = makeBase(o.noiseAmount);
+    s.blooms.push({
+      x: x * s.scale, y: y * s.scale,
+      color: palette[(Math.random() * palette.length) | 0],
+      base: pts, vari,
+      drawn: 0,
+      total: Math.max(12, Math.round(o.layerCount * 7)),
+      radius: o.bloomRadius * s.scale * (0.6 + Math.random() * 0.6),
     });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) resize(rect.width, rect.height);
+  }
 
-    function spawnBloom(x: number, y: number) {
-      const { colors, bloomRadius, noiseAmount, maxBlooms } = optionsRef.current;
-      if (blooms.length >= maxBlooms) blooms.splice(0, 1);
-      blooms.push({
-        x,
-        y,
-        colorIdx: Math.floor(Math.random() * colors.length),
-        radius: 0,
-        maxRadius: bloomRadius * (0.7 + Math.random() * 0.6),
-        opacity: optionsRef.current.opacity,
-        noiseRadii: makeNoiseRadii(noiseAmount),
-        born: false,
-      });
+  /** One translucent wash: the bloom's base shape, deformed again so every layer differs. */
+  function paintLayer(b: Bloom, o: UseWatercolorBloomOptions) {
+    const pc = s.pctx;
+    if (!pc) return;
+    const prog = b.drawn / b.total;
+    const spread = b.radius * (0.35 + 0.65 * (1 - Math.pow(1 - prog, 2)));
+    const { pts } = deform(b.base, b.vari, 0.18 + o.noiseAmount * 0.2, 2);
+    pc.beginPath();
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = b.x + pts[i] * spread, y = b.y + pts[i + 1] * spread;
+      if (i === 0) pc.moveTo(x, y); else pc.lineTo(x, y);
+    }
+    pc.closePath();
+    pc.fillStyle = hexToRgba(b.color, Math.min(1, o.opacity * 0.28));
+    pc.fill();
+    // Wet edge: pigment collects where the wash dries
+    if (o.wetEdge > 0) {
+      pc.strokeStyle = hexToRgba(b.color, Math.min(1, o.wetEdge * 0.05));
+      pc.lineWidth = Math.max(0.8, 1.6 * s.scale);
+      pc.stroke();
+    }
+    b.drawn++;
+  }
+
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number, frame: FrameInfo) {
+    const o = optionsRef.current;
+    const k = dt / 16.67;
+    s.t += dt * 0.001;
+    if (s.key !== `${w}|${h}|${o.resolution}|${o.backgroundColor}`) setupPaper(w, h);
+
+    const p = readPointer(pointer.current, canvasEl.current);
+    if (o.interactive) for (const tap of p.taps) spawn(tap.x, tap.y);
+    if (o.animated && o.autoBloom && s.t > s.nextAuto) {
+      s.nextAuto = s.t + Math.max(0.15, o.autoBloomInterval / 1000);
+      spawn(w * (0.1 + Math.random() * 0.8), h * (0.1 + Math.random() * 0.8));
     }
 
-    function onMouseDown(e: MouseEvent) {
-      if (!optionsRef.current.interactive) return;
-      const r = canvas!.getBoundingClientRect();
-      spawnBloom(e.clientX - r.left, e.clientY - r.top);
+    // Paint: a few layers per frame while a bloom spreads; instant when not animated
+    const perFrame = o.animated ? Math.max(1, Math.round(o.bloomSpeed * 2.5 * k * (frame.quality < 0.75 ? 0.6 : 1))) : Infinity;
+    for (const b of s.blooms) {
+      for (let i = 0; i < perFrame && b.drawn < b.total; i++) paintLayer(b, o);
     }
-    function onTouchStart(e: TouchEvent) {
-      if (!optionsRef.current.interactive) return;
-      e.preventDefault();
-      const r = canvas!.getBoundingClientRect();
-      spawnBloom(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
-    }
+    s.blooms = s.blooms.filter((b) => b.drawn < b.total);
 
-    parent.addEventListener("mousedown", onMouseDown);
-    parent.addEventListener("touchstart", onTouchStart, { passive: false });
-
-    function loop(timestamp: number) {
-      const { colors, backgroundColor, bloomSpeed, opacity, wetEdge, layerCount, fadeSpeed, autoBloom, autoBloomInterval, animated } = optionsRef.current;
-
-      if (autoBloom && cssW > 0 && timestamp - lastAutoBloom > autoBloomInterval) {
-        lastAutoBloom = timestamp;
-        spawnBloom(Math.random() * cssW, Math.random() * cssH);
-      }
-
-      if (!animated) {
-        rafId = requestAnimationFrame(loop);
-        return;
-      }
-
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, cssW, cssH);
-
-      ctx.save();
-
-      for (let bi = blooms.length - 1; bi >= 0; bi--) {
-        const bloom = blooms[bi];
-        const color = colors[bloom.colorIdx] ?? colors[0];
-
-        if (bloom.radius < bloom.maxRadius) {
-          bloom.radius = Math.min(bloom.maxRadius, bloom.radius + bloomSpeed * 0.8);
-        } else {
-          bloom.opacity = Math.max(0, bloom.opacity - fadeSpeed);
-        }
-
-        if (bloom.opacity <= 0) {
-          blooms.splice(bi, 1);
-          continue;
-        }
-
-        // Draw layers from inside out
-        for (let li = 0; li < layerCount; li++) {
-          const t = (li + 1) / layerCount;
-          const layerRadius = bloom.radius * t;
-          const isEdge = li === layerCount - 1;
-          const layerAlpha = bloom.opacity * (isEdge ? (0.3 + wetEdge * 0.7) : 0.08);
-
-          ctx.fillStyle = hexToRgba(color, layerAlpha);
-          drawBlob(ctx, bloom.x, bloom.y, layerRadius, bloom.noiseRadii);
-          ctx.fill();
-        }
-
-        // Extra wet-edge ring just outside current radius
-        if (wetEdge > 0.05) {
-          ctx.strokeStyle = hexToRgba(color, bloom.opacity * wetEdge * 0.4);
-          ctx.lineWidth = 2 + wetEdge * 3;
-          drawBlob(ctx, bloom.x, bloom.y, bloom.radius * 1.02, bloom.noiseRadii);
-          ctx.stroke();
-        }
-      }
-
-      ctx.restore();
-      rafId = requestAnimationFrame(loop);
+    // Old washes slowly fade back into the paper
+    if (o.animated && o.fadeSpeed > 0 && s.pctx && s.paper) {
+      s.pctx.fillStyle = hexToRgba(o.backgroundColor, Math.min(1, o.fadeSpeed * 3 * k));
+      s.pctx.fillRect(0, 0, s.paper.width, s.paper.height);
     }
 
-    // Seed a few initial blooms
-    const seedTimer = setTimeout(() => {
-      if (cssW > 0 && cssH > 0) {
-        spawnBloom(cssW * 0.3, cssH * 0.4);
-        spawnBloom(cssW * 0.7, cssH * 0.6);
-      }
-    }, 100);
+    if (s.paper) {
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(s.paper, 0, 0, w, h);
+    } else if (!frame.overlay) {
+      ctx.fillStyle = o.backgroundColor;
+      ctx.fillRect(0, 0, w, h);
+    }
+    if (s.grain) {
+      const prev = ctx.globalCompositeOperation;
+      ctx.globalCompositeOperation = "overlay";
+      ctx.globalAlpha = 0.06;
+      for (let y = 0; y < h; y += 128) for (let x = 0; x < w; x += 128) ctx.drawImage(s.grain, x, y);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = prev;
+    }
+  }
 
-    rafId = requestAnimationFrame(loop);
-
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(rafId);
-      clearTimeout(seedTimer);
-      parent.removeEventListener("mousedown", onMouseDown);
-      parent.removeEventListener("touchstart", onTouchStart);
-    };
-  }, [canvasRef]);
+  const setup = useCanvasSetup({
+    onResize: (w, h) => setupPaper(w, h),
+    onFrame: draw,
+  });
+  canvasEl.current = setup.canvas;
+  return setup;
 }

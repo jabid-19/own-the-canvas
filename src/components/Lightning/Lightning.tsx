@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useLightning } from "./useLightning";
 
-type LightningPreset = "default" | "neon" | "storm" | "plasma" | "subtle";
+type LightningPreset = "default" | "neon" | "storm" | "plasma" | "subtle" | "monochrome";
 
 interface LightningPresetValues {
   segments?: number;
@@ -23,6 +23,12 @@ interface LightningPresetValues {
 
 export const PRESETS: Record<LightningPreset, LightningPresetValues> = {
   default: {
+    color: "#c0c0ff",
+    coreColor: "#ffffff",
+    glowBlur: 20,
+    backgroundColor: "#050010",
+  },
+  monochrome: {
     color: "#6b7280",
     coreColor: "#ffffff",
     glowBlur: 20,
@@ -65,11 +71,11 @@ export const PRESETS: Record<LightningPreset, LightningPresetValues> = {
 };
 
 export interface LightningProps extends BaseCanvasProps {
-  /** Recursion depth for bolt segments. (default: 8) */
+  /** Recursion depth for bolt segments, 1–12 (2^n points per bolt). (default: 8) */
   segments?: number;
   /** Midpoint displacement roughness 0–1. (default: 0.5) */
   roughness?: number;
-  /** Probability of spawning a branch at each segment. (default: 0.3) */
+  /** Probability of spawning a branch at each segment. (default: 0.1) */
   branchChance?: number;
   /** Energy multiplier for sub-branches. (default: 0.6) */
   branchDecay?: number;
@@ -77,7 +83,7 @@ export interface LightningProps extends BaseCanvasProps {
   flickerCount?: number;
   /** Glow shadow blur radius. (default: 20) */
   glowBlur?: number;
-  /** Bolt glow color. (default: "#7C3AED") */
+  /** Bolt glow color. (default: "#c0c0ff") */
   color?: string;
   /** Inner core color. (default: "#ffffff") */
   coreColor?: string;
@@ -106,7 +112,7 @@ export const Lightning = forwardRef<HTMLCanvasElement, LightningProps>((props, r
     width, height, className, style,
   } = props;
 
-  const p = (preset && PRESETS[preset as LightningPreset]) || {};
+  const p = PRESETS[(preset ?? "default") as LightningPreset] || {};
 
   const internalRef = useRef<HTMLCanvasElement | null>(null);
   useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

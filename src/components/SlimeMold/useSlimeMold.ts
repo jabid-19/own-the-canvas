@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { sampleGradient } from "../../utils/color";
+import { pointerInCanvas } from "../../runtime/fx";
 
 export interface UseSlimeMoldOptions {
   agentCount: number;
@@ -120,9 +121,10 @@ export function useSlimeMold(
     // Mouse
     function onMouseMove(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
-      const rect = canvas!.getBoundingClientRect();
-      const cx = e.clientX - rect.left;
-      const cy = e.clientY - rect.top;
+      const p = pointerInCanvas(e, canvas!);
+      if (!p) return onMouseLeave();
+      const cx = p.x;
+      const cy = p.y;
       const { resolution } = optionsRef.current;
       stateRef.mouseGX = cx * resolution;
       stateRef.mouseGY = cy * resolution;

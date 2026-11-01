@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSandSimulation, SandMaterial } from "./useSandSimulation";
 
-type SandSimulationPreset = "default" | "desert" | "ocean" | "inferno" | "neon";
+type SandSimulationPreset = "default" | "desert" | "ocean" | "inferno" | "neon" | "monochrome";
 
 interface SandSimulationPresetValues {
   sandColor?: string;
@@ -14,7 +14,8 @@ interface SandSimulationPresetValues {
 }
 
 export const PRESETS: Record<SandSimulationPreset, SandSimulationPresetValues> = {
-  default: {},
+  default: { sandColor: "#c8a85a", waterColor: "#0088cc", fireColor: "#ff4400", backgroundColor: "#1a1200", wallColor: "#6b4c1a" },
+  monochrome: {},
   desert: { sandColor: "#c8a85a", backgroundColor: "#1a1200", wallColor: "#6b4c1a" },
   ocean: { waterColor: "#0088cc", backgroundColor: "#001a2e", wallColor: "#0a3a5a", material: "water" },
   inferno: { fireColor: "#ff4400", backgroundColor: "#0a0000", wallColor: "#2a0000", material: "fire" },
@@ -28,20 +29,22 @@ export interface SandSimulationProps extends BaseCanvasProps {
   brushSize?: number;
   /** Active material to paint (default: "sand") */
   material?: SandMaterial;
-  /** Sand cell color (default: "#ffffff") */
+  /** Sand cell color (default: "#c8a85a") */
   sandColor?: string;
-  /** Water cell color (default: "#6b7280") */
+  /** Water cell color (default: "#0088cc") */
   waterColor?: string;
-  /** Fire cell color (default: "#ffffff") */
+  /** Fire cell color (default: "#ff4400") */
   fireColor?: string;
-  /** Wall cell color (default: "#4b5563") */
+  /** Wall cell color (default: "#6b4c1a") */
   wallColor?: string;
-  /** Empty cell / background color (default: "#111111") */
+  /** Empty cell / background color (default: "#1a1200") */
   backgroundColor?: string;
   /** Enable mouse painting (default: true) */
   interactive?: boolean;
-  /** Gravity strength multiplier (default: 1) */
+  /** Simulation steps per frame: 2 = falls twice as fast, 0 = frozen, max 8 (default: 1) */
   gravity?: number;
+  /** Pour sand on its own in drifting colour bands, draining when the pile gets high (default: true) */
+  autoPour?: boolean;
   /** Named preset */
   preset?: SandSimulationPreset | string;
 }
@@ -60,13 +63,14 @@ export const SandSimulation = forwardRef<HTMLCanvasElement, SandSimulationProps>
       backgroundColor,
       interactive,
       gravity,
+      autoPour,
       width,
       height,
       className,
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as SandSimulationPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as SandSimulationPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
@@ -81,6 +85,7 @@ export const SandSimulation = forwardRef<HTMLCanvasElement, SandSimulationProps>
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       interactive:     interactive     ?? true,
       gravity:         gravity         ?? 1,
+      autoPour:        autoPour        ?? true,
     });
 
     return (

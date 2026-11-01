@@ -37,7 +37,7 @@ export function PColor({ label, value, onChange }: {
       <span style={labelStyle}>{label}</span>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <input type="color" value={value} onChange={(e) => onChange(e.target.value)}
-          style={{ width: 32, height: 26, border: "1px solid var(--border)", borderRadius: 6, cursor: "pointer", padding: 2, background: "var(--bg-subtle)", flexShrink: 0 }} />
+          style={{ width: 32, height: 26, border: "none", boxShadow: "0 0 0 2px var(--bg), 0 0 0 3px var(--border-mid)", borderRadius: 3, cursor: "pointer", padding: 2, background: "var(--bg-subtle)", flexShrink: 0 }} />
         <span style={{ ...valueStyle, marginLeft: 0 }}>{value.toUpperCase()}</span>
       </div>
     </div>
@@ -55,15 +55,16 @@ export function PToggle({ label, value, onChange }: {
         role="switch"
         aria-checked={value}
         style={{
-          width: 40, height: 22, borderRadius: 11, border: "none", cursor: "pointer",
-          background: value ? "var(--accent)" : "var(--border)",
+          width: 44, height: 24, borderRadius: 3, border: "none", cursor: "pointer",
+          background: value ? "var(--teal)" : "var(--border-mid)",
+          boxShadow: "inset 0 2px 3px rgba(43,33,24,.35)",
           position: "relative", transition: "background 0.2s", flexShrink: 0,
         }}
       >
         <div style={{
-          position: "absolute", top: 3, left: value ? 21 : 3,
-          width: 16, height: 16, borderRadius: "50%", background: "#fff",
-          transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+          position: "absolute", top: 2, left: value ? 22 : 2,
+          width: 20, height: 20, borderRadius: 2, background: "var(--bg)",
+          transition: "left 0.2s var(--ease)", boxShadow: "0 1px 0 #fff inset, 0 2px 0 rgba(43,33,24,.3), 0 3px 4px rgba(43,33,24,.25)",
         }} />
       </button>
     </div>
@@ -146,12 +147,15 @@ export function PButton({ label, onClick, variant = "primary" }: {
     <button
       onClick={onClick}
       style={{
-        width: "100%", padding: "8px 16px", borderRadius: 8,
-        cursor: "pointer", fontSize: 13, fontWeight: 600,
-        background: variant === "primary" ? "var(--accent)" : "var(--bg-subtle)",
+        width: "100%", padding: "9px 16px", borderRadius: 4, minHeight: 40,
+        cursor: "pointer", fontSize: 13, fontWeight: 700,
+        background: variant === "primary" ? "var(--accent)" : "var(--bg)",
         color: variant === "primary" ? "#fff" : "var(--text-1)",
-        border: variant === "secondary" ? "1px solid var(--border)" : "none",
-        marginBottom: 8,
+        border: "none",
+        boxShadow: variant === "primary"
+          ? "0 3px 0 var(--accent-deep), 0 6px 8px -2px rgba(43,33,24,.3)"
+          : "0 3px 0 var(--border-mid), 0 6px 8px -2px rgba(43,33,24,.2)",
+        marginBottom: 10,
       } as React.CSSProperties}
     >
       {label}
@@ -163,54 +167,95 @@ export function PButton({ label, onClick, variant = "primary" }: {
 export function PLiveLabel({ text = "Live preview" }: { text?: string }) {
   return (
     <div style={{
-      position: "absolute", bottom: 10, left: 14, fontSize: 11,
-      color: "rgba(255,255,255,0.45)", fontFamily: "var(--mono)",
+      position: "absolute", bottom: 12, left: 14, fontSize: 11, fontWeight: 600,
+      color: "var(--text-1)", fontFamily: "var(--mono)", background: "var(--bg)",
+      padding: "3px 10px 3px 8px", boxShadow: "var(--lift-1)",
+      clipPath: "polygon(0 0, 100% 0, calc(100% - 5px) 50%, 100% 100%, 0 100%)",
       display: "flex", alignItems: "center", gap: 6, pointerEvents: "none", zIndex: 10,
     }}>
-      <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 5px #22c55e" }} />
+      <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#2f9e5f" }} />
       {text}
     </div>
   );
 }
 
 const PLAYGROUND_CSS = `
+.pg-card {
+  position: relative;
+  margin: 8px 0 34px;
+  background: var(--grain), var(--bg-subtle);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--border-mid), 0 3px 0 var(--border-mid), 0 7px 0 rgba(var(--shadow-ink), .1), 0 18px 26px -10px rgba(var(--shadow-ink), .32);
+}
+.pg-window {
+  position: relative;
+  height: 320px;
+  margin: 40px 40px 14px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #17110c;
+  box-shadow:
+    0 0 0 10px #f4ecd8,
+    0 0 0 11px rgba(43,33,24,.5),
+    0 0 0 13px #d8a959,
+    0 0 0 14px #8a5a1d,
+    0 0 0 24px #8c5a2e,
+    0 0 0 25px #4b2d14,
+    0 18px 26px 22px rgba(var(--shadow-ink), .26);
+}
+.pg-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+  box-shadow: inset 0 6px 10px rgba(0,0,0,.5), inset 5px 0 8px -3px rgba(0,0,0,.35);
+}
 .playground-controls {
-  padding: 14px 18px;
-  background: var(--bg-subtle);
-  border-top: 1px solid var(--border);
+  padding: 14px 22px 18px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 32px;
+  gap: 0 36px;
 }
 @media (max-width: 640px) {
-  .playground-controls { grid-template-columns: 1fr; }
+  .playground-controls { grid-template-columns: 1fr; padding: 12px 16px 16px; }
+  .pg-window { height: 240px; margin: 30px 26px 10px; box-shadow: 0 0 0 7px #f4ecd8, 0 0 0 8px rgba(43,33,24,.5), 0 0 0 9px #d8a959, 0 0 0 16px #8c5a2e, 0 0 0 17px #4b2d14, 0 12px 18px 14px rgba(var(--shadow-ink), .26); }
 }
 .playground-controls-header {
   grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 4px;
+  padding-bottom: 10px;
+  background: repeating-linear-gradient(90deg, var(--border-mid) 0 8px, transparent 8px 14px) bottom / 100% 3px no-repeat;
+  margin-bottom: 6px;
 }
 .playground-reset-btn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
+  padding: 5px 14px;
+  min-height: 34px;
+  border-radius: 3px;
+  border: none;
   background: var(--bg);
-  color: var(--text-2);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-.playground-reset-btn:hover {
   color: var(--text-1);
-  border-color: var(--text-3);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--border-mid), 0 4px 5px -1px rgba(var(--shadow-ink), .22);
+  transition: transform 150ms var(--ease), box-shadow 150ms var(--ease), background 150ms var(--ease);
 }
+.playground-reset-btn:hover { background: var(--mustard); }
+.playground-reset-btn:active { transform: translateY(2px); box-shadow: none; }
+.playground-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px 4px;
+}
+.pg-code .codeblock { border-radius: 0; box-shadow: none; }
 `;
 
 // ─── Playground shell ─────────────────────────────────────────────────────────
@@ -224,28 +269,16 @@ interface PlaygroundShellProps {
 
 export function PlaygroundShell({ preview, controls, code, onReset, previewActions }: PlaygroundShellProps) {
   return (
-    <div style={{
-      border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
-      overflow: "hidden", marginBottom: 20,
-    }}>
+    <div className="pg-card">
       <style dangerouslySetInnerHTML={{ __html: PLAYGROUND_CSS }} />
-      {/* Preview */}
-      <div style={{ height: 300, position: "relative", overflow: "hidden" }}>
+      {/* Preview: a window cut through the card */}
+      <div className="pg-window">
         {preview}
       </div>
 
-      {/* Action bar directly under canvas */}
-      {previewActions && (
-        <div style={{
-          display: "flex", justifyContent: "center", alignItems: "center", gap: 10,
-          padding: "12px 18px", borderTop: "1px solid var(--border)",
-          background: "var(--bg)",
-        }}>
-          {previewActions}
-        </div>
-      )}
+      {previewActions && <div className="playground-actions">{previewActions}</div>}
 
-      {/* Controls — two-column grid, single on mobile */}
+      {/* Controls: two-column grid, single on mobile */}
       <div className="playground-controls">
         {onReset && (
           <div className="playground-controls-header">
@@ -258,7 +291,7 @@ export function PlaygroundShell({ preview, controls, code, onReset, previewActio
       </div>
 
       {/* Live code block */}
-      <div style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="pg-code">
         <CodeBlock code={code} language="tsx" />
       </div>
     </div>

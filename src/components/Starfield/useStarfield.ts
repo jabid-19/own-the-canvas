@@ -10,6 +10,10 @@ interface Star2D {
   opacity: number;
   twinklePhase: number;
   twinkleSpeed: number;
+  /** 0–1 draws; size/opacity/twinkleSpeed re-resolve live from them. */
+  rs: number;
+  ro: number;
+  rt: number;
 }
 
 interface Star3D {
@@ -80,14 +84,16 @@ export function useStarfield(
 
     function init2D(width: number, height: number) {
       const { starCount, starSizeMin, starSizeMax, starOpacityMin, starOpacityMax, twinkleSpeed } = optionsRef.current;
-      stars2DRef.current = Array.from({ length: starCount }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * (starSizeMax - starSizeMin) + starSizeMin,
-        opacity: Math.random() * (starOpacityMax - starOpacityMin) + starOpacityMin,
-        twinklePhase: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * twinkleSpeed + twinkleSpeed * 0.3,
-      }));
+      stars2DRef.current = Array.from({ length: starCount }, () => {
+        const x = Math.random() * width, y = Math.random() * height;
+        const rs = Math.random(), ro = Math.random(), twinklePhase = Math.random() * Math.PI * 2, rt = Math.random();
+        return {
+          x, y, rs, ro, rt, twinklePhase,
+          size: rs * (starSizeMax - starSizeMin) + starSizeMin,
+          opacity: ro * (starOpacityMax - starOpacityMin) + starOpacityMin,
+          twinkleSpeed: rt * twinkleSpeed + twinkleSpeed * 0.3,
+        };
+      });
     }
 
     function init3D(width: number, height: number) {
@@ -168,8 +174,13 @@ export function useStarfield(
         }
       } else {
         const stars = stars2DRef.current;
+        const o = optionsRef.current;
         for (let i = 0; i < stars.length; i++) {
           const star = stars[i];
+          // live size / opacity / twinkle ranges
+          star.size = star.rs * (o.starSizeMax - o.starSizeMin) + o.starSizeMin;
+          star.opacity = star.ro * (o.starOpacityMax - o.starOpacityMin) + o.starOpacityMin;
+          star.twinkleSpeed = star.rt * o.twinkleSpeed + o.twinkleSpeed * 0.3;
           star.y += speed * (star.size / 2);
           if (star.y > h) { star.y = 0; star.x = Math.random() * w; }
 

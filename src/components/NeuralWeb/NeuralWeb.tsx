@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useNeuralWeb } from "./useNeuralWeb";
 
-type NeuralWebPreset = "default" | "neon" | "brain" | "minimal" | "plasma" | "circuit";
+type NeuralWebPreset = "default" | "neon" | "brain" | "minimal" | "plasma" | "circuit" | "monochrome";
 
 interface NeuralWebPresetValues {
   nodeColor?: string;
@@ -19,7 +19,8 @@ interface NeuralWebPresetValues {
 }
 
 const PRESETS: Record<NeuralWebPreset, NeuralWebPresetValues> = {
-  default: {},
+  default: { nodeColor: "#5ce1e6", edgeColor: "#2a8c9e", signalColor: "#ffc857", backgroundColor: "#050b14" },
+  monochrome: {},
   neon: {
     nodeColor: "#00ffcc",
     edgeColor: "#00ffcc",
@@ -79,13 +80,13 @@ const PRESETS: Record<NeuralWebPreset, NeuralWebPresetValues> = {
 export interface NeuralWebProps extends BaseCanvasProps {
   /** Number of network nodes (default: 40) */
   nodeCount?: number;
-  /** Resting node color (default: "#ffffff") */
+  /** Resting node color (default: "#5ce1e6") */
   nodeColor?: string;
-  /** Edge line color (default: "#6b7280") */
+  /** Edge line color (default: "#2a8c9e") */
   edgeColor?: string;
-  /** Traveling signal color (default: "#ffffff") */
+  /** Traveling signal color (default: "#ffc857") */
   signalColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#050b14") */
   backgroundColor?: string;
   /** Max px distance to draw edges (default: 150) */
   connectionRadius?: number;
@@ -123,7 +124,7 @@ export const NeuralWeb = forwardRef<HTMLCanvasElement, NeuralWebProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as NeuralWebPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as NeuralWebPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

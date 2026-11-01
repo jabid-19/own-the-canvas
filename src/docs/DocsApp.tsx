@@ -9,22 +9,15 @@ const MatrixRainPage     = lazy(() => import("./pages/components/MatrixRainPage"
 const ParticleFieldPage  = lazy(() => import("./pages/components/ParticleFieldPage").then((m) => ({ default: m.ParticleFieldPage })));
 const StarfieldPage      = lazy(() => import("./pages/components/StarfieldPage").then((m) => ({ default: m.StarfieldPage })));
 const FireEffectPage     = lazy(() => import("./pages/components/FireEffectPage").then((m) => ({ default: m.FireEffectPage })));
-const AudioVisualizerPage = lazy(() => import("./pages/components/AudioVisualizerPage").then((m) => ({ default: m.AudioVisualizerPage })));
 const ConfettiPage       = lazy(() => import("./pages/components/ConfettiPage").then((m) => ({ default: m.ConfettiPage })));
 const NoiseGradientPage  = lazy(() => import("./pages/components/NoiseGradientPage").then((m) => ({ default: m.NoiseGradientPage })));
-const PixelDissolvePage  = lazy(() => import("./pages/components/PixelDissolvePage").then((m) => ({ default: m.PixelDissolvePage })));
 const FlowFieldPage        = lazy(() => import("./pages/components/FlowFieldPage").then((m) => ({ default: m.FlowFieldPage })));
-const ShockwavePage        = lazy(() => import("./pages/components/ShockwavePage").then((m) => ({ default: m.ShockwavePage })));
 const FireworksPage        = lazy(() => import("./pages/components/FireworksPage").then((m) => ({ default: m.FireworksPage })));
-const GlitchOverlayPage    = lazy(() => import("./pages/components/GlitchOverlayPage").then((m) => ({ default: m.GlitchOverlayPage })));
 const MandalaPage          = lazy(() => import("./pages/components/MandalaPage").then((m) => ({ default: m.MandalaPage })));
-const MagneticBlobPage     = lazy(() => import("./pages/components/MagneticBlobPage").then((m) => ({ default: m.MagneticBlobPage })));
-const ClothSimulationPage  = lazy(() => import("./pages/components/ClothSimulationPage").then((m) => ({ default: m.ClothSimulationPage })));
 const FluidSimulationPage  = lazy(() => import("./pages/components/FluidSimulationPage").then((m) => ({ default: m.FluidSimulationPage })));
 const RainPage             = lazy(() => import("./pages/components/RainPage").then((m) => ({ default: m.RainPage })));
 const LightningPage        = lazy(() => import("./pages/components/LightningPage").then((m) => ({ default: m.LightningPage })));
 const GameOfLifePage       = lazy(() => import("./pages/components/GameOfLifePage").then((m) => ({ default: m.GameOfLifePage })));
-const WormholePage         = lazy(() => import("./pages/components/WormholePage").then((m) => ({ default: m.WormholePage })));
 const BoidsPage            = lazy(() => import("./pages/components/BoidsPage").then((m) => ({ default: m.BoidsPage })));
 const ReactionDiffusionPage = lazy(() => import("./pages/components/ReactionDiffusionPage").then((m) => ({ default: m.ReactionDiffusionPage })));
 const AuroraBorealisPage   = lazy(() => import("./pages/components/AuroraBorealisPage").then((m) => ({ default: m.AuroraBorealisPage })));
@@ -32,21 +25,17 @@ const SpirographPage       = lazy(() => import("./pages/components/SpirographPag
 const SandSimulationPage   = lazy(() => import("./pages/components/SandSimulationPage").then((m) => ({ default: m.SandSimulationPage })));
 const WaveInterferencePage = lazy(() => import("./pages/components/WaveInterferencePage").then((m) => ({ default: m.WaveInterferencePage })));
 const DiffusionAggregationPage = lazy(() => import("./pages/components/DiffusionAggregationPage").then((m) => ({ default: m.DiffusionAggregationPage })));
-const LissajousPage      = lazy(() => import("./pages/components/LissajousPage").then((m) => ({ default: m.LissajousPage })));
 const LSystemPage        = lazy(() => import("./pages/components/LSystemPage").then((m) => ({ default: m.LSystemPage })));
 const KaleidoscopePage   = lazy(() => import("./pages/components/KaleidoscopePage").then((m) => ({ default: m.KaleidoscopePage })));
 const VoronoiCellsPage   = lazy(() => import("./pages/components/VoronoiCellsPage").then((m) => ({ default: m.VoronoiCellsPage })));
 const SlimeMoldPage      = lazy(() => import("./pages/components/SlimeMoldPage").then((m) => ({ default: m.SlimeMoldPage })));
-const InkBleedPage       = lazy(() => import("./pages/components/InkBleedPage").then((m) => ({ default: m.InkBleedPage })));
 const WatercolorBloomPage = lazy(() => import("./pages/components/WatercolorBloomPage").then((m) => ({ default: m.WatercolorBloomPage })));
 const PendulaWavePage    = lazy(() => import("./pages/components/PendulaWavePage").then((m) => ({ default: m.PendulaWavePage })));
 const CrystalGrowthPage  = lazy(() => import("./pages/components/CrystalGrowthPage").then((m) => ({ default: m.CrystalGrowthPage })));
 const NeuralWebPage      = lazy(() => import("./pages/components/NeuralWebPage").then((m) => ({ default: m.NeuralWebPage })));
-const ParticleTextPage   = lazy(() => import("./pages/components/ParticleTextPage").then((m) => ({ default: m.ParticleTextPage })));
 const MetaballsPage      = lazy(() => import("./pages/components/MetaballsPage").then((m) => ({ default: m.MetaballsPage })));
 const AntColonyPage      = lazy(() => import("./pages/components/AntColonyPage").then((m) => ({ default: m.AntColonyPage })));
 const MagneticFieldPage  = lazy(() => import("./pages/components/MagneticFieldPage").then((m) => ({ default: m.MagneticFieldPage })));
-const TerrainMeshPage    = lazy(() => import("./pages/components/TerrainMeshPage").then((m) => ({ default: m.TerrainMeshPage })));
 const DragonCursorPage   = lazy(() => import("./pages/components/DragonCursorPage").then((m) => ({ default: m.DragonCursorPage })));
 const SakuraBlossomPage  = lazy(() => import("./pages/components/SakuraBlossomPage").then((m) => ({ default: m.SakuraBlossomPage })));
 const KoiPondPage        = lazy(() => import("./pages/components/KoiPondPage").then((m) => ({ default: m.KoiPondPage })));
@@ -58,19 +47,54 @@ const GalaxySpiralPage   = lazy(() => import("./pages/components/GalaxySpiralPag
 const TornadoVortexPage  = lazy(() => import("./pages/components/TornadoVortexPage").then((m) => ({ default: m.TornadoVortexPage })));
 const BubbleUniversePage = lazy(() => import("./pages/components/BubbleUniversePage").then((m) => ({ default: m.BubbleUniversePage })));
 const SolarFlarePage     = lazy(() => import("./pages/components/SolarFlarePage").then((m) => ({ default: m.SolarFlarePage })));
+const IvyGrowthPage = lazy(() => import("./pages/components/IvyGrowthPage").then((m) => ({ default: m.IvyGrowthPage })));
+const FirefliesPage = lazy(() => import("./pages/components/FirefliesPage").then((m) => ({ default: m.FirefliesPage })));
+const DandelionPage = lazy(() => import("./pages/components/DandelionPage").then((m) => ({ default: m.DandelionPage })));
+const GrassFieldPage = lazy(() => import("./pages/components/GrassFieldPage").then((m) => ({ default: m.GrassFieldPage })));
+const MothsPage = lazy(() => import("./pages/components/MothsPage").then((m) => ({ default: m.MothsPage })));
+const SunbeamDustPage = lazy(() => import("./pages/components/SunbeamDustPage").then((m) => ({ default: m.SunbeamDustPage })));
+const PaperLanternsPage = lazy(() => import("./pages/components/PaperLanternsPage").then((m) => ({ default: m.PaperLanternsPage })));
+const KelpForestPage = lazy(() => import("./pages/components/KelpForestPage").then((m) => ({ default: m.KelpForestPage })));
+const SnowDriftPage = lazy(() => import("./pages/components/SnowDriftPage").then((m) => ({ default: m.SnowDriftPage })));
+const FrostGlassPage = lazy(() => import("./pages/components/FrostGlassPage").then((m) => ({ default: m.FrostGlassPage })));
+const OrigamiCranesPage = lazy(() => import("./pages/components/OrigamiCranesPage").then((m) => ({ default: m.OrigamiCranesPage })));
+const SeasonsTreePage = lazy(() => import("./pages/components/SeasonsTreePage").then((m) => ({ default: m.SeasonsTreePage })));
+const InkMountainsPage = lazy(() => import("./pages/components/InkMountainsPage").then((m) => ({ default: m.InkMountainsPage })));
+const WindowRainPage = lazy(() => import("./pages/components/WindowRainPage").then((m) => ({ default: m.WindowRainPage })));
+const IncenseSmokePage = lazy(() => import("./pages/components/IncenseSmokePage").then((m) => ({ default: m.IncenseSmokePage })));
+const MoonlitSeaPage = lazy(() => import("./pages/components/MoonlitSeaPage").then((m) => ({ default: m.MoonlitSeaPage })));
+const CloudSeaPage = lazy(() => import("./pages/components/CloudSeaPage").then((m) => ({ default: m.CloudSeaPage })));
+const FerrofluidPage = lazy(() => import("./pages/components/FerrofluidPage").then((m) => ({ default: m.FerrofluidPage })));
 
+const LOADING_LINES = ["Cutting paper…", "Mixing ink…", "Priming the canvas…", "Connecting the stars…"];
+const STARS: [number, number][] = [[33.5, 17.7], [23.3, 33.8], [14.6, 57.2], [17.7, 73.3], [27.1, 102.7]];
+
+// The logo's enso, cut in paper strips that draw themselves while a page chunk loads.
 function Loading() {
+  const [line, setLine] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setLine((l) => (l + 1) % LOADING_LINES.length), 1400);
+    return () => clearInterval(id);
+  }, []);
   return (
-    <div style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100%",
-      color: "var(--text-3)",
-      fontSize: 14,
-      fontFamily: "var(--font)",
-    }}>
-      Loading…
+    <div className="otc-loader" role="status" aria-label="Loading">
+      <svg className="otc-loader-mark" viewBox="0 0 128 128" aria-hidden="true">
+        <circle cx="64" cy="64" r="58" fill="#fbf5e8" />
+        <g className="otc-loader-stars">
+          <path d={"M" + STARS.map(([x, y]) => `${x} ${y}`).join("L")} stroke="#4f4136" strokeWidth=".5" fill="none" />
+          {STARS.map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r={i % 2 ? 2 : 1.4} fill="#2b2118" style={{ animationDelay: `${i * 0.18}s` }} />
+          ))}
+        </g>
+        <g className="otc-loader-spin">
+          <circle className="otc-loader-arc" cx="64" cy="64" r="38" stroke="#74493a" transform="translate(-1.2 1.4)" />
+          <circle className="otc-loader-arc" cx="64" cy="64" r="38" stroke="#b17962" />
+        </g>
+        <g className="otc-loader-spin otc-loader-spin--rev">
+          <circle className="otc-loader-ink" cx="66" cy="65" r="27" stroke="#2b2118" />
+        </g>
+      </svg>
+      <span className="otc-loader-caption" aria-hidden="true">{LOADING_LINES[line]}</span>
     </div>
   );
 }
@@ -87,22 +111,15 @@ export function DocsApp() {
           <Route path="/components/particle-field" element={<ParticleFieldPage />} />
           <Route path="/components/starfield" element={<StarfieldPage />} />
           <Route path="/components/fire-effect" element={<FireEffectPage />} />
-          <Route path="/components/audio-visualizer" element={<AudioVisualizerPage />} />
           <Route path="/components/confetti" element={<ConfettiPage />} />
           <Route path="/components/noise-gradient" element={<NoiseGradientPage />} />
-          <Route path="/components/pixel-dissolve" element={<PixelDissolvePage />} />
 <Route path="/components/flow-field"        element={<FlowFieldPage />} />
-          <Route path="/components/shockwave"         element={<ShockwavePage />} />
           <Route path="/components/fireworks"         element={<FireworksPage />} />
-          <Route path="/components/glitch-overlay"    element={<GlitchOverlayPage />} />
           <Route path="/components/mandala"           element={<MandalaPage />} />
-          <Route path="/components/magnetic-blob"     element={<MagneticBlobPage />} />
-          <Route path="/components/cloth-simulation"  element={<ClothSimulationPage />} />
           <Route path="/components/fluid-simulation"  element={<FluidSimulationPage />} />
           <Route path="/components/rain"             element={<RainPage />} />
           <Route path="/components/lightning"        element={<LightningPage />} />
           <Route path="/components/game-of-life"     element={<GameOfLifePage />} />
-          <Route path="/components/wormhole"         element={<WormholePage />} />
           <Route path="/components/boids"            element={<BoidsPage />} />
           <Route path="/components/reaction-diffusion" element={<ReactionDiffusionPage />} />
           <Route path="/components/aurora-borealis"    element={<AuroraBorealisPage />} />
@@ -110,21 +127,17 @@ export function DocsApp() {
           <Route path="/components/sand-simulation"    element={<SandSimulationPage />} />
           <Route path="/components/wave-interference"  element={<WaveInterferencePage />} />
           <Route path="/components/diffusion-aggregation" element={<DiffusionAggregationPage />} />
-          <Route path="/components/lissajous"            element={<LissajousPage />} />
           <Route path="/components/l-system"             element={<LSystemPage />} />
           <Route path="/components/kaleidoscope"         element={<KaleidoscopePage />} />
           <Route path="/components/voronoi-cells"        element={<VoronoiCellsPage />} />
           <Route path="/components/slime-mold"           element={<SlimeMoldPage />} />
-          <Route path="/components/ink-bleed"            element={<InkBleedPage />} />
           <Route path="/components/watercolor-bloom"     element={<WatercolorBloomPage />} />
           <Route path="/components/pendula-wave"         element={<PendulaWavePage />} />
           <Route path="/components/crystal-growth"       element={<CrystalGrowthPage />} />
           <Route path="/components/neural-web"           element={<NeuralWebPage />} />
-          <Route path="/components/particle-text"        element={<ParticleTextPage />} />
           <Route path="/components/metaballs"            element={<MetaballsPage />} />
           <Route path="/components/ant-colony"           element={<AntColonyPage />} />
           <Route path="/components/magnetic-field"       element={<MagneticFieldPage />} />
-          <Route path="/components/terrain-mesh"         element={<TerrainMeshPage />} />
           <Route path="/components/dragon-cursor"        element={<DragonCursorPage />} />
           <Route path="/components/sakura-blossom"       element={<SakuraBlossomPage />} />
           <Route path="/components/koi-pond"             element={<KoiPondPage />} />
@@ -136,6 +149,24 @@ export function DocsApp() {
           <Route path="/components/tornado-vortex"       element={<TornadoVortexPage />} />
           <Route path="/components/bubble-universe"      element={<BubbleUniversePage />} />
           <Route path="/components/solar-flare"          element={<SolarFlarePage />} />
+          <Route path="/components/ivy-growth" element={<IvyGrowthPage />} />
+          <Route path="/components/fireflies" element={<FirefliesPage />} />
+          <Route path="/components/dandelion" element={<DandelionPage />} />
+          <Route path="/components/grass-field" element={<GrassFieldPage />} />
+          <Route path="/components/moths" element={<MothsPage />} />
+          <Route path="/components/sunbeam-dust" element={<SunbeamDustPage />} />
+          <Route path="/components/paper-lanterns" element={<PaperLanternsPage />} />
+          <Route path="/components/kelp-forest" element={<KelpForestPage />} />
+          <Route path="/components/snow-drift" element={<SnowDriftPage />} />
+          <Route path="/components/frost-glass" element={<FrostGlassPage />} />
+          <Route path="/components/origami-cranes" element={<OrigamiCranesPage />} />
+          <Route path="/components/seasons-tree" element={<SeasonsTreePage />} />
+          <Route path="/components/ink-mountains" element={<InkMountainsPage />} />
+          <Route path="/components/window-rain" element={<WindowRainPage />} />
+          <Route path="/components/incense-smoke" element={<IncenseSmokePage />} />
+          <Route path="/components/moonlit-sea" element={<MoonlitSeaPage />} />
+          <Route path="/components/cloud-sea" element={<CloudSeaPage />} />
+          <Route path="/components/ferrofluid" element={<FerrofluidPage />} />
         </Routes>
       </Suspense>
     </Layout>

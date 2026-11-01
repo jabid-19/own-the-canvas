@@ -5,16 +5,16 @@ import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel }
 import { AuroraBorealis } from "../../../components/AuroraBorealis";
 
 const PROPS = [
-  { name: "colors",          type: "string[]", default: '["#ffffff","#6b7280","#9ca3af"]', description: "Aurora band colors — each layer cycles through the array." },
+  { name: "colors",          type: "string[]", default: '["#00ff88", "#00ccff", "#88ff00"]', description: "Aurora band colors — each layer cycles through the array." },
   { name: "speed",           type: "number",   default: "1",        description: "Animation speed multiplier." },
   { name: "intensity",       type: "number",   default: "0.8",      description: "Band brightness and opacity 0–1." },
   { name: "layers",          type: "number",   default: "5",        description: "Number of aurora layers." },
-  { name: "backgroundColor", type: "string",   default: '"#111111"', description: "Sky background color." },
+  { name: "backgroundColor", type: "string",   default: '"#050a0f"', description: "Sky background color." },
   { name: "waveAmplitude",   type: "number",   default: "0.15",     description: "Wave height as fraction of canvas height." },
   { name: "waveFrequency",   type: "number",   default: "2",        description: "Wave oscillations across canvas width." },
   { name: "starCount",       type: "number",   default: "80",       description: "Number of background stars." },
   { name: "animated",        type: "boolean",  default: "true",     description: "Enable animation loop." },
-  { name: "preset",          type: "string",   default: "—",        description: '"default" | "arctic" | "solar" | "tropical" | "neon" | "midnight"' },
+  { name: "preset",          type: "string",   default: "—",        description: '"default" | "arctic" | "solar" | "tropical" | "neon" | "midnight" | "monochrome"' },
 ];
 
 function AuroraBorealisPlayground({ onReset }: { onReset?: () => void }) {
@@ -25,7 +25,7 @@ function AuroraBorealisPlayground({ onReset }: { onReset?: () => void }) {
   const [waveAmplitude, setWaveAmplitude] = useState(0.15);
   const [waveFrequency, setWaveFrequency] = useState(2);
   const [starCount, setStarCount] = useState(80);
-  const [bg, setBg] = useState("#111111");
+  const [bg, setBg] = useState("#050a0f");
   const [animated, setAnimated] = useState(true);
 
   const code = [
@@ -68,7 +68,7 @@ function AuroraBorealisPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "arctic", "solar", "tropical", "neon", "midnight"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "arctic", "solar", "tropical", "neon", "midnight", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />

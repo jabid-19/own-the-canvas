@@ -10,8 +10,8 @@ const PROPS = [
   { name: "iterations",     type: "number",            default: "4",          description: "Number of string rewriting iterations." },
   { name: "angle",          type: "number",            default: "25",         description: "Turtle turning angle in degrees." },
   { name: "lineWidth",      type: "number",            default: "1",          description: "Stroke line width." },
-  { name: "color",          type: "string",            default: '"#ffffff"',  description: "Branch stroke color." },
-  { name: "backgroundColor",type: "string",            default: '"#111111"',  description: "Canvas background color." },
+  { name: "color",          type: "string",            default: '"#86efac"',  description: "Branch stroke color." },
+  { name: "backgroundColor",type: "string",            default: '"#06120a"',  description: "Canvas background color." },
   { name: "speed",          type: "number",            default: "5",          description: "Segments drawn per frame — 1 for slow stroke-by-stroke reveal, 10 for fast draw." },
   { name: "autoReset",      type: "boolean",           default: "true",       description: "Restart animation after full draw." },
   { name: "trailFade",      type: "number",            default: "0",          description: "Background fade opacity between cycles — 0 = hard clear." },
@@ -33,8 +33,8 @@ function LSystemPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]         = useState("default");
   const [angle, setAngle]           = useState(25);
   const [lineWidth, setLineWidth]   = useState(1);
-  const [color, setColor]           = useState("#ffffff");
-  const [bg, setBg]                 = useState("#111111");
+  const [color, setColor]           = useState("#86efac");
+  const [bg, setBg]                 = useState("#06120a");
   const [speed, setSpeed]           = useState(5);
   const [autoReset, setAutoReset]   = useState(true);
   const [trailFade, setTrailFade]   = useState(0);

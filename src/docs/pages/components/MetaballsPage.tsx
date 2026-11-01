@@ -6,8 +6,8 @@ import { Metaballs } from "../../../components/Metaballs";
 
 const PROPS = [
   { name: "blobCount",       type: "number",  default: "5",       description: "Number of initial metaballs." },
-  { name: "color",           type: "string",  default: '"#ffffff"', description: "Blob fill color." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "color",           type: "string",  default: '"#ff7a45"', description: "Blob fill color." },
+  { name: "backgroundColor", type: "string",  default: '"#14060a"', description: "Canvas background." },
   { name: "threshold",       type: "number",  default: "1",       description: "Field strength threshold for blob surface." },
   { name: "speed",           type: "number",  default: "1",       description: "Blob wander speed." },
   { name: "minRadius",       type: "number",  default: "40",      description: "Min blob radius in px." },
@@ -17,11 +17,12 @@ const PROPS = [
   { name: "resolution",      type: "number",  default: "0.4",     description: "Render resolution fraction — lower is faster." },
   { name: "animated",        type: "boolean", default: "true",    description: "Enable animation." },
   { name: "interactive",     type: "boolean", default: "true",    description: "Drag to move blobs; click empty area to add." },
-  { name: "preset",          type: "string",  default: "—",       description: '"default" | "plasma" | "lava" | "ocean" | "neon" | "ghost"' },
+  { name: "preset",          type: "string",  default: "—",       description: '"default" | "plasma" | "lava" | "ocean" | "neon" | "ghost" | "monochrome"' },
 ];
 
 const PRESET_PARAMS = {
-  default: { color: "#ffffff", bg: "#111111", threshold: 1,   speed: 1,   minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 20 },
+  default: { color: "#ff7a45", bg: "#14060a", threshold: 1,   speed: 1,   minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 20 },
+  monochrome: { color: "#ffffff", bg: "#111111", threshold: 1,   speed: 1,   minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 20 },
   plasma:  { color: "#c084fc", bg: "#050010", threshold: 1,   speed: 1.5, minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 30 },
   lava:    { color: "#f97316", bg: "#1a0000", threshold: 1,   speed: 0.5, minRadius: 50, maxRadius: 100, glowEffect: true,  glowBlur: 20 },
   ocean:   { color: "#38bdf8", bg: "#020c17", threshold: 0.8, speed: 0.8, minRadius: 40, maxRadius: 80,  glowEffect: true,  glowBlur: 15 },
@@ -32,8 +33,8 @@ const PRESET_PARAMS = {
 function MetaballsPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset]       = useState("default");
   const [blobCount, setBlobCount] = useState(5);
-  const [color, setColor]         = useState("#ffffff");
-  const [bg, setBg]               = useState("#111111");
+  const [color, setColor]         = useState("#ff7a45");
+  const [bg, setBg]               = useState("#14060a");
   const [threshold, setThresh]    = useState(1);
   const [speed, setSpeed]         = useState(1);
   const [minRadius, setMinR]      = useState(40);
@@ -106,7 +107,7 @@ function MetaballsPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "plasma", "lava", "ocean", "neon", "ghost"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "plasma", "lava", "ocean", "neon", "ghost", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Blob color"  value={color} onChange={setColor} />
         <PColor label="Background"  value={bg}    onChange={setBg} />
@@ -136,7 +137,7 @@ export function MetaballsPage() {
     <PageShell
       eyebrow="Component"
       title="Metaballs"
-      lead="Organic blobs that merge and split as they wander. Built on implicit surface math — each blob emits a field that combines with neighbors, creating smooth liquid boundaries. Drag blobs around or click to add new ones."
+      lead="Glossy blobs of glowing wax that rise, sink and melt into each other like a lava lamp. Built on implicit-surface math and lit as a 3D height map. Drag to move a blob, click empty space to add one."
     >
       <MetaballsPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

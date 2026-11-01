@@ -114,46 +114,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         </svg>
       );
 
-    case "GlitchOverlay":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="2" y="3" width="20" height="14" rx="2" />
-          <path d="M6 21h12M12 17v4M5 7h8M11 11h8" />
-        </svg>
-      );
-
-    case "PixelDissolve":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="3" y="3" width="4" height="4" rx="1" fill="currentColor" />
-          <rect x="10" y="3" width="4" height="4" rx="1" fill="currentColor" opacity="0.8" />
-          <rect x="17" y="3" width="4" height="4" rx="1" fill="currentColor" opacity="0.6" />
-          <rect x="3" y="10" width="4" height="4" rx="1" fill="currentColor" opacity="0.9" />
-          <rect x="10" y="10" width="4" height="4" rx="1" fill="currentColor" opacity="0.2" />
-          <rect x="17" y="17" width="4" height="4" rx="1" fill="currentColor" opacity="0.4" />
-          <rect x="10" y="17" width="4" height="4" rx="1" fill="currentColor" opacity="0.7" />
-          <rect x="3" y="17" width="4" height="4" rx="1" fill="currentColor" opacity="0.5" />
-        </svg>
-      );
-
     case "Confetti":
       return (
         <svg
@@ -170,22 +130,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
           <circle cx="15" cy="14" r="1.5" fill="currentColor" />
           <circle cx="6" cy="14" r="1" fill="currentColor" />
           <path d="M12 4c1 2-1 3 0 5M10 11c-1 1 1 2 0 3" />
-        </svg>
-      );
-
-    case "AudioVisualizer":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 11v2" />
         </svg>
       );
 
@@ -260,24 +204,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         </svg>
       );
 
-    case "Shockwave":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="3" />
-          <circle cx="12" cy="12" r="7" strokeDasharray="3 3" />
-          <circle cx="12" cy="12" r="10" />
-        </svg>
-      );
-
     case "Fireworks":
       return (
         <svg
@@ -292,26 +218,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         >
           <circle cx="12" cy="12" r="1" fill="currentColor" />
           <path d="M12 8V2M12 16v6M8 12H2M16 12h6M9 9L5 5M15 15l4 4M9 15l-4 4M15 9l4-4" />
-        </svg>
-      );
-
-    case "Wormhole":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <ellipse cx="12" cy="12" rx="10" ry="6" />
-          <ellipse cx="12" cy="12" rx="7" ry="4.2" />
-          <ellipse cx="12" cy="12" rx="4" ry="2.4" />
-          <ellipse cx="12" cy="12" rx="1.5" ry="0.9" />
-          <path d="M2 12h20M12 2v20" />
         </svg>
       );
 
@@ -348,38 +254,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         >
           <circle cx="12" cy="10" r="1.5" fill="currentColor" />
           <path d="M12 10c0-2.5 1.5-4.5 4-4.5s4 2 4 4.5-2 4.5-4 4.5M12 10c-2.5 0-4.5 1.5-4.5 4s2 4 4.5 4 4.5-2 4.5-4M12 10c0 2.5-1.5 4.5-4 4.5s-4-2-4-4.5 2-4.5 4-4.5M12 10c2.5 0 4.5-1.5 4.5-4s-2-4-4.5-4-4.5 2-4.5 4" />
-        </svg>
-      );
-
-    case "ClothSimulation":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 4h20M2 9h20M2 14h20M2 19h20M4 2v20M9 2v20M14 2v20M19 2v20" />
-        </svg>
-      );
-
-    case "MagneticBlob":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M6 12c0-3.3 2.7-6 6-6s6 2.7 6 6c0 1.2-.4 2.3-1 3.2c1.8 1.5 3 3.8 3 6.3c0 4.4-3.6 8-8 8s-8-3.6-8-8c0-2.5 1.2-4.8 3-6.3c-.6-.9-1-2-1-3.2z" />
         </svg>
       );
 
@@ -598,22 +472,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         </svg>
       );
 
-    case "Lissajous":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M16 6C11 12 6 18 2 12s5-12 10-6c5 6 10 12 14 6s-5-12-10-6z" />
-        </svg>
-      );
-
     case "LSystem":
       return (
         <svg
@@ -675,22 +533,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
           aria-hidden="true"
         >
           <path d="M4 20c2-3 5-3 6-5s-1-4 2-6c3 2 5-1 6-4M10 15c1 1 3 0 4 2M8 9c-1-2-4-2-5-4M14 11c1-1 3-1 4 1" />
-        </svg>
-      );
-
-    case "InkBleed":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M12 3c3 0 5 1 7 3s2 4 1 6c-1 3 0 5-2 7s-5 2-7 1c-3-1-5-1-6-3s-1-5 1-7s3-4 6-4z" />
         </svg>
       );
 
@@ -764,31 +606,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         </svg>
       );
 
-    case "ParticleText":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="4" r="1" fill="currentColor" />
-          <circle cx="10" cy="8" r="1" fill="currentColor" />
-          <circle cx="14" cy="8" r="1" fill="currentColor" />
-          <circle cx="8" cy="12" r="1" fill="currentColor" />
-          <circle cx="12" cy="12" r="1" fill="currentColor" />
-          <circle cx="16" cy="12" r="1" fill="currentColor" />
-          <circle cx="6" cy="16" r="1" fill="currentColor" />
-          <circle cx="18" cy="16" r="1" fill="currentColor" />
-          <circle cx="4" cy="20" r="1" fill="currentColor" />
-          <circle cx="20" cy="20" r="1" fill="currentColor" />
-        </svg>
-      );
-
     case "Metaballs":
       return (
         <svg
@@ -839,22 +656,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         >
           <rect x="8" y="10" width="8" height="4" rx="1" />
           <path d="M8 12c-4-4-4 4 0 0M16 12c4-4 4 4 0 0M12 10c0-6-6-6-6 2M12 14c0 6-6 6-6-2M12 10c0-6 6-6 6 2M12 14c0 6 6 6 6-2" />
-        </svg>
-      );
-
-    case "TerrainMesh":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 17l4-4 6 5 6-7 4 3 M2 21h20M2 13l5 3 6-4 4 3 3-2 M2 9l3-2 5 4 6-3 6 1" />
         </svg>
       );
 
@@ -922,6 +723,294 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         >
           <circle cx="12" cy="12" r="6" />
           <path d="M12 6c-2-3-6-3-6 0M18 12c3-2 3-6 0-6M12 18c2 3 6 3 6 0M6 12c-3 2-3 6 0 6" />
+        </svg>
+      );
+
+    case "IvyGrowth":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M7 22c0-6 2-9 6-11.5S19 6 18 2" /><path d="M9.5 15.5c-2.2.2-3.6-1-3.8-3 2.2-.2 3.6 1 3.8 3z" /><path d="M14 10c.3-2.2 1.7-3.4 3.7-3.4-.2 2.2-1.6 3.4-3.7 3.4z" /><path d="M12 12.5c1.8.9 2.4 2.5 1.6 4.3-1.8-.9-2.4-2.5-1.6-4.3z" />
+        </svg>
+      );
+
+    case "Fireflies":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="7" cy="8" r="1.3" fill="currentColor" /><circle cx="7" cy="8" r="3.5" opacity="0.4" /><circle cx="16.5" cy="6" r="1" fill="currentColor" /><circle cx="15" cy="15.5" r="1.3" fill="currentColor" /><circle cx="15" cy="15.5" r="3.5" opacity="0.4" /><circle cx="6.5" cy="18" r="0.9" fill="currentColor" />
+        </svg>
+      );
+
+    case "Dandelion":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 22v-10" /><circle cx="12" cy="8" r="1.2" fill="currentColor" /><path d="M12 8V3M12 8l3.5-3.5M12 8h5M12 8l3.5 3.5M12 8l-3.5 3.5M12 8H7M12 8 8.5 4.5" /><path d="M19 5.5l1.5-1M20.5 10l1.5.5" />
+        </svg>
+      );
+
+    case "GrassField":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 21c0-5 1.5-9 4-12" /><path d="M8 21c0-6-.5-11-2-15" /><path d="M12 21c0-5 1-9 4-13" /><path d="M16 21c0-4-1-8-3-10" /><path d="M20 21c0-5 .5-8 2-11" />
+        </svg>
+      );
+
+    case "Moths":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="18" cy="6" r="2" fill="currentColor" /><circle cx="18" cy="6" r="4.5" opacity="0.35" /><path d="M8 14c-3-3-6-2-5 1s4 2 5-1zM8 14c3-3 6-2 5 1s-4 2-5-1z" /><path d="M8 13v4" />
+        </svg>
+      );
+
+    case "SunbeamDust":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 2l5 20M10 2l5 20M15 2l5 20" opacity="0.5" /><circle cx="9" cy="12" r="0.8" fill="currentColor" /><circle cx="13" cy="8" r="0.8" fill="currentColor" /><circle cx="15" cy="16" r="0.8" fill="currentColor" /><circle cx="11" cy="18" r="0.6" fill="currentColor" />
+        </svg>
+      );
+
+    case "PaperLanterns":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M8 6h8c1 3 1 7-.5 10h-7C7 13 7 9 8 6z" /><path d="M10 3h4M12 3v3M10 19h4" /><path d="M10.5 6.5c-.5 3-.5 6 0 9M13.5 6.5c.5 3 .5 6 0 9" opacity="0.5" />
+        </svg>
+      );
+
+    case "KelpForest":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 22c-2-4 2-6 0-10s2-6 0-10" /><path d="M11 22c-2-3 1.5-5 0-8s1.5-4 0-7" /><path d="M15 12c1.5-1.5 3.5-1.5 5 0-1.5 1.5-3.5 1.5-5 0zM20 12l2-1.5v3z" /><circle cx="17" cy="5" r="1" /><circle cx="19" cy="8" r="0.6" />
+        </svg>
+      );
+
+    case "SnowDrift":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2 20h20" /><path d="M5 20c1-3 4-4 7-4s6 1 7 4" /><circle cx="7" cy="5" r="0.8" fill="currentColor" /><circle cx="13" cy="8" r="0.8" fill="currentColor" /><circle cx="18" cy="4" r="0.8" fill="currentColor" /><circle cx="10" cy="11" r="0.6" fill="currentColor" />
+        </svg>
+      );
+
+    case "FrostGlass":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9l5 3M5.5 10.5l-.5 3M8 12l3-1M21 14l-5-2M18.5 13l.5-3M16 12l-3 1" /><circle cx="12" cy="12" r="2.5" opacity="0.5" />
+        </svg>
+      );
+
+    case "OrigamiCranes":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 13l6-1 3-7 2 7 7-2-6 5-1 5-3-4z" /><path d="M12 5l0 7M9 12l3 0 2 0" opacity="0.5" />
+        </svg>
+      );
+
+    case "SeasonsTree":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 22v-8M12 14l-4-4M12 14l4-5M8 10l-3-2M16 9l3-3" /><circle cx="5" cy="7" r="1.6" /><circle cx="19" cy="5.5" r="1.6" /><circle cx="12" cy="5" r="2" /><path d="M7 19.5l1 .8M15.5 18.5l1.2.4" />
+        </svg>
+      );
+
+    case "InkMountains":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2 18l5-8 3 4 4-7 8 11z" /><path d="M4 14h4M14 16h6" opacity="0.5" /><circle cx="18" cy="5" r="1.6" />
+        </svg>
+      );
+
+    case "WindowRain":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M8 7c-1 1.5-1 2.5 0 3s1-1.5 0-3zM15 11c-1 1.5-1 2.5 0 3s1-1.5 0-3z" /><path d="M8 10v4M15 14v3" opacity="0.5" />
+        </svg>
+      );
+
+    case "IncenseSmoke":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 22V14" /><circle cx="12" cy="13.5" r="0.7" fill="currentColor" /><path d="M12 13c0-2 1.5-3 1-5s-2-2.5-1-4.5" /><path d="M13 8c2-.5 3 1 2.5 2.5" opacity="0.6" />
+        </svg>
+      );
+
+    case "MoonlitSea":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="16" cy="6" r="2.5" /><path d="M2 12h20" /><path d="M3 16c2-1 3 1 5 0s3 1 5 0 3 1 5 0 3 1 3 0" /><path d="M15 13.5h2M14.5 15.5h3" opacity="0.6" />
+        </svg>
+      );
+
+    case "CloudSea":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2 10h20" /><path d="M9 10a3 3 0 016 0" /><path d="M3 16c1.5-2 4-2 5 0 1-2 4-2 5 0 1-2 4-2 5 0 1-1.5 2.5-1.5 3 0" /><path d="M4 20c2-1.5 4-1.5 6 0 2-1.5 4-1.5 6 0" opacity="0.6" />
+        </svg>
+      );
+
+    case "Ferrofluid":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 18c2 0 2-1 3-1l1.5-5 1.5 5 1.5-7 1.5 7 1.5-6 1.5 6 1.5-4 1.5 4c1 0 1 1 3 1z" /><path d="M12 3v3M10.5 4.5h3" opacity="0.6" />
         </svg>
       );
 

@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useWatercolorBloom } from "./useWatercolorBloom";
 
 type WatercolorBloomPreset = "default" | "sunset" | "ocean" | "spring" | "monochrome" | "neon";
@@ -15,7 +16,7 @@ interface WatercolorBloomPresetValues {
 }
 
 const PRESETS: Record<WatercolorBloomPreset, WatercolorBloomPresetValues> = {
-  default: {},
+  default: { colors: ["#f97316", "#ec4899", "#8b5cf6", "#fbbf24"], backgroundColor: "#0a0005" },
   sunset: {
     colors: ["#f97316", "#ec4899", "#8b5cf6", "#fbbf24"],
     backgroundColor: "#0a0005",
@@ -55,9 +56,9 @@ const PRESETS: Record<WatercolorBloomPreset, WatercolorBloomPresetValues> = {
 };
 
 export interface WatercolorBloomProps extends BaseCanvasProps {
-  /** Bloom color palette (default: ["#ffffff","#6b7280","#9ca3af"]) */
+  /** Bloom color palette (default: ["#f97316", "#ec4899", "#8b5cf6", "#fbbf24"]) */
   colors?: string[];
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#0a0005") */
   backgroundColor?: string;
   /** Max bloom radius in px (default: 80) */
   bloomRadius?: number;
@@ -96,11 +97,9 @@ export const WatercolorBloom = forwardRef<HTMLCanvasElement, WatercolorBloomProp
       resolution, animated, maxBlooms, width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as WatercolorBloomPreset]) || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
+    const p = PRESETS[(preset ?? "default") as WatercolorBloomPreset] || {};
 
-    useWatercolorBloom(internalRef, {
+    const { canvasRef, canvas } = useWatercolorBloom({
       colors:            colors            ?? p.colors            ?? ["#ffffff", "#6b7280", "#9ca3af"],
       backgroundColor:   backgroundColor   ?? p.backgroundColor   ?? "#111111",
       bloomRadius:       bloomRadius       ?? p.bloomRadius       ?? 80,
@@ -118,25 +117,16 @@ export const WatercolorBloom = forwardRef<HTMLCanvasElement, WatercolorBloomProp
       maxBlooms:         maxBlooms         ?? 12,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
+      <RuntimeCanvas
+        canvasRef={canvasRef}
+        width={width}
+        height={height}
         className={className}
-        style={{
-          width: width ?? "100%",
-          height: height ?? "100%",
-          display: "block",
-          overflow: "hidden",
-          cursor: (interactive ?? true) ? "crosshair" : "default",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+        style={{ cursor: (interactive ?? true) ? "crosshair" : "default", ...style }}
+      />
     );
   }
 );

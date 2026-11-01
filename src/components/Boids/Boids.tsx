@@ -1,8 +1,9 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useBoids } from "./useBoids";
 
-type BoidsPreset = "default" | "birds" | "fish" | "swarm" | "neon";
+type BoidsPreset = "default" | "birds" | "fish" | "swarm" | "neon" | "monochrome";
 
 interface BoidsPresetValues {
   count?: number;
@@ -26,6 +27,10 @@ interface BoidsPresetValues {
 
 export const PRESETS: Record<BoidsPreset, BoidsPresetValues> = {
   default: {
+    color: "#0891B2",
+    backgroundColor: "#030d1a",
+  },
+  monochrome: {
     color: "#ffffff",
     backgroundColor: "#111111",
   },
@@ -82,7 +87,7 @@ export interface BoidsProps extends BaseCanvasProps {
   alignmentForce?: number;
   /** Cohesion steering force. (default: 0.03) */
   cohesionForce?: number;
-  /** Boid and trail color. (default: "#7C3AED") */
+  /** Boid and trail color. (default: "#0891B2") */
   color?: string;
   /** Trail history length in frames. (default: 8) */
   trailLength?: number;
@@ -90,7 +95,7 @@ export interface BoidsProps extends BaseCanvasProps {
   trailOpacity?: number;
   /** Boid triangle size in px. (default: 6) */
   boidSize?: number;
-  /** Canvas background color. (default: "#050010") */
+  /** Canvas background color. (default: "#030d1a") */
   backgroundColor?: string;
   /** Boids flee from mouse cursor. (default: true) */
   interactive?: boolean;
@@ -114,12 +119,9 @@ export const Boids = forwardRef<HTMLCanvasElement, BoidsProps>((props, ref) => {
     width, height, className, style,
   } = props;
 
-  const p = (preset && PRESETS[preset as BoidsPreset]) || {};
+  const p = PRESETS[(preset ?? "default") as BoidsPreset] || {};
 
-  const internalRef = useRef<HTMLCanvasElement | null>(null);
-  useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-  useBoids(internalRef, {
+  const { canvasRef, canvas } = useBoids({
     count:            count            ?? p.count            ?? 80,
     maxSpeed:         maxSpeed         ?? p.maxSpeed         ?? 3,
     separationRadius: separationRadius ?? p.separationRadius ?? 25,
@@ -139,14 +141,9 @@ export const Boids = forwardRef<HTMLCanvasElement, BoidsProps>((props, ref) => {
     wrapEdges:        wrapEdges        ?? p.wrapEdges        ?? true,
   });
 
-  return (
-    <div
-      className={className}
-      style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", ...style }}
-    >
-      <canvas ref={internalRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
-    </div>
-  );
+  useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
+  return <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={style} />;
 });
 
 Boids.displayName = "Boids";

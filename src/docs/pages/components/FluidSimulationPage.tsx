@@ -9,13 +9,13 @@ const PROPS = [
   { name: "viscosity",       type: "number",  default: "0.0001",    description: "Fluid viscosity — resistance to flow." },
   { name: "diffusion",       type: "number",  default: "0.0001",    description: "Ink diffusion rate." },
   { name: "dissipation",     type: "number",  default: "0.995",     description: "Density fade per frame 0–1." },
-  { name: "inkColors",       type: "string[]",default: "multi",     description: "Ink colors painted by mouse and auto-ink." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background color." },
+  { name: "inkColors",       type: "string[]",default: '["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"]',     description: "Ink colors painted by mouse and auto-ink." },
+  { name: "backgroundColor", type: "string",  default: '"#020f1a"', description: "Canvas background color." },
   { name: "autoInk",         type: "boolean", default: "true",      description: "Auto-inject ink bursts without mouse." },
   { name: "autoInkInterval", type: "number",  default: "1500",      description: "Interval between auto-ink bursts in ms." },
   { name: "mouseForce",      type: "number",  default: "5",         description: "Mouse velocity → force multiplier." },
   { name: "inkRadius",       type: "number",  default: "4",         description: "Ink splat radius in grid cells." },
-  { name: "preset",          type: "string",  default: "—",         description: '"default" | "ink" | "neon" | "lava" | "ocean" | "smoke"' },
+  { name: "preset",          type: "string",  default: "—",         description: '"default" | "ink" | "neon" | "lava" | "ocean" | "smoke" | "monochrome"' },
 ];
 
 function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
@@ -24,8 +24,8 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const [dissipation, setDissipation] = useState(0.995);
   const [autoInk, setAutoInk] = useState(true);
   const [mouseForce, setMouseForce] = useState(5);
-  const [bg, setBg] = useState("#111111");
-  const [inkColors, setInkColors] = useState(["#ffffff", "#6b7280"]);
+  const [bg, setBg] = useState("#020f1a");
+  const [inkColors, setInkColors] = useState(["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"]);
 
   function handlePreset(p: string) {
     setPreset(p);
@@ -66,7 +66,7 @@ function FluidSimulationPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke"]} onChange={handlePreset} />
+        <PSel label="Preset" value={preset} options={["default", "ink", "neon", "lava", "ocean", "smoke", "monochrome"]} onChange={handlePreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PDivider />

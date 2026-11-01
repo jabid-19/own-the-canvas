@@ -13,24 +13,24 @@ const PROPS = [
   { name: "separationForce",  type: "number",  default: "0.05",      description: "Separation steering force." },
   { name: "alignmentForce",   type: "number",  default: "0.05",      description: "Alignment steering force." },
   { name: "cohesionForce",    type: "number",  default: "0.03",      description: "Cohesion steering force." },
-  { name: "color",            type: "string",  default: '"#ffffff"', description: "Boid and trail color." },
+  { name: "color",            type: "string",  default: '"#0891B2"', description: "Boid and trail color." },
   { name: "trailLength",      type: "number",  default: "8",         description: "Trail history length in frames." },
   { name: "trailOpacity",     type: "number",  default: "0.4",       description: "Trail line opacity 0–1." },
   { name: "boidSize",         type: "number",  default: "6",         description: "Boid triangle size in px." },
-  { name: "backgroundColor",  type: "string",  default: '"#111111"', description: "Canvas background color." },
+  { name: "backgroundColor",  type: "string",  default: '"#030d1a"', description: "Canvas background color." },
   { name: "interactive",      type: "boolean", default: "true",      description: "Boids flee from mouse cursor." },
   { name: "mouseRadius",      type: "number",  default: "80",        description: "Mouse avoidance radius in px." },
   { name: "mouseForce",       type: "number",  default: "0.2",       description: "Mouse avoidance force." },
   { name: "wrapEdges",        type: "boolean", default: "true",      description: "Wrap boids at canvas edges." },
-  { name: "preset",           type: "string",  default: "—",         description: '"default" | "birds" | "fish" | "swarm" | "neon"' },
+  { name: "preset",           type: "string",  default: "—",         description: '"default" | "birds" | "fish" | "swarm" | "neon" | "monochrome"' },
 ];
 
 function BoidsPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
   const [count, setCount] = useState(80);
   const [maxSpeed, setMaxSpeed] = useState(3);
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
+  const [color, setColor] = useState("#0891B2");
+  const [bg, setBg] = useState("#030d1a");
   const [trailLength, setTrailLength] = useState(8);
   const [sepForce, setSepForce] = useState(0.05);
 
@@ -62,7 +62,7 @@ function BoidsPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "birds", "fish", "swarm", "neon"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "birds", "fish", "swarm", "neon", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Color" value={color} onChange={setColor} />
         <PColor label="Background" value={bg} onChange={setBg} />

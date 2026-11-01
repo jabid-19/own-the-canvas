@@ -5,7 +5,7 @@ import { PlaygroundShell, PSel, PSlider, PColorArray, PDivider, PLiveLabel } fro
 import { FireEffect } from "../../../components/FireEffect";
 
 const PROPS = [
-  { name: "palette",      type: '"smoke" | "inferno" | "toxic" | "ice" | "plasma"', default: '"smoke"',   description: "Color palette for the fire simulation." },
+  { name: "palette",      type: '"smoke" | "inferno" | "toxic" | "ice" | "plasma"', default: '"inferno"',   description: "Color palette for the fire simulation." },
   { name: "customColors", type: "string[]",                                          default: "undefined", description: "Custom gradient colors — overrides palette when ≥2 colors provided." },
   { name: "intensity",    type: "number",                                            default: "0.95",      description: "Fire intensity (0–1). Higher = taller flames." },
   { name: "windStrength", type: "number",                                            default: "0.3",       description: "Horizontal wind drift strength." },
@@ -16,7 +16,7 @@ const PROPS = [
 type FirePalette = "smoke" | "inferno" | "toxic" | "ice" | "plasma";
 
 function FireEffectPlayground({ onReset }: { onReset?: () => void }) {
-  const [palette, setPalette] = useState<FirePalette>("smoke");
+  const [palette, setPalette] = useState<FirePalette>("inferno");
   const [customColors, setCustomColors] = useState<string[]>([]);
   const [intensity, setIntensity] = useState(0.95);
   const [wind, setWind] = useState(0.3);
@@ -74,7 +74,7 @@ export function FireEffectPage() {
     <PageShell
       eyebrow="Component"
       title="FireEffect"
-      lead="Pixel-level fire simulation using a cellular automaton approach. Choose from four distinct color palettes."
+      lead="Licking flame tongues from a smooth noise-driven heat field, with a soft glow and sparks rising off the top. Five colour palettes, wind, and flame height controls."
     >
       <FireEffectPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

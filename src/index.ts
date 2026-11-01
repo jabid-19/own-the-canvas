@@ -10,8 +10,6 @@ export type { StarfieldProps, StarfieldPerspective } from "./components/Starfiel
 export { FireEffect } from "./components/FireEffect";
 export type { FireEffectProps, FirePalette } from "./components/FireEffect";
 
-export { AudioVisualizer } from "./components/AudioVisualizer";
-export type { AudioVisualizerProps, VisualizerMode } from "./components/AudioVisualizer";
 
 export { Confetti } from "./components/Confetti";
 export type { ConfettiProps, ConfettiShape } from "./components/Confetti";
@@ -20,32 +18,22 @@ export type { ConfettiProps, ConfettiShape } from "./components/Confetti";
 export { NoiseGradient } from "./components/NoiseGradient";
 export type { NoiseGradientProps } from "./components/NoiseGradient";
 
-export { PixelDissolve } from "./components/PixelDissolve";
-export type { PixelDissolveProps, DissolveDirection, DissolvePattern } from "./components/PixelDissolve";
 
 
 export { FlowField } from "./components/FlowField";
 export type { FlowFieldProps } from "./components/FlowField";
 
 
-export { Shockwave } from "./components/Shockwave";
-export type { ShockwaveProps } from "./components/Shockwave";
 
 export { Fireworks } from "./components/Fireworks";
 export type { FireworksProps } from "./components/Fireworks";
 
-export { GlitchOverlay } from "./components/GlitchOverlay";
-export type { GlitchOverlayProps } from "./components/GlitchOverlay";
 
 
 export { Mandala } from "./components/Mandala";
 export type { MandalaProps } from "./components/Mandala";
 
-export { MagneticBlob } from "./components/MagneticBlob";
-export type { MagneticBlobProps } from "./components/MagneticBlob";
 
-export { ClothSimulation } from "./components/ClothSimulation";
-export type { ClothSimulationProps } from "./components/ClothSimulation";
 
 export { FluidSimulation } from "./components/FluidSimulation";
 export type { FluidSimulationProps } from "./components/FluidSimulation";
@@ -59,8 +47,6 @@ export type { LightningProps } from "./components/Lightning";
 export { GameOfLife } from "./components/GameOfLife";
 export type { GameOfLifeProps, GameOfLifeHandle } from "./components/GameOfLife";
 
-export { Wormhole } from "./components/Wormhole";
-export type { WormholeProps } from "./components/Wormhole";
 
 export { Boids } from "./components/Boids";
 export type { BoidsProps } from "./components/Boids";
@@ -83,8 +69,6 @@ export type { WaveInterferenceProps } from "./components/WaveInterference";
 export { DiffusionAggregation } from "./components/DiffusionAggregation";
 export type { DiffusionAggregationProps, DLASeedMode } from "./components/DiffusionAggregation";
 
-export { Lissajous } from "./components/Lissajous";
-export type { LissajousProps, LissajousColorMode } from "./components/Lissajous";
 
 export { LSystem } from "./components/LSystem";
 export type { LSystemProps } from "./components/LSystem";
@@ -98,8 +82,6 @@ export type { VoronoiCellsProps, VoronoiColorMode } from "./components/VoronoiCe
 export { SlimeMold } from "./components/SlimeMold";
 export type { SlimeMoldProps } from "./components/SlimeMold";
 
-export { InkBleed } from "./components/InkBleed";
-export type { InkBleedProps } from "./components/InkBleed";
 
 export { WatercolorBloom } from "./components/WatercolorBloom";
 export type { WatercolorBloomProps } from "./components/WatercolorBloom";
@@ -113,8 +95,6 @@ export type { CrystalGrowthProps, CrystalGrowthColorMode } from "./components/Cr
 export { NeuralWeb } from "./components/NeuralWeb";
 export type { NeuralWebProps } from "./components/NeuralWeb";
 
-export { ParticleText } from "./components/ParticleText";
-export type { ParticleTextProps } from "./components/ParticleText";
 
 export { Metaballs } from "./components/Metaballs";
 export type { MetaballsProps } from "./components/Metaballs";
@@ -125,8 +105,6 @@ export type { AntColonyProps } from "./components/AntColony";
 export { MagneticField } from "./components/MagneticField";
 export type { MagneticFieldProps } from "./components/MagneticField";
 
-export { TerrainMesh } from "./components/TerrainMesh";
-export type { TerrainMeshProps } from "./components/TerrainMesh";
 
 export { DragonCursor } from "./components/DragonCursor";
 export type { DragonCursorProps } from "./components/DragonCursor";
@@ -163,3 +141,56 @@ export type { ButterflySwarmProps } from "./components/ButterflySwarm";
 export { DeepSeaBioluminescence } from "./components/DeepSeaBioluminescence";
 export type { DeepSeaBioluminescenceProps } from "./components/DeepSeaBioluminescence";
 
+export { IvyGrowth } from "./components/IvyGrowth";
+export type { IvyGrowthProps } from "./components/IvyGrowth";
+
+export { Fireflies } from "./components/Fireflies";
+export type { FirefliesProps } from "./components/Fireflies";
+
+export { Dandelion } from "./components/Dandelion";
+export type { DandelionProps } from "./components/Dandelion";
+
+export { GrassField } from "./components/GrassField";
+export type { GrassFieldProps } from "./components/GrassField";
+
+export { Moths } from "./components/Moths";
+export type { MothsProps } from "./components/Moths";
+
+export { SunbeamDust } from "./components/SunbeamDust";
+export type { SunbeamDustProps } from "./components/SunbeamDust";
+
+export { PaperLanterns } from "./components/PaperLanterns";
+export type { PaperLanternsProps } from "./components/PaperLanterns";
+
+export { KelpForest } from "./components/KelpForest";
+export type { KelpForestProps } from "./components/KelpForest";
+
+export { SnowDrift } from "./components/SnowDrift";
+export type { SnowDriftProps } from "./components/SnowDrift";
+
+export { FrostGlass } from "./components/FrostGlass";
+export type { FrostGlassProps } from "./components/FrostGlass";
+
+export { OrigamiCranes } from "./components/OrigamiCranes";
+export type { OrigamiCranesProps } from "./components/OrigamiCranes";
+
+export { SeasonsTree } from "./components/SeasonsTree";
+export type { SeasonsTreeProps, Season } from "./components/SeasonsTree";
+
+export { InkMountains } from "./components/InkMountains";
+export type { InkMountainsProps } from "./components/InkMountains";
+
+export { WindowRain } from "./components/WindowRain";
+export type { WindowRainProps } from "./components/WindowRain";
+
+export { IncenseSmoke } from "./components/IncenseSmoke";
+export type { IncenseSmokeProps } from "./components/IncenseSmoke";
+
+export { MoonlitSea } from "./components/MoonlitSea";
+export type { MoonlitSeaProps } from "./components/MoonlitSea";
+
+export { CloudSea } from "./components/CloudSea";
+export type { CloudSeaProps } from "./components/CloudSea";
+
+export { Ferrofluid } from "./components/Ferrofluid";
+export type { FerrofluidProps } from "./components/Ferrofluid";

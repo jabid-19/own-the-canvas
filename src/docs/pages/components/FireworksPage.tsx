@@ -5,7 +5,7 @@ import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel }
 import { Fireworks } from "../../../components/Fireworks";
 
 const PROPS = [
-  { name: "colors",          type: "string[]", default: "multi",     description: "Particle burst colors." },
+  { name: "colors",          type: "string[]", default: '["#f43f5e", "#f59e0b", "#4ade80", "#06b6d4", "#ffd166", "#ffffff"]',     description: "Particle burst colors." },
   { name: "particleCount",   type: "number",   default: "80",        description: "Particles per explosion." },
   { name: "gravity",         type: "number",   default: "0.08",      description: "Gravity pull per frame." },
   { name: "friction",        type: "number",   default: "0.97",      description: "Velocity friction 0–1." },
@@ -17,13 +17,13 @@ const PROPS = [
   { name: "autoInterval",    type: "number",   default: "1800",      description: "Average ms between auto-launches." },
   { name: "glowEffect",      type: "boolean",  default: "true",      description: "Glow on particles." },
   { name: "glowBlur",        type: "number",   default: "8",         description: "Shadow blur for glow." },
-  { name: "backgroundColor", type: "string",   default: '"#111111"', description: "Canvas background color." },
+  { name: "backgroundColor", type: "string",   default: '"#04060f"', description: "Canvas background color." },
   { name: "shellSpeed",      type: "number",   default: "12",        description: "Shell upward speed." },
   { name: "starCount",       type: "number",   default: "80",        description: "Number of background stars." },
   { name: "starColor",       type: "string",   default: '"#ffffff"', description: "Star color." },
   { name: "glowingStars",    type: "boolean",  default: "false",     description: "Enable glow effect on ~28% of stars." },
   { name: "starGlowBlur",    type: "number",   default: "8",         description: "Shadow blur radius for glowing stars." },
-  { name: "preset",          type: "string",   default: "—",         description: '"default" | "celebration" | "subtle" | "neon" | "golden"' },
+  { name: "preset",          type: "string",   default: "—",         description: '"default" | "celebration" | "subtle" | "neon" | "golden" | "monochrome"' },
 ];
 
 function FireworksPlayground({ onReset }: { onReset?: () => void }) {
@@ -31,7 +31,7 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
   const [count, setCount] = useState(80);
   const [gravity, setGravity] = useState(0.08);
   const [spread, setSpread] = useState(5);
-  const [bg, setBg] = useState("#111111");
+  const [bg, setBg] = useState("#04060f");
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [glow, setGlow] = useState(true);
   const [starCount, setStarCount] = useState(80);
@@ -73,7 +73,7 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "celebration", "subtle", "neon", "golden"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "celebration", "subtle", "neon", "golden", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
         <PSlider label="Particle count" value={count} min={20} max={200} step={10} onChange={setCount} />
@@ -102,7 +102,7 @@ export function FireworksPage() {
     <PageShell
       eyebrow="Component"
       title="Fireworks"
-      lead="Physics-based fireworks with launching shells, particle bursts, gravity trails, and glow. Click to launch a shell, or let auto-launch handle it."
+      lead="A fireworks show over a sleeping city: rockets climb on spark trails and burst as peonies, chrysanthemums, gold willows, rings, palms and crossettes, lighting up the sky and skyline. Click to launch a shell at that spot."
     >
       <FireworksPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

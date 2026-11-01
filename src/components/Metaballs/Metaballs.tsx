@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useMetaballs } from "./useMetaballs";
 
-type MetaballsPreset = "default" | "plasma" | "lava" | "ocean" | "neon" | "ghost";
+type MetaballsPreset = "default" | "plasma" | "lava" | "ocean" | "neon" | "ghost" | "monochrome";
 
 interface MetaballsPresetValues {
   color?: string;
@@ -16,7 +16,8 @@ interface MetaballsPresetValues {
 }
 
 const PRESETS: Record<MetaballsPreset, MetaballsPresetValues> = {
-  default: {},
+  default: { color: "#ff7a45", backgroundColor: "#14060a" },
+  monochrome: {},
   plasma: {
     color: "#c084fc",
     backgroundColor: "#050010",
@@ -63,9 +64,9 @@ const PRESETS: Record<MetaballsPreset, MetaballsPresetValues> = {
 export interface MetaballsProps extends BaseCanvasProps {
   /** Number of initial metaballs (default: 5) */
   blobCount?: number;
-  /** Blob fill color (default: "#ffffff") */
+  /** Blob fill color (default: "#ff7a45") */
   color?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#14060a") */
   backgroundColor?: string;
   /** Field threshold for inside/outside (default: 1) */
   threshold?: number;
@@ -96,7 +97,7 @@ export const Metaballs = forwardRef<HTMLCanvasElement, MetaballsProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as MetaballsPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as MetaballsPreset] || {};
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

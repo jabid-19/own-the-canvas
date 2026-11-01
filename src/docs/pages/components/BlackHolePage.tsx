@@ -5,13 +5,13 @@ import { PlaygroundShell, PSel, PSlider, PColor, PToggle, PDivider, PLiveLabel }
 import { BlackHole } from "../../../components/BlackHole";
 
 const PROPS = [
-  { name: "diskColor",          type: "string",  default: '"#ffffff"', description: "Accretion disk particle color." },
-  { name: "backgroundColor",    type: "string",  default: '"#111111"', description: "Canvas background." },
+  { name: "diskColor",          type: "string",  default: '"#ff6600"', description: "Accretion disk particle color." },
+  { name: "backgroundColor",    type: "string",  default: '"#0d0200"', description: "Canvas background." },
   { name: "particleCount",      type: "number",  default: "300",       description: "Number of disk particles." },
   { name: "gravity",            type: "number",  default: "200",       description: "Gravitational pull strength." },
   { name: "eventHorizonRadius", type: "number",  default: "30",        description: "Event horizon radius in px." },
   { name: "diskWidth",          type: "number",  default: "120",       description: "Accretion disk radial extent in px." },
-  { name: "jetColor",           type: "string",  default: '"#6b7280"', description: "Polar jet stream color." },
+  { name: "jetColor",           type: "string",  default: '"#ff3300"', description: "Polar jet stream color." },
   { name: "showJets",           type: "boolean", default: "true",      description: "Show polar particle jets." },
   { name: "lensing",            type: "boolean", default: "true",      description: "Background grid gravitational lensing." },
   { name: "speed",              type: "number",  default: "1",         description: "Animation speed multiplier." },
@@ -20,13 +20,14 @@ const PROPS = [
   { name: "starColor",          type: "string",  default: '"#ffffff"', description: "Star color." },
   { name: "glowingStars",       type: "boolean", default: "false",     description: "Enable glow effect on ~28% of stars." },
   { name: "starGlowBlur",       type: "number",  default: "8",         description: "Shadow blur radius for glowing stars." },
-  { name: "preset",             type: "string",  default: "—",         description: '"default" | "cosmic" | "inferno" | "neon" | "void"' },
+  { name: "preset",             type: "string",  default: "—",         description: '"default" | "cosmic" | "inferno" | "neon" | "void" | "monochrome"' },
 ];
 
 const PRESET_VALUES: Record<string, {
   diskColor: string; bg: string; jetColor: string; diskWidth: number; particleCount: number;
 }> = {
-  default: { diskColor: "#ffffff", bg: "#111111", jetColor: "#6b7280", diskWidth: 120, particleCount: 300 },
+  default: { diskColor: "#ff6600", bg: "#0d0200", jetColor: "#ff3300", diskWidth: 120, particleCount: 300 },
+  monochrome: { diskColor: "#ffffff", bg: "#111111", jetColor: "#6b7280", diskWidth: 120, particleCount: 300 },
   cosmic:  { diskColor: "#aaccff", bg: "#020510", jetColor: "#88aaff", diskWidth: 140, particleCount: 300 },
   inferno: { diskColor: "#ff6600", bg: "#0d0200", jetColor: "#ff3300", diskWidth: 100, particleCount: 300 },
   neon:    { diskColor: "#00ffcc", bg: "#000510", jetColor: "#ff00aa", diskWidth: 120, particleCount: 300 },
@@ -35,9 +36,9 @@ const PRESET_VALUES: Record<string, {
 
 function BlackHolePlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [diskColor, setDiskColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [jetColor, setJetColor] = useState("#6b7280");
+  const [diskColor, setDiskColor] = useState("#ff6600");
+  const [bg, setBg] = useState("#0d0200");
+  const [jetColor, setJetColor] = useState("#ff3300");
   const [particleCount, setParticleCount] = useState(300);
   const [ehRadius, setEhRadius] = useState(30);
   const [diskWidth, setDiskWidth] = useState(120);
@@ -111,7 +112,7 @@ function BlackHolePlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "cosmic", "inferno", "neon", "void"]} onChange={onPresetChange} />
+        <PSel label="Preset" value={preset} options={["default", "cosmic", "inferno", "neon", "void", "monochrome"]} onChange={onPresetChange} />
         <PDivider />
         <PColor label="Disk color" value={diskColor} onChange={setDiskColor} />
         <PColor label="Jet color" value={jetColor} onChange={setJetColor} />

@@ -1,8 +1,9 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSolarFlare } from "./useSolarFlare";
 
-type SolarFlarePreset = "default" | "inferno" | "plasma" | "neon" | "white-dwarf";
+type SolarFlarePreset = "default" | "inferno" | "plasma" | "neon" | "white-dwarf" | "monochrome";
 
 interface SolarFlarePresetValues {
   sunColor?: string;
@@ -14,7 +15,8 @@ interface SolarFlarePresetValues {
 }
 
 export const PRESETS: Record<SolarFlarePreset, SolarFlarePresetValues> = {
-  default: {},
+  default: { sunColor: "#ff6600", coronaColor: "#ff3300", flareColor: "#ffaa00", backgroundColor: "#0a0200" },
+  monochrome: {},
   inferno: {
     sunColor: "#ff6600",
     coronaColor: "#ff3300",
@@ -47,13 +49,13 @@ export const PRESETS: Record<SolarFlarePreset, SolarFlarePresetValues> = {
 };
 
 export interface SolarFlareProps extends BaseCanvasProps {
-  /** Photosphere color (default: "#ffffff") */
+  /** Photosphere color (default: "#ff6600") */
   sunColor?: string;
-  /** Corona glow color (default: "#6b7280") */
+  /** Corona glow color (default: "#ff3300") */
   coronaColor?: string;
-  /** Eruption/flare color (default: "#ffffff") */
+  /** Eruption/flare color (default: "#ffaa00") */
   flareColor?: string;
-  /** Canvas background (default: "#111111") */
+  /** Canvas background (default: "#0a0200") */
   backgroundColor?: string;
   /** Sun radius as fraction of min(w,h)/2 (default: 0.35) */
   sunRadius?: number;
@@ -86,11 +88,9 @@ export const SolarFlare = forwardRef<HTMLCanvasElement, SolarFlareProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as SolarFlarePreset]) || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
+    const p = PRESETS[(preset ?? "default") as SolarFlarePreset] || {};
 
-    useSolarFlare(internalRef, {
+    const { canvasRef, canvas } = useSolarFlare({
       sunColor:           sunColor           ?? p.sunColor           ?? "#ffffff",
       coronaColor:        coronaColor        ?? p.coronaColor        ?? "#6b7280",
       flareColor:         flareColor         ?? p.flareColor         ?? "#ffffff",
@@ -106,25 +106,16 @@ export const SolarFlare = forwardRef<HTMLCanvasElement, SolarFlareProps>(
       speed:              speed              ?? 1,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
+      <RuntimeCanvas
+        canvasRef={canvasRef}
+        width={width}
+        height={height}
         className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          cursor:   "crosshair",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+        style={{ cursor: "crosshair", ...style }}
+      />
     );
   }
 );

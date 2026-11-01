@@ -1,5 +1,6 @@
 import { useRef, useEffect, RefObject } from "react";
 import { hexToRgbString } from "../../utils/color";
+import { pointerInCanvas } from "../../runtime/fx";
 
 interface Star {
   r: number;       // radial distance from center (galaxy plane)
@@ -130,8 +131,9 @@ export function useGalaxySpiral(
 
     function onMouseMove(e: MouseEvent) {
       if (!optionsRef.current.interactive) return;
-      const r = canvas!.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+      const p = pointerInCanvas(e, canvas!);
+      if (!p) return onMouseLeave();
+      mouseRef.current = p;
     }
     function onMouseLeave() { mouseRef.current = null; }
     window.addEventListener("mousemove", onMouseMove);

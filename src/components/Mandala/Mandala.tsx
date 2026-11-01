@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useMandala } from "./useMandala";
 
-type MandalaPreset = "default" | "neon" | "lotus" | "cosmic" | "minimal";
+type MandalaPreset = "default" | "neon" | "lotus" | "cosmic" | "minimal" | "monochrome";
 
 interface MandalaPresetValues {
   symmetry?: number;
@@ -20,6 +20,19 @@ interface MandalaPresetValues {
 
 export const PRESETS: Record<MandalaPreset, MandalaPresetValues> = {
   default: {
+    symmetry: 8,
+    colors: ["#f43f5e", "#fb7185", "#fda4af", "#fbbf24"],
+    lineWidth: 1.5,
+    speed: 1,
+    layers: 5,
+    glowEffect: true,
+    glowBlur: 10,
+    strokeOpacity: 0.8,
+    mirror: true,
+    noiseAmount: 0.3,
+    backgroundColor: "#0c0005",
+  },
+  monochrome: {
     symmetry: 8,
     colors: ["#ffffff", "#6b7280"],
     lineWidth: 1.5,
@@ -88,7 +101,7 @@ export const PRESETS: Record<MandalaPreset, MandalaPresetValues> = {
 export interface MandalaProps extends BaseCanvasProps {
   /** Number of rotational symmetry arms (default: 8) */
   symmetry?: number;
-  /** Stroke colors cycled per layer (default: multi-color) */
+  /** Stroke colors cycled per layer (default: ["#f43f5e", "#fb7185", "#fda4af", "#fbbf24"]) */
   colors?: string[];
   /** Stroke line width (default: 1.5) */
   lineWidth?: number;
@@ -98,7 +111,7 @@ export interface MandalaProps extends BaseCanvasProps {
   layers?: number;
   /** Outer radius as fraction of canvas min dimension (default: 1) */
   radius?: number;
-  /** Canvas background color (default: "#050010") */
+  /** Canvas background color (default: "#0c0005") */
   backgroundColor?: string;
   /** Enable animation (default: true) */
   animated?: boolean;
@@ -125,7 +138,7 @@ export const Mandala = forwardRef<HTMLCanvasElement, MandalaProps>(
       width, height, className, style,
     } = props;
 
-    const p = (preset && PRESETS[preset as MandalaPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as MandalaPreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

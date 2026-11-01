@@ -1,53 +1,7 @@
-import { useRef, useEffect, RefObject } from "react";
+import { useRef } from "react";
+import { useCanvasSetup, type FrameInfo } from "../../hooks/useCanvasSetup";
+import { fbm2 } from "../../runtime/noise";
 import { sampleGradient } from "../../utils/color";
-
-function fade(t: number) { return t * t * t * (t * (t * 6 - 15) + 10); }
-function lerp(a: number, b: number, t: number) { return a + t * (b - a); }
-
-function grad(hash: number, x: number, y: number): number {
-  const h = hash & 3;
-  const u = h < 2 ? x : y;
-  const v = h < 2 ? y : x;
-  return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
-}
-
-const PERM = new Uint8Array(256);
-for (let i = 0; i < 256; i++) PERM[i] = i;
-for (let i = 255; i > 0; i--) {
-  const j = Math.floor(Math.random() * (i + 1));
-  [PERM[i], PERM[j]] = [PERM[j], PERM[i]];
-}
-const P = new Uint8Array(512);
-for (let i = 0; i < 512; i++) P[i] = PERM[i & 255];
-
-function noise2d(x: number, y: number): number {
-  const xi = Math.floor(x) & 255;
-  const yi = Math.floor(y) & 255;
-  const xf = x - Math.floor(x);
-  const yf = y - Math.floor(y);
-  const u = fade(xf);
-  const v = fade(yf);
-  const aa = P[P[xi] + yi];
-  const ab = P[P[xi] + yi + 1];
-  const ba = P[P[xi + 1] + yi];
-  const bb = P[P[xi + 1] + yi + 1];
-  return lerp(
-    lerp(grad(aa, xf, yf), grad(ba, xf - 1, yf), u),
-    lerp(grad(ab, xf, yf - 1), grad(bb, xf - 1, yf - 1), u),
-    v
-  );
-}
-
-function octaveNoise(x: number, y: number, octaves: number, persistence: number): number {
-  let val = 0, amp = 1, freq = 1, max = 0;
-  for (let i = 0; i < octaves; i++) {
-    val += noise2d(x * freq, y * freq) * amp;
-    max += amp;
-    amp *= persistence;
-    freq *= 2;
-  }
-  return val / max;
-}
 
 export interface UseNoiseGradientOptions {
   colors: string[];
@@ -61,125 +15,95 @@ export interface UseNoiseGradientOptions {
   resolution: number;
 }
 
-export function useNoiseGradient(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseNoiseGradientOptions
-) {
+/**
+ * Domain-warped fBm (Quilez): noise sampled at coordinates displaced by
+ * other noise, twice. Gives the folded, flowing silk look instead of blobs.
+ * Returns [value, sheen] in [0, 1].
+ */
+export function warpedField(x: number, y: number, t: number, octaves: number, gain: number, dirY: number): [number, number] {
+  // Warp layers only need the broad shapes; detail octaves go on the final pass
+  const wo = Math.min(octaves, 2);
+  const qx = fbm2(x + t * 0.6, y + t * 0.6 * dirY, wo, 1, gain);
+  const qy = fbm2(x + 5.2 - t * 0.4, y + 1.3 + t * 0.3, wo, 2, gain);
+  const rx = fbm2(x + 3.5 * qx + 1.7 + t * 0.25, y + 3.5 * qy + 9.2, wo, 3, gain);
+  const ry = fbm2(x + 3.5 * qx + 8.3, y + 3.5 * qy + 2.8 - t * 0.2 * dirY, wo, 4, gain);
+  const v = fbm2(x + 3 * rx, y + 3 * ry, octaves, 5, gain);
+  const sheen = Math.min(1, Math.hypot(rx - 0.5, ry - 0.5) * 2.2);
+  return [v, sheen];
+}
+
+export function useNoiseGradient(options: UseNoiseGradientOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
-  const rafRef = useRef<number>(0);
-  const timeRef = useRef<number>(0);
-  const imageDataRef = useRef<ImageData | null>(null);
-  const bufferCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const bufferCtxRef = useRef<CanvasRenderingContext2D | null>(null);
-  const bufferWRef = useRef<number>(0);
-  const bufferHRef = useRef<number>(0);
 
-  useEffect(() => {
-    const canvasEl = canvasRef.current;
-    if (!canvasEl) return;
-    const canvas: HTMLCanvasElement = canvasEl;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
+  const s = useRef({
+    t: 0,
+    buf: null as { c: HTMLCanvasElement; img: ImageData; bw: number; bh: number } | null,
+    staticKey: "",
+  }).current;
 
-    let cw = 0, ch = 0;
+  function buffer(w: number, h: number, res: number) {
+    const bw = Math.max(16, Math.round(w * res));
+    const bh = Math.max(16, Math.round(h * res));
+    if (s.buf && s.buf.bw === bw && s.buf.bh === bh) return s.buf;
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas");
+    c.width = bw;
+    c.height = bh;
+    const img = c.getContext("2d")?.createImageData?.(bw, bh);
+    if (!img) return null;
+    s.buf = { c, img, bw, bh };
+    s.staticKey = "";
+    return s.buf;
+  }
 
-    function applyDpr(width: number, height: number) {
-      const { resolution } = optionsRef.current;
-      const dpr = window.devicePixelRatio || 1;
-      const res = Math.max(0.05, Math.min(1, resolution));
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      cw = canvas.width;
-      ch = canvas.height;
-      const bw = Math.max(1, Math.round(cw * res));
-      const bh = Math.max(1, Math.round(ch * res));
-      if (bw !== bufferWRef.current || bh !== bufferHRef.current) {
-        bufferWRef.current = bw;
-        bufferHRef.current = bh;
-        imageDataRef.current = new ImageData(bw, bh);
-        // Cache buffer canvas — reuse every frame instead of creating per frame
-        const bc = document.createElement("canvas");
-        bc.width = bw;
-        bc.height = bh;
-        const bctx = bc.getContext("2d")!;
-        bufferCanvasRef.current = bc;
-        bufferCtxRef.current = bctx;
-      }
-    }
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number, frame: FrameInfo) {
+    const o = optionsRef.current;
+    const colors = o.colors.length >= 2 ? o.colors : ["#000000", "#ffffff"];
+    // ponytail: pixel budget cap (~40k) keeps a full-screen hero smooth; the field is
+    // soft enough that upscaling hides it. Raise MAX_PX if a sharper look is ever needed.
+    const MAX_PX = 40000 * (frame.quality < 0.75 ? 0.5 : 1);
+    const res = Math.min(Math.min(1, Math.max(0.05, o.resolution)), Math.sqrt(MAX_PX / Math.max(1, w * h)));
+    const b = buffer(w, h, res);
+    if (!b) return;
 
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) applyDpr(width, height);
-    });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
+    if (o.animated) s.t += dt * 0.001 * o.speed;
+    const key = `${o.animated}|${colors.join()}|${o.scale}|${o.octaves}|${o.persistence}|${o.timeOffsetY}|${b.bw}x${b.bh}`;
+    const needs = o.animated || key !== s.staticKey;
 
-    function renderFrame(timestamp: number) {
-      const { colors, speed, scale, octaves, animated, blendMode, timeOffsetY, persistence } =
-        optionsRef.current;
-
-      if (colors.length < 2) {
-        rafRef.current = requestAnimationFrame(renderFrame);
-        return;
-      }
-
-      if (animated) timeRef.current = timestamp * 0.001 * speed;
-
-      const t = timeRef.current;
-      const imageData = imageDataRef.current;
-      const bufferCanvas = bufferCanvasRef.current;
-      const bufferCtx = bufferCtxRef.current;
-      if (!imageData || !bufferCanvas || !bufferCtx) {
-        rafRef.current = requestAnimationFrame(renderFrame);
-        return;
-      }
-
-      const bw = bufferWRef.current;
-      const bh = bufferHRef.current;
-      const data = imageData.data;
-
-      // Normalize coords by buffer dims so scale is canvas-size independent
-      const sx = scale * 3 / bw;
-      const sy = scale * 3 / bh;
-
-      for (let y = 0; y < bh; y++) {
-        const ny = y * sy;
-        for (let x = 0; x < bw; x++) {
-          const n = octaveNoise(x * sx + t, ny + t * timeOffsetY, octaves, persistence);
-          // Bias toward mid-range for richer gradient sampling
-          const v = Math.max(0, Math.min(1, (n + 1) / 2));
-          const [r, g, b] = sampleGradient(colors, v);
-          const idx = (y * bw + x) * 4;
-          data[idx] = r;
-          data[idx + 1] = g;
-          data[idx + 2] = b;
-          data[idx + 3] = 255;
+    if (needs) {
+      s.staticKey = key;
+      const t = s.t;
+      // Uniform scale on both axes (by the shorter side) so nothing stretches
+      const unit = (1.6 * Math.max(0.1, o.scale)) / Math.min(b.bw, b.bh);
+      const oct = Math.max(1, Math.min(6, Math.round(o.octaves)));
+      const gain = Math.min(0.9, Math.max(0.1, o.persistence));
+      const lut = Array.from({ length: 256 }, (_, i) => sampleGradient(colors, i / 255));
+      const d = b.img.data;
+      for (let y = 0; y < b.bh; y++) {
+        for (let x = 0; x < b.bw; x++) {
+          const [v, sheen] = warpedField(x * unit, y * unit, t, oct, gain, o.timeOffsetY);
+          // Stretch contrast around the mean so the full palette shows
+          const c = lut[Math.max(0, Math.min(255, ((v - 0.5) * 1.9 + 0.5) * 255)) | 0];
+          const lift = sheen * 18;
+          const grain = (Math.random() - 0.5) * 3; // dither: no banding on smooth ramps
+          const j = (y * b.bw + x) * 4;
+          d[j] = c[0] + lift + grain;
+          d[j + 1] = c[1] + lift + grain;
+          d[j + 2] = c[2] + lift + grain;
+          d[j + 3] = 255;
         }
       }
-
-      bufferCtx.putImageData(imageData, 0, 0);
-
-      ctx.globalCompositeOperation = (blendMode as GlobalCompositeOperation) || "source-over";
-      // Smooth bilinear upscale from low-res buffer to full canvas
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(bufferCanvas, 0, 0, cw, ch);
-
-      if (animated) {
-        rafRef.current = requestAnimationFrame(renderFrame);
-      }
+      b.c.getContext("2d")?.putImageData(b.img, 0, 0);
     }
 
-    rafRef.current = requestAnimationFrame(renderFrame);
+    const prev = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = (o.blendMode as GlobalCompositeOperation) || "source-over";
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(b.c, 0, 0, w, h);
+    ctx.globalCompositeOperation = prev;
+  }
 
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, [canvasRef]);
+  return useCanvasSetup({ onFrame: draw });
 }

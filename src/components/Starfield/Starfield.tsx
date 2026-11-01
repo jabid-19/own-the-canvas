@@ -2,7 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useStarfield, StarfieldPerspective } from "./useStarfield";
 
-type StarfieldPreset = "default" | "warp" | "peaceful" | "minimal" | "nebula";
+type StarfieldPreset = "default" | "warp" | "peaceful" | "minimal" | "nebula" | "monochrome";
 
 interface StarfieldPresetValues {
   starColor?: string;
@@ -17,7 +17,8 @@ interface StarfieldPresetValues {
 }
 
 const PRESETS: Record<StarfieldPreset, StarfieldPresetValues> = {
-  default: {},
+  default: { starColor: "#c4b5fd", backgroundColor: "#0d0118" },
+  monochrome: {},
   warp: {
     perspective: "3D",
     speed: 2,
@@ -53,11 +54,11 @@ const PRESETS: Record<StarfieldPreset, StarfieldPresetValues> = {
 export interface StarfieldProps extends BaseCanvasProps {
   /** Number of stars (default: 200) */
   starCount?: number;
-  /** Star color (default: "#ffffff") */
+  /** Star color (default: "#c4b5fd") */
   starColor?: string;
   /** Shooting star trail color (default: "#ffffff") */
   shootingStarColor?: string;
-  /** Background color (default: "#000010") */
+  /** Background color (default: "#0d0118") */
   backgroundColor?: string;
   /** Movement speed (default: 0.5) */
   speed?: number;
@@ -113,7 +114,7 @@ export const Starfield = forwardRef<HTMLCanvasElement, StarfieldProps>(
       style,
     } = props;
 
-    const p = (preset && PRESETS[preset as StarfieldPreset]) || {};
+    const p = PRESETS[(preset ?? "default") as StarfieldPreset] || {};
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

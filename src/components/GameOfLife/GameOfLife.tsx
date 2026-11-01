@@ -4,7 +4,7 @@ import { useGameOfLife, GameOfLifeHandle } from "./useGameOfLife";
 
 export type { GameOfLifeHandle };
 
-type GameOfLifePreset = "default" | "neon" | "matrix" | "minimal" | "fire";
+type GameOfLifePreset = "default" | "neon" | "matrix" | "minimal" | "fire" | "monochrome";
 
 interface GameOfLifePresetValues {
   cellSize?: number;
@@ -21,6 +21,12 @@ interface GameOfLifePresetValues {
 
 export const PRESETS: Record<GameOfLifePreset, GameOfLifePresetValues> = {
   default: {
+    aliveColor: "#00ff41",
+    oldColor: "#004d14",
+    deadColor: "#000000",
+    backgroundColor: "#000000",
+  },
+  monochrome: {
     aliveColor: "#ffffff",
     oldColor: "#6b7280",
     deadColor: "#111111",
@@ -64,11 +70,11 @@ export interface GameOfLifeProps extends BaseCanvasProps {
   speed?: number;
   /** Initial alive cell density 0–1. (default: 0.3) */
   initialDensity?: number;
-  /** Color of newly born cells. (default: "#7C3AED") */
+  /** Color of newly born cells. (default: "#00ff41") */
   aliveColor?: string;
-  /** Color of old cells. (default: "#0891B2") */
+  /** Color of old cells. (default: "#004d14") */
   oldColor?: string;
-  /** Color of dead cells / background. (default: "#050010") */
+  /** Color of dead cells / background. (default: "#000000") */
   deadColor?: string;
   /** Color cells by generation age. (default: true) */
   showAge?: boolean;
@@ -76,7 +82,7 @@ export interface GameOfLifeProps extends BaseCanvasProps {
   wrapEdges?: boolean;
   /** Click to toggle cells. (default: true) */
   interactive?: boolean;
-  /** Canvas background color. (default: "#050010") */
+  /** Canvas background color. (default: "#000000") */
   backgroundColor?: string;
   /** Named preset. */
   preset?: GameOfLifePreset | string;
@@ -90,12 +96,19 @@ export const GameOfLife = forwardRef<GameOfLifeHandle, GameOfLifeProps>((props, 
     width, height, className, style,
   } = props;
 
-  const p = (preset && PRESETS[preset as GameOfLifePreset]) || {};
+  const p = PRESETS[(preset ?? "default") as GameOfLifePreset] || {};
 
   const internalCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const handleRef = useRef<GameOfLifeHandle | null>(null);
 
-  useImperativeHandle(ref, () => handleRef.current as GameOfLifeHandle);
+  // Delegates lazily: the hook fills handleRef in an effect, after this runs.
+  useImperativeHandle(ref, () => ({
+    randomize: () => handleRef.current?.randomize(),
+    clear: () => handleRef.current?.clear(),
+    pause: () => handleRef.current?.pause(),
+    resume: () => handleRef.current?.resume(),
+    get canvas() { return internalCanvasRef.current; },
+  }), []);
 
   useGameOfLife(internalCanvasRef, {
     cellSize:        cellSize        ?? p.cellSize        ?? 8,

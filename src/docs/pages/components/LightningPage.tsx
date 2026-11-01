@@ -11,21 +11,21 @@ const PROPS = [
   { name: "branchDecay",     type: "number",  default: "0.6",       description: "Energy multiplier for sub-branches." },
   { name: "flickerCount",    type: "number",  default: "3",         description: "Rapid flicker strikes per event." },
   { name: "glowBlur",        type: "number",  default: "20",        description: "Glow shadow blur radius." },
-  { name: "color",           type: "string",  default: '"#6b7280"', description: "Bolt glow color." },
+  { name: "color",           type: "string",  default: '"#c0c0ff"', description: "Bolt glow color." },
   { name: "coreColor",       type: "string",  default: '"#ffffff"', description: "Inner bright core color." },
-  { name: "backgroundColor", type: "string",  default: '"#111111"', description: "Canvas background color." },
+  { name: "backgroundColor", type: "string",  default: '"#050010"', description: "Canvas background color." },
   { name: "autoInterval",    type: "number",  default: "2000",      description: "Ms between automatic strikes." },
   { name: "interactive",     type: "boolean", default: "true",      description: "Click to trigger a strike at cursor." },
   { name: "startX",          type: "number",  default: "0.5",       description: "Strike origin X as fraction of width." },
   { name: "startY",          type: "number",  default: "0",         description: "Strike origin Y as fraction of height." },
   { name: "endY",            type: "number",  default: "1",         description: "Strike end Y as fraction of height." },
-  { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "storm" | "plasma" | "subtle"' },
+  { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "storm" | "plasma" | "subtle" | "monochrome"' },
 ];
 
 function LightningPlayground({ onReset }: { onReset?: () => void }) {
   const [preset, setPreset] = useState("default");
-  const [color, setColor] = useState("#6b7280");
-  const [bg, setBg] = useState("#111111");
+  const [color, setColor] = useState("#c0c0ff");
+  const [bg, setBg] = useState("#050010");
   const [branchChance, setBranchChance] = useState(0.1);
   const [glowBlur, setGlowBlur] = useState(20);
   const [autoInterval, setAutoInterval] = useState(2000);
@@ -57,7 +57,7 @@ function LightningPlayground({ onReset }: { onReset?: () => void }) {
   const controls = (
     <>
       <div>
-        <PSel label="Preset" value={preset} options={["default", "neon", "storm", "plasma", "subtle"]} onChange={setPreset} />
+        <PSel label="Preset" value={preset} options={["default", "neon", "storm", "plasma", "subtle", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Bolt color" value={color} onChange={setColor} />
         <PColor label="Background" value={bg} onChange={setBg} />

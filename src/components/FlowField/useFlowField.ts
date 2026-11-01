@@ -1,4 +1,5 @@
 import { useRef, useEffect, RefObject } from "react";
+import { pointerInCanvas } from "../../runtime/fx";
 
 // Permutation table for Perlin noise
 const PERM = new Uint8Array(512);
@@ -118,12 +119,10 @@ export function useFlowField(
 
     reinitRef.current = () => { if (w > 0 && h > 0) initParticles(); };
 
-    function getPos(e: MouseEvent) {
-      const rect = canvas!.getBoundingClientRect();
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    }
     function onMouseMove(e: MouseEvent) {
-      if (optionsRef.current.interactive) mouseRef.current = getPos(e);
+      const p = pointerInCanvas(e, canvas!);
+      if (!p) return onMouseLeave();
+      if (optionsRef.current.interactive) mouseRef.current = p;
     }
     function onMouseLeave() { mouseRef.current = null; }
     window.addEventListener("mousemove", onMouseMove);
@@ -138,6 +137,10 @@ export function useFlowField(
     if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
 
     function draw() {
+      if (!optionsRef.current.animated) { // frozen: keep the last painted frame
+        rafRef.current = requestAnimationFrame(draw);
+        return;
+      }
       const { speed, noiseScale, fadeStrength, lineWidth, backgroundColor, timeSpeed, curl, attractRadius, attractStrength } = optionsRef.current;
 
       timeRef.current += timeSpeed * 0.001;
