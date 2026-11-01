@@ -2,9 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-11-01
+
+Docs-only release so the npm page shows the 2.0 README.
+
+### Changed
+
+- README: new cover image (the old one showed the 1.x monochrome look and advertised removed components), a Living Scenes table describing each Living Scene and which react to `data-otc-solid`, updated descriptions for the rebuilt DragonCursor, Rain, and BubbleUniverse, and corrected defaults for `FluidSimulation.resolution` (80) and `FireEffect.spread` (0).
+- `package.json`: normalized `repository.url` (npm warned on publish).
+
 ## [2.0.0] - 2026-11-01
 
-The big one: 18 new Living Scenes, effects that react to your page's elements, a production-safe runtime, color by default, and a redrawn catalog. 11 components are removed; see the README's "Upgrading from 1.x" for replacements.
+The big one: new Living Scenes, effects that react to your page's elements, a production-safe runtime, color by default, and a redrawn catalog. 11 components are removed; see the README's "Upgrading from 1.x" for replacements.
 
 ### Added
 
