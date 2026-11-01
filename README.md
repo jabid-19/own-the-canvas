@@ -4,7 +4,7 @@
 
 # own-the-canvas
 
-**50+ canvas-based React visual components. Zero dependencies. TypeScript.**
+**60 canvas-based React visual components. Zero dependencies. TypeScript.**
 
 [![npm version](https://img.shields.io/npm/v/own-the-canvas?style=flat-square&color=555555)](https://www.npmjs.com/package/own-the-canvas)
 [![license](https://img.shields.io/npm/l/own-the-canvas?style=flat-square&color=555555)](LICENSE)
@@ -13,6 +13,18 @@
 [![React](https://img.shields.io/badge/React-18%2B-555555?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 
 ![own-the-canvas cover](https://raw.githubusercontent.com/jabid-19/own-the-canvas/main/.github/assets/cover.png)
+
+---
+
+## What's New in 2.0
+
+- **18 Living Scenes:** nature effects with real models underneath, from ivy that grows along your headline to fireflies that flash in sync and a moonlit sea that glitters where the waves catch the moon.
+- **Effects that know your page:** mark any element with `data-otc-solid` and petals, snow, seeds, leaves, fireflies, and paper cranes land on it, and ivy climbs it.
+- **Color by default:** every component opens in its signature palette. Pass `preset="monochrome"` for the 1.x look.
+- **Production-safe runtime:** effects pause offscreen and in background tabs, respect `prefers-reduced-motion`, and run at the same speed on 60Hz and 120Hz screens.
+- **Rebuilt classics:** DragonCursor, Fireworks, Rain, BlackHole, TornadoVortex, SolarFlare, Boids, and more were redrawn from scratch with the same props.
+
+Upgrading from 1.x? See [Upgrading from 1.x](#upgrading-from-1x).
 
 ---
 
@@ -26,7 +38,7 @@ pnpm add own-the-canvas
 yarn add own-the-canvas
 ```
 
-> **Peer deps:** React 18+
+> **Peer deps:** React 18 or 19
 
 ---
 
@@ -35,7 +47,7 @@ yarn add own-the-canvas
 Every component fills its parent container by default. Drop it in and it works.
 
 ```tsx
-import { DragonCursor, MatrixRain, ParticleText } from "own-the-canvas";
+import { MatrixRain } from "own-the-canvas";
 
 export default function App() {
   return (
@@ -50,13 +62,67 @@ All components accept a `preset` prop for instant themed defaults — override a
 
 ---
 
+## Effects That Know Your Page
+
+Mark any element with `data-otc-solid` and effects collide with it. Petals land on your headline, rest on your buttons, and slide off the edges in the wind. Resting petals stay attached when the page scrolls.
+
+```tsx
+import { SakuraBlossom } from "own-the-canvas";
+
+<SakuraBlossom overlay collide preset="sakura" />
+
+<h1 data-otc-solid>Ship faster</h1>
+<button data-otc-solid>Get started</button>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `overlay` | `boolean` | `false` | Fixed full-viewport layer over the page, click-through, transparent background |
+| `collide` | `boolean` | `false` | Collide with `[data-otc-solid]` elements |
+| `restitution` | `number` | `0` | `0` = rest and slide off, `> 0` = bounce |
+| `zIndex` | `number` | `10` | Overlay stacking order |
+
+Use `data-otc-solid="live"` for sticky or animated elements so their position is re-read every frame.
+
+What each DOM-aware effect does with marked elements:
+
+| Component | With `collide` |
+| --- | --- |
+| `SakuraBlossom` | Petals land, rest, and slide off in the wind |
+| `IvyGrowth` | Vines climb each element's sides and grow across its top |
+| `Fireflies` | Fireflies perch on top edges and blink there |
+| `Dandelion` | Blown seeds parachute down and settle on elements |
+| `PaperLanterns` | Clicking a marked element releases a lantern from it |
+| `SnowDrift` | Snow piles up on top edges and spills off the sides |
+| `FrostGlass` | Frost nucleates on element edges and grows outward |
+| `OrigamiCranes` | Paper cranes land and rest with wings folded |
+| `SeasonsTree` | Falling autumn leaves and petals settle on elements |
+
+Rain and Confetti are next.
+
+---
+
+## Production-Safe by Default
+
+Runtime-based components (SakuraBlossom, the 18 Living Scenes below, and the rebuilt TornadoVortex, SolarFlare, BlackHole, NoiseGradient, Boids, and WatercolorBloom) get these behaviors with no setup:
+
+- **Pause offscreen:** zero work while scrolled out of view.
+- **Pause in background tabs:** resumes without a burst of catch-up motion.
+- **Respects `prefers-reduced-motion`:** renders one still frame and stops.
+- **Adaptive quality:** particle budget drops when frames run slow and recovers when they don't.
+- **Same speed on every display:** motion is time-based, so 120Hz screens don't run 2x fast.
+- **DPR capped at 2:** sharp on retina without 3x-density cost on phones.
+- **SSR-safe:** overlay canvases mount on the client only.
+
+---
+
 ## Featured Components
 
 ### DragonCursor
 
 A sinuous dragon body that trails your cursor in real time. Segments, wings, optional fire breath, and a background star field with optional per-star glow halos — all configurable.
 
-**Presets:** `default · emerald · inferno · void · ice`
+**Presets:** `default · emerald · inferno · void · ice · monochrome`
 
 ```tsx
 import { DragonCursor } from "own-the-canvas";
@@ -67,8 +133,8 @@ import { DragonCursor } from "own-the-canvas";
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `segmentCount` | `number` | `20` | Body segment count |
-| `bodyColor` | `string` | `"#ffffff"` | Dragon body color |
-| `wingSpan` | `number` | `60` | Wing span in px |
+| `bodyColor` | `string` | `"#35e0a1"` | Dragon body color |
+| `wingSpan` | `number` | `80` | Wing span in px |
 | `showFire` | `boolean` | `false` | Enable fire breath |
 | `followSpeed` | `number` | `0.15` | Cursor follow lerp speed |
 | `starCount` | `number` | `60` | Number of background stars |
@@ -82,7 +148,7 @@ import { DragonCursor } from "own-the-canvas";
 
 Falling character rain — katakana, latin, or binary. Per-column trail fade, variable speed, neon green or any color.
 
-**Presets:** `default · cyberpunk · binary · minimal · blood`
+**Presets:** `default · cyberpunk · binary · minimal · blood · monochrome`
 
 ```tsx
 import { MatrixRain } from "own-the-canvas";
@@ -92,7 +158,7 @@ import { MatrixRain } from "own-the-canvas";
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `color` | `string` | `"#ffffff"` | Character color |
+| `color` | `string` | `"#00ff41"` | Character color |
 | `charset` | `"latin" \| "binary" \| "katakana" \| string` | `"latin"` | Character set |
 | `fontSize` | `number` | `14` | Font size in px |
 | `speed` | `number` | `33` | Ms per frame — lower = faster |
@@ -104,7 +170,7 @@ import { MatrixRain } from "own-the-canvas";
 
 Living koi pond on canvas — fish navigate with organic steering, ripple on hover, lily pads float, caustic light dances.
 
-**Presets:** `default · koi · night · lotus · neon`
+**Presets:** `default · koi · night · lotus · neon · monochrome`
 
 ```tsx
 import { KoiPond } from "own-the-canvas";
@@ -115,7 +181,7 @@ import { KoiPond } from "own-the-canvas";
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `fishCount` | `number` | `6` | Number of koi fish |
-| `fishColor` | `string` | `"#ffffff"` | Fish body color |
+| `fishColor` | `string` | `"#ff6030"` | Fish body color |
 | `showLilies` | `boolean` | `true` | Render floating lily pads |
 | `caustics` | `boolean` | `true` | Caustic light shimmer |
 | `interactive` | `boolean` | `true` | React to mouse movement |
@@ -126,7 +192,7 @@ import { KoiPond } from "own-the-canvas";
 
 Real-time Navier-Stokes fluid solver. Move your mouse to inject velocity and ink — auto-bursts fire at intervals for continuous motion.
 
-**Presets:** `default · ink · neon · lava · ocean · smoke`
+**Presets:** `default · ink · neon · lava · ocean · smoke · monochrome`
 
 ```tsx
 import { FluidSimulation } from "own-the-canvas";
@@ -141,7 +207,7 @@ import { FluidSimulation } from "own-the-canvas";
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `resolution` | `number` | `128` | Grid resolution 32–128 |
-| `inkColors` | `string[]` | monochrome | Ink colors |
+| `inkColors` | `string[]` | `["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"]` | Ink colors |
 | `viscosity` | `number` | `0.0001` | Fluid viscosity |
 | `autoInk` | `boolean` | `true` | Auto-inject ink bursts |
 | `mouseForce` | `number` | `5` | Mouse velocity force multiplier |
@@ -168,36 +234,10 @@ import { FlowField } from "own-the-canvas";
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `particleCount` | `number` | `800` | Number of flow particles |
-| `colors` | `string[]` | monochrome | Particle stroke colors |
+| `colors` | `string[]` | `["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9", "#e0f2fe"]` | Particle stroke colors |
 | `noiseScale` | `number` | `0.004` | Noise scale — lower = larger structures |
 | `curl` | `boolean` | `false` | Add curl noise for swirling flow |
 | `speed` | `number` | `1` | Flow speed multiplier |
-
----
-
-### GlitchOverlay
-
-Digital glitch effect with RGB channel separation, CRT scanlines, block-slice artifacts, and film noise. Designed as an absolute-positioned overlay — zero configuration required.
-
-**Presets:** `default · crt · cyberpunk · subtle · corrupt`
-
-```tsx
-import { GlitchOverlay } from "own-the-canvas";
-
-<div style={{ position: "relative" }}>
-  <YourContent />
-  <GlitchOverlay preset="cyberpunk" intensity={0.8} rgbShift={12} />
-</div>
-```
-
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `intensity` | `number` | `0.6` | Glitch probability 0–1 |
-| `rgbShift` | `number` | `8` | RGB color shift in px |
-| `rgbShiftColor` | `string` | `"#ff0000"` | RGB split primary color — complement used for opposing channel |
-| `scanlines` | `boolean` | `true` | CRT scanline overlay |
-| `blockGlitch` | `boolean` | `true` | Block-slice glitch artifacts |
-| `flickerRate` | `number` | `0.02` | Screen flicker rate 0–1 |
 
 ---
 
@@ -205,7 +245,7 @@ import { GlitchOverlay } from "own-the-canvas";
 
 Physics-based soap bubbles that float, collide, merge on contact, and pop on click. Iridescent shimmer and glow included.
 
-**Presets:** `default · soap · neon · deep · minimal`
+**Presets:** `default · soap · neon · deep · minimal · monochrome`
 
 ```tsx
 import { BubbleUniverse } from "own-the-canvas";
@@ -227,7 +267,7 @@ import { BubbleUniverse } from "own-the-canvas";
 
 Falling rain streaks with sinusoidal wind drift, splash particles on ground impact, and a background star field with optional glow halos. Great as a layered overlay.
 
-**Presets:** `default · storm · drizzle · neon · golden`
+**Presets:** `default · storm · drizzle · neon · golden · monochrome`
 
 ```tsx
 import { Rain } from "own-the-canvas";
@@ -240,7 +280,7 @@ import { Rain } from "own-the-canvas";
 | `dropCount` | `number` | `200` | Number of rain drops |
 | `speed` | `number` | `15` | Drop fall speed px/frame |
 | `wind` | `number` | `0.3` | Horizontal wind drift |
-| `dropColor` | `string` | `"#000000"` | Drop stroke color |
+| `dropColor` | `string` | `"#a9c2e8"` | Drop stroke color |
 | `showSplashes` | `boolean` | `true` | Splash particles on impact |
 | `starCount` | `number` | `60` | Number of background stars |
 | `starColor` | `string` | `"#ffffff"` | Star color |
@@ -251,9 +291,9 @@ import { Rain } from "own-the-canvas";
 
 ### FireEffect
 
-Pixel-level cellular automaton fire. Heat seeds at the bottom row, rises with cooling and wind drift, maps to a palette. Five color themes.
+Licking flame tongues from a smooth noise-driven heat field, with a soft glow and sparks rising off the top. Five colour palettes, wind, and flame height controls.
 
-**Presets:** `default · inferno · toxic · ice · plasma`
+**Presets:** `default · inferno · toxic · ice · plasma · monochrome`
 
 ```tsx
 import { FireEffect } from "own-the-canvas";
@@ -263,41 +303,12 @@ import { FireEffect } from "own-the-canvas";
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `palette` | `"smoke" \| "inferno" \| "toxic" \| "ice" \| "plasma"` | `"smoke"` | Color theme |
+| `palette` | `"smoke" \| "inferno" \| "toxic" \| "ice" \| "plasma"` | `"inferno"` | Color theme |
 | `customColors` | `string[]` | `undefined` | Custom gradient — overrides palette when ≥2 colors |
 | `intensity` | `number` | `0.95` | Flame intensity 0–1 |
 | `windStrength` | `number` | `0.3` | Horizontal wind -1 to 1 |
 | `cooling` | `number` | `0.3` | Cooling rate — higher = shorter flames |
 | `spread` | `number` | `0.7` | Flame spread 0–1 |
-
----
-
-### ParticleText
-
-Text rendered from thousands of particles — each springs to its position in the letterform. Mouse cursor repels them; they reform when it leaves.
-
-**Presets:** `default · neon · fire · frost · gold · minimal`
-
-```tsx
-import { ParticleText } from "own-the-canvas";
-
-<ParticleText
-  text="HELLO"
-  preset="neon"
-  fontSize={140}
-  repelRadius={100}
-  repelForce={8}
-/>
-```
-
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `string` | `"hello"` | Text to render as particles |
-| `fontSize` | `number` | `120` | Font size in px |
-| `color` | `string` | `"#ffffff"` | Particle color |
-| `repelRadius` | `number` | `80` | Mouse repulsion radius in px |
-| `repelForce` | `number` | `5` | Mouse repulsion force |
-| `snapSpeed` | `number` | `0.12` | Spring constant for snap-to-target |
 
 ---
 
@@ -311,19 +322,44 @@ Every component accepts these props:
 | `height` | `number \| string` | `"100%"` | Container height |
 | `className` | `string` | — | CSS class on wrapper `<div>` |
 | `style` | `React.CSSProperties` | — | Inline styles on wrapper `<div>` |
-| `preset` | `string` | `"default"` | Named preset — sets themed defaults |
+| `preset` | `string` | `"default"` | Named preset that sets themed defaults. `"monochrome"` gives the 1.x grayscale look |
 
 All components use `forwardRef` — the ref is forwarded to the underlying `<canvas>` element.
 
 ---
 
-## 42 More Components
+## Living Scenes
 
-> Starfield · Fireworks · Boids · SlimeMold · GameOfLife · Kaleidoscope · ReactionDiffusion · AuroraBorealis · Spirograph · Lightning · ClothSimulation · VoronoiCells · NeuralWeb · Metaballs · AntColony · Wormhole · Mandala · MagneticBlob · WatercolorBloom · InkBleed · CrystalGrowth · SandSimulation · WaveInterference · LSystem · Lissajous · PendulaWave · DiffusionAggregation · TerrainMesh · MagneticField · Spotlight · Shockwave · Confetti · RippleEffect · NoiseGradient · PixelDissolve · AudioVisualizer · ParticleField · LiveChart · GalaxySpiral · SolarFlare · TornadoVortex · SakuraBlossom
+Nature effects with real models underneath, built for hero sections:
+
+> IvyGrowth (space colonization) · Fireflies (pulse-coupled sync) · Dandelion (pappus drag) · GrassField (spring blades) · Moths (transverse orientation) · SunbeamDust (Tyndall-lit dust) · PaperLanterns (buoyancy and depth) · KelpForest (anchored rope dynamics) · SnowDrift (angle-of-repose drifts) · FrostGlass (60° ice dendrites) · OrigamiCranes (faceted 3D paper) · SeasonsTree (kinematic tree, four seasons) · InkMountains (sumi-e ridgelines) · WindowRain (refracting drops on fogged glass) · IncenseSmoke (laminar-to-turbulent plume) · MoonlitSea (moon-path glitter) · CloudSea (sunlit cloud deck) · Ferrofluid (Rosensweig spikes)
+
+---
+
+## 34 More Components
+
+> AntColony · AuroraBorealis · BlackHole · Boids · ButterflySwarm · Confetti · CrystalGrowth · DeepSeaBioluminescence · DiffusionAggregation · Fireworks · GalaxySpiral · GameOfLife · Kaleidoscope · LSystem · Lightning · MagneticField · Mandala · Metaballs · NeuralWeb · NoiseGradient · ParticleField · PendulaWave · ReactionDiffusion · SakuraBlossom · SandSimulation · SlimeMold · SolarFlare · SpiderWeb · Spirograph · Starfield · TornadoVortex · VoronoiCells · WatercolorBloom · WaveInterference
 
 Full docs, live previews, and interactive playground:
 
 **[own-the-canvas.vercel.app](https://own-the-canvas.vercel.app)**
+
+---
+
+## Upgrading from 1.x
+
+2.0 removes 11 components and changes default colors. Everything else keeps its props.
+
+| Removed in 2.0 | Use instead |
+| --- | --- |
+| `Lissajous` | `PendulaWave` (its harmonograph draws the same figures) |
+| `MagneticBlob` | `Metaballs` |
+| `Wormhole` | `Starfield` with `perspective="3D"` |
+| `Shockwave`, `ClothSimulation`, `GlitchOverlay`, `PixelDissolve`, `AudioVisualizer`, `TerrainMesh`, `ParticleText`, `InkBleed` | No direct replacement. Stay on 1.0.12 if you need them |
+
+**Default colors changed.** With no `preset`, components now render in color. To keep the 1.x look, pass `preset="monochrome"`. Explicit color props still override any preset.
+
+**Cursor effects stay inside their canvas.** Effects that follow the cursor now ignore it when it's outside their canvas, instead of chasing it across the page.
 
 ---
 
