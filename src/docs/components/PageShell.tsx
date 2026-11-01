@@ -324,6 +324,11 @@ const CSS = `
   .page-canvas { height: 96px; }
   .page-preview { height: 240px; margin: 34px 22px 26px; }
 }
+@media (max-width: 480px) {
+  .page-desk { padding: 14px 6px 48px; }
+  .page-shell { padding: 8px 16px 56px; }
+  .page-preview { margin: 28px 12px 22px; height: 220px; }
+}
 `;
 
 interface PageShellProps {

@@ -147,7 +147,11 @@ const CSS = `
 .component-card-preview:hover .component-card-play {
   opacity: 1;
 }
+@media (hover: none) {
+  .component-card-placeholder-hint { display: none; }
+}
 @media (max-width: 600px) {
+  .component-card-preview { height: 150px; }
   .component-card-preview:hover .component-card-play {
     opacity: 0;
   }

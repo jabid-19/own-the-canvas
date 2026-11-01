@@ -406,7 +406,7 @@ const CSS = `
 
 @media (max-width: 768px) {
   .home { padding: 0 16px 60px; }
-  .home-topbar { padding: 8px 14px; }
+  .home-topbar { padding: 8px 14px; position: static; }
   .home-hero { padding: 44px 0 32px; }
   .home-hero-sub { font-size: 17px; }
   .home-install-block { font-size: 13px; padding: 11px 26px; }

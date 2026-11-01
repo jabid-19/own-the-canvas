@@ -69,6 +69,20 @@ const CSS = `
   vertical-align: middle;
   text-transform: uppercase;
 }
+
+/* phones: each prop becomes a stacked card so the description isn't scrolled off-screen */
+@media (max-width: 640px) {
+  .props-table, .props-table tbody { display: block; }
+  .props-table thead { display: none; }
+  .props-table tr { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 12px 14px; border-bottom: 2px dotted var(--border); }
+  .props-table tr:last-child { border-bottom: none; }
+  .props-table td, .props-table tbody tr:nth-child(even) td { padding: 0; border: 0; background: none; }
+  .props-table tbody tr:nth-child(even) { background: rgba(244,234,214,.55); }
+  .props-table tr:hover td { background: none; }
+  .props-table td:nth-child(4) { flex: 0 0 100%; margin-top: 4px; }
+  .props-table td:nth-child(3) .prop-default::before { content: "default "; opacity: .6; }
+  .props-table td:nth-child(3):has(.prop-default:empty) { display: none; }
+}
 `;
 
 export interface PropRow {
