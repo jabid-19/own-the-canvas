@@ -13,7 +13,8 @@ export default defineConfig(({ mode }) => {
       ...(isLib
         ? [
             dts({
-              include: ["src/components/**", "src/hooks/**", "src/types/**", "src/index.ts"],
+              include: ["src/components/**", "src/hooks/**", "src/runtime/**", "src/types/**", "src/index.ts"],
+              exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
               outDir: "lib",
               insertTypesEntry: true,
             }),
