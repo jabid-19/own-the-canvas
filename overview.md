@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-**own-the-canvas** is a React component library of 53 canvas-based visual effects and animations, built entirely on the HTML Canvas 2D API with zero runtime dependencies. Every component is optimized for performance, highly customizable through props, and ships with full TypeScript support.
+**own-the-canvas** is a React component library of 50+ canvas-based visual effects and animations, built entirely on the HTML Canvas 2D API with zero runtime dependencies. Every component is optimized for performance, highly customizable through props, and ships with full TypeScript support.
 
 | Field | Value |
 |---|---|
@@ -73,7 +73,7 @@ Every component uses `forwardRef`, exposing the underlying `HTMLCanvasElement` (
 ```
 own-the-canvas/
 ├── src/
-│   ├── index.ts                      # Barrel export — all 53 components + types
+│   ├── index.ts                      # Barrel export — all components + types
 │   ├── types/
 │   │   └── index.ts                  # BaseCanvasProps, CanvasSetupOptions, CanvasSetupResult
 │   ├── hooks/
@@ -134,7 +134,7 @@ own-the-canvas/
 │       │   ├── Home.tsx
 │       │   ├── Overview.tsx
 │       │   ├── Playground.tsx
-│       │   └── components/           # 53 component playground pages
+│       │   └── components/           # component playground pages
 │       └── components/               # Docs UI building blocks
 │           ├── CodeBlock.tsx         # Syntax-highlighted code
 │           ├── PropsTable.tsx        # Props documentation table

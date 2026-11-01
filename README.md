@@ -4,7 +4,7 @@
 
 # own-the-canvas
 
-**60 canvas-based React visual components. Zero dependencies. TypeScript.**
+**50+ canvas-based React visual components. Zero dependencies. TypeScript.**
 
 [![npm version](https://img.shields.io/npm/v/own-the-canvas?style=flat-square&color=555555)](https://www.npmjs.com/package/own-the-canvas)
 [![license](https://img.shields.io/npm/l/own-the-canvas?style=flat-square&color=555555)](LICENSE)
@@ -18,7 +18,7 @@
 
 ## What's New in 2.0
 
-- **18 Living Scenes:** nature effects with real models underneath, from ivy that grows along your headline to fireflies that flash in sync and a moonlit sea that glitters where the waves catch the moon.
+- **Living Scenes:** nature effects with real models underneath, from ivy that grows along your headline to fireflies that flash in sync and a moonlit sea that glitters where the waves catch the moon.
 - **Effects that know your page:** mark any element with `data-otc-solid` and petals, snow, seeds, leaves, fireflies, and paper cranes land on it, and ivy climbs it.
 - **Color by default:** every component opens in its signature palette. Pass `preset="monochrome"` for the 1.x look.
 - **Production-safe runtime:** effects pause offscreen and in background tabs, respect `prefers-reduced-motion`, and run at the same speed on 60Hz and 120Hz screens.
@@ -104,7 +104,7 @@ Rain and Confetti are next.
 
 ## Production-Safe by Default
 
-Runtime-based components (SakuraBlossom, the 18 Living Scenes below, and the rebuilt TornadoVortex, SolarFlare, BlackHole, NoiseGradient, Boids, and WatercolorBloom) get these behaviors with no setup:
+Runtime-based components (SakuraBlossom, the Living Scenes below, and the rebuilt TornadoVortex, SolarFlare, BlackHole, NoiseGradient, Boids, and WatercolorBloom) get these behaviors with no setup:
 
 - **Pause offscreen:** zero work while scrolled out of view.
 - **Pause in background tabs:** resumes without a burst of catch-up motion.
@@ -120,7 +120,7 @@ Runtime-based components (SakuraBlossom, the 18 Living Scenes below, and the reb
 
 ### DragonCursor
 
-A sinuous dragon body that trails your cursor in real time. Segments, wings, optional fire breath, and a background star field with optional per-star glow halos — all configurable.
+A glowing dragon that follows your cursor: a tapered, scaled body with dorsal spines, membrane wings, a horned head with glowing eyes, and fire breath. When the cursor leaves the canvas it wanders on its own over a star field.
 
 **Presets:** `default · emerald · inferno · void · ice · monochrome`
 
@@ -206,7 +206,7 @@ import { FluidSimulation } from "own-the-canvas";
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `resolution` | `number` | `128` | Grid resolution 32–128 |
+| `resolution` | `number` | `80` | Grid resolution 32–128 |
 | `inkColors` | `string[]` | `["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"]` | Ink colors |
 | `viscosity` | `number` | `0.0001` | Fluid viscosity |
 | `autoInk` | `boolean` | `true` | Auto-inject ink bursts |
@@ -243,7 +243,7 @@ import { FlowField } from "own-the-canvas";
 
 ### BubbleUniverse
 
-Physics-based soap bubbles that float, collide, merge on contact, and pop on click. Iridescent shimmer and glow included.
+Soap bubbles with real thin-film color: clear centers, swirling rainbow rims, and window reflections. They drift upward over soft bokeh, merge on contact, and pop on click.
 
 **Presets:** `default · soap · neon · deep · minimal · monochrome`
 
@@ -265,7 +265,7 @@ import { BubbleUniverse } from "own-the-canvas";
 
 ### Rain
 
-Falling rain streaks with sinusoidal wind drift, splash particles on ground impact, and a background star field with optional glow halos. Great as a layered overlay.
+A rainy night street: three depth layers of rain in a gusting wind, mist, street lamps mirrored on wet asphalt, ripples and spray, and lightning flashes when the rain is heavy.
 
 **Presets:** `default · storm · drizzle · neon · golden · monochrome`
 
@@ -308,7 +308,7 @@ import { FireEffect } from "own-the-canvas";
 | `intensity` | `number` | `0.95` | Flame intensity 0–1 |
 | `windStrength` | `number` | `0.3` | Horizontal wind -1 to 1 |
 | `cooling` | `number` | `0.3` | Cooling rate — higher = shorter flames |
-| `spread` | `number` | `0.7` | Flame spread 0–1 |
+| `spread` | `number` | `0` | Flame spread 0–1 |
 
 ---
 
@@ -330,13 +330,32 @@ All components use `forwardRef` — the ref is forwarded to the underlying `<can
 
 ## Living Scenes
 
-Nature effects with real models underneath, built for hero sections:
+Nature effects with real models underneath, built for hero sections. Each one runs on the shared runtime, and the ones marked ✦ react to `data-otc-solid` elements.
 
-> IvyGrowth (space colonization) · Fireflies (pulse-coupled sync) · Dandelion (pappus drag) · GrassField (spring blades) · Moths (transverse orientation) · SunbeamDust (Tyndall-lit dust) · PaperLanterns (buoyancy and depth) · KelpForest (anchored rope dynamics) · SnowDrift (angle-of-repose drifts) · FrostGlass (60° ice dendrites) · OrigamiCranes (faceted 3D paper) · SeasonsTree (kinematic tree, four seasons) · InkMountains (sumi-e ridgelines) · WindowRain (refracting drops on fogged glass) · IncenseSmoke (laminar-to-turbulent plume) · MoonlitSea (moon-path glitter) · CloudSea (sunlit cloud deck) · Ferrofluid (Rosensweig spikes)
+| Component | What you see |
+| --- | --- |
+| `IvyGrowth` ✦ | Ivy that grows in real time and climbs the edges of your elements (space colonization) |
+| `Fireflies` ✦ | Fireflies whose flashing slowly falls into sync, perching on your elements |
+| `Dandelion` ✦ | Dandelion clocks you blow apart with the cursor; seeds parachute down on the wind |
+| `GrassField` | Grass on springs that sways in rolling gusts and parts around the cursor |
+| `Moths` | Moths spiraling a lamp by transverse orientation; your cursor is the light |
+| `SunbeamDust` | Window light shafts where dust only glitters inside the beams |
+| `PaperLanterns` ✦ | Sky lanterns rising with depth and flicker; click a button to release one from it |
+| `KelpForest` | Swaying kelp, schooling fish, and surface light; the cursor pushes the water |
+| `SnowDrift` ✦ | Snow that piles up on your headline and buttons, then slides off the edges |
+| `FrostGlass` ✦ | Frost crystals creep across the glass; the cursor is warm breath that melts them |
+| `OrigamiCranes` ✦ | Faceted paper cranes in 3D that bank, flap, and land on your elements |
+| `SeasonsTree` ✦ | A swaying tree living through spring, summer, autumn, and winter |
+| `InkMountains` | Ink-wash ridgelines dissolving into drifting mist, with parallax |
+| `WindowRain` | Rain running down a fogged window over blurred city lights; drag to wipe |
+| `IncenseSmoke` | A thread of incense smoke that breaks into curls as it rises |
+| `MoonlitSea` | Night swells with a glittering moon path and cursor ripples |
+| `CloudSea` | A sunset cloud deck seen from above that parts under the cursor |
+| `Ferrofluid` | Glossy ferrofluid that spikes toward the cursor like a magnet |
 
 ---
 
-## 34 More Components
+## More Components
 
 > AntColony · AuroraBorealis · BlackHole · Boids · ButterflySwarm · Confetti · CrystalGrowth · DeepSeaBioluminescence · DiffusionAggregation · Fireworks · GalaxySpiral · GameOfLife · Kaleidoscope · LSystem · Lightning · MagneticField · Mandala · Metaballs · NeuralWeb · NoiseGradient · ParticleField · PendulaWave · ReactionDiffusion · SakuraBlossom · SandSimulation · SlimeMold · SolarFlare · SpiderWeb · Spirograph · Starfield · TornadoVortex · VoronoiCells · WatercolorBloom · WaveInterference
 
