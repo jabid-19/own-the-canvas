@@ -9,6 +9,7 @@ const UNDER = ["#f2b134", "#e8795a", "#2f6f73", "#e8795a", "#f2b134", "#f2b134"]
 
 const CSS = `
 .page-desk {
+  overflow-x: clip;
   padding: 36px 28px 72px;
 }
 
