@@ -100,6 +100,8 @@ export interface FireworksProps extends BaseCanvasProps {
   glowBlur?: number;
   /** Canvas background (default: "#04060f") */
   backgroundColor?: string;
+  /** Draw the night scene (sky, stars, burst glow, skyline). false = fireworks only, over a plain backgroundColor fill ("transparent" to overlay). (default: true) */
+  showBackground?: boolean;
   /** Shell upward speed (default: 12) */
   shellSpeed?: number;
   /** Number of background stars (default: 0) */
@@ -119,7 +121,7 @@ export const Fireworks = forwardRef<HTMLCanvasElement, FireworksProps>(
     const {
       preset, colors, particleCount, gravity, friction, fadeSpeed,
       particleSize, trailLength, spread, autoLaunch, autoInterval,
-      glowEffect, glowBlur, backgroundColor, shellSpeed,
+      glowEffect, glowBlur, backgroundColor, showBackground, shellSpeed,
       starCount, starColor, glowingStars, starGlowBlur,
       width, height, className, style,
     } = props;
@@ -143,6 +145,7 @@ export const Fireworks = forwardRef<HTMLCanvasElement, FireworksProps>(
       glowEffect: glowEffect ?? p.glowEffect ?? true,
       glowBlur: glowBlur ?? p.glowBlur ?? 8,
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
+      showBackground: showBackground ?? true,
       shellSpeed: shellSpeed ?? p.shellSpeed ?? 12,
       starCount:    starCount    ?? 80,
       starColor:    starColor    ?? "#ffffff",

@@ -9,11 +9,11 @@ const PROPS = [
   { name: "roughness",       type: "number",  default: "0.5",       description: "Midpoint displacement roughness 0–1." },
   { name: "branchChance",    type: "number",  default: "0.3",       description: "Probability of a branch at each segment." },
   { name: "branchDecay",     type: "number",  default: "0.6",       description: "Energy multiplier for sub-branches." },
-  { name: "flickerCount",    type: "number",  default: "3",         description: "Rapid flicker strikes per event." },
+  { name: "flickerCount",    type: "number",  default: "3",         description: "Return strokes per strike: the channel relights this many times before fading." },
   { name: "glowBlur",        type: "number",  default: "20",        description: "Glow shadow blur radius." },
   { name: "color",           type: "string",  default: '"#c0c0ff"', description: "Bolt glow color." },
   { name: "coreColor",       type: "string",  default: '"#ffffff"', description: "Inner bright core color." },
-  { name: "backgroundColor", type: "string",  default: '"#050010"', description: "Canvas background color." },
+  { name: "backgroundColor", type: "string",  default: '"#050010"', description: 'Storm sky color. Use "transparent" for bolts only.' },
   { name: "autoInterval",    type: "number",  default: "2000",      description: "Ms between automatic strikes." },
   { name: "interactive",     type: "boolean", default: "true",      description: "Click to trigger a strike at cursor." },
   { name: "startX",          type: "number",  default: "0.5",       description: "Strike origin X as fraction of width." },
@@ -79,7 +79,7 @@ export function LightningPage() {
     <PageShell
       eyebrow="Component"
       title="Lightning"
-      lead="Recursive fractal branching lightning bolts with glow, flicker, and auto-strike. Click anywhere to trigger a strike — or let it fire automatically."
+      lead="A night thunderstorm: a stepped leader crawls down from the cloud deck, then the return stroke slams the channel white-hot, lights the clouds from inside and restrikes before fading. Sheet lightning glows between strikes. Click anywhere to strike."
     >
       <LightningPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

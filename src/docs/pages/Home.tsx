@@ -23,11 +23,21 @@ import { Fireflies } from "../../components/Fireflies";
 import { Dandelion } from "../../components/Dandelion";
 import { GrassField } from "../../components/GrassField";
 import { Moths } from "../../components/Moths";
+import { Eye } from "../../components/Eye";
+import { Owl } from "../../components/Owl";
+import { Octopus } from "../../components/Octopus";
+import { Hummingbird } from "../../components/Hummingbird";
+import { Candle } from "../../components/Candle";
+import { Cat } from "../../components/Cat";
+import { Jellyfish } from "../../components/Jellyfish";
+import { Snail } from "../../components/Snail";
+import { Sunflowers } from "../../components/Sunflowers";
+import { Komorebi } from "../../components/Komorebi";
+import { TidePool } from "../../components/TidePool";
 import { SunbeamDust } from "../../components/SunbeamDust";
 import { PaperLanterns } from "../../components/PaperLanterns";
 import { KelpForest } from "../../components/KelpForest";
 import { SnowDrift } from "../../components/SnowDrift";
-import { FrostGlass } from "../../components/FrostGlass";
 import { OrigamiCranes } from "../../components/OrigamiCranes";
 import { SeasonsTree } from "../../components/SeasonsTree";
 import { InkMountains } from "../../components/InkMountains";
@@ -47,7 +57,6 @@ import { Spirograph } from "../../components/Spirograph";
 import { SandSimulation } from "../../components/SandSimulation";
 import { WaveInterference } from "../../components/WaveInterference";
 import { DiffusionAggregation } from "../../components/DiffusionAggregation";
-import { LSystem } from "../../components/LSystem";
 import { Kaleidoscope } from "../../components/Kaleidoscope";
 import { VoronoiCells } from "../../components/VoronoiCells";
 import { SlimeMold } from "../../components/SlimeMold";
@@ -63,7 +72,6 @@ import { GalaxySpiral } from "../../components/GalaxySpiral";
 import { TornadoVortex } from "../../components/TornadoVortex";
 import { SolarFlare } from "../../components/SolarFlare";
 import { ButterflySwarm } from "../../components/ButterflySwarm";
-import { DeepSeaBioluminescence } from "../../components/DeepSeaBioluminescence";
 
 const CSS = `
 .home {
@@ -441,7 +449,7 @@ const COMPONENTS = [
     name: "KoiPond",
     path: "/components/koi-pond",
     accent: "#f97316",
-    desc: "Tranquil pond with swimming koi fish, interactive water ripples, and lilies",
+    desc: "Koi with flexible spines and soft shadows under caustics and lilies; tap to feed them",
     preview: <KoiPond fishCount={5} width="100%" height="100%" />,
   },
   {
@@ -480,6 +488,83 @@ const COMPONENTS = [
     preview: <Moths preset="porch-lamp" count={18} width="100%" height="100%" />,
   },
   {
+    name: "Eye",
+    path: "/components/eye",
+    accent: "#c8963e",
+    desc: "A living eye that follows your cursor: fibrous iris, breathing pupil, saccades and blinks",
+    preview: <Eye eyeSize={0.9} width="100%" height="100%" />,
+  },
+  {
+    name: "Owl",
+    path: "/components/owl",
+    accent: "#f2a516",
+    desc: "An owl whose whole head snaps to follow your cursor; perches on your headline with collide",
+    preview: <Owl size={0.9} width="100%" height="100%" />,
+  },
+  {
+    name: "Octopus",
+    path: "/components/octopus",
+    accent: "#c4553a",
+    desc: "Eight IK arms that coil around the cursor, grip page elements and squirt ink when tapped",
+    preview: <Octopus width="100%" height="100%" />,
+  },
+  {
+    name: "Hummingbird",
+    path: "/components/hummingbird",
+    accent: "#ff2d6f",
+    desc: "Blur-winged hummingbirds that dart between flowers, or between your buttons",
+    preview: <Hummingbird birdCount={2} width="100%" height="100%" />,
+  },
+  {
+    name: "Candle",
+    path: "/components/candle",
+    accent: "#ff9a3c",
+    desc: "A breathing candle flame that leans into cursor drafts; click to snuff it",
+    preview: <Candle width="100%" height="100%" />,
+  },
+  {
+    name: "Cat",
+    path: "/components/cat",
+    accent: "#d9822b",
+    desc: "A curled-up sleeping cat that peeks at your cursor, purrs when petted and naps on your headline",
+    preview: <Cat width="100%" height="100%" />,
+  },
+  {
+    name: "Jellyfish",
+    path: "/components/jellyfish",
+    accent: "#c9a7e8",
+    desc: "Moon jellies pulsing by jet propulsion, verlet tentacles trailing in the cursor's wake",
+    preview: <Jellyfish count={3} width="100%" height="100%" />,
+  },
+  {
+    name: "Snail",
+    path: "/components/snail",
+    accent: "#b5773f",
+    desc: "A snail gliding on pedal waves, leaving a drying slime trail; poke its eyes and it hides",
+    preview: <Snail width="100%" height="100%" />,
+  },
+  {
+    name: "Sunflowers",
+    path: "/components/sunflowers",
+    accent: "#f6b51e",
+    desc: "Golden-hour sunflowers whose heavy heads turn to face your cursor, the sun",
+    preview: <Sunflowers count={4} width="100%" height="100%" />,
+  },
+  {
+    name: "Komorebi",
+    path: "/components/komorebi",
+    accent: "#ffd9a0",
+    desc: "Sunlight dappled through swaying leaves; your cursor is the breeze",
+    preview: <Komorebi width="100%" height="100%" />,
+  },
+  {
+    name: "TidePool",
+    path: "/components/tide-pool",
+    accent: "#2a8a8f",
+    desc: "A rock pool from above: caustics, anemones that snap shut and fish that dart from your hand",
+    preview: <TidePool fishCount={5} width="100%" height="100%" />,
+  },
+  {
     name: "SunbeamDust",
     path: "/components/sunbeam-dust",
     accent: "#ffcf87",
@@ -506,13 +591,6 @@ const COMPONENTS = [
     accent: "#e2e8f0",
     desc: "Snow that piles up on your headline and buttons, then slides off the edges",
     preview: <SnowDrift preset="winter-night" width="100%" height="100%" />,
-  },
-  {
-    name: "FrostGlass",
-    path: "/components/frost-glass",
-    accent: "#a5f3fc",
-    desc: "Ice crystals creep across the glass; your cursor is warm breath that melts them",
-    preview: <FrostGlass preset="winter-window" growthSpeed={2.5} width="100%" height="100%" />,
   },
   {
     name: "OrigamiCranes",
@@ -578,20 +656,6 @@ const COMPONENTS = [
     preview: <ButterflySwarm butterflyCount={8} width="100%" height="100%" />,
   },
   {
-    name: "DeepSeaBioluminescence",
-    path: "/components/deep-sea-bioluminescence",
-    accent: "#00ffcc",
-    desc: "Dark ocean environment with pulsing jellyfish, bioluminescent plankton, and cursor-triggered glow ripples",
-    preview: (
-      <DeepSeaBioluminescence
-        jellyfishCount={3}
-        planktonCount={120}
-        width="100%"
-        height="100%"
-      />
-    ),
-  },
-  {
     name: "MatrixRain",
     path: "/components/matrix-rain",
     accent: "#00ff41",
@@ -602,7 +666,7 @@ const COMPONENTS = [
     name: "FluidSimulation",
     path: "/components/fluid-simulation",
     accent: "#06b6d4",
-    desc: "Navier-Stokes grid fluid simulation reacting dynamically to mouse movement",
+    desc: "Ink in water that never stops marbling; drag the current with your cursor",
     preview: <FluidSimulation resolution={64} width="100%" height="100%" />,
   },
   {
@@ -648,7 +712,7 @@ const COMPONENTS = [
     name: "Starfield",
     path: "/components/starfield",
     accent: "#b8bfff",
-    desc: "Twinkling 2D star field or high-speed 3D warp tunnel with shooting stars",
+    desc: "A Milky Way vista with parallax stars and meteors, or a 3D warp you steer",
     preview: <Starfield starCount={150} width="100%" height="100%" />,
   },
   {
@@ -688,7 +752,7 @@ const COMPONENTS = [
     name: "GameOfLife",
     path: "/components/game-of-life",
     accent: "#00ff41",
-    desc: "Conway's cellular automata displaying emergent life based on simple rules",
+    desc: "Conway's Life as glowing cells that bloom, age and leave fading embers",
     preview: <GameOfLife width="100%" height="100%" />,
   },
   {
@@ -730,14 +794,14 @@ const COMPONENTS = [
     name: "ReactionDiffusion",
     path: "/components/reaction-diffusion",
     accent: "#a3e635",
-    desc: "Gray-Scott model simulating chemical reaction-diffusion and labyrinthine Turing structures",
+    desc: "Gray-Scott patterns lit like wet relief, morphing between spots, stripes and mazes",
     preview: <ReactionDiffusion width="100%" height="100%" />,
   },
   {
     name: "AuroraBorealis",
     path: "/components/aurora-borealis",
     accent: "#88ccff",
-    desc: "Layered northern light curtain ribbons moving across a starry backdrop",
+    desc: "Folding aurora curtains of light rays over a mountain lake that mirrors them",
     preview: <AuroraBorealis width="100%" height="100%" />,
   },
   {
@@ -758,7 +822,7 @@ const COMPONENTS = [
     name: "WaveInterference",
     path: "/components/wave-interference",
     accent: "#7dd3fc",
-    desc: "Concentric waves radiating from multiple sources forming interference patterns",
+    desc: "Interfering ripples on a lit water surface; drag the sources around",
     preview: <WaveInterference width="100%" height="100%" />,
   },
   {
@@ -767,13 +831,6 @@ const COMPONENTS = [
     accent: "#ff7043",
     desc: "Diffusion-limited aggregation showing organic tree-like branch crystallization",
     preview: <DiffusionAggregation width="100%" height="100%" />,
-  },
-  {
-    name: "LSystem",
-    path: "/components/l-system",
-    accent: "#86efac",
-    desc: "Lindenmayer system grammar tree rendering fractal ferns and plants",
-    preview: <LSystem width="100%" height="100%" />,
   },
   {
     name: "Kaleidoscope",

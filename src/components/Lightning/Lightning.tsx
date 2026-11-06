@@ -79,7 +79,7 @@ export interface LightningProps extends BaseCanvasProps {
   branchChance?: number;
   /** Energy multiplier for sub-branches. (default: 0.6) */
   branchDecay?: number;
-  /** Number of rapid flicker strikes per event. (default: 3) */
+  /** Return strokes per strike: the same channel relights this many times. (default: 3) */
   flickerCount?: number;
   /** Glow shadow blur radius. (default: 20) */
   glowBlur?: number;

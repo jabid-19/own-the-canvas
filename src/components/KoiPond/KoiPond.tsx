@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useKoiPond } from "./useKoiPond";
 
 type KoiPondPreset = "default" | "koi" | "night" | "lotus" | "neon" | "monochrome";
@@ -54,7 +55,7 @@ export interface KoiPondProps extends BaseCanvasProps {
   fishCount?: number;
   /** Primary fish body color (default: "#ff6030") */
   fishColor?: string;
-  /** Scale accent color (default: "#ffffff") */
+  /** Patch color of the markings; every third koi swaps body and patch (default: "#ffffff") */
   scaleColor?: string;
   /** Water background color (default: "#0a1520") */
   waterColor?: string;
@@ -64,7 +65,7 @@ export interface KoiPondProps extends BaseCanvasProps {
   lilyColor?: string;
   /** Fish movement speed multiplier (default: 1) */
   speed?: number;
-  /** Cursor causes ripples (default: true) */
+  /** Cursor leaves ripples; tap to drop food the koi swim up to eat (default: true) */
   interactive?: boolean;
   /** Show lily pads (default: true) */
   showLilies?: boolean;
@@ -83,10 +84,7 @@ export const KoiPond = forwardRef<HTMLCanvasElement, KoiPondProps>(
     } = props;
 
     const p = PRESETS[(preset ?? "default") as KoiPondPreset] || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useKoiPond(internalRef, {
+    const { canvasRef, canvas } = useKoiPond({
       fishCount:   fishCount   ?? 6,
       fishColor:   fishColor   ?? p.fishColor   ?? "#ffffff",
       scaleColor:  scaleColor  ?? p.scaleColor  ?? "#6b7280",
@@ -99,25 +97,10 @@ export const KoiPond = forwardRef<HTMLCanvasElement, KoiPondProps>(
       caustics:    caustics    ?? true,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          cursor:   "crosshair",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={{ cursor: "crosshair", ...style }} />
     );
   }
 );

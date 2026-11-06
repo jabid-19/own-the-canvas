@@ -1,5 +1,6 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useGameOfLife, GameOfLifeHandle } from "./useGameOfLife";
 
 export type { GameOfLifeHandle };
@@ -74,13 +75,13 @@ export interface GameOfLifeProps extends BaseCanvasProps {
   aliveColor?: string;
   /** Color of old cells. (default: "#004d14") */
   oldColor?: string;
-  /** Color of dead cells / background. (default: "#000000") */
+  /** Faint lattice dots marking dead cells. (default: "#000000") */
   deadColor?: string;
   /** Color cells by generation age. (default: true) */
   showAge?: boolean;
   /** Wrap cells at canvas edges. (default: true) */
   wrapEdges?: boolean;
-  /** Click to toggle cells. (default: true) */
+  /** Click toggles a cell, drag paints life. (default: true) */
   interactive?: boolean;
   /** Canvas background color. (default: "#000000") */
   backgroundColor?: string;
@@ -98,7 +99,6 @@ export const GameOfLife = forwardRef<GameOfLifeHandle, GameOfLifeProps>((props, 
 
   const p = PRESETS[(preset ?? "default") as GameOfLifePreset] || {};
 
-  const internalCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const handleRef = useRef<GameOfLifeHandle | null>(null);
 
   // Delegates lazily: the hook fills handleRef in an effect, after this runs.
@@ -107,10 +107,10 @@ export const GameOfLife = forwardRef<GameOfLifeHandle, GameOfLifeProps>((props, 
     clear: () => handleRef.current?.clear(),
     pause: () => handleRef.current?.pause(),
     resume: () => handleRef.current?.resume(),
-    get canvas() { return internalCanvasRef.current; },
+    get canvas() { return handleRef.current?.canvas ?? null; },
   }), []);
 
-  useGameOfLife(internalCanvasRef, {
+  const { canvasRef } = useGameOfLife({
     cellSize:        cellSize        ?? p.cellSize        ?? 8,
     speed:           speed           ?? p.speed           ?? 10,
     initialDensity:  initialDensity  ?? p.initialDensity  ?? 0.3,
@@ -124,12 +124,7 @@ export const GameOfLife = forwardRef<GameOfLifeHandle, GameOfLifeProps>((props, 
   }, handleRef);
 
   return (
-    <div
-      className={className}
-      style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", cursor: "crosshair", ...style }}
-    >
-      <canvas ref={internalCanvasRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
-    </div>
+    <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={{ cursor: "crosshair", ...style }} />
   );
 });
 

@@ -34,6 +34,7 @@ export interface UseFireworksOptions {
   glowEffect: boolean;
   glowBlur: number;
   backgroundColor: string;
+  showBackground: boolean;
   shellSpeed: number;
   starCount: number;
   starColor: string;
@@ -246,8 +247,14 @@ export function useFireworks(
 
       // sky
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const transparent = !o.backgroundColor || o.backgroundColor === "transparent";
+      const noFill = !o.backgroundColor || o.backgroundColor === "transparent";
+      const transparent = !o.showBackground || noFill; // no scene (sky gradient, wash, skyline)
       ctx.clearRect(0, 0, w, h);
+      if (transparent && !noFill) {
+        // scene off: plain fill in backgroundColor
+        ctx.fillStyle = `rgb(${toRgb(o.backgroundColor)})`;
+        ctx.fillRect(0, 0, w, h);
+      }
       if (!transparent) {
         const bg = toRgb(o.backgroundColor);
         const sky = ctx.createLinearGradient(0, 0, 0, h);
@@ -257,11 +264,11 @@ export function useFireworks(
         ctx.fillRect(0, 0, w, h);
       }
 
-      // stars (live starCount)
+      // stars (live starCount); part of the sky, so hidden with it
       if (stars.length > o.starCount) stars.length = Math.max(0, o.starCount);
       while (stars.length < o.starCount) stars.push(makeStar());
       const starRgb = toRgb(o.starColor);
-      for (const s of stars) {
+      for (const s of o.showBackground ? stars : []) {
         const a = s.opacity * (0.7 + 0.3 * Math.sin(t * 2 + s.tw));
         if (o.glowingStars && s.isGlowing) {
           ctx.fillStyle = `rgba(${starRgb},${a * 0.15})`;
@@ -281,6 +288,7 @@ export function useFireworks(
         const f = flashes[i];
         f.life -= dt * 1.6;
         if (f.life <= 0) { flashes.splice(i, 1); continue; }
+        if (transparent) continue; // the wash lights the sky; on a bare canvas it would tint the page
         const R = Math.max(w, h) * 0.6;
         const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, R);
         g.addColorStop(0, `rgba(${f.rgb},${0.22 * f.life * f.life})`);

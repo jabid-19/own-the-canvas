@@ -12,7 +12,7 @@ const PROPS = [
   { name: "rippleColor", type: "string",  default: '"#60a8d0"',description: "Ripple ring color." },
   { name: "lilyColor",   type: "string",  default: '"#50aa50"',description: "Lily pad color." },
   { name: "speed",       type: "number",  default: "1",        description: "Fish movement speed multiplier." },
-  { name: "interactive", type: "boolean", default: "true",     description: "Cursor movement causes ripples." },
+  { name: "interactive", type: "boolean", default: "true",     description: "Cursor leaves ripples; tap to drop food the koi race up to eat." },
   { name: "showLilies",  type: "boolean", default: "true",     description: "Show lily pads." },
   { name: "caustics",    type: "boolean", default: "true",     description: "Animated caustic light patterns." },
   { name: "preset",      type: "string",  default: "—",        description: '"default" | "koi" | "night" | "lotus" | "neon" | "monochrome"' },
@@ -81,7 +81,7 @@ function KoiPondPlayground({ onReset }: { onReset?: () => void }) {
         width="100%"
         height="100%"
       />
-      <PLiveLabel text="Move cursor to create ripples" />
+      <PLiveLabel text="Move to ripple the water · tap to feed the koi" />
     </div>
   );
 
@@ -113,7 +113,7 @@ export function KoiPondPage() {
     <PageShell
       eyebrow="Component"
       title="KoiPond"
-      lead="A serene koi pond with flocking fish, ripple physics, lily pads, and animated caustic light on the water floor. Move your cursor to create ripples."
+      lead="A koi pond from above. Koi swim on flexible spines with painted patches, flapping fins and trailing butterfly tails, each casting a soft shadow on the pond floor. Sunlight caustics wash over the bottom and lily pads, some flowering, drift on the ripples. Move your cursor to ripple the water; tap to drop food and the koi race up to eat it."
     >
       <KoiPondPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

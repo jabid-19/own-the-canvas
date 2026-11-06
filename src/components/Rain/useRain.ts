@@ -13,6 +13,7 @@ export interface UseRainOptions {
   splashColor: string;
   showSplashes: boolean;
   backgroundColor: string;
+  showBackground: boolean;
   starCount: number;
   starColor: string;
   glowingStars: boolean;
@@ -128,7 +129,13 @@ export function useRain(canvasRef: RefObject<HTMLCanvasElement | null>, options:
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      if (o.backgroundColor !== "transparent") {
+      const scene = o.showBackground && o.backgroundColor !== "transparent";
+      if (!scene && o.backgroundColor !== "transparent") {
+        // scene off: plain fill in backgroundColor
+        ctx.fillStyle = `rgb(${bg})`;
+        ctx.fillRect(0, 0, w, h);
+      }
+      if (scene) {
         // sky, with the city's glow low on the horizon
         const sky = ctx.createLinearGradient(0, 0, 0, H);
         sky.addColorStop(0, `rgb(${mix(bg, "210,225,255", flick * 0.35)})`);
@@ -254,7 +261,7 @@ export function useRain(canvasRef: RefObject<HTMLCanvasElement | null>, options:
       }
       ctx.globalAlpha = 1;
 
-      if (flick > 0) {
+      if (scene && flick > 0) {
         ctx.fillStyle = `rgba(220,230,255,${flick * 0.12})`;
         ctx.fillRect(0, 0, w, h);
       }

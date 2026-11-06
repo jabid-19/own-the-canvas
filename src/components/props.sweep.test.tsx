@@ -33,8 +33,6 @@ const NEEDS: Record<string, Record<string, unknown>> = {
   "Fireflies.period": { interactive: false },         // test taps force-flash every fly
   "Fireflies.sync": { interactive: false },
   "FluidSimulation.glowEffect": { glowBlur: 12 },     // glow radius defaults to 0
-  "LSystem.trailFade": { speed: 200 },                // ghost shows on the 2nd cycle
-  "LSystem.autoReset": { speed: 200 },
   "Moths.lightX": { followCursor: false },           // light follows the cursor otherwise
   "Moths.lightY": { followCursor: false },
   "Moths.angle": { followCursor: false },
@@ -48,20 +46,22 @@ const NEEDS: Record<string, Record<string, unknown>> = {
   "SandSimulation.wallColor": { material: "wall" },
   "Lightning.startX": { interactive: false },         // clicks strike at the cursor instead
   "Lightning.endY": { interactive: false },
+  "Hummingbird.collide": { interactive: false },     // the fast test cursor keeps the bird fleeing
+  "Snail.trail": { interactive: false },            // the fast test cursor keeps the snail in its shell
+  "Snail.trailColor": { interactive: false },
+  "Snail.speed": { interactive: false },
 };
 // Verified by reading the code; the random pointer can't exercise them. Reason required.
 const VERIFIED: Record<string, string> = {
   "ParticleField.dragRadius": "read live in onMouseDown; test presses release the same frame, so nothing is dragged",
   "BubbleUniverse.popEffect": "read live in onClick; synthetic clicks miss every bubble",
   "Confetti.particleCount": "particles per burst; applies on the next trigger rising edge (by design)",
-  "FrostGlass.coverage": "live cap on frosted fraction; binds only once frost reaches it, seconds past the window",
   "Fireflies.sync": "live: sync=0 desyncs (probed with a 400-frame live run); any coupling > 0 keeps a small canvas locked",
   "PendulaWave.autoReset": "read live (usePendulaWave.ts:157); triggers once the swing decays below 4%, past the window",
   "SnowDrift.interactive": "read live (useSnowDrift.ts:182); brushes only at the pile surface, test cursor stays mid-canvas",
   "SolarFlare.interactive": "read live (useSolarFlare.ts:183); flareCount cap is hit in the first 24 frames so later taps add nothing",
   "Spirograph.autoReset": "read live (useSpirograph.ts:253); fires when a layer completes its full period, past the window",
   "IvyGrowth.loop": "read live (useIvyGrowth.ts:470); fires 7s after the wall finishes growing",
-  "LSystem.speed": "read live every frame; the default tree finishes inside the first 24 frames",
   "CrystalGrowth.autoReset": "read live; fires 4s after a flake finishes, longer than the test window",
 };
 // Components that draw nothing until told to.
@@ -70,7 +70,7 @@ const BASE: Record<string, Record<string, unknown>> = {
 };
 // Timer-driven props need a long window to show their effect.
 const LONG = /interval|^auto|reset|regrow|^loop$|shootingStar|lightning|flare|pulse|lifetime|^period$|^sync$/i;
-const LONG_PROPS = new Set(["SakuraBlossom.maxAccumulation", "SnowDrift.maxDepth", "Moths.angle", "LSystem.trailFade", "Lightning.startX", "Lightning.endY"]);
+const LONG_PROPS = new Set(["SakuraBlossom.maxAccumulation", "SnowDrift.maxDepth", "Moths.angle", "Lightning.startX", "Lightning.endY"]);
 // Callbacks / props with no visual output, verified elsewhere.
 // Presets that are intentional duplicates of default under a different name.
 const PRESET_ALIAS = new Set(["KoiPond.koi", "SandSimulation.desert"]);

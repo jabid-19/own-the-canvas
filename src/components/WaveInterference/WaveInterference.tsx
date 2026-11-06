@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useWaveInterference } from "./useWaveInterference";
 
 type WaveInterferencePreset = "default" | "ripple" | "plasma" | "neon" | "cosmic" | "monochrome";
@@ -40,6 +41,8 @@ export interface WaveInterferenceProps extends BaseCanvasProps {
   resolution?: number;
   /** Enable animation (default: true) */
   animated?: boolean;
+  /** Click to add or remove a source, drag to move one; the hovering cursor stirs ripples (default: true) */
+  interactive?: boolean;
   /** Amplitude decay with distance (default: 0.003) */
   decay?: number;
   /** Named preset */
@@ -60,6 +63,7 @@ export const WaveInterference = forwardRef<HTMLCanvasElement, WaveInterferencePr
       resolution,
       animated,
       decay,
+      interactive,
       width,
       height,
       className,
@@ -67,10 +71,7 @@ export const WaveInterference = forwardRef<HTMLCanvasElement, WaveInterferencePr
     } = props;
 
     const p = PRESETS[(preset ?? "default") as WaveInterferencePreset] || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useWaveInterference(internalRef, {
+    const { canvasRef, canvas } = useWaveInterference({
       maxSources:      maxSources      ?? 6,
       wavelength:      wavelength      ?? p.wavelength     ?? 80,
       speed:           speed           ?? 1,
@@ -81,27 +82,13 @@ export const WaveInterference = forwardRef<HTMLCanvasElement, WaveInterferencePr
       resolution:      resolution      ?? 0.4,
       animated:        animated        ?? true,
       decay:           decay           ?? p.decay          ?? 0.003,
+      interactive:     interactive     ?? true,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          cursor: "crosshair",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={{ cursor: "crosshair", ...style }} />
     );
   }
 );

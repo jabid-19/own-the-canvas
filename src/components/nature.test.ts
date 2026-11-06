@@ -166,3 +166,90 @@ describe("KelpForest: anchored rope", () => {
     expect(c.y[15]).toBeLessThan(c.y[0] - 200); // buoyant: stands up
   });
 });
+
+describe("Eye: blink curve", () => {
+  it("closes fast, holds shut, opens slower, then rests open", async () => {
+    const { blinkClosure } = await import("./Eye/useEye");
+    expect(blinkClosure(-1)).toBe(0);
+    expect(blinkClosure(0.035)).toBeCloseTo(0.5, 5);
+    expect(blinkClosure(0.085)).toBe(1);
+    expect(blinkClosure(0.185)).toBeCloseTo(0.5, 5); // half open takes longer than half closed
+    expect(blinkClosure(0.5)).toBe(0);
+  });
+});
+
+describe("Octopus: arm IK and grip points", () => {
+  it("fabrik keeps link lengths and reaches a target in range", async () => {
+    const { fabrik } = await import("./Octopus/useOctopus");
+    const P = Array.from({ length: 11 }, (_, i) => ({ x: i * 10, y: 0 }));
+    fabrik(P, { x: 0, y: 0 }, { x: 40, y: 60 }, 10, 8);
+    expect(P[0]).toEqual({ x: 0, y: 0 });
+    for (let i = 1; i < P.length; i++) expect(Math.hypot(P[i].x - P[i - 1].x, P[i].y - P[i - 1].y)).toBeCloseTo(10, 5);
+    expect(Math.hypot(P[10].x - 40, P[10].y - 60)).toBeLessThan(1);
+  });
+  it("edgePoint lands on the rect outline, from outside and inside", async () => {
+    const { edgePoint } = await import("./Octopus/useOctopus");
+    const s = { id: 1, x: 100, y: 100, w: 50, h: 20 };
+    expect(edgePoint(s, { x: 80, y: 110 })).toEqual({ x: 100, y: 110 });
+    expect(edgePoint(s, { x: 120, y: 103 })).toEqual({ x: 120, y: 100 }); // inside, nearest the top edge
+  });
+});
+
+describe("Owl and Hummingbird: page perches and flowers", () => {
+  it("pickPerch takes the solid nearest the middle that has headroom", async () => {
+    const { pickPerch, owlBlink } = await import("./Owl/useOwl");
+    const a = { id: 1, x: 0, y: 150, w: 40, h: 20 }, b = { id: 2, x: 130, y: 150, w: 40, h: 20 }, low = { id: 3, x: 140, y: 10, w: 20, h: 10 };
+    expect(pickPerch([a, b, low], 300, 200, 100)?.id).toBe(2);
+    expect(pickPerch([low], 300, 200, 100)).toBeNull();
+    expect(owlBlink(0.15)).toBe(1);
+    expect(owlBlink(1)).toBe(0);
+  });
+  it("solidNectar offers both side edges, facing inward", async () => {
+    const { solidNectar } = await import("./Hummingbird/useHummingbird");
+    const [l, r] = solidNectar([{ id: 7, x: 10, y: 20, w: 100, h: 40 }]);
+    expect(l).toMatchObject({ x: 8, y: 40, face: 1 });
+    expect(r).toMatchObject({ x: 112, y: 40, face: -1 });
+  });
+});
+
+describe("Cat, Jellyfish, Snail, Sunflowers, Komorebi, TidePool: pure helpers", () => {
+  it("onCat hits the curled body and head, misses the air above", async () => {
+    const { onCat } = await import("./Cat/useCat");
+    expect(onCat(0, -0.25)).toBe(true);
+    expect(onCat(-0.4, -0.36)).toBe(true);
+    expect(onCat(0, -1)).toBe(false);
+  });
+  it("jelly pulse squeezes fast and relaxes slowly", async () => {
+    const { pulse } = await import("./Jellyfish/useJellyfish");
+    expect(pulse(0)).toBeCloseTo(0);
+    expect(pulse(0.22)).toBeCloseTo(1);
+    expect(pulse(0.4)).toBeGreaterThan(pulse(0.8));
+    expect(pulse(1.22)).toBeCloseTo(1); // periodic
+  });
+  it("snail turns around only at the ends", async () => {
+    const { turnAt } = await import("./Snail/useSnail");
+    expect(turnAt(1, 1, 0, 1)).toBe(-1);
+    expect(turnAt(0, -1, 0, 1)).toBe(1);
+    expect(turnAt(0.5, 1, 0, 1)).toBe(1);
+    expect(turnAt(1, -1, 0, 1)).toBe(-1);
+  });
+  it("sunflower heads face the sun", async () => {
+    const { faceToward } = await import("./Sunflowers/useSunflowers");
+    expect(faceToward(100, 100, 300, 100, 400, 300).yaw).toBeGreaterThan(0.5);
+    expect(faceToward(300, 100, 100, 100, 400, 300).yaw).toBeLessThan(-0.5);
+    expect(faceToward(100, 200, 100, 0, 400, 300).pitch).toBeLessThan(0); // sun above: face tips up
+  });
+  it("komorebi spots stretch as the sun gets lower", async () => {
+    const { spotStretch } = await import("./Komorebi/useKomorebi");
+    expect(spotStretch(1)).toBeCloseTo(1);
+    expect(spotStretch(0.3)).toBeGreaterThan(spotStretch(0.7));
+    expect(spotStretch(0)).toBeLessThanOrEqual(4);
+  });
+  it("anemones shut close in and reopen only once clear (hysteresis)", async () => {
+    const { anemoneShut } = await import("./TidePool/useTidePool");
+    expect(anemoneShut(10, 10, false)).toBe(true);
+    expect(anemoneShut(18, 10, false)).toBe(false);
+    expect(anemoneShut(18, 10, true)).toBe(true);
+    expect(anemoneShut(25, 10, true)).toBe(false);
+  });
+});

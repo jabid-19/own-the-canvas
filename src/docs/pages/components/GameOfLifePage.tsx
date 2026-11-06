@@ -13,7 +13,7 @@ const PROPS = [
   { name: "deadColor",       type: "string",  default: '"#000000"', description: "Color of dead cells." },
   { name: "showAge",         type: "boolean", default: "true",      description: "Color cells by generation age." },
   { name: "wrapEdges",       type: "boolean", default: "true",      description: "Wrap cells at canvas edges (toroidal)." },
-  { name: "interactive",     type: "boolean", default: "true",      description: "Click to toggle cells alive/dead." },
+  { name: "interactive",     type: "boolean", default: "true",      description: "Click toggles a cell, drag paints life." },
   { name: "backgroundColor", type: "string",  default: '"#000000"', description: "Canvas background color." },
   { name: "preset",          type: "string",  default: "—",         description: '"default" | "neon" | "matrix" | "minimal" | "fire" | "monochrome"' },
 ];
@@ -59,7 +59,7 @@ function GameOfLifePlayground({ onReset }: { onReset?: () => void }) {
       <GameOfLife preset={preset} cellSize={cellSize} speed={speed}
         aliveColor={aliveColor} oldColor={oldColor} showAge={showAge}
         backgroundColor={bg} width="100%" height="100%" />
-      <PLiveLabel text="Click cells to toggle alive/dead" />
+      <PLiveLabel text="Click to toggle · drag to paint life" />
     </div>
   );
 
@@ -90,7 +90,7 @@ export function GameOfLifePage() {
     <PageShell
       eyebrow="Component"
       title="GameOfLife"
-      lead="Conway's Game of Life — emergent cellular automata where simple rules produce complex living patterns. Click cells to draw. Age-based color gradients reveal generation history."
+      lead="Conway's Game of Life as living light: cells swell in when born, cool from the newborn color to the old color as they age, and leave fading embers when they die, under a soft bloom. Generations cross-fade instead of snapping. Click to toggle a cell, drag to paint; when the board settles, gliders drift in to stir it up."
     >
       <GameOfLifePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

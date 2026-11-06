@@ -70,8 +70,6 @@ export { DiffusionAggregation } from "./components/DiffusionAggregation";
 export type { DiffusionAggregationProps, DLASeedMode } from "./components/DiffusionAggregation";
 
 
-export { LSystem } from "./components/LSystem";
-export type { LSystemProps } from "./components/LSystem";
 
 export { Kaleidoscope } from "./components/Kaleidoscope";
 export type { KaleidoscopeProps } from "./components/Kaleidoscope";
@@ -138,8 +136,6 @@ export { ButterflySwarm } from "./components/ButterflySwarm";
 export type { ButterflySwarmProps } from "./components/ButterflySwarm";
 
 
-export { DeepSeaBioluminescence } from "./components/DeepSeaBioluminescence";
-export type { DeepSeaBioluminescenceProps } from "./components/DeepSeaBioluminescence";
 
 export { IvyGrowth } from "./components/IvyGrowth";
 export type { IvyGrowthProps } from "./components/IvyGrowth";
@@ -168,8 +164,6 @@ export type { KelpForestProps } from "./components/KelpForest";
 export { SnowDrift } from "./components/SnowDrift";
 export type { SnowDriftProps } from "./components/SnowDrift";
 
-export { FrostGlass } from "./components/FrostGlass";
-export type { FrostGlassProps } from "./components/FrostGlass";
 
 export { OrigamiCranes } from "./components/OrigamiCranes";
 export type { OrigamiCranesProps } from "./components/OrigamiCranes";
@@ -194,3 +188,36 @@ export type { CloudSeaProps } from "./components/CloudSea";
 
 export { Ferrofluid } from "./components/Ferrofluid";
 export type { FerrofluidProps } from "./components/Ferrofluid";
+
+export { Eye } from "./components/Eye";
+export type { EyeProps, EyePupilShape } from "./components/Eye";
+
+export { Owl } from "./components/Owl";
+export type { OwlProps } from "./components/Owl";
+
+export { Octopus } from "./components/Octopus";
+export type { OctopusProps } from "./components/Octopus";
+
+export { Hummingbird } from "./components/Hummingbird";
+export type { HummingbirdProps } from "./components/Hummingbird";
+
+export { Candle } from "./components/Candle";
+export type { CandleProps } from "./components/Candle";
+
+export { Cat } from "./components/Cat";
+export type { CatProps } from "./components/Cat";
+
+export { Jellyfish } from "./components/Jellyfish";
+export type { JellyfishProps } from "./components/Jellyfish";
+
+export { Snail } from "./components/Snail";
+export type { SnailProps } from "./components/Snail";
+
+export { Sunflowers } from "./components/Sunflowers";
+export type { SunflowersProps } from "./components/Sunflowers";
+
+export { Komorebi } from "./components/Komorebi";
+export type { KomorebiProps } from "./components/Komorebi";
+
+export { TidePool } from "./components/TidePool";
+export type { TidePoolProps } from "./components/TidePool";

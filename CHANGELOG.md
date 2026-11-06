@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## [2.0.2] - 2026-11-06
+
+### Added
+
+- 11 new Living Scenes on the shared runtime: `Eye`, `Owl`, `Octopus`, `Hummingbird`, `Candle`, `Cat`, `Jellyfish`, `Snail`, `Sunflowers`, `Komorebi`, `TidePool`. `Owl`, `Octopus`, `Hummingbird`, `Cat`, `Jellyfish`, and `Snail` support `collide`.
+
+### Improved
+
+- `KoiPond` is rebuilt: koi swim on a 12-point spine with a full silhouette, painted patches, flapping pectoral fins and a butterfly tail, each casting a shadow on the pond floor; lily pads have veins and waterlilies and drift on the ripples. Tap to drop food and the koi race to eat it.
+- `AuroraBorealis` draws real curtains: vertical ray striations with a sharp hem fading upward into a second color, brightest where they fold, over a mountain lake that mirrors them. New `interactive` prop (default `true`): the cursor brightens nearby curtains, a tap sets off a substorm.
+- `Starfield` (2D) is a deep-sky vista: a Milky Way band with star clouds, dust lanes and nebulae, three parallax layers of temperature-tinted stars that shift with the cursor, diffraction spikes on bright stars and tapered meteors. 3D warp streaks stars and the cursor steers the vanishing point.
+- `GameOfLife` cells glow: they swell in at birth, cool with age, leave fading embers, and cross-fade between generations under a bloom. Dragging paints life, and a settled board is stirred with gliders.
+- `ReactionDiffusion` lets feed and kill rates drift across the canvas so pattern types coexist and keep morphing; hovering seeds chemical, and a dead field reseeds itself.
+- `FluidSimulation` uses square cells at any aspect ratio, vorticity confinement for crisp eddies, orbiting ink jets so it is never blank, and tone-mapped ink with a relief sheen.
+- `WaveInterference` renders a lit water surface (diffuse plus specular glint) with glowing sources. New `interactive` prop (default `true`): drag sources to move them, and the hovering cursor stirs its own ripples.
+- All seven now run on the shared canvas runtime (pause offscreen, reduced motion, DPR cap, window-level pointer).
+
+### Removed (breaking)
+
+- `DeepSeaBioluminescence` (use `Jellyfish`), `FrostGlass`, and `LSystem`.
+
 ## [2.0.1] - 2026-11-01
 
 Docs-only release so the npm page shows the 2.0 README.

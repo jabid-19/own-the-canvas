@@ -1,4 +1,7 @@
-import { useRef, useEffect, RefObject } from "react";
+import { useRef } from "react";
+import { useCanvasSetup } from "../../hooks/useCanvasSetup";
+import { usePointer, readPointer } from "../../runtime/fx";
+import { rgbOf } from "../../utils/color";
 
 export interface UseReactionDiffusionOptions {
   feedRate: number;
@@ -13,250 +16,161 @@ export interface UseReactionDiffusionOptions {
   interactive: boolean;
 }
 
-function parseHexToRgb(hex: string): [number, number, number] {
-  const clean = hex.replace("#", "");
-  const full = clean.length === 3
-    ? clean.split("").map((c) => c + c).join("")
-    : clean;
-  const n = parseInt(full, 16) || 0;
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+interface Field {
+  u: Float32Array; v: Float32Array; uNext: Float32Array; vNext: Float32Array;
+  /** Per-cell feed/kill offsets: a slowly drifting map so several pattern types coexist. */
+  df: Float32Array; dk: Float32Array;
+  gw: number; gh: number;
+  c: HTMLCanvasElement | null; g: CanvasRenderingContext2D | null; img: ImageData | null;
 }
 
-export function useReactionDiffusion(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseReactionDiffusionOptions
-) {
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
+/** Seed a soft disc of V (the autocatalyst) at grid cell (cx, cy), wrapping at the edges. */
+export function seedDisc(u: Float32Array, v: Float32Array, gw: number, gh: number, cx: number, cy: number, r: number): void {
+  for (let dy = -r; dy <= r; dy++) {
+    for (let dx = -r; dx <= r; dx++) {
+      if (dx * dx + dy * dy > r * r) continue;
+      const i = ((cy + dy + gh) % gh) * gw + ((cx + dx + gw) % gw);
+      u[i] = 0.5; v[i] = 0.25;
+    }
+  }
+}
+
+/**
+ * Gray-Scott reaction-diffusion, lit like a wet relief. Feed and kill rates drift slowly across
+ * the canvas around the chosen values, so spots, stripes and mazes meet and keep morphing into
+ * each other instead of freezing. Hovering seeds a trail of chemical, taps drop a blob, and an
+ * exhausted field reseeds itself.
+ */
+export function useReactionDiffusion(options: UseReactionDiffusionOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
+  const pointer = usePointer();
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
+  const s = useRef({ t: 0, key: "", field: null as Field | null, check: 0, lastGX: -1, lastGY: -1 });
 
-  const rafRef = useRef<number>(0);
-  const stateRef = useRef<{
-    u: Float32Array;
-    v: Float32Array;
-    uNext: Float32Array;
-    vNext: Float32Array;
-    gw: number;
-    gh: number;
-    imageData: ImageData;
-    offscreen: OffscreenCanvas;
-    offCtx: OffscreenCanvasRenderingContext2D;
-  } | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
-
-    let w = 0;
-    let h = 0;
-
-    function initGrid(gw: number, gh: number) {
-      const size = gw * gh;
-      const u = new Float32Array(size).fill(1);
-      const v = new Float32Array(size).fill(0);
-
-      // Seed with random blobs — high V concentration to kickstart autocatalysis
-      const numBlobs = Math.max(5, Math.floor((gw * gh) / 1000));
-      for (let b = 0; b < numBlobs; b++) {
-        const bx = Math.floor(Math.random() * gw);
-        const by = Math.floor(Math.random() * gh);
-        const br = Math.floor(2 + Math.random() * 5);
-        for (let dy = -br; dy <= br; dy++) {
-          for (let dx = -br; dx <= br; dx++) {
-            if (dx * dx + dy * dy <= br * br) {
-              const nx = (bx + dx + gw) % gw;
-              const ny = (by + dy + gh) % gh;
-              const idx = ny * gw + nx;
-              u[idx] = 0.5 + (Math.random() - 0.5) * 0.1;
-              v[idx] = 0.25 + Math.random() * 0.1;
-            }
-          }
-        }
-      }
-
-      const offscreen = new OffscreenCanvas(gw, gh);
-      const offCtx = offscreen.getContext("2d") as OffscreenCanvasRenderingContext2D;
-      const imageData = offCtx.createImageData(gw, gh);
-      // pre-fill alpha channel once
-      for (let i = 0; i < size; i++) imageData.data[i * 4 + 3] = 255;
-
-      stateRef.current = {
-        u,
-        v,
-        uNext: new Float32Array(size),
-        vNext: new Float32Array(size),
-        gw,
-        gh,
-        imageData,
-        offscreen,
-        offCtx,
-      };
+  function init(gw: number, gh: number): Field {
+    const size = gw * gh;
+    const u = new Float32Array(size).fill(1), v = new Float32Array(size);
+    const blobs = Math.max(5, Math.floor(size / 1000));
+    for (let b = 0; b < blobs; b++) seedDisc(u, v, gw, gh, Math.floor(Math.random() * gw), Math.floor(Math.random() * gh), Math.floor(2 + Math.random() * 5));
+    let c: HTMLCanvasElement | null = null, g: CanvasRenderingContext2D | null = null, img: ImageData | null = null;
+    if (typeof document !== "undefined") {
+      c = document.createElement("canvas");
+      c.width = gw; c.height = gh;
+      g = c.getContext("2d");
+      img = g ? g.createImageData(gw, gh) : null;
+      if (img) for (let i = 0; i < size; i++) img.data[i * 4 + 3] = 255;
     }
+    return { u, v, uNext: new Float32Array(size), vNext: new Float32Array(size), df: new Float32Array(size), dk: new Float32Array(size), gw, gh, c, g, img };
+  }
 
-    function resize(width: number, height: number) {
-      const dpr = window.devicePixelRatio || 1;
-      w = width;
-      h = height;
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
-      canvas!.style.width = `${w}px`;
-      canvas!.style.height = `${h}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number) {
+    const o = optionsRef.current;
+    const st = s.current;
+    st.t += dt / 1000;
+    const res = clamp(o.resolution, 0.1, 1);
+    const gw = Math.max(4, Math.round(w * res)), gh = Math.max(4, Math.round(h * res));
+    const key = `${gw}x${gh}`;
+    if (st.key !== key || !st.field) { st.key = key; st.field = init(gw, gh); }
+    const F = st.field;
+    const { u, v, uNext, vNext, df, dk } = F;
 
-      const { resolution } = optionsRef.current;
-      const gw = Math.max(4, Math.round(w * resolution));
-      const gh = Math.max(4, Math.round(h * resolution));
-      initGrid(gw, gh);
-    }
-
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) resize(width, height);
-    });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) resize(rect.width, rect.height);
-
-    // mouse disturbance
-    let isMouseDown = false;
-    let tapPending = false; // a click shorter than a frame still seeds once
-    let mouseGX = -1;
-    let mouseGY = -1;
-
-    function updateMouseGrid(clientX: number, clientY: number) {
-      const state = stateRef.current;
-      if (!state) return;
-      const r = canvas!.getBoundingClientRect();
-      const mx = clientX - r.left;
-      const my = clientY - r.top;
-      mouseGX = Math.floor((mx / w) * state.gw);
-      mouseGY = Math.floor((my / h) * state.gh);
-    }
-
-    function onMouseMove(e: MouseEvent) {
-      if (!optionsRef.current.interactive) return;
-      updateMouseGrid(e.clientX, e.clientY);
-    }
-
-    function onMouseDown(e: MouseEvent) {
-      if (!optionsRef.current.interactive) return;
-      isMouseDown = true;
-      tapPending = true;
-      updateMouseGrid(e.clientX, e.clientY);
-    }
-
-    function onMouseUp() { isMouseDown = false; if (!tapPending) { mouseGX = -1; mouseGY = -1; } }
-    function onMouseLeave() { isMouseDown = false; mouseGX = -1; mouseGY = -1; }
-
-    parent.addEventListener("mousemove", onMouseMove);
-    parent.addEventListener("mousedown", onMouseDown);
-    parent.addEventListener("mouseup", onMouseUp);
-    parent.addEventListener("mouseleave", onMouseLeave);
-
-    function step() {
-      const state = stateRef.current;
-      if (!state) return;
-      const { u, v, uNext, vNext, gw, gh } = state;
-      const { feedRate: f, killRate: k, diffusionU: dU, diffusionV: dV } = optionsRef.current;
-
-      // disturb with mouse
-      if ((isMouseDown || tapPending) && mouseGX >= 0 && mouseGY >= 0) {
-        tapPending = false;
-        const br = 3;
-        for (let dy = -br; dy <= br; dy++) {
-          for (let dx = -br; dx <= br; dx++) {
-            if (dx * dx + dy * dy <= br * br) {
-              const nx = (mouseGX + dx + gw) % gw;
-              const ny = (mouseGY + dy + gh) % gh;
-              const idx = ny * gw + nx;
-              u[idx] = 0.5;
-              v[idx] = 0.25;
-            }
-          }
-        }
-      }
-
+    // ---- the drifting parameter map: two slow waves, a fraction of the chosen f and k ----
+    if (Math.floor(st.t * 4) !== Math.floor((st.t - dt / 1000) * 4)) { // refresh 4x a second
+      const t = st.t * 0.05;
       for (let y = 0; y < gh; y++) {
-        const yn = ((y - 1 + gh) % gh) * gw;
-        const ys = ((y + 1) % gh) * gw;
-        const yc = y * gw;
+        for (let x = 0; x < gw; x++) {
+          const a = Math.sin(x / gw * 4.2 + t) * Math.cos(y / gh * 3.1 - t * 0.7);
+          const b = Math.sin((x + y) / (gw + gh) * 5.3 - t * 1.3);
+          df[y * gw + x] = a * 0.0022;
+          dk[y * gw + x] = b * 0.0011;
+        }
+      }
+    }
+
+    // ---- input: hover leaves a thin trail, a tap drops a blob ----
+    const p = readPointer(pointer.current, canvasEl.current);
+    if (o.interactive) {
+      if (p.inside) {
+        const gx = Math.floor(p.x / w * gw), gy = Math.floor(p.y / h * gh);
+        if (gx !== st.lastGX || gy !== st.lastGY) {
+          if (st.lastGX >= 0) { // fill the gap since last frame so fast strokes stay continuous
+            const n = Math.ceil(Math.hypot(gx - st.lastGX, gy - st.lastGY));
+            for (let i = 1; i <= n; i++) seedDisc(u, v, gw, gh, Math.round(st.lastGX + (gx - st.lastGX) * i / n), Math.round(st.lastGY + (gy - st.lastGY) * i / n), p.down ? 3 : 1);
+          }
+          st.lastGX = gx; st.lastGY = gy;
+        }
+      } else st.lastGX = st.lastGY = -1;
+      for (const tap of p.taps) seedDisc(u, v, gw, gh, Math.floor(tap.x / w * gw), Math.floor(tap.y / h * gh), 5);
+    }
+
+    // ---- simulate ----
+    const steps = clamp(Math.round(o.speed), 1, 40);
+    const f0 = o.feedRate, k0 = o.killRate, dU = o.diffusionU, dV = o.diffusionV;
+    for (let s2 = 0; s2 < steps; s2++) {
+      for (let y = 0; y < gh; y++) {
+        const yn = ((y - 1 + gh) % gh) * gw, ys = ((y + 1) % gh) * gw, yc = y * gw;
         for (let x = 0; x < gw; x++) {
           const i = yc + x;
-          const xw = (x - 1 + gw) % gw;
-          const xe = (x + 1) % gw;
-
+          const xw = (x - 1 + gw) % gw, xe = (x + 1) % gw;
           const lapU = u[yc + xw] + u[yc + xe] + u[yn + x] + u[ys + x] - 4 * u[i];
           const lapV = v[yc + xw] + v[yc + xe] + v[yn + x] + v[ys + x] - 4 * v[i];
-
+          const f = f0 + df[i], k = k0 + dk[i];
           const uvv = u[i] * v[i] * v[i];
-          uNext[i] = Math.max(0, Math.min(1, u[i] + dU * lapU - uvv + f * (1 - u[i])));
-          vNext[i] = Math.max(0, Math.min(1, v[i] + dV * lapV + uvv - (f + k) * v[i]));
+          uNext[i] = clamp(u[i] + dU * lapU - uvv + f * (1 - u[i]), 0, 1);
+          vNext[i] = clamp(v[i] + dV * lapV + uvv - (f + k) * v[i], 0, 1);
         }
       }
-
-      state.u.set(uNext);
-      state.v.set(vNext);
+      u.set(uNext); v.set(vNext);
     }
 
-    function render() {
-      const state = stateRef.current;
-      if (!state) return;
-      const { u, v, gw, gh, imageData, offscreen, offCtx } = state;
-      const { colorA, colorB, backgroundColor } = optionsRef.current;
+    // an exhausted field (all V gone) reseeds itself
+    st.check += dt;
+    if (st.check > 2000) {
+      st.check = 0;
+      let sum = 0;
+      for (let i = 0; i < v.length; i += 7) sum += v[i];
+      if (sum / (v.length / 7) < 0.002) for (let b = 0; b < 6; b++) seedDisc(u, v, gw, gh, Math.floor(Math.random() * gw), Math.floor(Math.random() * gh), 4);
+    }
 
-      const [ar, ag, ab] = parseHexToRgb(colorA);
-      const [br, bg, bb] = parseHexToRgb(colorB);
-
-      // Lit like a wet relief: the slope of v is the surface normal, lit from the upper left,
-      // with a glossy highlight on the ridges and a deeper tone in the troughs.
-      const data = imageData.data;
-      const lx = -0.6, ly = -0.8;
-      for (let y = 0; y < gh; y++) {
-        const ym = y > 0 ? -gw : 0, yp = y < gh - 1 ? gw : 0;
-        for (let x = 0; x < gw; x++) {
-          const i = y * gw + x;
-          const t = Math.max(0, Math.min(1, v[i] * 3.5));
-          const dx = (v[x < gw - 1 ? i + 1 : i] - v[x > 0 ? i - 1 : i]) * 3.5;
-          const dy = (v[i + yp] - v[i + ym]) * 3.5;
-          const diff = Math.max(0.35, Math.min(1.35, 0.95 - (dx * lx + dy * ly) * 2.2));
-          const spec = Math.pow(Math.max(0, -(dx * lx + dy * ly) * 2.4 - 0.25), 3) * t * 0.75;
-          const shade = (1 - u[i] * 0.12) * diff;
-          const p = i * 4;
-          data[p]     = Math.min(255, (ar + (br - ar) * t) * shade + spec * 255);
-          data[p + 1] = Math.min(255, (ag + (bg - ag) * t) * shade + spec * 255);
-          data[p + 2] = Math.min(255, (ab + (bb - ab) * t) * shade + spec * 255);
-        }
+    // ---- render: the slope of v is the surface normal, lit from the upper left ----
+    if (!F.img || !F.g || !F.c) return;
+    const [ar, ag, ab] = rgbOf(o.colorA, "0,0,0").split(",").map(Number);
+    const [br, bgc, bb] = rgbOf(o.colorB).split(",").map(Number);
+    const data = F.img.data;
+    const lx = -0.6, ly = -0.8;
+    for (let y = 0; y < gh; y++) {
+      const ym = y > 0 ? -gw : 0, yp = y < gh - 1 ? gw : 0;
+      for (let x = 0; x < gw; x++) {
+        const i = y * gw + x;
+        const t = clamp(v[i] * 3.5, 0, 1);
+        const dx = (v[x < gw - 1 ? i + 1 : i] - v[x > 0 ? i - 1 : i]) * 3.5;
+        const dy = (v[i + yp] - v[i + ym]) * 3.5;
+        const ndl = dx * lx + dy * ly;
+        const diff = clamp(0.95 - ndl * 2.2, 0.35, 1.35);
+        const spec = Math.pow(Math.max(0, -ndl * 2.4 - 0.25), 3) * t * 0.75;
+        const rim = t * (1 - t) * 0.5; // a soft translucent glow on the flanks
+        const shade = (1 - u[i] * 0.12) * diff;
+        const q = i * 4;
+        data[q] = Math.min(255, (ar + (br - ar) * t) * shade + spec * 255 + br * rim);
+        data[q + 1] = Math.min(255, (ag + (bgc - ag) * t) * shade + spec * 255 + bgc * rim);
+        data[q + 2] = Math.min(255, (ab + (bb - ab) * t) * shade + spec * 255 + bb * rim);
       }
-
-      offCtx.putImageData(imageData, 0, 0);
-      if (backgroundColor && backgroundColor !== "transparent") {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, w, h);
-      }
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(offscreen, 0, 0, w, h);
     }
-
-    function loop() {
-      const { speed } = optionsRef.current;
-      const steps = Math.max(1, Math.round(speed));
-      for (let s = 0; s < steps; s++) step();
-      render();
-      rafRef.current = requestAnimationFrame(loop);
+    F.g.putImageData(F.img, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    if (o.backgroundColor && o.backgroundColor !== "transparent") {
+      ctx.fillStyle = o.backgroundColor;
+      ctx.fillRect(0, 0, w, h);
     }
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(F.c, 0, 0, w, h);
+  }
 
-    rafRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(rafRef.current);
-      parent.removeEventListener("mousemove", onMouseMove);
-      parent.removeEventListener("mousedown", onMouseDown);
-      parent.removeEventListener("mouseup", onMouseUp);
-      parent.removeEventListener("mouseleave", onMouseLeave);
-    };
-  }, [canvasRef, options.resolution]);
+  const setup = useCanvasSetup({ onFrame: draw });
+  canvasEl.current = setup.canvas;
+  return setup;
 }

@@ -7,11 +7,21 @@ import { Fireflies } from "./Fireflies";
 import { Dandelion } from "./Dandelion";
 import { GrassField } from "./GrassField";
 import { Moths } from "./Moths";
+import { Eye } from "./Eye";
+import { Owl } from "./Owl";
+import { Octopus } from "./Octopus";
+import { Hummingbird } from "./Hummingbird";
+import { Candle } from "./Candle";
+import { Cat } from "./Cat";
+import { Jellyfish } from "./Jellyfish";
+import { Snail } from "./Snail";
+import { Sunflowers } from "./Sunflowers";
+import { Komorebi } from "./Komorebi";
+import { TidePool } from "./TidePool";
 import { SunbeamDust } from "./SunbeamDust";
 import { PaperLanterns } from "./PaperLanterns";
 import { KelpForest } from "./KelpForest";
 import { SnowDrift } from "./SnowDrift";
-import { FrostGlass } from "./FrostGlass";
 import { OrigamiCranes } from "./OrigamiCranes";
 import { SeasonsTree } from "./SeasonsTree";
 import { InkMountains } from "./InkMountains";
@@ -35,11 +45,27 @@ const EFFECTS: [string, ComponentType<Record<string, unknown>>, Record<string, u
   ["Dandelion", Dandelion as never, { collide: true }],
   ["GrassField", GrassField as never, { flowers: 0.1 }],
   ["Moths", Moths as never, {}],
+  ["Eye", Eye as never, {}],
+  ["Owl", Owl as never, { collide: true }],
+  ["Owl (no tufts, transparent)", Owl as never, { earTufts: false, backgroundColor: "transparent", followCursor: false }],
+  ["Octopus", Octopus as never, { collide: true }],
+  ["Hummingbird", Hummingbird as never, { collide: true, birdCount: 3 }],
+  ["Candle", Candle as never, {}],
+  ["Cat", Cat as never, { collide: true }],
+  ["Cat (transparent, no cursor)", Cat as never, { backgroundColor: "transparent", followCursor: false, interactive: false }],
+  ["Jellyfish", Jellyfish as never, { collide: true, count: 3 }],
+  ["Snail", Snail as never, { collide: true, speed: 20 }],
+  ["Snail (ground, no trail)", Snail as never, { trail: false, speed: 20 }],
+  ["Sunflowers", Sunflowers as never, { count: 4 }],
+  ["Sunflowers (no cursor)", Sunflowers as never, { followCursor: false, backgroundColor: "transparent" }],
+  ["Komorebi", Komorebi as never, {}],
+  ["Komorebi (overlay)", Komorebi as never, { overlay: true, sunHeight: 0.2 }],
+  ["TidePool", TidePool as never, { fishCount: 4 }],
+  ["Eye (slit, no lashes)", Eye as never, { pupilShape: "slit", showLashes: false, followCursor: false }],
   ["SunbeamDust", SunbeamDust as never, {}],
   ["PaperLanterns", PaperLanterns as never, { collide: true }],
   ["KelpForest", KelpForest as never, {}],
   ["SnowDrift", SnowDrift as never, { collide: true, count: 400 }],
-  ["FrostGlass", FrostGlass as never, { collide: true, growthSpeed: 4 }],
   ["OrigamiCranes", OrigamiCranes as never, { collide: true }],
   ["SeasonsTree", SeasonsTree as never, { collide: true, cycleSeconds: 8 }],
   ["InkMountains", InkMountains as never, {}],

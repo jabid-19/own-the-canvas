@@ -20,10 +20,10 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders 60 component cards", () => {
+  it("renders 68 component cards", () => {
     render(<Wrapper />);
     const cards = screen.getAllByTestId("component-card");
-    expect(cards).toHaveLength(60);
+    expect(cards).toHaveLength(68);
   });
 
   it("renders install command", () => {
@@ -31,7 +31,7 @@ describe("Home", () => {
     expect(screen.getAllByText(/npm install own-the-canvas/i).length).toBeGreaterThan(0);
   });
 
-  // Scoped to the hero: role queries over all 60 cards are slow enough to time out.
+  // Scoped to the hero: role queries over all 68 cards are slow enough to time out.
   const hero = (container: HTMLElement) => within(container.querySelector<HTMLElement>(".home-hero")!);
 
   it("has Get Started link", () => {

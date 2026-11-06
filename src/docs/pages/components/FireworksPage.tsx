@@ -18,6 +18,7 @@ const PROPS = [
   { name: "glowEffect",      type: "boolean",  default: "true",      description: "Glow on particles." },
   { name: "glowBlur",        type: "number",   default: "8",         description: "Shadow blur for glow." },
   { name: "backgroundColor", type: "string",   default: '"#04060f"', description: "Canvas background color." },
+  { name: "showBackground",  type: "boolean", default: "true",      description: "Draw the night scene (sky, stars, burst glow, skyline). false = effect only, over a plain backgroundColor fill ('transparent' to overlay)." },
   { name: "shellSpeed",      type: "number",   default: "12",        description: "Shell upward speed." },
   { name: "starCount",       type: "number",   default: "80",        description: "Number of background stars." },
   { name: "starColor",       type: "string",   default: '"#ffffff"', description: "Star color." },
@@ -31,6 +32,7 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
   const [count, setCount] = useState(80);
   const [gravity, setGravity] = useState(0.08);
   const [spread, setSpread] = useState(5);
+  const [showBackground, setShowBackground] = useState(true);
   const [bg, setBg] = useState("#04060f");
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [glow, setGlow] = useState(true);
@@ -50,6 +52,7 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
     autoLaunch ? null : `  autoLaunch={false}`,
     glow ? null : `  glowEffect={false}`,
     `  backgroundColor="${bg}"`,
+    showBackground ? null : `  showBackground={false}`,
     starCount > 0 ? `  starCount={${starCount}}` : null,
     starCount > 0 ? `  starColor="${starColor}"` : null,
     starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
@@ -62,7 +65,7 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
   const preview = (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Fireworks preset={preset} particleCount={count} gravity={gravity}
-        spread={spread} backgroundColor={bg} autoLaunch={autoLaunch}
+        spread={spread} backgroundColor={bg} showBackground={showBackground} autoLaunch={autoLaunch}
         glowEffect={glow} starCount={starCount} starColor={starColor}
         glowingStars={glowingStars} starGlowBlur={starGlowBlur}
         width="100%" height="100%" />
@@ -76,6 +79,7 @@ function FireworksPlayground({ onReset }: { onReset?: () => void }) {
         <PSel label="Preset" value={preset} options={["default", "celebration", "subtle", "neon", "golden", "monochrome"]} onChange={setPreset} />
         <PDivider />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PToggle label="Show background" value={showBackground} onChange={setShowBackground} />
         <PSlider label="Particle count" value={count} min={20} max={200} step={10} onChange={setCount} />
       </div>
       <div>

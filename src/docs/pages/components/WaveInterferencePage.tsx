@@ -15,6 +15,7 @@ const PROPS = [
   { name: "resolution",      type: "number",  default: "0.4",      description: "Render resolution fraction — lower is faster." },
   { name: "animated",        type: "boolean", default: "true",     description: "Enable animation loop." },
   { name: "decay",           type: "number",  default: "0.003",    description: "Amplitude decay rate with distance from source." },
+  { name: "interactive",     type: "boolean", default: "true",      description: "Click empty water to add a source, click a source to remove it, drag to move it; the hovering cursor stirs ripples." },
   { name: "preset",          type: "string",  default: "—",        description: '"default" | "ripple" | "plasma" | "neon" | "cosmic" | "monochrome"' },
 ];
 
@@ -71,7 +72,7 @@ function WaveInterferencePlayground({ onReset }: { onReset?: () => void }) {
         width="100%"
         height="100%"
       />
-      <PLiveLabel />
+      <PLiveLabel text="Click to add a source · drag to move · hover to stir" />
     </div>
   );
 
@@ -104,7 +105,7 @@ export function WaveInterferencePage() {
     <PageShell
       eyebrow="Component"
       title="WaveInterference"
-      lead="Real-time wave superposition from multiple point sources. Click anywhere to add a source, click an existing source to remove it. Constructive and destructive interference fringes appear instantly."
+      lead="Wave interference as a lit water surface. Each source sends out ripples, and where they meet the summed surface is shaded with light and a glossy glint, so bright fringes and calm nodal lines read crisply. Click to add a source, click one to remove it, drag to move it, and your cursor stirs its own ripples."
     >
       <WaveInterferencePlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

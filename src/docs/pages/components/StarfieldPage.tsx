@@ -80,7 +80,7 @@ export function StarfieldPage() {
     <PageShell
       eyebrow="Component"
       title="Starfield"
-      lead="2D twinkle field or 3D warp-speed star tunnel. Switch perspectives with the perspective prop."
+      lead="A deep-sky vista: a Milky Way band with glowing star clouds, dark dust lanes and faint nebulae under three parallax layers of temperature-tinted stars, with diffraction spikes on the brightest and meteors now and then. The cursor looks around. Switch perspective to 3D for a warp tunnel the cursor steers."
     >
       <StarfieldPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

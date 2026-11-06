@@ -91,7 +91,7 @@ export function FluidSimulationPage() {
     <PageShell
       eyebrow="Component"
       title="FluidSimulation"
-      lead="Grid-based Navier-Stokes fluid simulation with per-channel RGB ink. Move the cursor to paint — velocity carries ink through the fluid field, diffusing and advecting each frame."
+      lead="Ink in water: a stable-fluids simulation with vorticity confinement. Three slow ink jets orbit the canvas and bursts bloom on a timer, so the field is always marbling even untouched. Move the cursor to drag ink and current behind it; tap to blow a ring outward."
     >
       <FluidSimulationPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

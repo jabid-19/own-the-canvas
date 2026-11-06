@@ -14,6 +14,9 @@ export interface UseSpiderWebOptions {
   disturbRadius: number;
   interactive: boolean;
   showSpider: boolean;
+  showMoon: boolean;
+  /** "" = derive a pale tint from glowColor */
+  moonColor: string;
 }
 
 interface Node { bx: number; by: number; ox: number; oy: number; vx: number; vy: number; f: number }
@@ -282,12 +285,16 @@ export function useSpiderWeb(
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
       const moon = { x: w * 0.86, y: h * 0.17 };
+      const moonRgb = o.moonColor ? hexToRgbString(o.moonColor) : mix(glow, "255,255,255", 0.7);
+      const halo = o.moonColor ? moonRgb : glow;
       ctx.globalCompositeOperation = "lighter";
-      const mg = ctx.createRadialGradient(moon.x, moon.y, 0, moon.x, moon.y, h * 0.55);
-      mg.addColorStop(0, `rgba(${glow},0.22)`);
-      mg.addColorStop(1, `rgba(${glow},0)`);
-      ctx.fillStyle = mg;
-      ctx.fillRect(0, 0, w, h);
+      if (o.showMoon) {
+        const mg = ctx.createRadialGradient(moon.x, moon.y, 0, moon.x, moon.y, h * 0.55);
+        mg.addColorStop(0, `rgba(${halo},0.22)`);
+        mg.addColorStop(1, `rgba(${halo},0)`);
+        ctx.fillStyle = mg;
+        ctx.fillRect(0, 0, w, h);
+      }
       for (const b of bokeh) {
         const bg2 = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
         bg2.addColorStop(0, `rgba(${glow},${b.a})`);
@@ -298,10 +305,18 @@ export function useSpiderWeb(
         ctx.arc(b.x + Math.sin(t * 0.1 + b.r) * 6, b.y, b.r, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.fillStyle = `rgba(${mix(glow, "255,255,255", 0.7)},0.55)`;
-      ctx.beginPath();
-      ctx.arc(moon.x, moon.y, 14 * Math.max(0.7, scale), 0, Math.PI * 2);
-      ctx.fill();
+      if (o.showMoon) {
+        const mr = 14 * Math.max(0.7, scale);
+        const corona = ctx.createRadialGradient(moon.x, moon.y, mr * 0.8, moon.x, moon.y, mr * 2.6);
+        corona.addColorStop(0, `rgba(${moonRgb},0.18)`);
+        corona.addColorStop(1, `rgba(${moonRgb},0)`);
+        ctx.fillStyle = corona;
+        ctx.fillRect(moon.x - mr * 2.6, moon.y - mr * 2.6, mr * 5.2, mr * 5.2);
+        ctx.fillStyle = `rgba(${moonRgb},0.55)`;
+        ctx.beginPath();
+        ctx.arc(moon.x, moon.y, mr, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.globalCompositeOperation = "source-over";
 
       // physics: each junction springs toward a wind-swayed rest position

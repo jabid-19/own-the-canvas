@@ -44,6 +44,10 @@ export interface SpiderWebProps extends BaseCanvasProps {
   interactive?: boolean;
   /** Show spider (default: true) */
   showSpider?: boolean;
+  /** Show the moon and its halo in the sky (default: true) */
+  showMoon?: boolean;
+  /** Moon color; also tints its halo (default: a pale tint of glowColor) */
+  moonColor?: string;
   /** Named preset */
   preset?: SpiderWebPreset | string;
 }
@@ -52,7 +56,7 @@ export const SpiderWeb = forwardRef<HTMLCanvasElement, SpiderWebProps>(
   (props, ref) => {
     const {
       preset, spokeCount, ringCount, webColor, backgroundColor, spiderColor,
-      dewDrops, glowColor, swaySpeed, disturbRadius, interactive, showSpider,
+      dewDrops, glowColor, swaySpeed, disturbRadius, interactive, showSpider, showMoon, moonColor,
       width, height, className, style,
     } = props;
 
@@ -72,6 +76,8 @@ export const SpiderWeb = forwardRef<HTMLCanvasElement, SpiderWebProps>(
       disturbRadius: disturbRadius ?? 80,
       interactive:   interactive   ?? true,
       showSpider:    showSpider    ?? true,
+      showMoon:      showMoon      ?? true,
+      moonColor:     moonColor     ?? "",
     });
 
     return (

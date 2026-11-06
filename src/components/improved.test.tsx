@@ -11,6 +11,20 @@ import { deform } from "./WatercolorBloom/useWatercolorBloom";
 import { SolarFlare } from "./SolarFlare";
 import { NoiseGradient } from "./NoiseGradient";
 import { WatercolorBloom } from "./WatercolorBloom";
+import { koiWidth } from "./KoiPond/useKoiPond";
+import { curtainProfile } from "./AuroraBorealis/useAuroraBorealis";
+import { starTint } from "./Starfield/useStarfield";
+import { stepLife } from "./GameOfLife/useGameOfLife";
+import { seedDisc } from "./ReactionDiffusion/useReactionDiffusion";
+import { waveAt } from "./WaveInterference/useWaveInterference";
+import { advect } from "./FluidSimulation/useFluidSimulation";
+import { KoiPond } from "./KoiPond";
+import { AuroraBorealis } from "./AuroraBorealis";
+import { Starfield } from "./Starfield";
+import { GameOfLife } from "./GameOfLife";
+import { ReactionDiffusion } from "./ReactionDiffusion";
+import { WaveInterference } from "./WaveInterference";
+import { FluidSimulation } from "./FluidSimulation";
 
 describe("TornadoVortex", () => {
   it("is a rope at the ground flaring into the cloud, spinning fastest at the base", () => {
@@ -108,6 +122,52 @@ describe("WatercolorBloom", () => {
   });
 });
 
+describe("KoiPond, AuroraBorealis, Starfield: shapes", () => {
+  it("koi body is widest in the front third and tapers to the tail", () => {
+    expect(koiWidth(0.3)).toBeGreaterThan(koiWidth(0.05));
+    expect(koiWidth(0.3)).toBeGreaterThan(koiWidth(0.9));
+    expect(koiWidth(1.2)).toBe(0);
+  });
+  it("aurora curtains have a sharp hem and a long upward glow", () => {
+    expect(curtainProfile(-0.1, 0.3)).toBeLessThan(0.2); // falls off fast below the hem
+    expect(curtainProfile(0.2, 0.3)).toBeGreaterThan(0.4); // still bright well above it
+    expect(curtainProfile(0.05, 0.3)).toBeGreaterThan(curtainProfile(0.5, 0.3));
+  });
+  it("star tints cover all five temperature classes", () => {
+    expect(new Set([0.05, 0.2, 0.5, 0.8, 0.95].map(starTint))).toEqual(new Set([0, 1, 2, 3, 4]));
+  });
+});
+
+describe("GameOfLife, ReactionDiffusion, WaveInterference, FluidSimulation: physics", () => {
+  it("a blinker oscillates and its surviving cell ages", () => {
+    const g = new Uint8Array(25), n = new Uint8Array(25);
+    g[11] = g[12] = g[13] = 1; // horizontal, row 2
+    expect(stepLife(g, n, 5, 5, false)).toBe(3);
+    expect([n[7], n[12], n[17]]).toEqual([1, 2, 1]); // vertical now; the center survived
+    expect(n[11]).toBe(0);
+  });
+  it("seedDisc drops V, wrapping at the edges", () => {
+    const u = new Float32Array(100).fill(1), v = new Float32Array(100);
+    seedDisc(u, v, 10, 10, 0, 0, 1);
+    expect(v[0]).toBeCloseTo(0.25);
+    expect(v[9]).toBeCloseTo(0.25); // wrapped to the right edge
+  });
+  it("two in-phase sources reinforce on their bisector", () => {
+    const src = [{ x: 0, y: 0, amp: 1 }, { x: 100, y: 0, amp: 1 }];
+    const [hgt] = waveAt(50, 0, src, (2 * Math.PI) / 50, 0, 0); // 50px from each: one full wavelength
+    expect(hgt).toBeCloseTo(1);
+    const [, , , env] = waveAt(50, 0, src, 1, 0, 0.01);
+    expect(env).toBeCloseTo(Math.exp(-0.5));
+  });
+  it("advect carries a value downstream", () => {
+    const W = 8, H = 8, d0 = new Float32Array(64), d = new Float32Array(64);
+    d0[3 + 4 * W] = 1;
+    const u = new Float32Array(64).fill(1), v = new Float32Array(64); // 1 cell/s to the right
+    advect(W, H, 0, d, d0, u, v, 1);
+    expect(d[4 + 4 * W]).toBeCloseTo(1);
+  });
+});
+
 describe("improved effects: frame smoke test", () => {
   const h = useFrameHarness();
   const EFFECTS: [string, ComponentType<Record<string, unknown>>, Record<string, unknown>][] = [
@@ -115,6 +175,15 @@ describe("improved effects: frame smoke test", () => {
     ["NoiseGradient", NoiseGradient as never, {}],
     ["NoiseGradient (static)", NoiseGradient as never, { animated: false }],
     ["WatercolorBloom", WatercolorBloom as never, { autoBloomInterval: 100 }],
+    ["KoiPond", KoiPond as never, { fishCount: 4 }],
+    ["AuroraBorealis", AuroraBorealis as never, {}],
+    ["AuroraBorealis (static)", AuroraBorealis as never, { animated: false }],
+    ["Starfield", Starfield as never, { shootingStarInterval: 200 }],
+    ["Starfield (3D)", Starfield as never, { perspective: "3D" }],
+    ["GameOfLife", GameOfLife as never, { speed: 30 }],
+    ["ReactionDiffusion", ReactionDiffusion as never, { resolution: 0.2 }],
+    ["WaveInterference", WaveInterference as never, { resolution: 0.2 }],
+    ["FluidSimulation", FluidSimulation as never, { resolution: 40, autoInkInterval: 100 }],
   ];
 
   it.each(EFFECTS)("%s runs 300 frames with clicks without throwing", (_n, Effect, props) => {

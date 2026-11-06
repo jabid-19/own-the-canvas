@@ -57,3 +57,14 @@ export function sampleGradient(colors: string[], t: number): [number, number, nu
   const c2 = parseHex(colors[i + 1]) ?? [255, 255, 255];
   return lerpRgb(c1, c2, lt);
 }
+
+/** Blend two "r,g,b" strings: k = 0 gives a, 1 gives b. */
+export function mixRgb(a: string, b: string, k: number): string {
+  const A = a.split(",").map(Number), B = b.split(",").map(Number);
+  return A.map((v, i) => Math.round(v + (B[i] - v) * k)).join(",");
+}
+
+/** Hex to "r,g,b"; anything else (e.g. "transparent") falls back to `fallback`. */
+export function rgbOf(c: string, fallback = "255,255,255"): string {
+  return c.startsWith("#") ? hexToRgbString(c) : fallback;
+}

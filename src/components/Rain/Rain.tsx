@@ -89,6 +89,8 @@ export interface RainProps extends BaseCanvasProps {
   showSplashes?: boolean;
   /** Canvas background color. (default: "#0b1424") */
   backgroundColor?: string;
+  /** Draw the night-street scene (sky, city, lamps, wet ground). false = rain only, over a plain backgroundColor fill ("transparent" to overlay). (default: true) */
+  showBackground?: boolean;
   /** Number of background stars (default: 0) */
   starCount?: number;
   /** Star color (default: "#ffffff") */
@@ -105,7 +107,7 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
   const {
     preset,
     dropCount, speed, wind, windSpeed, dropLength, dropWidth,
-    dropOpacity, dropColor, splashColor, showSplashes, backgroundColor,
+    dropOpacity, dropColor, splashColor, showSplashes, backgroundColor, showBackground,
     starCount, starColor, glowingStars, starGlowBlur,
     width, height, className, style,
   } = props;
@@ -127,6 +129,7 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
     splashColor:  splashColor  ?? p.splashColor  ?? "#000000",
     showSplashes: showSplashes ?? p.showSplashes ?? true,
     backgroundColor: backgroundColor ?? p.backgroundColor ?? "#ffffff",
+    showBackground: showBackground ?? true,
     starCount:    starCount    ?? 60,
     starColor:    starColor    ?? "#ffffff",
     glowingStars: glowingStars ?? false,

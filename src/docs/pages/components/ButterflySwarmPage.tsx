@@ -9,7 +9,7 @@ const PROPS = [
   { name: "butterflyCount",  type: "number",  default: "12",        description: "Number of butterflies." },
   { name: "wingColor",       type: "string",  default: '"#e06010"', description: "Primary wing fill color." },
   { name: "patternColor",    type: "string",  default: '"#111111"', description: "Wing spot and body color." },
-  { name: "backgroundColor", type: "string",  default: '"#0a0800"', description: "Canvas background." },
+  { name: "backgroundColor", type: "string",  default: '"#0a0800"', description: 'Canvas background. Use "transparent" for butterflies only.' },
   { name: "flapSpeed",       type: "number",  default: "1",         description: "Wing flap speed multiplier." },
   { name: "speed",           type: "number",  default: "1",         description: "Movement speed multiplier." },
   { name: "attractRadius",   type: "number",  default: "120",       description: "Cursor attraction/scatter radius in px." },
@@ -115,7 +115,7 @@ export function ButterflySwarmPage() {
     <PageShell
       eyebrow="Component"
       title="ButterflySwarm"
-      lead="A flock of flapping butterflies that drift autonomously. Hover to slowly attract them — move fast to scatter the swarm."
+      lead="Butterflies with veined fore- and hindwings, dark margins and pale spots, folding in perspective as they beat and gliding now and then. Hover to slowly attract them — move fast to scatter the swarm."
     >
       <ButterflySwarmPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
       <section className="page-section" aria-labelledby="usage-h">

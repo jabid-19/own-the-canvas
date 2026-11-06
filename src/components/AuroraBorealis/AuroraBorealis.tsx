@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useAuroraBorealis } from "./useAuroraBorealis";
 
 type AuroraBorealisPreset = "default" | "arctic" | "solar" | "tropical" | "neon" | "midnight" | "monochrome";
@@ -28,18 +29,20 @@ export interface AuroraBorealisProps extends BaseCanvasProps {
   speed?: number;
   /** Band brightness/opacity 0–1 (default: 0.8) */
   intensity?: number;
-  /** Number of aurora layers (default: 5) */
+  /** Number of aurora curtains (default: 5) */
   layers?: number;
   /** Sky background color (default: "#050a0f") */
   backgroundColor?: string;
-  /** Wave height as fraction of canvas height (default: 0.15) */
+  /** How far the curtains fold, as a fraction of the sky height (default: 0.15) */
   waveAmplitude?: number;
-  /** Wave oscillations across canvas width (default: 2) */
+  /** Folds across the width (default: 2) */
   waveFrequency?: number;
   /** Background star count (default: 80) */
   starCount?: number;
   /** Enable animation (default: true) */
   animated?: boolean;
+  /** The cursor brightens the curtains near it; a tap sets off a substorm surge (default: true) */
+  interactive?: boolean;
   /** Named preset */
   preset?: AuroraBorealisPreset | string;
 }
@@ -57,6 +60,7 @@ export const AuroraBorealis = forwardRef<HTMLCanvasElement, AuroraBorealisProps>
       waveFrequency,
       starCount,
       animated,
+      interactive,
       width,
       height,
       className,
@@ -64,10 +68,7 @@ export const AuroraBorealis = forwardRef<HTMLCanvasElement, AuroraBorealisProps>
     } = props;
 
     const p = PRESETS[(preset ?? "default") as AuroraBorealisPreset] || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useAuroraBorealis(internalRef, {
+    const { canvasRef, canvas } = useAuroraBorealis({
       colors:          colors          ?? p.colors          ?? ["#ffffff", "#6b7280", "#9ca3af"],
       speed:           speed           ?? p.speed           ?? 1,
       intensity:       intensity       ?? p.intensity       ?? 0.8,
@@ -77,26 +78,13 @@ export const AuroraBorealis = forwardRef<HTMLCanvasElement, AuroraBorealisProps>
       waveFrequency:   waveFrequency   ?? 2,
       starCount:       starCount       ?? 80,
       animated:        animated        ?? true,
+      interactive:     interactive     ?? true,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={style} />
     );
   }
 );

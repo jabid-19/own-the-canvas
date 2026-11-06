@@ -25,7 +25,6 @@ const SpirographPage       = lazy(() => import("./pages/components/SpirographPag
 const SandSimulationPage   = lazy(() => import("./pages/components/SandSimulationPage").then((m) => ({ default: m.SandSimulationPage })));
 const WaveInterferencePage = lazy(() => import("./pages/components/WaveInterferencePage").then((m) => ({ default: m.WaveInterferencePage })));
 const DiffusionAggregationPage = lazy(() => import("./pages/components/DiffusionAggregationPage").then((m) => ({ default: m.DiffusionAggregationPage })));
-const LSystemPage        = lazy(() => import("./pages/components/LSystemPage").then((m) => ({ default: m.LSystemPage })));
 const KaleidoscopePage   = lazy(() => import("./pages/components/KaleidoscopePage").then((m) => ({ default: m.KaleidoscopePage })));
 const VoronoiCellsPage   = lazy(() => import("./pages/components/VoronoiCellsPage").then((m) => ({ default: m.VoronoiCellsPage })));
 const SlimeMoldPage      = lazy(() => import("./pages/components/SlimeMoldPage").then((m) => ({ default: m.SlimeMoldPage })));
@@ -41,7 +40,6 @@ const SakuraBlossomPage  = lazy(() => import("./pages/components/SakuraBlossomPa
 const KoiPondPage        = lazy(() => import("./pages/components/KoiPondPage").then((m) => ({ default: m.KoiPondPage })));
 const SpiderWebPage     = lazy(() => import("./pages/components/SpiderWebPage").then((m) => ({ default: m.SpiderWebPage })));
 const ButterflySwarmPage = lazy(() => import("./pages/components/ButterflySwarmPage").then((m) => ({ default: m.ButterflySwarmPage })));
-const DeepSeaBioluminescencePage = lazy(() => import("./pages/components/DeepSeaBioluminescencePage").then((m) => ({ default: m.DeepSeaBioluminescencePage })));
 const BlackHolePage      = lazy(() => import("./pages/components/BlackHolePage").then((m) => ({ default: m.BlackHolePage })));
 const GalaxySpiralPage   = lazy(() => import("./pages/components/GalaxySpiralPage").then((m) => ({ default: m.GalaxySpiralPage })));
 const TornadoVortexPage  = lazy(() => import("./pages/components/TornadoVortexPage").then((m) => ({ default: m.TornadoVortexPage })));
@@ -51,12 +49,22 @@ const IvyGrowthPage = lazy(() => import("./pages/components/IvyGrowthPage").then
 const FirefliesPage = lazy(() => import("./pages/components/FirefliesPage").then((m) => ({ default: m.FirefliesPage })));
 const DandelionPage = lazy(() => import("./pages/components/DandelionPage").then((m) => ({ default: m.DandelionPage })));
 const GrassFieldPage = lazy(() => import("./pages/components/GrassFieldPage").then((m) => ({ default: m.GrassFieldPage })));
+const OwlPage = lazy(() => import("./pages/components/OwlPage").then((m) => ({ default: m.OwlPage })));
+const OctopusPage = lazy(() => import("./pages/components/OctopusPage").then((m) => ({ default: m.OctopusPage })));
+const HummingbirdPage = lazy(() => import("./pages/components/HummingbirdPage").then((m) => ({ default: m.HummingbirdPage })));
+const CandlePage = lazy(() => import("./pages/components/CandlePage").then((m) => ({ default: m.CandlePage })));
+const CatPage = lazy(() => import("./pages/components/CatPage").then((m) => ({ default: m.CatPage })));
+const JellyfishPage = lazy(() => import("./pages/components/JellyfishPage").then((m) => ({ default: m.JellyfishPage })));
+const SnailPage = lazy(() => import("./pages/components/SnailPage").then((m) => ({ default: m.SnailPage })));
+const SunflowersPage = lazy(() => import("./pages/components/SunflowersPage").then((m) => ({ default: m.SunflowersPage })));
+const KomorebiPage = lazy(() => import("./pages/components/KomorebiPage").then((m) => ({ default: m.KomorebiPage })));
+const TidePoolPage = lazy(() => import("./pages/components/TidePoolPage").then((m) => ({ default: m.TidePoolPage })));
+const EyePage = lazy(() => import("./pages/components/EyePage").then((m) => ({ default: m.EyePage })));
 const MothsPage = lazy(() => import("./pages/components/MothsPage").then((m) => ({ default: m.MothsPage })));
 const SunbeamDustPage = lazy(() => import("./pages/components/SunbeamDustPage").then((m) => ({ default: m.SunbeamDustPage })));
 const PaperLanternsPage = lazy(() => import("./pages/components/PaperLanternsPage").then((m) => ({ default: m.PaperLanternsPage })));
 const KelpForestPage = lazy(() => import("./pages/components/KelpForestPage").then((m) => ({ default: m.KelpForestPage })));
 const SnowDriftPage = lazy(() => import("./pages/components/SnowDriftPage").then((m) => ({ default: m.SnowDriftPage })));
-const FrostGlassPage = lazy(() => import("./pages/components/FrostGlassPage").then((m) => ({ default: m.FrostGlassPage })));
 const OrigamiCranesPage = lazy(() => import("./pages/components/OrigamiCranesPage").then((m) => ({ default: m.OrigamiCranesPage })));
 const SeasonsTreePage = lazy(() => import("./pages/components/SeasonsTreePage").then((m) => ({ default: m.SeasonsTreePage })));
 const InkMountainsPage = lazy(() => import("./pages/components/InkMountainsPage").then((m) => ({ default: m.InkMountainsPage })));
@@ -127,7 +135,6 @@ export function DocsApp() {
           <Route path="/components/sand-simulation"    element={<SandSimulationPage />} />
           <Route path="/components/wave-interference"  element={<WaveInterferencePage />} />
           <Route path="/components/diffusion-aggregation" element={<DiffusionAggregationPage />} />
-          <Route path="/components/l-system"             element={<LSystemPage />} />
           <Route path="/components/kaleidoscope"         element={<KaleidoscopePage />} />
           <Route path="/components/voronoi-cells"        element={<VoronoiCellsPage />} />
           <Route path="/components/slime-mold"           element={<SlimeMoldPage />} />
@@ -143,7 +150,6 @@ export function DocsApp() {
           <Route path="/components/koi-pond"             element={<KoiPondPage />} />
           <Route path="/components/spider-web"          element={<SpiderWebPage />} />
           <Route path="/components/butterfly-swarm"     element={<ButterflySwarmPage />} />
-          <Route path="/components/deep-sea-bioluminescence" element={<DeepSeaBioluminescencePage />} />
           <Route path="/components/black-hole"           element={<BlackHolePage />} />
           <Route path="/components/galaxy-spiral"        element={<GalaxySpiralPage />} />
           <Route path="/components/tornado-vortex"       element={<TornadoVortexPage />} />
@@ -154,11 +160,21 @@ export function DocsApp() {
           <Route path="/components/dandelion" element={<DandelionPage />} />
           <Route path="/components/grass-field" element={<GrassFieldPage />} />
           <Route path="/components/moths" element={<MothsPage />} />
+          <Route path="/components/eye" element={<EyePage />} />
+          <Route path="/components/owl" element={<OwlPage />} />
+          <Route path="/components/octopus" element={<OctopusPage />} />
+          <Route path="/components/hummingbird" element={<HummingbirdPage />} />
+          <Route path="/components/candle" element={<CandlePage />} />
+          <Route path="/components/cat" element={<CatPage />} />
+          <Route path="/components/jellyfish" element={<JellyfishPage />} />
+          <Route path="/components/snail" element={<SnailPage />} />
+          <Route path="/components/sunflowers" element={<SunflowersPage />} />
+          <Route path="/components/komorebi" element={<KomorebiPage />} />
+          <Route path="/components/tide-pool" element={<TidePoolPage />} />
           <Route path="/components/sunbeam-dust" element={<SunbeamDustPage />} />
           <Route path="/components/paper-lanterns" element={<PaperLanternsPage />} />
           <Route path="/components/kelp-forest" element={<KelpForestPage />} />
           <Route path="/components/snow-drift" element={<SnowDriftPage />} />
-          <Route path="/components/frost-glass" element={<FrostGlassPage />} />
           <Route path="/components/origami-cranes" element={<OrigamiCranesPage />} />
           <Route path="/components/seasons-tree" element={<SeasonsTreePage />} />
           <Route path="/components/ink-mountains" element={<InkMountainsPage />} />

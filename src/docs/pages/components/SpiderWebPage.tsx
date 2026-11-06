@@ -16,6 +16,8 @@ const PROPS = [
   { name: "disturbRadius",  type: "number",  default: "80",         description: "Cursor disturbance radius in px." },
   { name: "interactive",    type: "boolean", default: "true",       description: "Cursor pulls web strands." },
   { name: "showSpider",     type: "boolean", default: "true",       description: "Show the spider." },
+  { name: "showMoon",       type: "boolean", default: "true",       description: "Show the moon and its halo." },
+  { name: "moonColor",      type: "string",  default: "—",          description: "Moon color; also tints its halo. Defaults to a pale tint of glowColor." },
   { name: "preset",         type: "string",  default: "—",          description: '"default" | "night" | "forest" | "neon" | "frost" | "monochrome"' },
 ];
 
@@ -41,6 +43,8 @@ function SpiderWebPlayground({ onReset }: { onReset?: () => void }) {
   const [dewDrops, setDewDrops]         = useState(true);
   const [interactive, setInteractive]   = useState(true);
   const [showSpider, setShowSpider]     = useState(true);
+  const [showMoon, setShowMoon]         = useState(true);
+  const [moonColor, setMoonColor]       = useState("#f4f1e0");
 
   function onPresetChange(p: string) {
     setPreset(p);
@@ -67,6 +71,8 @@ function SpiderWebPlayground({ onReset }: { onReset?: () => void }) {
     `  dewDrops={${dewDrops}}`,
     `  interactive={${interactive}}`,
     `  showSpider={${showSpider}}`,
+    `  showMoon={${showMoon}}`,
+    `  moonColor="${moonColor}"`,
     `  width="100%"`,
     `  height="100%"`,
     `/>`,
@@ -87,6 +93,8 @@ function SpiderWebPlayground({ onReset }: { onReset?: () => void }) {
         dewDrops={dewDrops}
         interactive={interactive}
         showSpider={showSpider}
+        showMoon={showMoon}
+        moonColor={moonColor}
         width="100%"
         height="100%"
       />
@@ -105,6 +113,8 @@ function SpiderWebPlayground({ onReset }: { onReset?: () => void }) {
         <PColor label="Glow color" value={glowColor} onChange={setGlowColor} />
         <PToggle label="Dew drops" value={dewDrops} onChange={setDewDrops} />
         <PToggle label="Show spider" value={showSpider} onChange={setShowSpider} />
+        <PToggle label="Show moon" value={showMoon} onChange={setShowMoon} />
+        <PColor label="Moon color" value={moonColor} onChange={setMoonColor} />
         <PToggle label="Interactive" value={interactive} onChange={setInteractive} />
       </div>
       <div>

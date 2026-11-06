@@ -1,12 +1,13 @@
-import { useRef, useEffect, RefObject } from "react";
-import { hexToRgbString } from "../../utils/color";
-import { pointerInCanvas } from "../../runtime/fx";
+import { useRef } from "react";
+import { useCanvasSetup } from "../../hooks/useCanvasSetup";
+import { usePointer, readPointer } from "../../runtime/fx";
+import { rgbOf } from "../../utils/color";
 
-// Simplified 2D fluid simulation (Jos Stam "Real-Time Fluid Dynamics for Games")
-// Grid-based Eulerian approach with velocity diffusion, advection, and pressure projection
+// Stable fluids (Jos Stam, "Real-Time Fluid Dynamics for Games") on a rectangular grid of square
+// cells, with vorticity confinement so the swirls stay crisp instead of smearing out.
 
 export interface UseFluidSimulationOptions {
-  resolution: number; // grid cells (lower = faster)
+  resolution: number; // cells along the long side ≈ resolution * aspect^0.5
   viscosity: number;
   diffusion: number;
   dissipation: number;
@@ -20,305 +21,271 @@ export interface UseFluidSimulationOptions {
   inkRadius: number;
 }
 
-function idx(x: number, y: number, N: number) {
-  return Math.min(x, N - 1) + Math.min(y, N - 1) * N;
+interface Grid {
+  W: number; H: number;
+  u: Float32Array; v: Float32Array; u0: Float32Array; v0: Float32Array;
+  r: Float32Array; g: Float32Array; b: Float32Array; tmp: Float32Array;
+  p: Float32Array; div: Float32Array; curl: Float32Array;
+  c: HTMLCanvasElement | null; ctx: CanvasRenderingContext2D | null; img: ImageData | null;
 }
 
-function diffuse(N: number, b: number, x: Float32Array, x0: Float32Array, diff: number, dt: number) {
-  const a = dt * diff * N * N;
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
+function bound(W: number, H: number, b: number, x: Float32Array) {
+  for (let i = 1; i < W - 1; i++) {
+    x[i] = b === 2 ? -x[i + W] : x[i + W];
+    x[i + (H - 1) * W] = b === 2 ? -x[i + (H - 2) * W] : x[i + (H - 2) * W];
+  }
+  for (let j = 1; j < H - 1; j++) {
+    x[j * W] = b === 1 ? -x[1 + j * W] : x[1 + j * W];
+    x[W - 1 + j * W] = b === 1 ? -x[W - 2 + j * W] : x[W - 2 + j * W];
+  }
+  x[0] = 0.5 * (x[1] + x[W]);
+  x[W - 1] = 0.5 * (x[W - 2] + x[2 * W - 1]);
+  x[(H - 1) * W] = 0.5 * (x[1 + (H - 1) * W] + x[(H - 2) * W]);
+  x[W * H - 1] = 0.5 * (x[W * H - 2] + x[W * (H - 1) - 1]);
+}
+
+function diffuse(W: number, H: number, b: number, x: Float32Array, x0: Float32Array, diff: number, dt: number) {
+  const a = dt * diff * W * H;
+  if (a <= 0) { x.set(x0); return; }
   const c = 1 + 4 * a;
   for (let k = 0; k < 4; k++) {
-    for (let j = 1; j < N - 1; j++) {
-      for (let i = 1; i < N - 1; i++) {
-        x[idx(i, j, N)] = (x0[idx(i, j, N)] + a * (
-          x[idx(i - 1, j, N)] + x[idx(i + 1, j, N)] +
-          x[idx(i, j - 1, N)] + x[idx(i, j + 1, N)]
-        )) / c;
+    for (let j = 1; j < H - 1; j++) {
+      for (let i = 1; i < W - 1; i++) {
+        const n = i + j * W;
+        x[n] = (x0[n] + a * (x[n - 1] + x[n + 1] + x[n - W] + x[n + W])) / c;
       }
     }
-    setBoundary(N, b, x);
+    bound(W, H, b, x);
   }
 }
 
-function advect(N: number, b: number, d: Float32Array, d0: Float32Array, u: Float32Array, v: Float32Array, dt: number) {
-  const dt0 = dt * N;
-  for (let j = 1; j < N - 1; j++) {
-    for (let i = 1; i < N - 1; i++) {
-      let x = i - dt0 * u[idx(i, j, N)];
-      let y = j - dt0 * v[idx(i, j, N)];
-      x = Math.max(0.5, Math.min(N - 1.5, x));
-      y = Math.max(0.5, Math.min(N - 1.5, y));
-      const i0 = Math.floor(x); const i1 = i0 + 1;
-      const j0 = Math.floor(y); const j1 = j0 + 1;
-      const s1 = x - i0; const s0 = 1 - s1;
-      const t1 = y - j0; const t0 = 1 - t1;
-      d[idx(i, j, N)] =
-        s0 * (t0 * d0[idx(i0, j0, N)] + t1 * d0[idx(i0, j1, N)]) +
-        s1 * (t0 * d0[idx(i1, j0, N)] + t1 * d0[idx(i1, j1, N)]);
+/** Semi-Lagrangian advection; velocities are in cells per second. */
+export function advect(W: number, H: number, b: number, d: Float32Array, d0: Float32Array, u: Float32Array, v: Float32Array, dt: number) {
+  for (let j = 1; j < H - 1; j++) {
+    for (let i = 1; i < W - 1; i++) {
+      const n = i + j * W;
+      const x = clamp(i - dt * u[n], 0.5, W - 1.5), y = clamp(j - dt * v[n], 0.5, H - 1.5);
+      const i0 = Math.floor(x), j0 = Math.floor(y);
+      const s1 = x - i0, t1 = y - j0, s0 = 1 - s1, t0 = 1 - t1;
+      const m = i0 + j0 * W;
+      d[n] = s0 * (t0 * d0[m] + t1 * d0[m + W]) + s1 * (t0 * d0[m + 1] + t1 * d0[m + 1 + W]);
     }
   }
-  setBoundary(N, b, d);
+  bound(W, H, b, d);
 }
 
-function project(N: number, u: Float32Array, v: Float32Array, p: Float32Array, div: Float32Array) {
-  const h = 1.0 / N;
-  for (let j = 1; j < N - 1; j++) {
-    for (let i = 1; i < N - 1; i++) {
-      div[idx(i, j, N)] = -0.5 * h * (
-        u[idx(i + 1, j, N)] - u[idx(i - 1, j, N)] +
-        v[idx(i, j + 1, N)] - v[idx(i, j - 1, N)]
-      );
-      p[idx(i, j, N)] = 0;
+function project(G: Grid) {
+  const { W, H, u, v, p, div } = G;
+  for (let j = 1; j < H - 1; j++) {
+    for (let i = 1; i < W - 1; i++) {
+      const n = i + j * W;
+      div[n] = -0.5 * (u[n + 1] - u[n - 1] + v[n + W] - v[n - W]);
+      p[n] = 0;
     }
   }
-  setBoundary(N, 0, div);
-  setBoundary(N, 0, p);
-
-  for (let k = 0; k < 4; k++) {
-    for (let j = 1; j < N - 1; j++) {
-      for (let i = 1; i < N - 1; i++) {
-        p[idx(i, j, N)] = (div[idx(i, j, N)] +
-          p[idx(i - 1, j, N)] + p[idx(i + 1, j, N)] +
-          p[idx(i, j - 1, N)] + p[idx(i, j + 1, N)]) / 4;
+  bound(W, H, 0, div); bound(W, H, 0, p);
+  for (let k = 0; k < 12; k++) {
+    for (let j = 1; j < H - 1; j++) {
+      for (let i = 1; i < W - 1; i++) {
+        const n = i + j * W;
+        p[n] = (div[n] + p[n - 1] + p[n + 1] + p[n - W] + p[n + W]) / 4;
       }
     }
-    setBoundary(N, 0, p);
+    bound(W, H, 0, p);
   }
-
-  for (let j = 1; j < N - 1; j++) {
-    for (let i = 1; i < N - 1; i++) {
-      u[idx(i, j, N)] -= 0.5 * (p[idx(i + 1, j, N)] - p[idx(i - 1, j, N)]) / h;
-      v[idx(i, j, N)] -= 0.5 * (p[idx(i, j + 1, N)] - p[idx(i, j - 1, N)]) / h;
+  for (let j = 1; j < H - 1; j++) {
+    for (let i = 1; i < W - 1; i++) {
+      const n = i + j * W;
+      u[n] -= 0.5 * (p[n + 1] - p[n - 1]);
+      v[n] -= 0.5 * (p[n + W] - p[n - W]);
     }
   }
-  setBoundary(N, 1, u);
-  setBoundary(N, 2, v);
+  bound(W, H, 1, u); bound(W, H, 2, v);
 }
 
-function setBoundary(N: number, b: number, x: Float32Array) {
-  for (let i = 1; i < N - 1; i++) {
-    x[idx(0, i, N)] = b === 1 ? -x[idx(1, i, N)] : x[idx(1, i, N)];
-    x[idx(N - 1, i, N)] = b === 1 ? -x[idx(N - 2, i, N)] : x[idx(N - 2, i, N)];
-    x[idx(i, 0, N)] = b === 2 ? -x[idx(i, 1, N)] : x[idx(i, 1, N)];
-    x[idx(i, N - 1, N)] = b === 2 ? -x[idx(i, N - 2, N)] : x[idx(i, N - 2, N)];
+/** Vorticity confinement: push velocity around existing curls so small eddies survive. */
+function confine(G: Grid, eps: number, dt: number) {
+  const { W, H, u, v, curl } = G;
+  for (let j = 1; j < H - 1; j++) for (let i = 1; i < W - 1; i++) {
+    const n = i + j * W;
+    curl[n] = 0.5 * (v[n + 1] - v[n - 1] - (u[n + W] - u[n - W]));
   }
-  x[idx(0, 0, N)] = 0.5 * (x[idx(1, 0, N)] + x[idx(0, 1, N)]);
-  x[idx(N - 1, 0, N)] = 0.5 * (x[idx(N - 2, 0, N)] + x[idx(N - 1, 1, N)]);
-  x[idx(0, N - 1, N)] = 0.5 * (x[idx(1, N - 1, N)] + x[idx(0, N - 2, N)]);
-  x[idx(N - 1, N - 1, N)] = 0.5 * (x[idx(N - 2, N - 1, N)] + x[idx(N - 1, N - 2, N)]);
+  for (let j = 2; j < H - 2; j++) for (let i = 2; i < W - 2; i++) {
+    const n = i + j * W;
+    let nx = 0.5 * (Math.abs(curl[n + 1]) - Math.abs(curl[n - 1]));
+    let ny = 0.5 * (Math.abs(curl[n + W]) - Math.abs(curl[n - W]));
+    const l = Math.hypot(nx, ny) + 1e-5;
+    nx /= l; ny /= l;
+    u[n] += eps * ny * curl[n] * dt;
+    v[n] -= eps * nx * curl[n] * dt;
+  }
 }
 
-export function useFluidSimulation(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseFluidSimulationOptions
-) {
+function makeGrid(W: number, H: number): Grid {
+  const n = W * H;
+  const f = () => new Float32Array(n);
+  let c: HTMLCanvasElement | null = null, ctx: CanvasRenderingContext2D | null = null, img: ImageData | null = null;
+  if (typeof document !== "undefined") {
+    c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    ctx = c.getContext("2d");
+    img = ctx ? ctx.createImageData(W, H) : null;
+  }
+  return { W, H, u: f(), v: f(), u0: f(), v0: f(), r: f(), g: f(), b: f(), tmp: f(), p: f(), div: f(), curl: f(), c, ctx, img };
+}
+
+/**
+ * Ink in water. Three slow ink jets orbit the canvas and bursts bloom on a timer, all cycling
+ * through the palette, so the field is always flowing and marbling even untouched. Moving the
+ * cursor drags ink and current behind it; a tap blows a ring outward. Ink is tone-mapped so
+ * overlapping colors mix rather than blow out, with a faint relief sheen on its folds.
+ */
+export function useFluidSimulation(options: UseFluidSimulationOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
-  const rafRef = useRef<number>(0);
-  const mouseRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
-  const colorIndexRef = useRef<number>(0);
+  const pointer = usePointer();
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
+  const s = useRef({ t: 0, key: "", grid: null as Grid | null, nextBurst: 0.4, ci: 0, lx: -1, ly: -1 });
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
-    let w = 0, h = 0;
-
-    const N = Math.max(32, Math.min(128, options.resolution));
-    const size = N * N;
-
-    // Fluid state arrays
-    let u = new Float32Array(size);
-    let v = new Float32Array(size);
-    let u0 = new Float32Array(size);
-    let v0 = new Float32Array(size);
-    // Per-channel density for RGB ink
-    let dR = new Float32Array(size);
-    let dG = new Float32Array(size);
-    let dB = new Float32Array(size);
-    let dR0 = new Float32Array(size);
-    let dG0 = new Float32Array(size);
-    let dB0 = new Float32Array(size);
-    let p = new Float32Array(size);
-    let divArr = new Float32Array(size);
-    let imageData: ImageData | null = null;
-    // Synchronous offscreen canvas — avoids async createImageBitmap
-    const offscreen = document.createElement("canvas");
-    offscreen.width = N;
-    offscreen.height = N;
-    const offCtx = offscreen.getContext("2d")!;
-
-    function applyDpr(width: number, height: number) {
-      const cvs = canvasRef.current!;
-      const dpr = window.devicePixelRatio || 1;
-      cvs.width = Math.round(width * dpr);
-      cvs.height = Math.round(height * dpr);
-      cvs.style.width = `${width}px`;
-      cvs.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      w = width; h = height;
-      imageData = offCtx.createImageData(N, N);
+  function splat(G: Grid, gx: number, gy: number, vx: number, vy: number, rgb: number[], amount: number, radius: number) {
+    const R = Math.max(1, radius), R2 = R * R;
+    const x0 = Math.max(1, Math.floor(gx - R * 2)), x1 = Math.min(G.W - 2, Math.ceil(gx + R * 2));
+    const y0 = Math.max(1, Math.floor(gy - R * 2)), y1 = Math.min(G.H - 2, Math.ceil(gy + R * 2));
+    for (let j = y0; j <= y1; j++) for (let i = x0; i <= x1; i++) {
+      const d2 = (i - gx) ** 2 + (j - gy) ** 2;
+      const f = Math.exp(-d2 / R2);
+      if (f < 0.01) continue;
+      const n = i + j * G.W;
+      G.r[n] += rgb[0] * amount * f; G.g[n] += rgb[1] * amount * f; G.b[n] += rgb[2] * amount * f;
+      G.u[n] += vx * f; G.v[n] += vy * f;
     }
+  }
 
-    const ro = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) applyDpr(width, height);
-    });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number) {
+    const o = optionsRef.current;
+    const st = s.current;
+    const sec = Math.min(0.033, dt / 1000);
+    st.t += sec;
+    const t = st.t;
 
-    function addInkAt(gx: number, gy: number, vx: number, vy: number, r: number, g: number, b: number, force: number, radius: number) {
-      const ir = Math.max(1, Math.floor(radius));
-      for (let dy = -ir; dy <= ir; dy++) {
-        for (let dx = -ir; dx <= ir; dx++) {
-          const nx = gx + dx;
-          const ny = gy + dy;
-          if (nx < 1 || nx >= N - 1 || ny < 1 || ny >= N - 1) continue;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist > ir) continue;
-          const falloff = 1 - dist / ir;
-          const i = idx(nx, ny, N);
-          // Inject directly into current arrays — source arrays (d0/u0/v0)
-          // are overwritten by d0.set(d) at the start of each step, so
-          // writing to them here would be wiped before use.
-          dR[i] += r * falloff;
-          dG[i] += g * falloff;
-          dB[i] += b * falloff;
-          u[i] += vx * force * falloff;
-          v[i] += vy * force * falloff;
-        }
-      }
-    }
-
-    function onMouseMove(e: MouseEvent) {
-      const p = pointerInCanvas(e, canvasRef.current!);
-      if (!p) return onMouseLeave();
-      const mx = p.x;
-      const my = p.y;
-      const prev = mouseRef.current;
-      mouseRef.current = {
-        x: mx, y: my,
-        px: prev ? prev.x : mx,
-        py: prev ? prev.y : my,
-      };
-    }
-    function onMouseLeave() { mouseRef.current = null; }
-    window.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseleave", onMouseLeave);
-
-    // Auto ink runs on the frame clock: live autoInk/autoInkInterval, pauses with the loop.
-    let clockMs = 0, nextAutoAt = -1;
-    function autoSplash() {
-      const { inkColors } = optionsRef.current;
-      const color = inkColors[colorIndexRef.current % inkColors.length];
-      colorIndexRef.current++;
-      const rgb = hexToRgbString(color).split(",").map(Number);
-      const gx = Math.floor(N * 0.2 + Math.random() * N * 0.6);
-      const gy = Math.floor(N * 0.2 + Math.random() * N * 0.6);
-      const angle = Math.random() * Math.PI * 2;
-      addInkAt(gx, gy, Math.cos(angle) * 2, Math.sin(angle) * 2, rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, 3, 3);
-    }
-
-    function draw() {
-      const { viscosity, diffusion, dissipation, inkColors, backgroundColor, mouseForce, inkRadius, autoInk, autoInkInterval, glowEffect, glowBlur } = optionsRef.current;
-      const dt = 0.016;
-
-      clockMs += 16;
-      const nextGap = () => Math.max(50, autoInkInterval) * (0.6 + Math.random() * 0.8);
-      if (!autoInk) nextAutoAt = -1;
-      else if (nextAutoAt < 0) nextAutoAt = clockMs + nextGap();
-      else if (clockMs >= nextAutoAt) { autoSplash(); nextAutoAt = clockMs + nextGap(); }
-
-      // Mouse → inject velocity + ink
-      const mouse = mouseRef.current;
-      if (mouse) {
-        const gx = Math.floor((mouse.x / w) * N);
-        const gy = Math.floor((mouse.y / h) * N);
-        const dvx = (mouse.x - mouse.px) * 0.5;
-        const dvy = (mouse.y - mouse.py) * 0.5;
-
-        const color = inkColors[colorIndexRef.current % inkColors.length];
-        const rgb = hexToRgbString(color).split(",").map(Number);
-        addInkAt(gx, gy, dvx, dvy, rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, mouseForce, inkRadius);
-
-        if (Math.abs(dvx) + Math.abs(dvy) > 0.5) colorIndexRef.current++;
-        mouse.px = mouse.x;
-        mouse.py = mouse.y;
-      }
-
-      // Velocity step
-      u0.set(u); v0.set(v);
-      diffuse(N, 1, u, u0, viscosity, dt);
-      diffuse(N, 2, v, v0, viscosity, dt);
-      project(N, u, v, p, divArr);
-      u0.set(u); v0.set(v);
-      advect(N, 1, u, u0, u0, v0, dt);
-      advect(N, 2, v, v0, u0, v0, dt);
-      project(N, u, v, p, divArr);
-
-      // Density step — RGB channels
-      for (const [d, d0] of [[dR, dR0], [dG, dG0], [dB, dB0]] as [Float32Array, Float32Array][]) {
-        d0.set(d);
-        diffuse(N, 0, d, d0, diffusion, dt);
-        d0.set(d);
-        advect(N, 0, d, d0, u, v, dt);
-        for (let i = 0; i < size; i++) {
-          d[i] = Math.max(0, d[i] * dissipation);
-          d0[i] = 0;
-        }
-      }
-      for (let i = 0; i < size; i++) {
-        u0[i] = 0; v0[i] = 0;
-      }
-
-      // Render to canvas via ImageData
-      if (!imageData) { rafRef.current = requestAnimationFrame(draw); return; }
-
-      const data = imageData.data;
-      for (let j = 0; j < N; j++) {
-        for (let i = 0; i < N; i++) {
-          const ci = idx(i, j, N);
-          const base = (j * N + i) * 4;
-          data[base] = Math.min(255, dR[ci] * 255);
-          data[base + 1] = Math.min(255, dG[ci] * 255);
-          data[base + 2] = Math.min(255, dB[ci] * 255);
-          data[base + 3] = Math.min(255, (dR[ci] + dG[ci] + dB[ci]) * 200);
-        }
-      }
-
-      ctx.clearRect(0, 0, w, h);
-      if (backgroundColor && backgroundColor !== "transparent") {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, w, h);
-      }
-
-      // Synchronous: write pixels to offscreen canvas then scale to main canvas
-      offCtx.putImageData(imageData, 0, 0);
-      ctx.drawImage(offscreen, 0, 0, w, h);
-      // Glow: blurred additive copy of the ink. Skipped where ctx.filter is unsupported.
-      if (glowEffect && glowBlur > 0 && typeof ctx.filter === "string") {
-        ctx.save();
-        ctx.filter = `blur(${glowBlur}px)`;
-        ctx.globalCompositeOperation = "lighter";
-        ctx.globalAlpha = 0.6;
-        ctx.drawImage(offscreen, 0, 0, w, h);
-        ctx.restore();
-      }
-
-      rafRef.current = requestAnimationFrame(draw);
-    }
-
-    rafRef.current = requestAnimationFrame(draw);
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseleave", onMouseLeave);
+    // grid: ~resolution² cells, square in screen space
+    const N = clamp(Math.round(o.resolution), 32, 128);
+    const aspect = Math.max(0.2, Math.min(5, w / Math.max(1, h)));
+    const W = Math.max(8, Math.round(N * Math.sqrt(aspect))), H = Math.max(8, Math.round(N / Math.sqrt(aspect)));
+    const key = `${W}x${H}`;
+    if (st.key !== key || !st.grid) { st.key = key; st.grid = makeGrid(W, H); }
+    const G = st.grid;
+    const cell = w / W;
+    const palette = (o.inkColors.length ? o.inkColors : ["#ffffff"]).map((c) => rgbOf(c).split(",").map((x) => Number(x) / 255));
+    const colorAt = (k: number) => { // smooth walk through the palette
+      const f = ((k % palette.length) + palette.length) % palette.length, i = Math.floor(f), m = f - i;
+      const A = palette[i], B = palette[(i + 1) % palette.length];
+      return [A[0] + (B[0] - A[0]) * m, A[1] + (B[1] - A[1]) * m, A[2] + (B[2] - A[2]) * m];
     };
-  }, [canvasRef, options.resolution]);
+
+    // ---- sources ----
+    if (o.autoInk) {
+      for (let e = 0; e < 3; e++) { // three jets on slow Lissajous orbits
+        const a = t * 0.23 + e * Math.PI * 2 / 3;
+        const ex = W * (0.5 + 0.3 * Math.cos(a)), ey = H * (0.5 + 0.28 * Math.sin(a * 1.6 + e));
+        // aim toward the middle with a twist, so streams cross and roll up into eddies
+        const aim = Math.atan2(H / 2 - ey, W / 2 - ex) + 0.7 * Math.sin(t * 0.4 + e * 2);
+        splat(G, ex, ey, Math.cos(aim) * 55, Math.sin(aim) * 55, colorAt(t * 0.12 + e * 1.3), 6 * sec * 4, Math.max(1, o.inkRadius * 0.3));
+      }
+      st.nextBurst -= sec;
+      if (st.nextBurst <= 0) {
+        st.nextBurst = Math.max(0.05, o.autoInkInterval / 1000) * (0.6 + Math.random() * 0.8);
+        const gx = W * (0.15 + Math.random() * 0.7), gy = H * (0.15 + Math.random() * 0.7), a = Math.random() * Math.PI * 2;
+        splat(G, gx, gy, Math.cos(a) * 40, Math.sin(a) * 40, colorAt(st.ci++), 3, o.inkRadius);
+      }
+    }
+    const p = readPointer(pointer.current, canvasEl.current);
+    if (p.inside) {
+      const gx = p.x / cell, gy = p.y / cell;
+      if (st.lx >= 0) {
+        const dx = gx - st.lx, dy = gy - st.ly;
+        const moved = Math.hypot(dx, dy);
+        if (moved > 0.05) {
+          const steps = Math.min(8, Math.ceil(moved)); // stamp along the stroke so fast moves stay continuous
+          for (let i = 1; i <= steps; i++) {
+            splat(G, st.lx + dx * i / steps, st.ly + dy * i / steps, dx / sec * o.mouseForce * 0.08, dy / sec * o.mouseForce * 0.08, colorAt(st.ci * 0.15 + t * 0.2), 1.2 / steps, o.inkRadius * 0.7);
+          }
+          st.ci += moved * 0.02;
+        }
+      }
+      st.lx = gx; st.ly = gy;
+    } else st.lx = st.ly = -1;
+    for (const tap of p.taps) { // a ring blown outward
+      const gx = tap.x / cell, gy = tap.y / cell;
+      for (let k = 0; k < 10; k++) {
+        const a = (k / 10) * Math.PI * 2;
+        splat(G, gx + Math.cos(a) * 2, gy + Math.sin(a) * 2, Math.cos(a) * 60 * o.mouseForce * 0.2, Math.sin(a) * 60 * o.mouseForce * 0.2, colorAt(st.ci + k * 0.1), 0.35, o.inkRadius * 0.6);
+      }
+      st.ci++;
+    }
+
+    // ---- step ----
+    const { u, v, u0, v0, tmp } = G;
+    u0.set(u); v0.set(v);
+    diffuse(W, H, 1, u, u0, o.viscosity, sec);
+    diffuse(W, H, 2, v, v0, o.viscosity, sec);
+    confine(G, 14, sec);
+    project(G);
+    u0.set(u); v0.set(v);
+    advect(W, H, 1, u, u0, u0, v0, sec);
+    advect(W, H, 2, v, v0, u0, v0, sec);
+    project(G);
+    const keep = Math.pow(clamp(o.dissipation, 0, 1), sec * 60);
+    for (const d of [G.r, G.g, G.b]) {
+      tmp.set(d);
+      diffuse(W, H, 0, d, tmp, o.diffusion, sec);
+      tmp.set(d);
+      advect(W, H, 0, d, tmp, u, v, sec);
+      for (let i = 0; i < d.length; i++) d[i] *= keep;
+    }
+    const vk = Math.pow(0.999, sec * 60);
+    for (let i = 0; i < u.length; i++) { u[i] *= vk; v[i] *= vk; }
+
+    // ---- render ----
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, w, h);
+    if (o.backgroundColor && o.backgroundColor !== "transparent") { ctx.fillStyle = o.backgroundColor; ctx.fillRect(0, 0, w, h); }
+    if (!G.img || !G.ctx || !G.c) return;
+    const data = G.img.data;
+    const { r, g, b } = G;
+    for (let j = 0; j < H; j++) {
+      for (let i = 0; i < W; i++) {
+        const n = i + j * W;
+        const L = r[n] + g[n] + b[n];
+        // relief: light from the upper left across the ink's folds
+        const lE = i < W - 1 ? r[n + 1] + g[n + 1] + b[n + 1] : L, lW = i > 0 ? r[n - 1] + g[n - 1] + b[n - 1] : L;
+        const lS = j < H - 1 ? r[n + W] + g[n + W] + b[n + W] : L, lN = j > 0 ? r[n - W] + g[n - W] + b[n - W] : L;
+        const shade = clamp(1 + ((lW - lE) + (lN - lS)) * 0.9, 0.6, 1.5);
+        const q = n * 4;
+        data[q] = 255 * (1 - Math.exp(-r[n] * 2.6)) * shade;
+        data[q + 1] = 255 * (1 - Math.exp(-g[n] * 2.6)) * shade;
+        data[q + 2] = 255 * (1 - Math.exp(-b[n] * 2.6)) * shade;
+        data[q + 3] = 255 * (1 - Math.exp(-L * 2.2));
+      }
+    }
+    G.ctx.putImageData(G.img, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(G.c, 0, 0, w, h);
+    if (o.glowEffect && o.glowBlur > 0 && typeof ctx.filter === "string") { // glow: a blurred additive copy
+      ctx.save();
+      ctx.filter = `blur(${o.glowBlur}px)`;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.6;
+      ctx.drawImage(G.c, 0, 0, w, h);
+      ctx.restore();
+    }
+  }
+
+  const setup = useCanvasSetup({ onFrame: draw });
+  canvasEl.current = setup.canvas;
+  return setup;
 }

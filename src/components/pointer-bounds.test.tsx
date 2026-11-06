@@ -6,7 +6,6 @@ import { pointerInCanvas } from "../runtime/fx";
 import { DragonCursor } from "./DragonCursor";
 import { KoiPond } from "./KoiPond";
 import { ButterflySwarm } from "./ButterflySwarm";
-import { DeepSeaBioluminescence } from "./DeepSeaBioluminescence";
 import { Boids } from "./Boids";
 import { BlackHole } from "./BlackHole";
 import { BubbleUniverse } from "./BubbleUniverse";
@@ -58,7 +57,6 @@ describe("cursor-following effects ignore the cursor outside the canvas", () => 
     ["DragonCursor", DragonCursor as never],
     ["KoiPond", KoiPond as never],
     ["ButterflySwarm", ButterflySwarm as never],
-    ["DeepSeaBioluminescence", DeepSeaBioluminescence as never],
     ["Boids", Boids as never],
     ["BlackHole", BlackHole as never],
     ["BubbleUniverse", BubbleUniverse as never],

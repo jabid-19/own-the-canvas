@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 // Guards the "colorful default, monochrome opt-in" rule from component-creation-guide.md.
 const dir = join(__dirname);
 const components = readdirSync(dir).filter((d) => existsSync(join(dir, d, `${d}.tsx`)));
-const NO_PRESET_COLORS = new Set(["LSystem"]); // presets are shapes, color is a plain prop
+const NO_PRESET_COLORS = new Set<string>();
 
 describe("preset color defaults", () => {
   for (const name of components) {

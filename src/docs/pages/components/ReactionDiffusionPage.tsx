@@ -14,7 +14,7 @@ const PROPS = [
   { name: "colorA",         type: "string",  default: '"#04121f"', description: "Color at low V concentration." },
   { name: "colorB",         type: "string",  default: '"#5eead4"', description: "Color at high V concentration." },
   { name: "backgroundColor",type: "string",  default: '"#04121f"', description: "Canvas background color." },
-  { name: "interactive",    type: "boolean", default: "true",     description: "Mouse click+drag disturbs the chemical field." },
+  { name: "interactive",    type: "boolean", default: "true",     description: "Hovering seeds a trail of chemical (thicker while pressed); taps drop a blob." },
   { name: "preset",         type: "string",  default: "—",        description: '"default" | "coral" | "spots" | "maze" | "waves" | "neon" | "monochrome"' },
 ];
 
@@ -82,7 +82,7 @@ function ReactionDiffusionPlayground({ onReset }: { onReset?: () => void }) {
         width="100%"
         height="100%"
       />
-      <PLiveLabel />
+      <PLiveLabel text="Draw with the cursor · tap to seed" />
     </div>
   );
 
@@ -115,7 +115,7 @@ export function ReactionDiffusionPage() {
     <PageShell
       eyebrow="Component"
       title="ReactionDiffusion"
-      lead="Gray-Scott reaction-diffusion simulation. Two virtual chemicals interact to spontaneously grow coral, spots, mazes, and traveling waves from random seeds. Click and drag to disturb the field."
+      lead="Gray-Scott reaction-diffusion, lit like a wet relief. Feed and kill rates drift slowly across the canvas, so spots, stripes and mazes meet and keep morphing instead of freezing. Draw with your cursor to seed new growth; an exhausted field reseeds itself."
     >
       <ReactionDiffusionPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

@@ -14,6 +14,7 @@ const PROPS = [
   { name: "waveFrequency",   type: "number",   default: "2",        description: "Wave oscillations across canvas width." },
   { name: "starCount",       type: "number",   default: "80",       description: "Number of background stars." },
   { name: "animated",        type: "boolean",  default: "true",     description: "Enable animation loop." },
+  { name: "interactive",     type: "boolean",  default: "true",     description: "The cursor brightens the curtains near it; a tap sets off a substorm surge." },
   { name: "preset",          type: "string",   default: "—",        description: '"default" | "arctic" | "solar" | "tropical" | "neon" | "midnight" | "monochrome"' },
 ];
 
@@ -61,7 +62,7 @@ function AuroraBorealisPlayground({ onReset }: { onReset?: () => void }) {
         width="100%"
         height="100%"
       />
-      <PLiveLabel />
+      <PLiveLabel text="Sweep the sky · tap for a substorm" />
     </div>
   );
 
@@ -94,7 +95,7 @@ export function AuroraBorealisPage() {
     <PageShell
       eyebrow="Component"
       title="AuroraBorealis"
-      lead="Animated northern lights with layered sine-wave curtains, vertical streaks, and a star field. Uses additive screen blending to build luminous, overlapping color bands."
+      lead="Northern lights over a mountain lake. Each layer is a folding curtain of vertical rays with a sharp bright hem that fades upward into a second color, brightest where it folds back on itself, mirrored in the still water below. Sweep the cursor across the sky to brighten the curtains; tap to set off a substorm."
     >
       <AuroraBorealisPlayground key={resetKey} onReset={() => setResetKey((k) => k + 1)} />
 

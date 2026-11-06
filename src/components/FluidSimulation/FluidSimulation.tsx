@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useFluidSimulation } from "./useFluidSimulation";
 
 type FluidPreset = "default" | "ink" | "neon" | "lava" | "ocean" | "smoke" | "monochrome";
@@ -148,10 +149,7 @@ export const FluidSimulation = forwardRef<HTMLCanvasElement, FluidSimulationProp
 
     const p = PRESETS[(preset ?? "default") as FluidPreset] || {};
 
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useFluidSimulation(internalRef, {
+    const { canvasRef, canvas } = useFluidSimulation({
       resolution: resolution ?? p.resolution ?? 128,
       viscosity: viscosity ?? p.viscosity ?? 0.0001,
       diffusion: diffusion ?? p.diffusion ?? 0.0001,
@@ -166,13 +164,10 @@ export const FluidSimulation = forwardRef<HTMLCanvasElement, FluidSimulationProp
       inkRadius: inkRadius ?? p.inkRadius ?? 4,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", ...style }}
-      >
-        <canvas ref={internalRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={style} />
     );
   }
 );

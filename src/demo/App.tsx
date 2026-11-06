@@ -30,7 +30,6 @@ import type { SandMaterial } from "../components/SandSimulation";
 import { WaveInterference, PRESETS as WAVE_PRESETS } from "../components/WaveInterference";
 import { DiffusionAggregation, PRESETS as DLA_PRESETS } from "../components/DiffusionAggregation";
 import type { DLASeedMode } from "../components/DiffusionAggregation";
-import { LSystem } from "../components/LSystem";
 import { Kaleidoscope } from "../components/Kaleidoscope";
 import { VoronoiCells } from "../components/VoronoiCells";
 import type { VoronoiColorMode } from "../components/VoronoiCells";
@@ -49,7 +48,6 @@ import { GalaxySpiral, PRESETS as GALAXY_PRESETS } from "../components/GalaxySpi
 import { TornadoVortex, PRESETS as TORNADO_PRESETS } from "../components/TornadoVortex";
 import { SolarFlare, PRESETS as SOLARFLARE_PRESETS } from "../components/SolarFlare";
 import { ButterflySwarm, PRESETS as BUTTERFLY_PRESETS } from "../components/ButterflySwarm";
-import { DeepSeaBioluminescence, PRESETS as DEEPSEA_PRESETS } from "../components/DeepSeaBioluminescence";
 import { SpiderWeb, PRESETS as SPIDERWEB_PRESETS } from "../components/SpiderWeb";
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
@@ -732,17 +730,6 @@ const icons: Record<string, React.ReactNode> = {
       <circle cx="8" cy="12" r="0.75" fill="currentColor" opacity=".5" />
     </svg>
   ),
-  LSystem: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <line x1="8" y1="14" x2="8" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="8" y1="8" x2="4" y2="4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity=".8" />
-      <line x1="8" y1="8" x2="12" y2="4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity=".8" />
-      <line x1="4" y1="4" x2="2" y2="1" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" opacity=".6" />
-      <line x1="4" y1="4" x2="6" y2="1" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" opacity=".6" />
-      <line x1="12" y1="4" x2="10" y2="1" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" opacity=".6" />
-      <line x1="12" y1="4" x2="14" y2="1" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" opacity=".6" />
-    </svg>
-  ),
   Kaleidoscope: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <polygon points="8,2 14,14 2,14" stroke="currentColor" strokeWidth="0.75" fill="none" opacity=".7" />
@@ -882,17 +869,6 @@ const icons: Record<string, React.ReactNode> = {
       <circle cx="8" cy="8" r="1" fill="currentColor" />
     </svg>
   ),
-  DeepSeaBioluminescence: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M8 3 C10 3, 12 5, 12 7 C12 9, 10 10, 8 10 C6 10, 4 9, 4 7 C4 5, 6 3, 8 3Z" fill="currentColor" opacity=".7" />
-      <path d="M6 10 C5 12, 4 14, 5 14" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".6" />
-      <path d="M8 10 C8 12, 8 14, 8 14" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".6" />
-      <path d="M10 10 C11 12, 12 14, 11 14" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity=".6" />
-      <circle cx="4" cy="4" r="0.8" fill="currentColor" opacity=".4" />
-      <circle cx="12" cy="12" r="0.8" fill="currentColor" opacity=".4" />
-      <circle cx="3" cy="11" r="0.5" fill="currentColor" opacity=".3" />
-    </svg>
-  ),
   SpiderWeb: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <line x1="8" y1="1" x2="8" y2="15" stroke="currentColor" strokeWidth="0.6" opacity=".6" />
@@ -931,7 +907,6 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   SandSimulation: { desc: "Falling-sand physics with sand, water, fire, and walls", accent: "#fbbf24" },
   WaveInterference: { desc: "Click to add wave sources and watch interference patterns", accent: "#7dd3fc" },
   DiffusionAggregation: { desc: "Diffusion-limited aggregation grows fractal crystal trees", accent: "#e2e8f0" },
-  LSystem: { desc: "Lindenmayer system turtle-graphics fractals with presets", accent: "#86efac" },
   Kaleidoscope: { desc: "Glass shards mirrored into an N-fold rosette", accent: "#f9a8d4" },
   VoronoiCells: { desc: "Animated Voronoi tessellation — click to add seeds", accent: "#fde68a" },
   SlimeMold: { desc: "Physarum polycephalum slime mold trail simulation", accent: "#d9f99d" },
@@ -947,7 +922,6 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   TornadoVortex: { desc: "Tornado funnel with debris, lightning, and dust cloud", accent: "#d1d5db" },
   SolarFlare: { desc: "Animated sun with convection cells and CME flares", accent: "#fbbf24" },
   ButterflySwarm: { desc: "Butterflies that flock, flutter, and scatter from the cursor", accent: "#f97316" },
-  DeepSeaBioluminescence: { desc: "Glowing jellyfish and bioluminescent plankton in the deep sea", accent: "#00ccff" },
   SpiderWeb: { desc: "Procedural spider web with dew drops, sway, and cursor disturbance", accent: "#c8c8c8" },
 };
 
@@ -959,12 +933,12 @@ type ComponentId =
   | "Rain" | "Lightning" | "FireEffect" | "ParticleField"
   | "DragonCursor" | "KoiPond" | "BubbleUniverse" | "SakuraBlossom"
   | "ReactionDiffusion" | "AuroraBorealis" | "Spirograph" | "SandSimulation"
-  | "WaveInterference" | "DiffusionAggregation" | "LSystem"
+  | "WaveInterference" | "DiffusionAggregation"
   | "Kaleidoscope" | "VoronoiCells" | "SlimeMold"
   | "WatercolorBloom" | "PendulaWave" | "CrystalGrowth" | "NeuralWeb"
   | "Metaballs" | "AntColony" | "MagneticField"
   | "BlackHole" | "GalaxySpiral" | "TornadoVortex" | "SolarFlare"
-  | "ButterflySwarm" | "DeepSeaBioluminescence" | "SpiderWeb";
+  | "ButterflySwarm" | "SpiderWeb";
 
 const ALL_COMPONENTS: ComponentId[] = [
   "DragonCursor", "KoiPond", "MatrixRain", "FluidSimulation", "FlowField", "Boids",
@@ -974,12 +948,12 @@ const ALL_COMPONENTS: ComponentId[] = [
   "GameOfLife",
   "Rain", "Lightning", "FireEffect", "ParticleField",
   "ReactionDiffusion", "AuroraBorealis", "Spirograph", "SandSimulation",
-  "WaveInterference", "DiffusionAggregation", "LSystem",
+  "WaveInterference", "DiffusionAggregation",
   "Kaleidoscope", "VoronoiCells", "SlimeMold",
   "WatercolorBloom", "PendulaWave", "CrystalGrowth", "NeuralWeb",
   "Metaballs", "AntColony", "MagneticField",
   "BlackHole", "GalaxySpiral", "TornadoVortex", "SolarFlare",
-  "ButterflySwarm", "DeepSeaBioluminescence", "SpiderWeb",
+  "ButterflySwarm", "SpiderWeb",
 ];
 
 // ─── Control Widgets ─────────────────────────────────────────────────────────
@@ -2932,84 +2906,6 @@ function DiffusionAggregationPanel() {
   );
 }
 
-const LSYSTEM_PRESET_PARAMS = {
-  default:    { angle: 25 },
-  fern:       { angle: 22 },
-  dragon:     { angle: 90 },
-  sierpinski: { angle: 120 },
-  bush:       { angle: 25 },
-  snowflake:  { angle: 60 },
-};
-
-function LSystemPanel() {
-  const [preset, setPreset] = useState("default");
-  const [angle, setAngle] = useState(25);
-  const [lineWidth, setLineWidth] = useState(1);
-  const [color, setColor] = useState("#ffffff");
-  const [bg, setBg] = useState("#111111");
-  const [speed, setSpeed] = useState(5);
-  const [autoReset, setAutoReset] = useState(true);
-  const [trailFade, setTrailFade] = useState(0);
-  const [glowEffect, setGlowEffect] = useState(false);
-  const [glowBlur, setGlowBlur] = useState(8);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const pp = LSYSTEM_PRESET_PARAMS[p as keyof typeof LSYSTEM_PRESET_PARAMS];
-    if (pp) setAngle(pp.angle);
-  }
-
-  const code = [
-    `import { LSystem } from 'own-the-canvas';`,
-    ``,
-    `<LSystem`,
-    `  preset="${preset}"`,
-    angle !== 25 ? `  angle={${angle}}` : null,
-    lineWidth !== 1 ? `  lineWidth={${lineWidth}}` : null,
-    `  color="${color}"`,
-    `  backgroundColor="${bg}"`,
-    speed !== 5 ? `  speed={${speed}}` : null,
-    trailFade > 0 ? `  trailFade={${trailFade}}` : null,
-    glowEffect ? `  glowEffect` : null,
-    glowEffect && glowBlur !== 8 ? `  glowBlur={${glowBlur}}` : null,
-    !autoReset ? `  autoReset={false}` : null,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <LSystem preset={preset} angle={angle} lineWidth={lineWidth} color={color}
-            backgroundColor={bg} speed={speed} autoReset={autoReset}
-            trailFade={trailFade} glowEffect={glowEffect} glowBlur={glowBlur}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="LSystem" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "fern", "dragon", "sierpinski", "bush", "snowflake"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Color" value={color} onChange={setColor} />
-          <ColorPicker label="Background" value={bg} onChange={setBg} />
-          <Slider label="Angle" value={angle} min={10} max={90} step={1} onChange={setAngle} />
-          <Slider label="Line width" value={lineWidth} min={0.5} max={4} step={0.1} onChange={setLineWidth} />
-          <Slider label="Speed" value={speed} min={1} max={10} step={1} onChange={setSpeed} />
-          <Slider label="Trail fade" value={trailFade} min={0} max={0.3} step={0.01} onChange={setTrailFade} />
-          {glowEffect && <Slider label="Glow blur" value={glowBlur} min={2} max={30} step={1} onChange={setGlowBlur} />}
-          <Toggle label="Glow effect" value={glowEffect} onChange={setGlowEffect} />
-          <Toggle label="Auto reset" value={autoReset} onChange={setAutoReset} />
-        </div>
-      </div>
-    </>
-  );
-}
-
 const KALEIDOSCOPE_PRESET_PARAMS = {
   default: { segments: 8,  colorA: "#e0e0ff", colorB: "#1a0a2e", bg: "#111111", noiseScale: 2.5, zoomSpeed: 0.3, rotation: 0.2, speed: 1   },
   neon:    { segments: 8,  colorA: "#00ffff", colorB: "#ff00ff", bg: "#000000", noiseScale: 3,   zoomSpeed: 0.3, rotation: 0.2, speed: 1.5 },
@@ -4465,72 +4361,6 @@ function ButterflySwarmPanel() {
   );
 }
 
-function DeepSeaBioluminescencePanel() {
-  const [preset, setPreset] = useState("default");
-  const [jellyfishCount, setJellyfishCount] = useState(5);
-  const [planktonCount, setPlanktonCount] = useState(200);
-  const [jellyfishColor, setJellyfishColor] = useState("#99bbcc");
-  const [glowColor, setGlowColor] = useState("#aaccdd");
-  const [waterColor, setWaterColor] = useState("#060c10");
-  const [speed, setSpeed] = useState(1);
-  const [interactive, setInteractive] = useState(true);
-
-  function handlePreset(p: string) {
-    setPreset(p);
-    const v = DEEPSEA_PRESETS[p as keyof typeof DEEPSEA_PRESETS] ?? {};
-    if (v.jellyfishColor) setJellyfishColor(v.jellyfishColor);
-    if (v.glowColor)      setGlowColor(v.glowColor);
-    if (v.waterColor)     setWaterColor(v.waterColor);
-  }
-
-  const code = [
-    `import { DeepSeaBioluminescence } from 'own-the-canvas';`,
-    ``,
-    `<DeepSeaBioluminescence`,
-    `  preset="${preset}"`,
-    `  jellyfishCount={${jellyfishCount}}`,
-    `  planktonCount={${planktonCount}}`,
-    `  jellyfishColor="${jellyfishColor}"`,
-    `  glowColor="${glowColor}"`,
-    `  waterColor="${waterColor}"`,
-    `  speed={${speed}}`,
-    !interactive ? `  interactive={false}` : null,
-    `  width="100%"`,
-    `  height="100%"`,
-    `/>`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <>
-      <div className="canvas-wrap">
-        <div className="canvas-wrap-inner">
-          <DeepSeaBioluminescence preset={preset} jellyfishCount={jellyfishCount}
-            planktonCount={planktonCount} jellyfishColor={jellyfishColor}
-            glowColor={glowColor} waterColor={waterColor}
-            speed={speed} interactive={interactive}
-            width="100%" height="100%" />
-        </div>
-        <div className="canvas-label"><div className="canvas-dot" /><span>Move cursor to create bioluminescent ripples</span></div>
-        <CodeSnippet code={code} />
-      </div>
-      <div className="controls">
-        <CtrlHeader id="DeepSeaBioluminescence" />
-        <div className="ctrl-body">
-          <Sel label="Preset" value={preset} options={["default", "abyssal", "coral", "aurora", "crimson"]} onChange={handlePreset} />
-          <Divider />
-          <ColorPicker label="Jellyfish color" value={jellyfishColor} onChange={setJellyfishColor} />
-          <ColorPicker label="Glow color" value={glowColor} onChange={setGlowColor} />
-          <ColorPicker label="Water color" value={waterColor} onChange={setWaterColor} />
-          <Slider label="Jellyfish count" value={jellyfishCount} min={1} max={15} step={1} onChange={setJellyfishCount} />
-          <Slider label="Plankton count" value={planktonCount} min={50} max={500} step={25} onChange={setPlanktonCount} />
-          <Slider label="Speed" value={speed} min={0.2} max={4} step={0.1} onChange={setSpeed} />
-          <Toggle label="Interactive" value={interactive} onChange={setInteractive} />
-        </div>
-      </div>
-    </>
-  );
-}
-
 function SpiderWebPanel() {
   const [preset, setPreset] = useState("default");
   const [spokeCount, setSpokeCount] = useState(12);
@@ -4657,7 +4487,6 @@ const PANELS: Record<ComponentId, React.FC> = {
   SandSimulation: SandSimulationPanel,
   WaveInterference: WaveInterferencePanel,
   DiffusionAggregation: DiffusionAggregationPanel,
-  LSystem: LSystemPanel,
   Kaleidoscope: KaleidoscopePanel,
   VoronoiCells: VoronoiCellsPanel,
   SlimeMold: SlimeMoldPanel,
@@ -4673,7 +4502,6 @@ const PANELS: Record<ComponentId, React.FC> = {
   TornadoVortex: TornadoVortexPanel,
   SolarFlare: SolarFlarePanel,
   ButterflySwarm: ButterflySwarmPanel,
-  DeepSeaBioluminescence: DeepSeaBioluminescencePanel,
   SpiderWeb: SpiderWebPanel,
 };
 

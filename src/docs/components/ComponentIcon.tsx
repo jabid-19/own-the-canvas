@@ -472,22 +472,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         </svg>
       );
 
-    case "LSystem":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M12 22V14M12 14l-4-4M12 14l4-4M8 10l-2-4M8 10l3-3M16 10l-3-3M16 10l2-4" />
-        </svg>
-      );
-
     case "Kaleidoscope":
       return (
         <svg
@@ -790,6 +774,182 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
         </svg>
       );
 
+    case "Owl":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 4l2 3M18 4l-2 3" /><path d="M5 10a7 7 0 0 1 14 0v4a7 7 0 0 1-14 0z" /><circle cx="9.3" cy="11" r="2" /><circle cx="14.7" cy="11" r="2" /><path d="M11.2 14l.8 1.4.8-1.4" /><path d="M3 21h18" />
+        </svg>
+      );
+
+    case "Octopus":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 10a6 6 0 0 1 12 0c0 2-1 3-2 3.5" /><path d="M8 13.5C7 14.5 5 15 4 17.5M10 14c-.5 2-1.5 4-3 6M14 14c.5 2 1.5 4 3 6M16 13.5c1 1 3 1.5 4 4" /><circle cx="10" cy="9.5" r="0.8" fill="currentColor" /><circle cx="14" cy="9.5" r="0.8" fill="currentColor" />
+        </svg>
+      );
+
+    case "Hummingbird":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 15c3-1 5-1 7 0 2-2 4-3 6-3l5-1-5 2c0 3-3 5-7 5-2 0-4-1-6-3z" /><path d="M11 13c-1-3-1-6 1-9 1 3 1 6-1 9z" opacity="0.6" /><circle cx="16" cy="12.6" r="0.6" fill="currentColor" />
+        </svg>
+      );
+
+    case "Cat":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 19c0-4 3.5-7 9-7s9 2.5 9 6c0 1-1 1.5-2 1.5H5" /><path d="M5 19.5c-1-1-1.5-3 0-4.5l-.3-3 2.3 1.6" /><path d="M7 14.5l.6-2.6 1.8 1.8" /><path d="M5.5 16.5q.8.6 1.6 0" /><path d="M21 18c1 0 1.5 1 .5 1.5H14" />
+        </svg>
+      );
+
+    case "Jellyfish":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 11a8 8 0 0 1 16 0c-1 .8-2 .8-2.7 0-.9.8-1.8.8-2.6 0-.9.8-1.8.8-2.7 0-.9.8-1.8.8-2.6 0-.9.8-1.8.8-2.7 0z" /><path d="M7 12c0 3-1 5 0 9M10 12c0 3 1 5 0 9M14 12c0 3-1 5 0 9M17 12c0 3 1 5 0 9" opacity="0.7" />
+        </svg>
+      );
+
+    case "Snail":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="12" r="5.5" /><path d="M11 12a2.5 2.5 0 1 1 2.5 2.5 4 4 0 0 1-4-4" /><path d="M2 19h17c2 0 3-1.5 3-3v-3" /><path d="M20 13l-1.5-4M22 13l1-3.5" /><path d="M5 17.5V19" />
+        </svg>
+      );
+
+    case "Sunflowers":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="8" r="2.5" /><path d="M12 2.5v1.5M12 12v1.5M6.5 8H8M16 8h1.5M8.1 4.1l1.1 1.1M14.8 10.8l1.1 1.1M8.1 11.9l1.1-1.1M14.8 5.2l1.1-1.1" /><path d="M12 13.5V22" /><path d="M12 18c-2-2-4-2-5.5-1 1.5 2 3.5 2 5.5 1zM12 16.5c2-2 4-2 5.5-1-1.5 2-3.5 2-5.5 1z" />
+        </svg>
+      );
+
+    case "Komorebi":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 4c4 2 7 1 9-1 2 2 5 3 9 1" /><path d="M6 6.5c1 1 2.5 1 3.5 0M14.5 6.5c1 1 2.5 1 3.5 0" /><ellipse cx="7" cy="14" rx="1.6" ry="2.2" /><ellipse cx="13" cy="17" rx="1.2" ry="1.7" /><ellipse cx="17" cy="12" rx="2" ry="2.7" /><ellipse cx="10" cy="20.5" rx="0.9" ry="1.2" />
+        </svg>
+      );
+
+    case "TidePool":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 8c2-4 6-5 9-4s7 2 7 6-2 8-6 9-9 0-10-4 0-5 0-7z" /><path d="M8 11l1.5-1 .5 1.8 1.5-.5-.7 1.6 1.4 1-1.8.2-.4 1.7-1-1.5-1.6.6.6-1.6-1.4-.8z" /><circle cx="15.5" cy="9" r="1.5" /><path d="M15.5 6.5v1M15.5 10.5v1M13 9h1M17 9h1" /><path d="M13 15.5c1 .8 2 .8 3 0" />
+        </svg>
+      );
+
+    case "Candle":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 3c1.6 2 2 3.4 2 4.6A2 2 0 0 1 12 10a2 2 0 0 1-2-2.4C10 6.4 10.6 5 12 3z" /><path d="M12 10v1.5" /><rect x="8.5" y="11.5" width="7" height="9" rx="1" /><path d="M5 21h14" />
+        </svg>
+      );
+
+    case "Eye":
+      return (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2 12.5c3-4.5 6.5-6.5 10-6.5s7 2 10 5.5c-3 4-6.5 6-10 6s-7-1.5-10-5z" /><circle cx="12" cy="11.8" r="3.6" /><circle cx="12" cy="11.8" r="1.4" fill="currentColor" /><path d="M7 7.5l-1-2M10.5 6l-.4-2.2M14 6l.5-2.2M17.3 7.4l1.2-1.9" />
+        </svg>
+      );
+
     case "Moths":
       return (
         <svg
@@ -867,22 +1027,6 @@ export function ComponentIcon({ name, className }: ComponentIconProps) {
           aria-hidden="true"
         >
           <path d="M2 20h20" /><path d="M5 20c1-3 4-4 7-4s6 1 7 4" /><circle cx="7" cy="5" r="0.8" fill="currentColor" /><circle cx="13" cy="8" r="0.8" fill="currentColor" /><circle cx="18" cy="4" r="0.8" fill="currentColor" /><circle cx="10" cy="11" r="0.6" fill="currentColor" />
-        </svg>
-      );
-
-    case "FrostGlass":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9l5 3M5.5 10.5l-.5 3M8 12l3-1M21 14l-5-2M18.5 13l.5-3M16 12l-3 1" /><circle cx="12" cy="12" r="2.5" opacity="0.5" />
         </svg>
       );
 

@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useReactionDiffusion } from "./useReactionDiffusion";
 
 type ReactionDiffusionPreset = "default" | "coral" | "spots" | "maze" | "waves" | "neon" | "monochrome";
@@ -45,7 +46,7 @@ export interface ReactionDiffusionProps extends BaseCanvasProps {
   colorB?: string;
   /** Canvas background color (default: "#04121f") */
   backgroundColor?: string;
-  /** Mouse disturbs the field (default: true) */
+  /** Hovering seeds a trail of chemical (thicker while pressed), taps drop a blob (default: true) */
   interactive?: boolean;
   /** Named preset */
   preset?: ReactionDiffusionPreset | string;
@@ -72,10 +73,7 @@ export const ReactionDiffusion = forwardRef<HTMLCanvasElement, ReactionDiffusion
     } = props;
 
     const p = PRESETS[(preset ?? "default") as ReactionDiffusionPreset] || {};
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useReactionDiffusion(internalRef, {
+    const { canvasRef, canvas } = useReactionDiffusion({
       feedRate:       feedRate       ?? p.feedRate       ?? 0.055,
       killRate:       killRate       ?? p.killRate       ?? 0.062,
       diffusionU:     diffusionU     ?? p.diffusionU     ?? 0.2,
@@ -88,25 +86,10 @@ export const ReactionDiffusion = forwardRef<HTMLCanvasElement, ReactionDiffusion
       interactive:    interactive    ?? true,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{
-          width:    width  ?? "100%",
-          height:   height ?? "100%",
-          display:  "block",
-          overflow: "hidden",
-          cursor: "crosshair",
-          ...style,
-        }}
-      >
-        <canvas
-          ref={internalRef}
-          aria-hidden="true"
-          role="presentation"
-          style={{ display: "block" }}
-        />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={style} />
     );
   }
 );

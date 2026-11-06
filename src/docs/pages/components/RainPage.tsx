@@ -16,6 +16,7 @@ const PROPS = [
   { name: "splashColor",     type: "string",  default: '"#dbe7ff"', description: "Splash particle color." },
   { name: "showSplashes",    type: "boolean", default: "true",      description: "Show splash particles when drops hit bottom." },
   { name: "backgroundColor", type: "string",  default: '"#0b1424"', description: 'Canvas background color. Use "transparent" to overlay on another element.' },
+  { name: "showBackground",  type: "boolean", default: "true",      description: "Draw the night-street scene (sky, city, lamps, wet ground). false = rain only, over a plain backgroundColor fill ('transparent' to overlay)." },
   { name: "starCount",       type: "number",  default: "60",        description: "Number of background stars." },
   { name: "starColor",       type: "string",  default: '"#ffffff"', description: "Star color." },
   { name: "glowingStars",    type: "boolean", default: "false",     description: "Enable glow effect on ~28% of stars." },
@@ -30,6 +31,7 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
   const [wind, setWind] = useState(0.3);
   const [dropColor, setDropColor] = useState("#a9c2e8");
   const [splashColor, setSplashColor] = useState("#dbe7ff");
+  const [showBackground, setShowBackground] = useState(true);
   const [bg, setBg] = useState("#0b1424");
   const [showSplashes, setShowSplashes] = useState(true);
   const [starCount, setStarCount] = useState(60);
@@ -49,6 +51,7 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
     `  splashColor="${splashColor}"`,
     showSplashes ? null : `  showSplashes={false}`,
     `  backgroundColor="${bg}"`,
+    showBackground ? null : `  showBackground={false}`,
     starCount > 0 ? `  starCount={${starCount}}` : null,
     starCount > 0 ? `  starColor="${starColor}"` : null,
     starCount > 0 && glowingStars ? `  glowingStars={true}` : null,
@@ -62,7 +65,7 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <Rain preset={preset} dropCount={dropCount} speed={speed} wind={wind}
         dropColor={dropColor} splashColor={splashColor} showSplashes={showSplashes}
-        backgroundColor={bg} starCount={starCount} starColor={starColor}
+        backgroundColor={bg} showBackground={showBackground} starCount={starCount} starColor={starColor}
         glowingStars={glowingStars} starGlowBlur={starGlowBlur}
         width="100%" height="100%" />
       <PLiveLabel />
@@ -77,6 +80,7 @@ function RainPlayground({ onReset }: { onReset?: () => void }) {
         <PColor label="Drop color" value={dropColor} onChange={setDropColor} />
         <PColor label="Splash color" value={splashColor} onChange={setSplashColor} />
         <PColor label="Background" value={bg} onChange={setBg} />
+        <PToggle label="Show background" value={showBackground} onChange={setShowBackground} />
       </div>
       <div>
         <PSlider label="Drop count" value={dropCount} min={20} max={800} step={20} onChange={setDropCount} />

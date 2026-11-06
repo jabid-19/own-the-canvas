@@ -1,5 +1,6 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useStarfield, StarfieldPerspective } from "./useStarfield";
 
 type StarfieldPreset = "default" | "warp" | "peaceful" | "minimal" | "nebula" | "monochrome";
@@ -116,10 +117,7 @@ export const Starfield = forwardRef<HTMLCanvasElement, StarfieldProps>(
 
     const p = PRESETS[(preset ?? "default") as StarfieldPreset] || {};
 
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useStarfield(internalRef, {
+    const { canvasRef, canvas } = useStarfield({
       starCount: starCount ?? p.starCount ?? 200,
       starColor: starColor ?? p.starColor ?? "#ffffff",
       shootingStarColor: shootingStarColor ?? p.shootingStarColor ?? "#ffffff",
@@ -138,13 +136,10 @@ export const Starfield = forwardRef<HTMLCanvasElement, StarfieldProps>(
       shootingStarLifetime: shootingStarLifetime ?? 60,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", ...style }}
-      >
-        <canvas ref={internalRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={style} />
     );
   }
 );

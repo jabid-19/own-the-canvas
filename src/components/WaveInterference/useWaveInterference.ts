@@ -1,4 +1,7 @@
-import { useRef, useEffect, RefObject } from "react";
+import { useRef } from "react";
+import { useCanvasSetup } from "../../hooks/useCanvasSetup";
+import { usePointer, readPointer, createVelocity, glowSprite } from "../../runtime/fx";
+import { rgbOf } from "../../utils/color";
 
 export interface UseWaveInterferenceOptions {
   maxSources: number;
@@ -11,198 +14,174 @@ export interface UseWaveInterferenceOptions {
   resolution: number;
   animated: boolean;
   decay: number;
+  interactive: boolean;
 }
 
-interface WaveSource {
-  x: number;
-  y: number;
+interface WaveSource { x: number; y: number; amp: number }
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+const GRAB_R = 18;
+
+/**
+ * Height and slope of the summed waves at (x, y): sources radiate cos(k·r − ωt) damped by
+ * exp(−decay·r). Returns [height, dh/dx, dh/dy, envelope], each averaged over the sources.
+ */
+export function waveAt(x: number, y: number, src: readonly WaveSource[], k: number, wt: number, decay: number): [number, number, number, number] {
+  let hgt = 0, gx = 0, gy = 0, env = 0;
+  for (const s of src) {
+    const dx = x - s.x, dy = y - s.y;
+    const r = Math.sqrt(dx * dx + dy * dy) + 1e-6;
+    const a = Math.exp(-decay * r) * s.amp;
+    const ph = k * r - wt;
+    hgt += a * Math.cos(ph);
+    const sl = -a * Math.sin(ph) * k / r;
+    gx += sl * dx; gy += sl * dy;
+    env += a;
+  }
+  const n = Math.max(1, src.length);
+  return [hgt / n, gx / n, gy / n, env / n];
 }
 
-function parseHex(hex: string): [number, number, number] {
-  const clean = hex.replace("#", "");
-  const full = clean.length === 3
-    ? clean.split("").map((c) => c + c).join("")
-    : clean;
-  const n = parseInt(full, 16) || 0;
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
-export function useWaveInterference(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseWaveInterferenceOptions
-) {
+/**
+ * Wave interference as a lit water surface. Each source sends out ripples; where they meet,
+ * the summed height and slope are shaded with diffuse light and a glossy sky glint, so the
+ * bright fringes and the calm nodal lines between them read crisply. Sources bob as glowing
+ * points: click empty water to add one, click a source to remove it, drag it to move it, and
+ * your hovering finger stirs its own ripples.
+ */
+export function useWaveInterference(options: UseWaveInterferenceOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
+  const pointer = usePointer();
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
+  const velocity = useRef(createVelocity());
+  const s = useRef({
+    t: 0, w: 0, h: 0, key: "", sources: [] as WaveSource[], finger: { x: 0, y: 0, amp: 0 } as WaveSource,
+    grab: -1, downX: 0, downY: 0, moved: false, wasDown: false,
+  });
+  const buf = useRef<{ c: HTMLCanvasElement; g: CanvasRenderingContext2D; img: ImageData } | null>(null);
+  const sprite = useRef<{ key: string; c: HTMLCanvasElement | null }>({ key: "", c: null });
 
-  const rafRef = useRef<number>(0);
-  const timeRef = useRef(0);
-  const sourcesRef = useRef<WaveSource[]>([]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
-
-    let w = 0;
-    let h = 0;
-    let offscreen: OffscreenCanvas | null = null;
-    let offCtx: OffscreenCanvasRenderingContext2D | null = null;
-    let imageData: ImageData | null = null;
-    let gw = 0;
-    let gh = 0;
-
-    // start with two sources to show interference immediately
-    function initSources() {
-      sourcesRef.current = [
-        { x: w * 0.35, y: h * 0.5 },
-        { x: w * 0.65, y: h * 0.5 },
-      ];
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number) {
+    const o = optionsRef.current;
+    const st = s.current;
+    const sec = dt / 1000;
+    if (o.animated) st.t += sec * o.speed;
+    if (st.w !== w || st.h !== h) {
+      st.w = w; st.h = h;
+      st.sources = [{ x: w * 0.35, y: h * 0.5, amp: 1 }, { x: w * 0.65, y: h * 0.5, amp: 1 }]; // two, to show interference at once
     }
 
-    function resize(width: number, height: number) {
-      const dpr = window.devicePixelRatio || 1;
-      w = width;
-      h = height;
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
-      canvas!.style.width = `${w}px`;
-      canvas!.style.height = `${h}px`;
-      ctx.scale(dpr, dpr);
-
-      const { resolution } = optionsRef.current;
-      gw = Math.max(4, Math.round(w * resolution));
-      gh = Math.max(4, Math.round(h * resolution));
-      offscreen = new OffscreenCanvas(gw, gh);
-      offCtx = offscreen.getContext("2d") as OffscreenCanvasRenderingContext2D;
-      imageData = offCtx.createImageData(gw, gh);
-      initSources();
-    }
-
-    const ro = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) resize(width, height);
-    });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) resize(rect.width, rect.height);
-
-    const SOURCE_CLICK_RADIUS = 16;
-
-    function onClick(e: MouseEvent) {
-      const r = canvas!.getBoundingClientRect();
-      const mx = e.clientX - r.left;
-      const my = e.clientY - r.top;
-
-      const sources = sourcesRef.current;
-      const { maxSources } = optionsRef.current;
-
-      // check if clicking near an existing source to remove it
-      for (let i = 0; i < sources.length; i++) {
-        const dx = sources[i].x - mx;
-        const dy = sources[i].y - my;
-        if (dx * dx + dy * dy < SOURCE_CLICK_RADIUS * SOURCE_CLICK_RADIUS) {
-          sources.splice(i, 1);
-          return;
-        }
+    // ---- input: click adds/removes, drag moves, hover stirs ----
+    const p = readPointer(pointer.current, canvasEl.current);
+    const { vx, vy } = velocity.current(p, dt / 16.67);
+    const near = (x: number, y: number) => st.sources.findIndex((q) => Math.hypot(q.x - x, q.y - y) < GRAB_R);
+    if (o.interactive) {
+      if (p.down && !st.wasDown && p.inside) { st.grab = near(p.x, p.y); st.downX = p.x; st.downY = p.y; st.moved = false; }
+      if (p.down && st.grab >= 0 && st.sources[st.grab]) {
+        if (Math.hypot(p.x - st.downX, p.y - st.downY) > 4) st.moved = true;
+        if (st.moved) { st.sources[st.grab].x = clamp(p.x, 0, w); st.sources[st.grab].y = clamp(p.y, 0, h); }
       }
-
-      // add new source if under limit
-      if (sources.length < maxSources) {
-        sources.push({ x: mx, y: my });
+      for (const tap of p.taps) {
+        if (st.grab >= 0 && st.moved) continue; // that press was a drag
+        const i = near(tap.x, tap.y);
+        if (i >= 0) st.sources.splice(i, 1);
+        else if (st.sources.length < o.maxSources) st.sources.push({ x: tap.x, y: tap.y, amp: 1 });
       }
+      if (!p.down) st.grab = -1;
+      st.wasDown = p.down;
+      // the finger: a weak source that follows the cursor while it moves, fading when still
+      const sp = Math.hypot(vx, vy);
+      const target = p.inside && st.grab < 0 ? clamp(sp / 12, 0, 0.8) : 0;
+      st.finger.amp += (target - st.finger.amp) * Math.min(1, sec * (target > st.finger.amp ? 6 : 1.5));
+      if (p.inside) { st.finger.x = p.x; st.finger.y = p.y; }
+    } else st.finger.amp = 0;
+    while (st.sources.length > Math.max(0, Math.round(o.maxSources))) st.sources.pop();
+    const all = st.finger.amp > 0.02 ? [...st.sources, st.finger] : st.sources;
+
+    // ---- the surface ----
+    const res = clamp(o.resolution, 0.1, 1);
+    const gw = Math.max(4, Math.round(w * res)), gh = Math.max(4, Math.round(h * res));
+    let b = buf.current;
+    if (typeof document !== "undefined" && (!b || b.c.width !== gw || b.c.height !== gh)) {
+      const c = document.createElement("canvas");
+      c.width = gw; c.height = gh;
+      const g = c.getContext("2d");
+      b = g ? { c, g, img: g.createImageData(gw, gh) } : null;
+      buf.current = b;
     }
-
-    canvas.addEventListener("click", onClick);
-
-    let lastTime = 0;
-
-    function draw(timestamp: number) {
-      const dt = lastTime ? Math.min(timestamp - lastTime, 50) : 16;
-      lastTime = timestamp;
-
-      const { wavelength, speed, colorHigh, colorLow, showSources, animated, decay, backgroundColor } = optionsRef.current;
-      const sources = sourcesRef.current;
-
-      if (animated) timeRef.current += dt * 0.001 * speed;
-      const t = timeRef.current;
-
-      const [loR, loG, loB] = parseHex(colorLow);
-      const [hiR, hiG, hiB] = parseHex(colorHigh);
-      const [bgR, bgG, bgB] = parseHex(backgroundColor);
-
-      const data = imageData!.data;
-      const k = (2 * Math.PI) / wavelength;
-      const omega = k * (speed * 60); // angular frequency
-      const n = Math.max(1, sources.length);
-
-      // scale grid coords to canvas coords
-      const scaleX = w / gw;
-      const scaleY = h / gh;
-
-      for (let py = 0; py < gh; py++) {
-        for (let px = 0; px < gw; px++) {
-          const cx = (px + 0.5) * scaleX;
-          const cy = (py + 0.5) * scaleY;
-
-          let sum = 0, env = 0;
-          for (const src of sources) {
-            const dx = cx - src.x;
-            const dy = cy - src.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const amp = Math.exp(-decay * dist);
-            sum += amp * Math.cos(k * dist - omega * t);
-            env += amp;
+    const lo = rgbOf(o.colorLow, "0,0,0").split(",").map(Number), hi = rgbOf(o.colorHigh).split(",").map(Number);
+    const bg = rgbOf(o.backgroundColor, "0,0,0").split(",").map(Number);
+    if (b) {
+      const data = b.img.data;
+      const k = (2 * Math.PI) / Math.max(4, o.wavelength);
+      const wt = k * 60 * st.t;
+      const sx = w / gw, sy = h / gh;
+      const slopeScale = 0.85 / k; // a full-amplitude wave tilts the surface ~40°
+      // light from the upper left, viewer straight above
+      const Lx = -0.45, Ly = -0.55, Lz = 0.7;
+      const Hl = Math.hypot(Lx, Ly, Lz + 1), Hx = Lx / Hl, Hy = Ly / Hl, Hz = (Lz + 1) / Hl;
+      for (let y = 0; y < gh; y++) {
+        for (let x = 0; x < gw; x++) {
+          // inlined waveAt (no per-pixel allocation)
+          const px = (x + 0.5) * sx, py = (y + 0.5) * sy;
+          let hgt = 0, gx = 0, gy = 0, env = 0;
+          for (let j = 0; j < all.length; j++) {
+            const src = all[j], dx = px - src.x, dy = py - src.y;
+            const r = Math.sqrt(dx * dx + dy * dy) + 1e-6;
+            const a = Math.exp(-o.decay * r) * src.amp, ph = k * r - wt;
+            hgt += a * Math.cos(ph);
+            const sl = -a * Math.sin(ph) * k / r;
+            gx += sl * dx; gy += sl * dy; env += a;
           }
-          // where the waves have died out (< 15% amplitude) the water settles to backgroundColor
-          const e = Math.min(1, env / n / 0.15);
-          const show = e * e * (3 - 2 * e);
-
-          // normalize to [0, 1]
-          const normalized = (sum / n + 1) * 0.5;
-          const val = Math.max(0, Math.min(1, normalized));
-
-          const p = (py * gw + px) * 4;
-          data[p]     = Math.round(bgR + (loR + (hiR - loR) * val - bgR) * show);
-          data[p + 1] = Math.round(bgG + (loG + (hiG - loG) * val - bgG) * show);
-          data[p + 2] = Math.round(bgB + (loB + (hiB - loB) * val - bgB) * show);
-          data[p + 3] = 255;
+          const inv = 1 / Math.max(1, all.length);
+          hgt *= inv; gx *= inv; gy *= inv; env *= inv;
+          let nx = -gx * slopeScale, ny = -gy * slopeScale, nz = 1;
+          const nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
+          const diff = clamp(nx * Lx + ny * Ly + nz * Lz, 0, 1);
+          const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 100);
+          const e = clamp(env / 0.15, 0, 1), show = e * e * (3 - 2 * e); // dead water settles to background
+          const m = clamp(0.5 + hgt * 0.6, 0, 1);
+          const lit = 0.3 + 0.9 * diff;
+          const q = (y * gw + x) * 4;
+          for (let c = 0; c < 3; c++) {
+            const water = (lo[c] + (hi[c] - lo[c]) * m) * lit + spec * 255 * 0.85;
+            data[q + c] = bg[c] + (water - bg[c]) * show;
+          }
+          data[q + 3] = 255;
         }
       }
-
-      offCtx!.putImageData(imageData!, 0, 0);
+      b.g.putImageData(b.img, 0, 0);
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "low";
-      ctx.drawImage(offscreen!, 0, 0, w, h);
-
-      // draw source markers
-      if (showSources) {
-        for (const src of sources) {
-          ctx.beginPath();
-          ctx.arc(src.x, src.y, 8, 0, Math.PI * 2);
-          ctx.strokeStyle = colorHigh;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          // crosshair
-          ctx.beginPath();
-          ctx.moveTo(src.x - 5, src.y);
-          ctx.lineTo(src.x + 5, src.y);
-          ctx.moveTo(src.x, src.y - 5);
-          ctx.lineTo(src.x, src.y + 5);
-          ctx.stroke();
-        }
-      }
-
-      rafRef.current = requestAnimationFrame(draw);
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(b.c, 0, 0, w, h);
+    } else {
+      ctx.fillStyle = o.backgroundColor;
+      ctx.fillRect(0, 0, w, h);
     }
 
-    rafRef.current = requestAnimationFrame(draw);
+    // ---- sources: glowing bobbing points ----
+    if (o.showSources) {
+      if (sprite.current.key !== o.colorHigh) sprite.current = { key: o.colorHigh, c: glowSprite(o.colorHigh.startsWith("#") ? o.colorHigh : "#ffffff", 64) };
+      const bob = Math.sin(st.t * 60 * (2 * Math.PI) / Math.max(4, o.wavelength));
+      for (const src of st.sources) {
+        if (sprite.current.c) {
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.6 + 0.3 * bob;
+          ctx.drawImage(sprite.current.c, src.x - 22, src.y - 22, 44, 44);
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = "source-over";
+        }
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.beginPath(); ctx.arc(src.x, src.y, 3 + bob, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = `rgba(${hi.join(",")},0.6)`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(src.x, src.y, 9, 0, Math.PI * 2); ctx.stroke();
+      }
+    }
+  }
 
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("click", onClick);
-    };
-  }, [canvasRef, options.resolution]);
+  const setup = useCanvasSetup({ onFrame: draw });
+  canvasEl.current = setup.canvas;
+  return setup;
 }

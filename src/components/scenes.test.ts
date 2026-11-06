@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { relaxPile, makePile } from "./SnowDrift/useSnowDrift";
-import { stepTip, makeGrid, type Tip } from "./FrostGlass/useFrostGlass";
 import { craneFaces, shadeFace } from "./OrigamiCranes/useOrigamiCranes";
 import { buildTree, seasonFullness } from "./SeasonsTree/useSeasonsTree";
 import { ridgeY, makeLayers } from "./InkMountains/useInkMountains";
@@ -33,27 +32,6 @@ describe("SnowDrift: angle of repose", () => {
     expect(spilled).toBeGreaterThan(0);
     expect(sum(p.h) + spilled).toBeCloseTo(before, 1);
     expect(p.h[0]).toBeLessThanOrEqual(0.7 * p.cell + 1e-6);
-  });
-});
-
-describe("FrostGlass: ice crystal growth", () => {
-  it("side branches split off at about ±60°", () => {
-    const grid = makeGrid(400, 400);
-    const offsets: number[] = [];
-    const tip: Tip = { x: 200, y: 200, angle: 0, left: 150, width: 1, gen: 0 };
-    // Measured against the parent's heading at the moment of the split (stems curl)
-    for (let i = 0; i < 60; i++) stepTip(tip, grid, 0.5, (t) => offsets.push(t.angle - tip.angle));
-    expect(offsets.length).toBeGreaterThan(5);
-    for (const d of offsets) expect(Math.abs(Math.abs(d) - Math.PI / 3)).toBeLessThan(0.15);
-  });
-
-  it("crystals never grow into existing frost", () => {
-    const grid = makeGrid(120, 60);
-    for (let cy = 0; cy < grid.rows; cy++) grid.cells[cy * grid.cols + 25] = 1; // a frozen wall at x≈75
-    const tip: Tip = { x: 10, y: 30, angle: 0, left: 500, width: 1, gen: 9 };
-    let maxX = 0;
-    while (tip.left > 0) { stepTip(tip, grid, 0, () => {}); maxX = Math.max(maxX, tip.x); }
-    expect(maxX).toBeLessThan(75);
   });
 });
 

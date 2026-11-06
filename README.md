@@ -94,7 +94,6 @@ What each DOM-aware effect does with marked elements:
 | `Dandelion` | Blown seeds parachute down and settle on elements |
 | `PaperLanterns` | Clicking a marked element releases a lantern from it |
 | `SnowDrift` | Snow piles up on top edges and spills off the sides |
-| `FrostGlass` | Frost nucleates on element edges and grows outward |
 | `OrigamiCranes` | Paper cranes land and rest with wings folded |
 | `SeasonsTree` | Falling autumn leaves and petals settle on elements |
 
@@ -168,7 +167,7 @@ import { MatrixRain } from "own-the-canvas";
 
 ### KoiPond
 
-Living koi pond on canvas — fish navigate with organic steering, ripple on hover, lily pads float, caustic light dances.
+A koi pond from above: koi on flexible spines with painted patches, fins and trailing tails cast shadows on the pond floor under drifting caustics, and lily pads (some flowering) float on the ripples. Move the cursor to ripple the water; tap to drop food and the koi race to eat it.
 
 **Presets:** `default · koi · night · lotus · neon · monochrome`
 
@@ -184,13 +183,13 @@ import { KoiPond } from "own-the-canvas";
 | `fishColor` | `string` | `"#ff6030"` | Fish body color |
 | `showLilies` | `boolean` | `true` | Render floating lily pads |
 | `caustics` | `boolean` | `true` | Caustic light shimmer |
-| `interactive` | `boolean` | `true` | React to mouse movement |
+| `interactive` | `boolean` | `true` | Cursor ripples; tap to feed the koi |
 
 ---
 
 ### FluidSimulation
 
-Real-time Navier-Stokes fluid solver. Move your mouse to inject velocity and ink — auto-bursts fire at intervals for continuous motion.
+Ink in water: a stable-fluids solver with vorticity confinement on square cells at any aspect ratio. Three slow ink jets keep it marbling untouched; move the cursor to drag ink and current, tap to blow a ring outward.
 
 **Presets:** `default · ink · neon · lava · ocean · smoke · monochrome`
 
@@ -209,7 +208,7 @@ import { FluidSimulation } from "own-the-canvas";
 | `resolution` | `number` | `80` | Grid resolution 32–128 |
 | `inkColors` | `string[]` | `["#0c4a6e", "#0891B2", "#06b6d4", "#67e8f9"]` | Ink colors |
 | `viscosity` | `number` | `0.0001` | Fluid viscosity |
-| `autoInk` | `boolean` | `true` | Auto-inject ink bursts |
+| `autoInk` | `boolean` | `true` | Orbiting ink jets plus timed bursts |
 | `mouseForce` | `number` | `5` | Mouse velocity force multiplier |
 
 ---
@@ -343,7 +342,6 @@ Nature effects with real models underneath, built for hero sections. Each one ru
 | `PaperLanterns` ✦ | Sky lanterns rising with depth and flicker; click a button to release one from it |
 | `KelpForest` | Swaying kelp, schooling fish, and surface light; the cursor pushes the water |
 | `SnowDrift` ✦ | Snow that piles up on your headline and buttons, then slides off the edges |
-| `FrostGlass` ✦ | Frost crystals creep across the glass; the cursor is warm breath that melts them |
 | `OrigamiCranes` ✦ | Faceted paper cranes in 3D that bank, flap, and land on your elements |
 | `SeasonsTree` ✦ | A swaying tree living through spring, summer, autumn, and winter |
 | `InkMountains` | Ink-wash ridgelines dissolving into drifting mist, with parallax |
@@ -357,7 +355,7 @@ Nature effects with real models underneath, built for hero sections. Each one ru
 
 ## More Components
 
-> AntColony · AuroraBorealis · BlackHole · Boids · ButterflySwarm · Confetti · CrystalGrowth · DeepSeaBioluminescence · DiffusionAggregation · Fireworks · GalaxySpiral · GameOfLife · Kaleidoscope · LSystem · Lightning · MagneticField · Mandala · Metaballs · NeuralWeb · NoiseGradient · ParticleField · PendulaWave · ReactionDiffusion · SakuraBlossom · SandSimulation · SlimeMold · SolarFlare · SpiderWeb · Spirograph · Starfield · TornadoVortex · VoronoiCells · WatercolorBloom · WaveInterference
+> AntColony · AuroraBorealis · BlackHole · Boids · ButterflySwarm · Confetti · CrystalGrowth · DiffusionAggregation · Fireworks · GalaxySpiral · GameOfLife · Kaleidoscope · Lightning · MagneticField · Mandala · Metaballs · NeuralWeb · NoiseGradient · ParticleField · PendulaWave · ReactionDiffusion · SakuraBlossom · SandSimulation · SlimeMold · SolarFlare · SpiderWeb · Spirograph · Starfield · TornadoVortex · VoronoiCells · WatercolorBloom · WaveInterference
 
 Full docs, live previews, and interactive playground:
 
