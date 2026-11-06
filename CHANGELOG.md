@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.3] - 2026-11-06
+
 ### Fixed
 
 - Tree-shaking: the package is marked `sideEffects: false` and the ESM build keeps one file per module, so importing one component no longer bundles all 68 (`MatrixRain` alone adds ~3.5 kB instead of ~660 kB).
