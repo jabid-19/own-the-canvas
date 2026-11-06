@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useVoronoiCells, VoronoiColorMode } from "./useVoronoiCells";
+import { resolvePreset } from "../../utils/props";
 
 type VoronoiPreset = "default" | "stained-glass" | "neon" | "frost" | "ember" | "void" | "monochrome";
 
@@ -38,7 +39,7 @@ export interface VoronoiCellsProps extends BaseCanvasProps {
   showEdges?: boolean;
   /** Edge line color; follows backgroundColor when unset (default: backgroundColor) */
   edgeColor?: string;
-  /** Render resolution fraction — lower is faster (default: 0.25) */
+  /** Render resolution fraction — lower is faster (default: 1) */
   resolution?: number;
   /** Lloyd centroid pull strength per frame (default: 0.05) */
   relaxation?: number;
@@ -59,7 +60,7 @@ export const VoronoiCells = forwardRef<HTMLCanvasElement, VoronoiCellsProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as VoronoiPreset] || {};
+    const p = resolvePreset("VoronoiCells", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

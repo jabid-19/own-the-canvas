@@ -27,13 +27,17 @@ export default defineConfig(({ mode }) => {
             entry: resolve(__dirname, "src/index.ts"),
             name: "OwnTheCanvas",
             formats: ["es", "cjs"],
-            fileName: (format) => `index.${format === "es" ? "es" : "cjs"}.js`,
+            // preserveModules: one output file per source module, so bundlers can
+            // tree-shake unused components (entryName is the module path, e.g. "components/Mandala/Mandala").
+            fileName: (format, entryName) => `${entryName}.${format === "es" ? "es" : "cjs"}.js`,
           },
           outDir: "lib",
           copyPublicDir: false,
           rollupOptions: {
             external: ["react", "react-dom", "react/jsx-runtime"],
             output: {
+              preserveModules: true,
+              preserveModulesRoot: "src",
               globals: {
                 react: "React",
                 "react-dom": "ReactDOM",

@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useOwl } from "./useOwl";
+import { resolvePreset } from "../../utils/props";
 
 type OwlPreset = "default" | "tawny" | "snowy" | "barn" | "spirit" | "monochrome";
 
@@ -63,7 +64,7 @@ export const Owl = forwardRef<HTMLCanvasElement, OwlProps>((props, ref) => {
     preset, featherColor, bellyColor, faceColor, eyeColor, beakColor, branchColor, backgroundColor,
     earTufts, size, followCursor, blinkInterval, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as OwlPreset] || {};
+  const p = resolvePreset("Owl", PRESETS, props);
 
   const { canvasRef, canvas } = useOwl({
     featherColor:    featherColor    ?? p.featherColor    ?? "#6b7280",

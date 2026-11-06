@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSpirograph } from "./useSpirograph";
+import { resolvePreset } from "../../utils/props";
 
 type SpirographPreset = "default" | "neon" | "prismatic" | "mandala" | "cosmic" | "minimal" | "monochrome";
 
@@ -120,7 +121,7 @@ export const Spirograph = forwardRef<HTMLCanvasElement, SpirographProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as SpirographPreset] || {};
+    const p = resolvePreset("Spirograph", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

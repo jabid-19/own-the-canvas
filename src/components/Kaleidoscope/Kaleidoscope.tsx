@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useKaleidoscope } from "./useKaleidoscope";
+import { resolvePreset } from "../../utils/props";
 
 type KaleidoscopePreset = "default" | "neon" | "crystal" | "void" | "fire" | "ice" | "monochrome";
 
@@ -58,7 +59,7 @@ export const Kaleidoscope = forwardRef<HTMLCanvasElement, KaleidoscopeProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as KaleidoscopePreset] || {};
+    const p = resolvePreset("Kaleidoscope", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

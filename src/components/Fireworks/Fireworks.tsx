@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useFireworks } from "./useFireworks";
+import { resolvePreset } from "../../utils/props";
 
 type FireworksPreset = "default" | "celebration" | "subtle" | "neon" | "golden" | "monochrome";
 
@@ -126,7 +127,7 @@ export const Fireworks = forwardRef<HTMLCanvasElement, FireworksProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as FireworksPreset] || {};
+    const p = resolvePreset("Fireworks", PRESETS, props);
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

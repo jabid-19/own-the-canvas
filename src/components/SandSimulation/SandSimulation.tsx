@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSandSimulation, SandMaterial } from "./useSandSimulation";
+import { resolvePreset } from "../../utils/props";
 
 type SandSimulationPreset = "default" | "desert" | "ocean" | "inferno" | "neon" | "monochrome";
 
@@ -70,7 +71,7 @@ export const SandSimulation = forwardRef<HTMLCanvasElement, SandSimulationProps>
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as SandSimulationPreset] || {};
+    const p = resolvePreset("SandSimulation", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

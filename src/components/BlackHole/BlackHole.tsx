@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useBlackHole } from "./useBlackHole";
+import { resolvePreset } from "../../utils/props";
 
 type BlackHolePreset = "default" | "cosmic" | "inferno" | "neon" | "void" | "monochrome";
 
@@ -89,12 +90,12 @@ export const BlackHole = forwardRef<HTMLCanvasElement, BlackHoleProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as BlackHolePreset] || {};
+    const p = resolvePreset("BlackHole", PRESETS, props);
 
     const { canvasRef, canvas } = useBlackHole({
       diskColor:           diskColor           ?? p.diskColor           ?? "#ffffff",
       backgroundColor:     backgroundColor     ?? p.backgroundColor     ?? "#111111",
-      particleCount:       particleCount       ?? p.particleCount       ?? 300,
+      particleCount:       Math.max(0, particleCount       ?? p.particleCount       ?? 300),
       gravity:             gravity             ?? p.gravity             ?? 200,
       eventHorizonRadius:  eventHorizonRadius  ?? p.eventHorizonRadius  ?? 30,
       diskWidth:           diskWidth           ?? p.diskWidth           ?? 120,

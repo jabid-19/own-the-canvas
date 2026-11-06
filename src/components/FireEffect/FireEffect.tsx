@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useFireEffect, FirePalette } from "./useFireEffect";
+import { resolvePreset } from "../../utils/props";
 
 type FirePreset = "default" | "inferno" | "toxic" | "ice" | "plasma" | "monochrome";
 
@@ -65,7 +66,7 @@ export interface FireEffectProps extends BaseCanvasProps {
   coolingScale?: number;
   /** Fire buffer resolution relative to canvas — 0.5 = half size for perf (default: 1) */
   resolution?: number;
-  /** Named preset: "default" | "inferno" | "toxic" | "ice" | "plasma" */
+  /** Named preset: "default" | "inferno" | "toxic" | "ice" | "plasma" | "monochrome" (default: "default", which uses the "inferno" palette) */
   preset?: FirePreset | string;
 }
 
@@ -89,7 +90,7 @@ export const FireEffect = forwardRef<HTMLCanvasElement, FireEffectProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as FirePreset] || {};
+    const p = resolvePreset("FireEffect", PRESETS, props);
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

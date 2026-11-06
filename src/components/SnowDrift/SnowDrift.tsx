@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSnowDrift } from "./useSnowDrift";
+import { resolvePreset } from "../../utils/props";
 
 type SnowDriftPreset = "default" | "winter-night" | "blizzard" | "nordic" | "dusk" | "monochrome";
 
@@ -24,7 +25,7 @@ const PRESETS: Record<SnowDriftPreset, SnowDriftPresetValues> = {
 export interface SnowDriftProps extends BaseCanvasProps {
   /** Number of falling flakes (default: 220) */
   count?: number;
-  /** Snow color (default: "#f8fafc") */
+  /** Snow color (default: "#f8fafc"). Near-white: on light pages in overlay mode pass a darker one, e.g. "#94a3b8" */
   color?: string;
   /** Background color, ignored in overlay mode (default: "#0b1220") */
   backgroundColor?: string;
@@ -46,7 +47,7 @@ export interface SnowDriftProps extends BaseCanvasProps {
   preset?: SnowDriftPreset | string;
   /** Fixed full-viewport, click-through layer over the page (default: false) */
   overlay?: boolean;
-  /** Snow piles up on elements marked `data-otc-solid` and slides off their edges (default: false) */
+  /** Snow piles up on elements marked `data-otc-solid` and slides off their edges. Uses the element box: make headings `inline-block` to catch snow only over the text (default: false) */
   collide?: boolean;
   /** Overlay z-index (default: 10) */
   zIndex?: number;
@@ -57,13 +58,13 @@ export const SnowDrift = forwardRef<HTMLCanvasElement, SnowDriftProps>((props, r
     preset, count, color, backgroundColor, flakeSize, wind, fallSpeed, maxDepth, floorDepth, slope, interactive,
     overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as SnowDriftPreset] || {};
+  const p = resolvePreset("SnowDrift", PRESETS, props);
 
   const { canvasRef, canvas } = useSnowDrift({
     count:           Math.max(0, Math.round((count ?? 220))),
     color:           color ?? p.color ?? "#ffffff",
     backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
-    flakeSize:       flakeSize ?? 2.2,
+    flakeSize:       Math.max(0, flakeSize ?? 2.2),
     wind:            wind ?? p.wind ?? 0.4,
     fallSpeed:       fallSpeed ?? 1,
     maxDepth:        maxDepth ?? p.maxDepth ?? 26,

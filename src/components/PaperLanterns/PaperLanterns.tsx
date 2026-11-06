@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { usePaperLanterns } from "./usePaperLanterns";
+import { resolvePreset } from "../../utils/props";
 
 type PaperLanternsPreset = "default" | "festival" | "lotus" | "moon" | "jade" | "monochrome";
 
@@ -54,7 +55,7 @@ export const PaperLanterns = forwardRef<HTMLCanvasElement, PaperLanternsProps>((
     preset, count, color, glowColor, backgroundColor, size, riseSpeed, wind, autoRelease,
     interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as PaperLanternsPreset] || {};
+  const p = resolvePreset("PaperLanterns", PRESETS, props);
 
   const { canvasRef, canvas } = usePaperLanterns({
     count:           Math.max(0, count ?? 22),

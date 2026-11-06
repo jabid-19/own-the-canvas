@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useMoonlitSea } from "./useMoonlitSea";
+import { resolvePreset } from "../../utils/props";
 
 type MoonlitSeaPreset = "default" | "midnight" | "harvest" | "arctic" | "rose" | "monochrome";
 
@@ -52,7 +53,7 @@ export const MoonlitSea = forwardRef<HTMLCanvasElement, MoonlitSeaProps>((props,
     preset, seaColor, skyColor, moonColor, horizon, moonX, waveHeight, speed, stars, interactive,
     overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as MoonlitSeaPreset] || {};
+  const p = resolvePreset("MoonlitSea", PRESETS, props);
 
   const { canvasRef, canvas } = useMoonlitSea({
     seaColor:    seaColor ?? p.seaColor ?? "#1f2937",

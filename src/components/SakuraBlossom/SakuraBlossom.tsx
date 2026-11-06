@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSakuraBlossom } from "./useSakuraBlossom";
+import { resolvePreset } from "../../utils/props";
 
 type SakuraBlossomPreset = "default" | "sakura" | "autumn" | "snow" | "neon" | "monochrome";
 
@@ -81,7 +82,7 @@ export const SakuraBlossom = forwardRef<HTMLCanvasElement, SakuraBlossomProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as SakuraBlossomPreset] || {};
+    const p = resolvePreset("SakuraBlossom", PRESETS, props);
 
     const { canvasRef, canvas } = useSakuraBlossom({
       petalCount:       petalCount       ?? 80,

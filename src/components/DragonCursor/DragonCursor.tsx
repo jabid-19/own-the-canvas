@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useDragonCursor } from "./useDragonCursor";
+import { resolvePreset } from "../../utils/props";
 
 type DragonCursorPreset = "default" | "emerald" | "inferno" | "void" | "ice" | "monochrome";
 
@@ -59,11 +60,11 @@ export interface DragonCursorProps extends BaseCanvasProps {
   followSpeed?: number;
   /** Wing length in px (default: 80) */
   wingSpan?: number;
-  /** Show fire breath particles (default: true) */
+  /** Show fire breath particles (default: false) */
   showFire?: boolean;
   /** Dragon follows cursor (default: true) */
   interactive?: boolean;
-  /** Number of background stars (default: 0) */
+  /** Number of background stars (default: 60) */
   starCount?: number;
   /** Star color (default: "#ffffff") */
   starColor?: string;
@@ -84,13 +85,13 @@ export const DragonCursor = forwardRef<HTMLCanvasElement, DragonCursorProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as DragonCursorPreset] || {};
+    const p = resolvePreset("DragonCursor", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useDragonCursor(internalRef, {
-      segmentCount:    segmentCount    ?? 20,
-      segmentSize:     segmentSize     ?? p.segmentSize     ?? 18,
+      segmentCount:    Math.max(2, segmentCount    ?? 20),
+      segmentSize:     Math.max(0, segmentSize     ?? p.segmentSize     ?? 18),
       bodyColor:       bodyColor       ?? p.bodyColor       ?? "#ffffff",
       eyeColor:        eyeColor        ?? p.eyeColor        ?? "#111111",
       fireColor:       fireColor       ?? p.fireColor       ?? "#ffffff",

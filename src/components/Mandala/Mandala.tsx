@@ -1,6 +1,8 @@
-import { forwardRef, useRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useMandala } from "./useMandala";
+import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
+import { resolvePreset } from "../../utils/props";
 
 type MandalaPreset = "default" | "neon" | "lotus" | "cosmic" | "minimal" | "monochrome";
 
@@ -138,12 +140,9 @@ export const Mandala = forwardRef<HTMLCanvasElement, MandalaProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as MandalaPreset] || {};
+    const p = resolvePreset("Mandala", PRESETS, props);
 
-    const internalRef = useRef<HTMLCanvasElement | null>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
-
-    useMandala(internalRef, {
+    const { canvasRef, canvas } = useMandala({
       symmetry: symmetry ?? p.symmetry ?? 8,
       colors: colors ?? p.colors ?? ["#ffffff", "#6b7280"],
       lineWidth: lineWidth ?? p.lineWidth ?? 1.5,
@@ -159,13 +158,10 @@ export const Mandala = forwardRef<HTMLCanvasElement, MandalaProps>(
       noiseAmount: noiseAmount ?? p.noiseAmount ?? 0.3,
     });
 
+    useImperativeHandle(ref, () => canvas as HTMLCanvasElement, [canvas]);
+
     return (
-      <div
-        className={className}
-        style={{ width: width ?? "100%", height: height ?? "100%", display: "block", overflow: "hidden", ...style }}
-      >
-        <canvas ref={internalRef} aria-hidden="true" role="presentation" style={{ display: "block" }} />
-      </div>
+      <RuntimeCanvas canvasRef={canvasRef} width={width} height={height} className={className} style={style} />
     );
   }
 );

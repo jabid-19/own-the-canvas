@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useCandle } from "./useCandle";
+import { resolvePreset } from "../../utils/props";
 
 type CandlePreset = "default" | "ivory" | "rose" | "obsidian" | "spirit" | "monochrome";
 
@@ -50,7 +51,7 @@ export const Candle = forwardRef<HTMLCanvasElement, CandleProps>((props, ref) =>
     preset, flameColor, coreColor, waxColor, backgroundColor, size, candleHeight, flicker,
     glowIntensity, interactive, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as CandlePreset] || {};
+  const p = resolvePreset("Candle", PRESETS, props);
 
   const { canvasRef, canvas } = useCandle({
     flameColor:      flameColor      ?? p.flameColor      ?? "#e5e7eb",

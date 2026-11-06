@@ -322,25 +322,51 @@ export function useVoronoiCells(
       const [edR, edG, edB] = sampleGradient([edgeColor], 0);
 
       const data = imageData.data;
+      // Hot loop: flat typed arrays and one packed 32-bit write per pixel
+      // (object property reads and per-channel writes dominated the frame).
+      const n = seeds.length;
+      const sxs = new Float32Array(n), sys = new Float32Array(n);
+      const packed = new Uint32Array(n);
+      const le = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
+      const pack = (r: number, g: number, b: number) =>
+        le ? ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0 : ((r << 24) | (g << 16) | (b << 8) | 255) >>> 0;
+      for (let si = 0; si < n; si++) {
+        sxs[si] = seeds[si].gx; sys[si] = seeds[si].gy;
+        const [cr, cg, cb] = colors[si];
+        packed[si] = pack(cr, cg, cb);
+      }
+      const px32 = new Uint32Array(data.buffer, data.byteOffset, gridW * gridH);
 
-      // nearest-seed pixel loop
-      for (let py = 0; py < gridH; py++) {
-        for (let px = 0; px < gridW; px++) {
-          let minDist = Infinity;
-          let minIdx = 0;
-          for (let si = 0; si < seeds.length; si++) {
-            const dx = px - seeds[si].gx;
-            const dy = py - seeds[si].gy;
-            const d = dx * dx + dy * dy;
-            if (d < minDist) { minDist = d; minIdx = si; }
+      const nearest = (px: number, py: number) => {
+        let minDist = Infinity;
+        let minIdx = 0;
+        for (let si = 0; si < n; si++) {
+          const dx = px - sxs[si];
+          const dy = py - sys[si];
+          const d = dx * dx + dy * dy;
+          if (d < minDist) { minDist = d; minIdx = si; }
+        }
+        return minIdx;
+      };
+
+      // Nearest-seed fill, block by block. Voronoi cells are convex, so when
+      // all four corners of a block share a seed, every pixel inside does too:
+      // fill it without searching. Only blocks on a cell edge go per pixel.
+      const B = 8;
+      for (let by = 0; by < gridH; by += B) {
+        const y1 = Math.min(by + B, gridH) - 1;
+        for (let bx = 0; bx < gridW; bx += B) {
+          const x1 = Math.min(bx + B, gridW) - 1;
+          const id = nearest(bx, by);
+          const uniform = id === nearest(x1, by) && id === nearest(bx, y1) && id === nearest(x1, y1);
+          for (let py = by; py <= y1; py++) {
+            const row = py * gridW;
+            for (let px = bx; px <= x1; px++) {
+              const ci = uniform ? id : nearest(px, py);
+              cellIds[row + px] = ci;
+              px32[row + px] = packed[ci];
+            }
           }
-          cellIds[py * gridW + px] = minIdx;
-          const [cr, cg, cb] = colors[minIdx];
-          const off = (py * gridW + px) * 4;
-          data[off] = cr;
-          data[off + 1] = cg;
-          data[off + 2] = cb;
-          data[off + 3] = 255;
         }
       }
 
@@ -368,19 +394,14 @@ export function useVoronoiCells(
 
       // edge detection pass
       if (showEdges) {
+        const edge32 = pack(edR, edG, edB);
         for (let py = 0; py < gridH; py++) {
           for (let px = 0; px < gridW; px++) {
             const id = cellIds[py * gridW + px];
             const isEdge =
               (px > 0 && cellIds[py * gridW + px - 1] !== id) ||
               (py > 0 && cellIds[(py - 1) * gridW + px] !== id);
-            if (isEdge) {
-              const off = (py * gridW + px) * 4;
-              data[off] = edR;
-              data[off + 1] = edG;
-              data[off + 2] = edB;
-              data[off + 3] = 255;
-            }
+            if (isEdge) px32[py * gridW + px] = edge32;
           }
         }
       }

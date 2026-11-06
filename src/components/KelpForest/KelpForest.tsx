@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useKelpForest } from "./useKelpForest";
+import { resolvePreset } from "../../utils/props";
 
 type KelpForestPreset = "default" | "pacific" | "tropical" | "midnight" | "golden" | "monochrome";
 
@@ -53,7 +54,7 @@ export const KelpForest = forwardRef<HTMLCanvasElement, KelpForestProps>((props,
     preset, kelpCount, fishCount, kelpColor, fishColor, backgroundColor, current, bubbles,
     lightRays, interactive, overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as KelpForestPreset] || {};
+  const p = resolvePreset("KelpForest", PRESETS, props);
 
   const { canvasRef, canvas } = useKelpForest({
     kelpCount:       Math.max(0, Math.round(kelpCount ?? 9)),

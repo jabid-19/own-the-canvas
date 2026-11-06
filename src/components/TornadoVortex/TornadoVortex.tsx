@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useTornadoVortex } from "./useTornadoVortex";
+import { resolvePreset } from "../../utils/props";
 
 type TornadoVortexPreset = "default" | "storm" | "fire" | "neon" | "void" | "monochrome";
 
@@ -85,10 +86,10 @@ export const TornadoVortex = forwardRef<HTMLCanvasElement, TornadoVortexProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as TornadoVortexPreset] || {};
+    const p = resolvePreset("TornadoVortex", PRESETS, props);
 
     const { canvasRef, canvas } = useTornadoVortex({
-      particleCount:  particleCount  ?? 600,
+      particleCount:  Math.max(0, particleCount  ?? 600),
       funnelColor:    funnelColor    ?? p.funnelColor    ?? "#ffffff",
       debrisColor:    debrisColor    ?? p.debrisColor    ?? "#6b7280",
       lightningColor: lightningColor ?? p.lightningColor ?? "#ffffff",

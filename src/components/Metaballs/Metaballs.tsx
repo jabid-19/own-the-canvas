@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useMetaballs } from "./useMetaballs";
+import { resolvePreset } from "../../utils/props";
 
 type MetaballsPreset = "default" | "plasma" | "lava" | "ocean" | "neon" | "ghost" | "monochrome";
 
@@ -97,12 +98,12 @@ export const Metaballs = forwardRef<HTMLCanvasElement, MetaballsProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as MetaballsPreset] || {};
+    const p = resolvePreset("Metaballs", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useMetaballs(internalRef, {
-      blobCount:       blobCount       ?? 5,
+      blobCount:       Math.max(0, blobCount       ?? 5),
       color:           color           ?? p.color           ?? "#ffffff",
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       threshold:       threshold       ?? p.threshold       ?? 1,

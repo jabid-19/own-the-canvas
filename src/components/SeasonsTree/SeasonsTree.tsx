@@ -3,6 +3,7 @@ import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSeasonsTree } from "./useSeasonsTree";
 import type { Season } from "./useSeasonsTree";
+import { resolvePreset } from "../../utils/props";
 
 type SeasonsTreePreset = "default" | "japanese" | "maple" | "moonlight" | "ink" | "monochrome";
 
@@ -61,7 +62,7 @@ export const SeasonsTree = forwardRef<HTMLCanvasElement, SeasonsTreeProps>((prop
     preset, season, cycleSeconds, trunkColor, leafColor, blossomColor, autumnColor, backgroundColor, treeX, treeSize, wind, interactive,
     overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as SeasonsTreePreset] || {};
+  const p = resolvePreset("SeasonsTree", PRESETS, props);
 
   const { canvasRef, canvas } = useSeasonsTree({
     season:          season ?? "cycle",
@@ -72,7 +73,7 @@ export const SeasonsTree = forwardRef<HTMLCanvasElement, SeasonsTreeProps>((prop
     autumnColor:     autumnColor ?? p.autumnColor ?? "#9ca3af",
     backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
     treeX:           treeX ?? 0.5,
-    treeSize:        treeSize ?? 1,
+    treeSize:        Math.max(0, treeSize ?? 1),
     wind:            wind ?? 0.6,
     interactive:     interactive ?? true,
     overlay:         overlay ?? false,

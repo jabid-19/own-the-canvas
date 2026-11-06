@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useWindowRain } from "./useWindowRain";
+import { resolvePreset } from "../../utils/props";
 
 type WindowRainPreset = "default" | "city-night" | "neon" | "cafe" | "storm" | "monochrome";
 
@@ -51,7 +52,7 @@ export const WindowRain = forwardRef<HTMLCanvasElement, WindowRainProps>((props,
     preset, lightColors, backgroundColor, fogColor, rain, dropSize, fog, lights, interactive,
     overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as WindowRainPreset] || {};
+  const p = resolvePreset("WindowRain", PRESETS, props);
 
   const { canvasRef, canvas } = useWindowRain({
     lightColors:     lightColors ?? p.lightColors ?? ["#ffffff", "#9ca3af", "#6b7280"],

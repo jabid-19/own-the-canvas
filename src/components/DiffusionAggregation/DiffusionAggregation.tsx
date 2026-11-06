@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useDiffusionAggregation, DLASeedMode } from "./useDiffusionAggregation";
+import { resolvePreset } from "../../utils/props";
 
 type DiffusionAggregationPreset = "default" | "coral" | "snowflake" | "lightning" | "neon" | "frost" | "monochrome";
 
@@ -105,7 +106,7 @@ export const DiffusionAggregation = forwardRef<HTMLCanvasElement, DiffusionAggre
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as DiffusionAggregationPreset] || {};
+    const p = resolvePreset("DiffusionAggregation", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

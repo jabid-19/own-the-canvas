@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useReactionDiffusion } from "./useReactionDiffusion";
+import { resolvePreset } from "../../utils/props";
 
 type ReactionDiffusionPreset = "default" | "coral" | "spots" | "maze" | "waves" | "neon" | "monochrome";
 
@@ -72,7 +73,7 @@ export const ReactionDiffusion = forwardRef<HTMLCanvasElement, ReactionDiffusion
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as ReactionDiffusionPreset] || {};
+    const p = resolvePreset("ReactionDiffusion", PRESETS, props);
     const { canvasRef, canvas } = useReactionDiffusion({
       feedRate:       feedRate       ?? p.feedRate       ?? 0.055,
       killRate:       killRate       ?? p.killRate       ?? 0.062,

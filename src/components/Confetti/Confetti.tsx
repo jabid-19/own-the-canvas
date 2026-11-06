@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useConfetti, ConfettiShape } from "./useConfetti";
+import { resolvePreset } from "../../utils/props";
 
 export type ConfettiPalette = "monochrome" | "colorful";
 
@@ -119,7 +120,7 @@ export const Confetti = forwardRef<HTMLCanvasElement, ConfettiProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as ConfettiPreset] || {};
+    const p = resolvePreset("Confetti", PRESETS, props);
 
     // palette prop > preset palette > default "colorful"
     const resolvedPalette: ConfettiPalette = palette ?? p.palette ?? "colorful";

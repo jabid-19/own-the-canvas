@@ -52,9 +52,14 @@ export function useMatrixRain(
       canvas!.height = Math.round(h * dpr);
       canvas!.style.width = `${w}px`;
       canvas!.style.height = `${h}px`;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed(fontPx());
+    }
 
-      const { fontSize } = optionsRef.current;
+    // Clamped: 0 or negative would divide into an infinite column count.
+    const fontPx = () => Math.max(4, optionsRef.current.fontSize || 0);
+
+    function seed(fontSize: number) {
       const cols = Math.floor(w / fontSize);
       dropsRef.current = Array.from({ length: cols }, () =>
         Math.floor(Math.random() * -(h / fontSize))
@@ -73,9 +78,12 @@ export function useMatrixRain(
     let elapsed = 0;
 
     function draw() {
-      const { color, backgroundColor, fontSize, charset, resetThreshold } =
+      const { color, backgroundColor, charset, resetThreshold } =
         optionsRef.current;
       const chars = charset;
+      const fontSize = fontPx();
+      // fontSize changed live: re-lay the columns
+      if (dropsRef.current.length !== Math.floor(w / fontSize)) seed(fontSize);
 
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, w, h);
@@ -99,8 +107,12 @@ export function useMatrixRain(
       lastTime = timestamp;
       elapsed += dt;
 
+      // speed is ms per step; 0 or less means step every frame
       const { speed } = optionsRef.current;
-      if (elapsed >= speed) {
+      if (!(speed > 0)) {
+        elapsed = 0;
+        draw();
+      } else if (elapsed >= speed) {
         elapsed = elapsed % speed;
         draw();
       }

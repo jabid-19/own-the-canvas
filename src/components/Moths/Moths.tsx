@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useMoths } from "./useMoths";
+import { resolvePreset } from "../../utils/props";
 
 type MothsPreset = "default" | "porch-lamp" | "moonlight" | "candle" | "neon" | "monochrome";
 
@@ -59,7 +60,7 @@ export const Moths = forwardRef<HTMLCanvasElement, MothsProps>((props, ref) => {
     preset, count, color, lightColor, backgroundColor, angle, speed, size, glowRadius,
     lightX, lightY, showLight, followCursor, overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as MothsPreset] || {};
+  const p = resolvePreset("Moths", PRESETS, props);
 
   const { canvasRef, canvas } = useMoths({
     count:           count           ?? 26,
@@ -68,7 +69,7 @@ export const Moths = forwardRef<HTMLCanvasElement, MothsProps>((props, ref) => {
     backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
     angle:           angle           ?? p.angle           ?? 80,
     speed:           speed           ?? 1,
-    size:            size            ?? 8,
+    size:            Math.max(0, size            ?? 8),
     glowRadius:      glowRadius      ?? 120,
     lightX:          lightX          ?? 0.5,
     lightY:          lightY          ?? 0.42,

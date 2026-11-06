@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useLightning } from "./useLightning";
+import { resolvePreset } from "../../utils/props";
 
 type LightningPreset = "default" | "neon" | "storm" | "plasma" | "subtle" | "monochrome";
 
@@ -112,7 +113,7 @@ export const Lightning = forwardRef<HTMLCanvasElement, LightningProps>((props, r
     width, height, className, style,
   } = props;
 
-  const p = PRESETS[(preset ?? "default") as LightningPreset] || {};
+  const p = resolvePreset("Lightning", PRESETS, props);
 
   const internalRef = useRef<HTMLCanvasElement | null>(null);
   useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

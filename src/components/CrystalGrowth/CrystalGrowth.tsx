@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useCrystalGrowth, CrystalGrowthColorMode } from "./useCrystalGrowth";
+import { resolvePreset } from "../../utils/props";
 
 type CrystalGrowthPreset = "default" | "snowflake" | "gem" | "neon" | "frost" | "gold" | "monochrome";
 
@@ -116,7 +117,7 @@ export const CrystalGrowth = forwardRef<HTMLCanvasElement, CrystalGrowthProps>(
       interactive, autoReset, colorMode, animated, width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as CrystalGrowthPreset] || {};
+    const p = resolvePreset("CrystalGrowth", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

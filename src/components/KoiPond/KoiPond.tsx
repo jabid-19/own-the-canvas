@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useKoiPond } from "./useKoiPond";
+import { resolvePreset } from "../../utils/props";
 
 type KoiPondPreset = "default" | "koi" | "night" | "lotus" | "neon" | "monochrome";
 
@@ -83,7 +84,7 @@ export const KoiPond = forwardRef<HTMLCanvasElement, KoiPondProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as KoiPondPreset] || {};
+    const p = resolvePreset("KoiPond", PRESETS, props);
     const { canvasRef, canvas } = useKoiPond({
       fishCount:   fishCount   ?? 6,
       fishColor:   fishColor   ?? p.fishColor   ?? "#ffffff",

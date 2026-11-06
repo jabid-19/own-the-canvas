@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useCat } from "./useCat";
+import { resolvePreset } from "../../utils/props";
 
 type CatPreset = "default" | "tuxedo" | "siamese" | "grey" | "midnight" | "monochrome";
 
@@ -57,7 +58,7 @@ export const Cat = forwardRef<HTMLCanvasElement, CatProps>((props, ref) => {
     preset, furColor, stripeColor, bellyColor, eyeColor, cushionColor, backgroundColor,
     size, followCursor, interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as CatPreset] || {};
+  const p = resolvePreset("Cat", PRESETS, props);
 
   const { canvasRef, canvas } = useCat({
     furColor:        furColor        ?? p.furColor        ?? "#9ca3af",

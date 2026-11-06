@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { usePendulaWave, PendulaWaveColorMode } from "./usePendulaWave";
+import { resolvePreset } from "../../utils/props";
 
 type PendulaWavePreset = "default" | "neon" | "crystal" | "sand" | "minimal" | "cosmic" | "monochrome";
 
@@ -114,7 +115,7 @@ export const PendulaWave = forwardRef<HTMLCanvasElement, PendulaWaveProps>(
       animated, autoReset, width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as PendulaWavePreset] || {};
+    const p = resolvePreset("PendulaWave", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
@@ -125,7 +126,7 @@ export const PendulaWave = forwardRef<HTMLCanvasElement, PendulaWaveProps>(
       lineWidth:       lineWidth       ?? p.lineWidth       ?? 1,
       trailFade:       trailFade       ?? p.trailFade       ?? 0.01,
       speed:           speed           ?? 1,
-      damping:         damping         ?? p.damping         ?? 0.9995,
+      damping:         Math.min(1, Math.max(0, damping ?? p.damping ?? 0.9995)),
       freq1:           freq1           ?? p.freq1           ?? 2,
       freq2:           freq2           ?? p.freq2           ?? 3,
       freq3:           freq3           ?? p.freq3           ?? 0.01,

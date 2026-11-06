@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useGrassField } from "./useGrassField";
+import { resolvePreset } from "../../utils/props";
 
 type GrassFieldPreset = "default" | "meadow" | "dusk" | "wheat" | "frost" | "monochrome";
 
@@ -59,7 +60,7 @@ export const GrassField = forwardRef<HTMLCanvasElement, GrassFieldProps>((props,
     preset, density, bladeHeight, baseColor, tipColor, backgroundColor, flowerColor,
     flowers, wind, gusts, rows, interactive, overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as GrassFieldPreset] || {};
+  const p = resolvePreset("GrassField", PRESETS, props);
 
   const { canvasRef, canvas } = useGrassField({
     density:         density         ?? 45,

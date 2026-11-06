@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSlimeMold } from "./useSlimeMold";
+import { resolvePreset } from "../../utils/props";
 
 type SlimeMoldPreset = "default" | "neon" | "coral" | "vein" | "frost" | "gold" | "monochrome";
 
@@ -64,12 +65,12 @@ export const SlimeMold = forwardRef<HTMLCanvasElement, SlimeMoldProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as SlimeMoldPreset] || {};
+    const p = resolvePreset("SlimeMold", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useSlimeMold(internalRef, {
-      agentCount:      agentCount      ?? p.agentCount      ?? 1800,
+      agentCount:      Math.max(0, agentCount      ?? p.agentCount      ?? 1800),
       sensorAngle:     sensorAngle     ?? 45,
       sensorDistance:  sensorDistance  ?? 9,
       stepSize:        stepSize        ?? 1.5,

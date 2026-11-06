@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useParticleField } from "./useParticleField";
+import { resolvePreset } from "../../utils/props";
 
 export type ParticleLineStyle = "solid" | "dashed";
 
@@ -183,7 +184,7 @@ export const ParticleField = forwardRef<HTMLCanvasElement, ParticleFieldProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as ParticlePreset] || {};
+    const p = resolvePreset("ParticleField", PRESETS, props);
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

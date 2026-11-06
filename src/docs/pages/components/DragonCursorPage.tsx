@@ -13,7 +13,7 @@ const PROPS = [
   { name: "backgroundColor",type: "string",  default: '"#07130f"',description: "Canvas background." },
   { name: "followSpeed",    type: "number",  default: "0.15",         description: "Cursor follow lerp factor 0–1." },
   { name: "wingSpan",       type: "number",  default: "80",           description: "Wing length in px." },
-  { name: "showFire",       type: "boolean", default: "true",         description: "Show fire breath particles." },
+  { name: "showFire",       type: "boolean", default: "false",        description: "Show fire breath particles." },
   { name: "interactive",    type: "boolean", default: "true",         description: "Dragon follows cursor; false = autonomous wander." },
   { name: "starCount",      type: "number",  default: "60",           description: "Number of background stars." },
   { name: "starColor",      type: "string",  default: '"#ffffff"',    description: "Star color." },

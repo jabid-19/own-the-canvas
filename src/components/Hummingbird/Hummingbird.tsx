@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useHummingbird } from "./useHummingbird";
+import { resolvePreset } from "../../utils/props";
 
 type HummingbirdPreset = "default" | "ruby" | "violet" | "sunset" | "frost" | "monochrome";
 
@@ -58,7 +59,7 @@ export const Hummingbird = forwardRef<HTMLCanvasElement, HummingbirdProps>((prop
     preset, bodyColor, throatColor, bellyColor, flowerColor, backgroundColor, birdCount, size, speed,
     interactive, showFlowers, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as HummingbirdPreset] || {};
+  const p = resolvePreset("Hummingbird", PRESETS, props);
 
   const { canvasRef, canvas } = useHummingbird({
     bodyColor:       bodyColor       ?? p.bodyColor       ?? "#6b7280",

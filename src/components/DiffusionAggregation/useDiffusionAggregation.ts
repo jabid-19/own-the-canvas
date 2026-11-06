@@ -86,18 +86,26 @@ export function useDiffusionAggregation(
       return false;
     }
 
+    // Clamped: 0 would mean an infinite grid
+    const size = () => Math.max(1, optionsRef.current.particleSize || 0);
+    const lookKey = () => {
+      const o = optionsRef.current;
+      return `${o.backgroundColor}|${o.particleColor}|${o.glowEffect}|${o.glowBlur}`;
+    };
+    let prevLook = "";
+
     function occupyCell(gx: number, gy: number) {
       if (gx < 0 || gx >= cols || gy < 0 || gy >= rows) return;
       grid![gridIdx(gx, gy)] = 1;
     }
 
     function toGrid(px: number, py: number): [number, number] {
-      const { particleSize } = optionsRef.current;
+      const particleSize = size();
       return [Math.floor(px / particleSize), Math.floor(py / particleSize)];
     }
 
     function toCanvas(gx: number, gy: number): [number, number] {
-      const { particleSize } = optionsRef.current;
+      const particleSize = size();
       return [gx * particleSize + particleSize * 0.5, gy * particleSize + particleSize * 0.5];
     }
 
@@ -120,7 +128,8 @@ export function useDiffusionAggregation(
 
     function drawParticle(gx: number, gy: number, isCluster: boolean) {
       const [cx, cy] = toCanvas(gx, gy);
-      const { particleColor, walkerColor, particleSize, glowEffect, glowBlur } = optionsRef.current;
+      const { particleColor, walkerColor, glowEffect, glowBlur } = optionsRef.current;
+      const particleSize = size();
 
       if (glowEffect && isCluster) {
         ctx.shadowColor = particleColor;
@@ -139,8 +148,8 @@ export function useDiffusionAggregation(
 
     function eraseWalker(gx: number, gy: number) {
       const [cx, cy] = toCanvas(gx, gy);
-      const { particleSize, backgroundColor } = optionsRef.current;
-      const r = particleSize * 0.5 + 1;
+      const { backgroundColor } = optionsRef.current;
+      const r = size() * 0.5 + 1;
       ctx.fillStyle = backgroundColor;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -180,7 +189,9 @@ export function useDiffusionAggregation(
     }
 
     function reset(width: number, height: number) {
-      const { particleSize, walkerCount } = optionsRef.current;
+      const { walkerCount } = optionsRef.current;
+      const particleSize = size();
+      prevLook = lookKey();
       cols = Math.max(4, Math.floor(width / particleSize));
       rows = Math.max(4, Math.floor(height / particleSize));
       grid = new Uint8Array(cols * rows);
@@ -233,11 +244,23 @@ export function useDiffusionAggregation(
     }
     canvas.addEventListener("click", onClick);
 
+    // Look props changed live: repaint background and the whole cluster from
+    // the grid, so the canvas matches a fresh mount.
+    function repaint() {
+      prevLook = lookKey();
+      ctx.fillStyle = optionsRef.current.backgroundColor;
+      ctx.fillRect(0, 0, w, h);
+      for (let gy = 0; gy < rows; gy++)
+        for (let gx = 0; gx < cols; gx++)
+          if (grid![gridIdx(gx, gy)]) drawParticle(gx, gy, true);
+    }
+
     function loop() {
       if (!grid) {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
+      if (lookKey() !== prevLook) repaint(); // particleSize/seedMode remount via deps
 
       const { stepsPerFrame, walkerCount, showWalkers, seedMode } = optionsRef.current;
 

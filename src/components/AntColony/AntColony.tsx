@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useAntColony } from "./useAntColony";
+import { resolvePreset } from "../../utils/props";
 
 type AntColonyPreset = "default" | "neon" | "desert" | "jungle" | "minimal" | "swarm" | "monochrome";
 
@@ -115,7 +116,7 @@ export const AntColony = forwardRef<HTMLCanvasElement, AntColonyProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as AntColonyPreset] || {};
+    const p = resolvePreset("AntColony", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

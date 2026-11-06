@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useBoids } from "./useBoids";
+import { resolvePreset } from "../../utils/props";
 
 type BoidsPreset = "default" | "birds" | "fish" | "swarm" | "neon" | "monochrome";
 
@@ -119,7 +120,7 @@ export const Boids = forwardRef<HTMLCanvasElement, BoidsProps>((props, ref) => {
     width, height, className, style,
   } = props;
 
-  const p = PRESETS[(preset ?? "default") as BoidsPreset] || {};
+  const p = resolvePreset("Boids", PRESETS, props);
 
   const { canvasRef, canvas } = useBoids({
     count:            count            ?? p.count            ?? 80,

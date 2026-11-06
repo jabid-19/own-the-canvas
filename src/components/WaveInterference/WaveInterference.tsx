@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useWaveInterference } from "./useWaveInterference";
+import { resolvePreset } from "../../utils/props";
 
 type WaveInterferencePreset = "default" | "ripple" | "plasma" | "neon" | "cosmic" | "monochrome";
 
@@ -70,7 +71,7 @@ export const WaveInterference = forwardRef<HTMLCanvasElement, WaveInterferencePr
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as WaveInterferencePreset] || {};
+    const p = resolvePreset("WaveInterference", PRESETS, props);
     const { canvasRef, canvas } = useWaveInterference({
       maxSources:      maxSources      ?? 6,
       wavelength:      wavelength      ?? p.wavelength     ?? 80,

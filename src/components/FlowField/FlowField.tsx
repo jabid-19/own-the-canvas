@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useFlowField } from "./useFlowField";
+import { resolvePreset } from "../../utils/props";
 
 type FlowFieldPreset = "default" | "neon" | "ocean" | "lava" | "forest" | "monochrome";
 
@@ -92,7 +93,7 @@ export const FlowField = forwardRef<HTMLCanvasElement, FlowFieldProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as FlowFieldPreset] || {};
+    const p = resolvePreset("FlowField", PRESETS, props);
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

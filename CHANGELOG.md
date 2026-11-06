@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Tree-shaking: the package is marked `sideEffects: false` and the ESM build keeps one file per module, so importing one component no longer bundles all 68 (`MatrixRain` alone adds ~3.5 kB instead of ~660 kB).
+- `Mandala` is ~6x faster (20 → 120 fps at 944×720): each layer's arms are stroked together, and the glow is drawn on a quarter-res buffer. It now runs on the shared runtime (pause offscreen, reduced motion, DPR cap).
+- `VoronoiCells` is ~2x faster: blocks fully inside one cell are filled without a nearest-seed search.
+- Zero and negative sizes/counts no longer crash: `MatrixRain fontSize`, `SandSimulation cellSize`, `DiffusionAggregation particleSize`, `DragonCursor segmentCount`, `BubbleUniverse minRadius`/`maxRadius`, and similar props are clamped. `MatrixRain speed={0}` steps every frame instead of rendering blank.
+- `Spirograph` and `DiffusionAggregation` repaint when `backgroundColor` (and, for DiffusionAggregation, `particleColor`/glow) changes after mount. `MatrixRain` re-lays its columns when `fontSize` changes live.
+- Docs: `DragonCursor` `showFire`/`starCount` defaults, `VoronoiCells` `resolution` default, and collision notes (`data-otc-solid` uses the element box; light-page colors for `SnowDrift`).
+
+### Added
+
+- Development-only `console.warn` for an unknown `preset`, an unparseable color, or a non-finite number, naming the component, prop, and value.
+
 ## [2.0.2] - 2026-11-06
 
 ### Added

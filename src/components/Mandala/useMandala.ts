@@ -1,4 +1,5 @@
-import { useRef, useEffect, RefObject } from "react";
+import { useRef } from "react";
+import { useCanvasSetup, type FrameInfo } from "../../hooks/useCanvasSetup";
 
 export interface UseMandalaOptions {
   symmetry: number;
@@ -16,122 +17,124 @@ export interface UseMandalaOptions {
   noiseAmount: number;
 }
 
-// Simple deterministic noise for mandala arms
-function hash(n: number): number {
-  let x = Math.sin(n) * 43758.5453123;
-  return x - Math.floor(x);
-}
+/** Glow is drawn at this fraction of canvas size, then upscaled. */
+const GLOW_SCALE = 0.25;
 
-export function useMandala(
-  canvasRef: RefObject<HTMLCanvasElement | null>,
-  options: UseMandalaOptions
-) {
+/**
+ * Every arm of a layer shares color, width and alpha, so all arms go into one
+ * path and get one stroke. The old per-arm stroke paid for a shadowBlur pass
+ * symmetry × mirror times per layer (80 blurs a frame at defaults).
+ *
+ * Glow: shadowBlur on thick, self-intersecting full-res paths is the expensive
+ * part, so the glow pass is drawn on a quarter-res buffer (1/16 the pixels)
+ * and upscaled under the sharp, shadowless strokes.
+ */
+export function useMandala(options: UseMandalaOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
-  const rafRef = useRef<number>(0);
-  const timeRef = useRef<number>(0);
+  const timeRef = useRef(0);
+  const glowRef = useRef<HTMLCanvasElement | null>(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const ctx = canvas.getContext("2d")!;
-    let w = 0, h = 0;
+  function onResize(w: number, h: number) {
+    const g = (glowRef.current ??= document.createElement("canvas"));
+    g.width = Math.max(1, Math.ceil(w * GLOW_SCALE));
+    g.height = Math.max(1, Math.ceil(h * GLOW_SCALE));
+  }
 
-    function applyDpr(width: number, height: number) {
-      const cvs = canvasRef.current!;
-      const dpr = window.devicePixelRatio || 1;
-      cvs.width = Math.round(width * dpr);
-      cvs.height = Math.round(height * dpr);
-      cvs.style.width = `${width}px`;
-      cvs.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
-      w = width; h = height;
+  function draw(ctx: CanvasRenderingContext2D, w: number, h: number, dt: number, _frame: FrameInfo) {
+    const {
+      colors, lineWidth, speed, radius,
+      backgroundColor, animated, glowEffect, glowBlur,
+      strokeOpacity, mirror, noiseAmount,
+    } = optionsRef.current;
+    const symmetry = Math.max(1, Math.round(optionsRef.current.symmetry));
+    const layers = Math.max(1, Math.round(optionsRef.current.layers));
+
+    if (animated) timeRef.current += speed * 0.005 * (dt / 16.67);
+    const t = timeRef.current;
+
+    ctx.clearRect(0, 0, w, h);
+    if (backgroundColor && backgroundColor !== "transparent") {
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, w, h);
     }
 
-    const ro = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) applyDpr(width, height);
-    });
-    ro.observe(parent);
-    const rect = parent.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) applyDpr(rect.width, rect.height);
+    const cx = w / 2;
+    const cy = h / 2;
+    const maxR = Math.min(w, h) * 0.45 * radius;
+    const copies = mirror ? 2 : 1;
 
-    function drawPetal(
-      cx: number, cy: number,
-      r: number, layerIndex: number,
-      t: number, color: string,
-      symmetry: number, mirror: boolean,
-      lineWidth: number, glowEffect: boolean, glowBlur: number,
-      strokeOpacity: number, noiseAmount: number
-    ) {
-      const petals = 6 + layerIndex * 2;
-      const layerPhase = (layerIndex / 8) * Math.PI * 2;
-      const layerT = t * (1 + layerIndex * 0.15);
+    // Sharp pass strokes arm by arm (cheaper for thick lines); the blurred glow
+    // pass strokes one merged path per layer (one shadow pass per layer).
+    const paths: Path2D[][] = [];
+    const mergedPaths: Path2D[] = [];
+    for (let l = 0; l < layers; l++) {
+      const r = maxR * (1 - l * (0.85 / layers));
+      const layerT = (t + l * 0.3) * (1 + l * 0.15);
+      const layerPhase = (l / 8) * Math.PI * 2;
+      const petals = 6 + l * 2;
+      const steps = petals * 3;
 
+      // Base arm shape, then rotated (and mirrored) copies into one path
+      const xs = new Float32Array(steps + 1);
+      const ys = new Float32Array(steps + 1);
+      for (let i = 0; i <= steps; i++) {
+        const angle = (i / steps) * Math.PI * 2;
+        const noise = noiseAmount * Math.sin(angle * 3 + layerT + layerPhase);
+        const rr = r * (0.5 + 0.5 * Math.abs(Math.sin(angle * (petals / 2) + layerT * 0.5)));
+        xs[i] = (rr + noise * r * 0.15) * Math.cos(angle);
+        ys[i] = (rr + noise * r * 0.1) * Math.sin(angle);
+      }
+
+      const arms: Path2D[] = [];
       for (let s = 0; s < symmetry; s++) {
         const baseAngle = (s / symmetry) * Math.PI * 2;
-
-        for (let m = 0; m < (mirror ? 2 : 1); m++) {
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate(baseAngle + (m === 1 ? Math.PI / symmetry : 0));
-          if (m === 1) ctx.scale(1, -1);
-
-          ctx.beginPath();
-          for (let i = 0; i <= petals * 3; i++) {
-            const angle = (i / (petals * 3)) * Math.PI * 2;
-            const noise = noiseAmount * Math.sin(angle * 3 + layerT + layerPhase);
-            const rr = r * (0.5 + 0.5 * Math.abs(Math.sin(angle * (petals / 2) + layerT * 0.5)));
-            const x = (rr + noise * r * 0.15) * Math.cos(angle);
-            const y = (rr + noise * r * 0.1) * Math.sin(angle);
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        for (let m = 0; m < copies; m++) {
+          const rot = baseAngle + (m === 1 ? Math.PI / symmetry : 0);
+          const c = Math.cos(rot), sn = Math.sin(rot);
+          const flip = m === 1 ? -1 : 1;
+          const path = new Path2D();
+          for (let i = 0; i <= steps; i++) {
+            const x = xs[i], y = ys[i] * flip;
+            const px = cx + x * c - y * sn;
+            const py = cy + x * sn + y * c;
+            if (i === 0) path.moveTo(px, py); else path.lineTo(px, py);
           }
-          ctx.closePath();
-
-          if (glowEffect) { ctx.shadowColor = color; ctx.shadowBlur = glowBlur; }
-          ctx.strokeStyle = color;
-          ctx.lineWidth = lineWidth * (1 - layerIndex * 0.08);
-          ctx.globalAlpha = strokeOpacity * (1 - layerIndex * 0.1);
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-          ctx.globalAlpha = 1;
-          ctx.restore();
+          path.closePath();
+          arms.push(path);
         }
       }
+      paths.push(arms);
+      const merged = new Path2D();
+      for (const a of arms) merged.addPath(a);
+      mergedPaths.push(merged);
     }
 
-    function draw() {
-      const {
-        symmetry, colors, lineWidth, speed, layers, radius,
-        backgroundColor, animated, glowEffect, glowBlur,
-        strokeOpacity, mirror, noiseAmount,
-      } = optionsRef.current;
-
-      if (animated) timeRef.current += speed * 0.005;
-      const t = timeRef.current;
-
-      ctx.clearRect(0, 0, w, h);
-      if (backgroundColor && backgroundColor !== "transparent") {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, w, h);
-      }
-
-      const cx = w / 2;
-      const cy = h / 2;
-      const maxR = Math.min(w, h) * 0.45 * radius;
-
+    const strokeLayers = (c: CanvasRenderingContext2D, shadow: number) => {
       for (let l = 0; l < layers; l++) {
-        const r = maxR * (1 - l * (0.85 / layers));
         const color = colors[l % colors.length];
-        drawPetal(cx, cy, r, l, t + l * 0.3, color, symmetry, mirror, lineWidth, glowEffect, glowBlur, strokeOpacity, noiseAmount);
+        if (shadow > 0) { c.shadowColor = color; c.shadowBlur = shadow; }
+        c.strokeStyle = color;
+        c.lineWidth = Math.max(0.1, lineWidth * (1 - l * 0.08));
+        c.globalAlpha = Math.max(0, strokeOpacity * (1 - l * 0.1));
+        if (shadow > 0) c.stroke(mergedPaths[l]);
+        else for (const p of paths[l]) c.stroke(p);
       }
+      c.shadowBlur = 0;
+      c.globalAlpha = 1;
+    };
 
-      rafRef.current = requestAnimationFrame(draw);
+    const g = glowRef.current;
+    const gctx = glowEffect && glowBlur > 0 && g ? g.getContext("2d") : null;
+    if (g && gctx) {
+      gctx.setTransform(1, 0, 0, 1, 0, 0);
+      gctx.clearRect(0, 0, g.width, g.height);
+      gctx.setTransform(GLOW_SCALE, 0, 0, GLOW_SCALE, 0, 0);
+      strokeLayers(gctx, glowBlur * GLOW_SCALE);
+      ctx.drawImage(g, 0, 0, g.width / GLOW_SCALE, g.height / GLOW_SCALE);
     }
+    strokeLayers(ctx, 0);
+  }
 
-    rafRef.current = requestAnimationFrame(draw);
-    return () => { ro.disconnect(); cancelAnimationFrame(rafRef.current); };
-  }, [canvasRef]);
+  return useCanvasSetup({ onFrame: draw, onResize });
 }

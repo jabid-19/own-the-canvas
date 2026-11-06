@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useAuroraBorealis } from "./useAuroraBorealis";
+import { resolvePreset } from "../../utils/props";
 
 type AuroraBorealisPreset = "default" | "arctic" | "solar" | "tropical" | "neon" | "midnight" | "monochrome";
 
@@ -67,7 +68,7 @@ export const AuroraBorealis = forwardRef<HTMLCanvasElement, AuroraBorealisProps>
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as AuroraBorealisPreset] || {};
+    const p = resolvePreset("AuroraBorealis", PRESETS, props);
     const { canvasRef, canvas } = useAuroraBorealis({
       colors:          colors          ?? p.colors          ?? ["#ffffff", "#6b7280", "#9ca3af"],
       speed:           speed           ?? p.speed           ?? 1,

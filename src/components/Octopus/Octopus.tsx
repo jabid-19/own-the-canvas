@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useOctopus } from "./useOctopus";
+import { resolvePreset } from "../../utils/props";
 
 type OctopusPreset = "default" | "blue-ringed" | "ghost" | "abyss" | "sand" | "monochrome";
 
@@ -59,7 +60,7 @@ export const Octopus = forwardRef<HTMLCanvasElement, OctopusProps>((props, ref) 
     preset, skinColor, spotColor, suckerColor, eyeColor, inkColor, backgroundColor, size, tentacleLength,
     followCursor, interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as OctopusPreset] || {};
+  const p = resolvePreset("Octopus", PRESETS, props);
 
   const { canvasRef, canvas } = useOctopus({
     skinColor:       skinColor       ?? p.skinColor       ?? "#9ca3af",

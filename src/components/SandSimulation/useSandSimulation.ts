@@ -79,7 +79,7 @@ export function useSandSimulation(
       canvas!.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const { cellSize } = optionsRef.current;
+      const cellSize = Math.max(1, optionsRef.current.cellSize || 0); // 0 would mean infinite cells
       const cols = Math.max(4, Math.floor(w / cellSize));
       const rows = Math.max(4, Math.floor(h / cellSize));
       initGrid(cols, rows);

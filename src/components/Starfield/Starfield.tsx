@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useStarfield, StarfieldPerspective } from "./useStarfield";
+import { resolvePreset } from "../../utils/props";
 
 type StarfieldPreset = "default" | "warp" | "peaceful" | "minimal" | "nebula" | "monochrome";
 
@@ -115,7 +116,7 @@ export const Starfield = forwardRef<HTMLCanvasElement, StarfieldProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as StarfieldPreset] || {};
+    const p = resolvePreset("Starfield", PRESETS, props);
 
     const { canvasRef, canvas } = useStarfield({
       starCount: starCount ?? p.starCount ?? 200,

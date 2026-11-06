@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useInkMountains } from "./useInkMountains";
+import { resolvePreset } from "../../utils/props";
 
 type InkMountainsPreset = "default" | "sumi" | "night" | "jade" | "dusk" | "monochrome";
 
@@ -52,7 +53,7 @@ export const InkMountains = forwardRef<HTMLCanvasElement, InkMountainsProps>((pr
     preset, paperColor, inkColor, sunColor, layers, mist, drift, birds, pines, parallax,
     overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as InkMountainsPreset] || {};
+  const p = resolvePreset("InkMountains", PRESETS, props);
 
   const { canvasRef, canvas } = useInkMountains({
     paperColor: paperColor ?? p.paperColor ?? "#f2efe6",

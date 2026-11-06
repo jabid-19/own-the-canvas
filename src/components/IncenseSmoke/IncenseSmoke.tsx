@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useIncenseSmoke } from "./useIncenseSmoke";
+import { resolvePreset } from "../../utils/props";
 
 type IncenseSmokePreset = "default" | "temple" | "sandalwood" | "moonlight" | "noir" | "monochrome";
 
@@ -53,7 +54,7 @@ export const IncenseSmoke = forwardRef<HTMLCanvasElement, IncenseSmokeProps>((pr
     preset, sticks, color, emberColor, stickColor, backgroundColor, turbulence, rise, thickness, interactive,
     overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as IncenseSmokePreset] || {};
+  const p = resolvePreset("IncenseSmoke", PRESETS, props);
 
   const { canvasRef, canvas } = useIncenseSmoke({
     sticks:          Math.max(1, Math.min(5, Math.round((sticks ?? 1)))),

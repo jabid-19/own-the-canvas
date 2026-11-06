@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useKomorebi } from "./useKomorebi";
+import { resolvePreset } from "../../utils/props";
 
 type KomorebiPreset = "default" | "morning" | "forest" | "golden-hour" | "moonlight" | "monochrome";
 
@@ -49,7 +50,7 @@ export const Komorebi = forwardRef<HTMLCanvasElement, KomorebiProps>((props, ref
     preset, lightColor, shadowColor, backgroundColor, density, wind, sunHeight,
     interactive, overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as KomorebiPreset] || {};
+  const p = resolvePreset("Komorebi", PRESETS, props);
 
   const { canvasRef, canvas } = useKomorebi({
     lightColor:      lightColor      ?? p.lightColor      ?? "#ffffff",

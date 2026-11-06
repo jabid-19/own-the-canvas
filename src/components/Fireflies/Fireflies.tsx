@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useFireflies } from "./useFireflies";
+import { resolvePreset } from "../../utils/props";
 
 type FirefliesPreset = "default" | "summer" | "riverbank" | "blue-ghost" | "ember" | "monochrome";
 
@@ -58,13 +59,13 @@ export const Fireflies = forwardRef<HTMLCanvasElement, FirefliesProps>((props, r
     preset, count, color, backgroundColor, size, glow, period, sync, syncRadius, speed,
     interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as FirefliesPreset] || {};
+  const p = resolvePreset("Fireflies", PRESETS, props);
 
   const { canvasRef, canvas } = useFireflies({
     count:           count           ?? 60,
     color:           color           ?? p.color           ?? "#ffffff",
     backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
-    size:            size            ?? 2.2,
+    size:            Math.max(0, size            ?? 2.2),
     glow:            glow            ?? p.glow            ?? 18,
     period:          period          ?? p.period          ?? 1.6,
     sync:            sync            ?? p.sync            ?? 0.08,

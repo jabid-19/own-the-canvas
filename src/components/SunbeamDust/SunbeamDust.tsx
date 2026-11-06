@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSunbeamDust } from "./useSunbeamDust";
+import { resolvePreset } from "../../utils/props";
 
 type SunbeamDustPreset = "default" | "golden-hour" | "chapel" | "morning" | "dusk" | "monochrome";
 
@@ -58,7 +59,7 @@ export const SunbeamDust = forwardRef<HTMLCanvasElement, SunbeamDustProps>((prop
     preset, color, backgroundColor, beams, angle, intensity, dustCount, dustSize, speed,
     windowX, windowWidth, interactive, overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as SunbeamDustPreset] || {};
+  const p = resolvePreset("SunbeamDust", PRESETS, props);
 
   const { canvasRef, canvas } = useSunbeamDust({
     color:           color           ?? p.color           ?? "#ffffff",

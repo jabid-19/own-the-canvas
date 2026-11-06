@@ -2,6 +2,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useButterflySwarm } from "./useButterflySwarm";
+import { resolvePreset } from "../../utils/props";
 
 type ButterflySwarmPreset = "default" | "monarch" | "morpho" | "meadow" | "night" | "monochrome";
 
@@ -51,7 +52,7 @@ export const ButterflySwarm = forwardRef<HTMLCanvasElement, ButterflySwarmProps>
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as ButterflySwarmPreset] || {};
+    const p = resolvePreset("ButterflySwarm", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

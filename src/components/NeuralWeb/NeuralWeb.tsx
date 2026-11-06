@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useNeuralWeb } from "./useNeuralWeb";
+import { resolvePreset } from "../../utils/props";
 
 type NeuralWebPreset = "default" | "neon" | "brain" | "minimal" | "plasma" | "circuit" | "monochrome";
 
@@ -124,7 +125,7 @@ export const NeuralWeb = forwardRef<HTMLCanvasElement, NeuralWebProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as NeuralWebPreset] || {};
+    const p = resolvePreset("NeuralWeb", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
@@ -135,13 +136,13 @@ export const NeuralWeb = forwardRef<HTMLCanvasElement, NeuralWebProps>(
       signalColor:      signalColor      ?? p.signalColor      ?? "#ffffff",
       backgroundColor:  backgroundColor  ?? p.backgroundColor  ?? "#111111",
       connectionRadius: connectionRadius ?? p.connectionRadius ?? 150,
-      nodeRadius:       nodeRadius       ?? p.nodeRadius       ?? 4,
+      nodeRadius:       Math.max(0, nodeRadius       ?? p.nodeRadius       ?? 4),
       lineWidth:        lineWidth        ?? 1,
-      speed:            speed            ?? 1,
+      speed:            Math.max(0, speed            ?? 1),
       pulseInterval:    pulseInterval    ?? p.pulseInterval    ?? 2000,
       pulseDecay:       pulseDecay       ?? p.pulseDecay       ?? 0.85,
       glowEffect:       glowEffect       ?? p.glowEffect       ?? true,
-      glowBlur:         glowBlur         ?? p.glowBlur         ?? 15,
+      glowBlur:         Math.max(0, glowBlur         ?? p.glowBlur         ?? 15),
       interactive:      interactive      ?? true,
       animated:         animated         ?? true,
       wander:           wander           ?? true,

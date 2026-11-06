@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useCloudSea } from "./useCloudSea";
+import { resolvePreset } from "../../utils/props";
 
 type CloudSeaPreset = "default" | "sunset" | "dawn" | "golden" | "stormy" | "monochrome";
 
@@ -52,7 +53,7 @@ export const CloudSea = forwardRef<HTMLCanvasElement, CloudSeaProps>((props, ref
     preset, skyColor, sunColor, cloudColor, shadowColor, horizon, coverage, speed, interactive,
     overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as CloudSeaPreset] || {};
+  const p = resolvePreset("CloudSea", PRESETS, props);
 
   const { canvasRef, canvas } = useCloudSea({
     skyColor:    skyColor ?? p.skyColor ?? "#111111",

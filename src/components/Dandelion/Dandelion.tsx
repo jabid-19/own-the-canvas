@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useDandelion } from "./useDandelion";
+import { resolvePreset } from "../../utils/props";
 
 type DandelionPreset = "default" | "meadow" | "sunset" | "moonlit" | "ink" | "monochrome";
 
@@ -57,7 +58,7 @@ export const Dandelion = forwardRef<HTMLCanvasElement, DandelionProps>((props, r
     preset, headCount, seedsPerHead, color, stemColor, backgroundColor, wind, blowStrength,
     autoBlow, regrow, interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as DandelionPreset] || {};
+  const p = resolvePreset("Dandelion", PRESETS, props);
 
   const { canvasRef, canvas } = useDandelion({
     headCount:       Math.max(0, Math.round(headCount ?? 3)),

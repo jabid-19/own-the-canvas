@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useEye, EyePupilShape } from "./useEye";
+import { resolvePreset } from "../../utils/props";
 
 type EyePreset = "default" | "ocean" | "amber" | "violet" | "serpent" | "monochrome";
 
@@ -61,7 +62,7 @@ export const Eye = forwardRef<HTMLCanvasElement, EyeProps>((props, ref) => {
     width, height, className, style,
   } = props;
 
-  const p = PRESETS[(preset ?? "default") as EyePreset] || {};
+  const p = resolvePreset("Eye", PRESETS, props);
   const internalRef = useRef<HTMLCanvasElement | null>(null);
   useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

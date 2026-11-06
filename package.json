@@ -24,6 +24,7 @@
   "main": "./lib/index.cjs.js",
   "module": "./lib/index.es.js",
   "types": "./lib/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./lib/index.es.js",

@@ -115,6 +115,8 @@ export function useSpirograph(
       prevLayerCount = layerCount;
     }
 
+    let prevBg = optionsRef.current.backgroundColor;
+
     function clearCanvas() {
       const { backgroundColor } = optionsRef.current;
       ctx.globalCompositeOperation = "source-over";
@@ -203,6 +205,9 @@ export function useSpirograph(
         applyParams(false);
         clearCanvas();
       }
+      // background changed live: repaint, like a fresh mount would
+      if (!isFirstDraw && backgroundColor !== prevBg) clearCanvas();
+      prevBg = backgroundColor;
       isFirstDraw = false;
 
       if (!animated) {

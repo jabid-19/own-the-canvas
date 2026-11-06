@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useFerrofluid } from "./useFerrofluid";
+import { resolvePreset } from "../../utils/props";
 
 type FerrofluidPreset = "default" | "studio" | "noir" | "gold" | "oil-slick" | "monochrome";
 
@@ -52,7 +53,7 @@ export const Ferrofluid = forwardRef<HTMLCanvasElement, FerrofluidProps>((props,
     preset, fluidColor, highlightColor, backgroundColor, spikes, spikeHeight, poolWidth, strength, reflection, interactive,
     overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as FerrofluidPreset] || {};
+  const p = resolvePreset("Ferrofluid", PRESETS, props);
 
   const { canvasRef, canvas } = useFerrofluid({
     fluidColor:      fluidColor ?? p.fluidColor ?? "#050505",

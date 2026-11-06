@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useBubbleUniverse } from "./useBubbleUniverse";
+import { resolvePreset } from "../../utils/props";
 
 type BubbleUniversePreset = "default" | "soap" | "neon" | "deep" | "minimal" | "monochrome";
 
@@ -82,14 +83,14 @@ export const BubbleUniverse = forwardRef<HTMLCanvasElement, BubbleUniverseProps>
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as BubbleUniversePreset] || {};
+    const p = resolvePreset("BubbleUniverse", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
     useBubbleUniverse(internalRef, {
       bubbleCount:    bubbleCount    ?? p.bubbleCount    ?? 15,
-      minRadius:      minRadius      ?? p.minRadius      ?? 20,
-      maxRadius:      maxRadius      ?? p.maxRadius      ?? 50,
+      minRadius:      Math.max(1, minRadius      ?? p.minRadius      ?? 20),
+      maxRadius:      Math.max(1, maxRadius      ?? p.maxRadius      ?? 50),
       backgroundColor: backgroundColor ?? p.backgroundColor ?? "#111111",
       shimmerColor:   shimmerColor   ?? p.shimmerColor   ?? "#ffffff",
       popEffect:      popEffect      ?? true,

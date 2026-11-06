@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useTidePool } from "./useTidePool";
+import { resolvePreset } from "../../utils/props";
 
 type TidePoolPreset = "default" | "tropical" | "kelp-coast" | "sunset" | "night" | "monochrome";
 
@@ -47,7 +48,7 @@ export const TidePool = forwardRef<HTMLCanvasElement, TidePoolProps>((props, ref
     preset, waterColor, rockColor, anemoneColor, starfishColor, fishCount, anemoneCount,
     causticIntensity, interactive, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as TidePoolPreset] || {};
+  const p = resolvePreset("TidePool", PRESETS, props);
 
   const { canvasRef, canvas } = useTidePool({
     waterColor:       waterColor       ?? p.waterColor       ?? "#6b7280",

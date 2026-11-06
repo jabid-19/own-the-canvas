@@ -2,6 +2,7 @@ import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useGameOfLife, GameOfLifeHandle } from "./useGameOfLife";
+import { resolvePreset } from "../../utils/props";
 
 export type { GameOfLifeHandle };
 
@@ -97,7 +98,7 @@ export const GameOfLife = forwardRef<GameOfLifeHandle, GameOfLifeProps>((props, 
     width, height, className, style,
   } = props;
 
-  const p = PRESETS[(preset ?? "default") as GameOfLifePreset] || {};
+  const p = resolvePreset("GameOfLife", PRESETS, props);
 
   const handleRef = useRef<GameOfLifeHandle | null>(null);
 

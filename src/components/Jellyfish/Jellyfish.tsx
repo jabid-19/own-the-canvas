@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useJellyfish } from "./useJellyfish";
+import { resolvePreset } from "../../utils/props";
 
 type JellyfishPreset = "default" | "sea-nettle" | "crystal" | "lions-mane" | "ghost" | "monochrome";
 
@@ -52,7 +53,7 @@ export const Jellyfish = forwardRef<HTMLCanvasElement, JellyfishProps>((props, r
     preset, count, bellColor, glowColor, backgroundColor, tentacleLength, pulseRate,
     interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as JellyfishPreset] || {};
+  const p = resolvePreset("Jellyfish", PRESETS, props);
 
   const { canvasRef, canvas } = useJellyfish({
     count:           count           ?? p.count           ?? 4,

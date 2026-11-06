@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useRain } from "./useRain";
+import { resolvePreset } from "../../utils/props";
 
 type RainPreset = "default" | "storm" | "drizzle" | "neon" | "golden" | "monochrome";
 
@@ -112,7 +113,7 @@ export const Rain = forwardRef<HTMLCanvasElement, RainProps>((props, ref) => {
     width, height, className, style,
   } = props;
 
-  const p = PRESETS[(preset ?? "default") as RainPreset] || {};
+  const p = resolvePreset("Rain", PRESETS, props);
 
   const internalRef = useRef<HTMLCanvasElement | null>(null);
   useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

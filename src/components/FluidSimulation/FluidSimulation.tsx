@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useFluidSimulation } from "./useFluidSimulation";
+import { resolvePreset } from "../../utils/props";
 
 type FluidPreset = "default" | "ink" | "neon" | "lava" | "ocean" | "smoke" | "monochrome";
 
@@ -147,7 +148,7 @@ export const FluidSimulation = forwardRef<HTMLCanvasElement, FluidSimulationProp
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as FluidPreset] || {};
+    const p = resolvePreset("FluidSimulation", PRESETS, props);
 
     const { canvasRef, canvas } = useFluidSimulation({
       resolution: resolution ?? p.resolution ?? 128,

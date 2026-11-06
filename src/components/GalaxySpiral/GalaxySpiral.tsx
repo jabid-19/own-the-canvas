@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useGalaxySpiral } from "./useGalaxySpiral";
+import { resolvePreset } from "../../utils/props";
 
 type GalaxySpiralPreset = "default" | "andromeda" | "neon" | "void" | "golden" | "monochrome";
 
@@ -78,7 +79,7 @@ export const GalaxySpiral = forwardRef<HTMLCanvasElement, GalaxySpiralProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as GalaxySpiralPreset] || {};
+    const p = resolvePreset("GalaxySpiral", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

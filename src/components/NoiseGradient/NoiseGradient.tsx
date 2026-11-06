@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useNoiseGradient } from "./useNoiseGradient";
+import { resolvePreset } from "../../utils/props";
 
 type NoiseGradientPreset = "default" | "aurora" | "sunset" | "ocean" | "forest" | "neon" | "monochrome";
 
@@ -89,7 +90,7 @@ export const NoiseGradient = forwardRef<HTMLCanvasElement, NoiseGradientProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as NoiseGradientPreset] || {};
+    const p = resolvePreset("NoiseGradient", PRESETS, props);
 
 
     const { canvasRef, canvas } = useNoiseGradient({

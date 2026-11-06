@@ -2,6 +2,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useSpiderWeb } from "./useSpiderWeb";
+import { resolvePreset } from "../../utils/props";
 
 type SpiderWebPreset = "default" | "night" | "forest" | "neon" | "frost" | "monochrome";
 
@@ -60,7 +61,7 @@ export const SpiderWeb = forwardRef<HTMLCanvasElement, SpiderWebProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as SpiderWebPreset] || {};
+    const p = resolvePreset("SpiderWeb", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 

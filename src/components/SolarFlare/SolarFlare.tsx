@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSolarFlare } from "./useSolarFlare";
+import { resolvePreset } from "../../utils/props";
 
 type SolarFlarePreset = "default" | "inferno" | "plasma" | "neon" | "white-dwarf" | "monochrome";
 
@@ -88,7 +89,7 @@ export const SolarFlare = forwardRef<HTMLCanvasElement, SolarFlareProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as SolarFlarePreset] || {};
+    const p = resolvePreset("SolarFlare", PRESETS, props);
 
     const { canvasRef, canvas } = useSolarFlare({
       sunColor:           sunColor           ?? p.sunColor           ?? "#ffffff",

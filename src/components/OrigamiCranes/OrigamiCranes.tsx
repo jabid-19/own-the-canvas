@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useOrigamiCranes } from "./useOrigamiCranes";
+import { resolvePreset } from "../../utils/props";
 
 type OrigamiCranesPreset = "default" | "senbazuru" | "washi" | "white-paper" | "gold" | "monochrome";
 
@@ -47,7 +48,7 @@ export const OrigamiCranes = forwardRef<HTMLCanvasElement, OrigamiCranesProps>((
     preset, count, colors, backgroundColor, size, speed, interactive,
     overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as OrigamiCranesPreset] || {};
+  const p = resolvePreset("OrigamiCranes", PRESETS, props);
 
   const { canvasRef, canvas } = useOrigamiCranes({
     count:           Math.max(0, Math.round((count ?? 14))),

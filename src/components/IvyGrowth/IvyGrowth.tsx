@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useIvyGrowth } from "./useIvyGrowth";
+import { resolvePreset } from "../../utils/props";
 
 type IvyGrowthPreset = "default" | "english-ivy" | "autumn" | "jungle" | "gilded" | "monochrome";
 
@@ -60,7 +61,7 @@ export const IvyGrowth = forwardRef<HTMLCanvasElement, IvyGrowthProps>((props, r
     preset, color, leafColor, backgroundColor, vines, growthSpeed, density, leafSize, leafDensity,
     followCursor, hug, loop, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as IvyGrowthPreset] || {};
+  const p = resolvePreset("IvyGrowth", PRESETS, props);
 
   const { canvasRef, canvas } = useIvyGrowth({
     color:           color           ?? p.color           ?? "#6b7280",

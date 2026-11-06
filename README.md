@@ -84,6 +84,10 @@ import { SakuraBlossom } from "own-the-canvas";
 
 Use `data-otc-solid="live"` for sticky or animated elements so their position is re-read every frame.
 
+Collisions use the element's box, not its text. A block-level `<h1>` spans its container, so particles land along the full width. Give it `display: inline-block` (or `width: fit-content`) to catch particles only over the words.
+
+Overlay effects draw light particles by default (SnowDrift is near-white). On a light page, pass a darker `color`, e.g. `<SnowDrift overlay collide color="#94a3b8" />`.
+
 What each DOM-aware effect does with marked elements:
 
 | Component | With `collide` |

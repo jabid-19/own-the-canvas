@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSunflowers } from "./useSunflowers";
+import { resolvePreset } from "../../utils/props";
 
 type SunflowersPreset = "default" | "dawn" | "dusk" | "velvet" | "moonlight" | "monochrome";
 
@@ -51,7 +52,7 @@ export const Sunflowers = forwardRef<HTMLCanvasElement, SunflowersProps>((props,
     preset, count, petalColor, centerColor, stemColor, backgroundColor, wind, followCursor,
     interactive, overlay, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as SunflowersPreset] || {};
+  const p = resolvePreset("Sunflowers", PRESETS, props);
 
   const { canvasRef, canvas } = useSunflowers({
     count:           count           ?? 5,

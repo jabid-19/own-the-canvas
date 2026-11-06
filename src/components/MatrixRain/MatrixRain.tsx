@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useMatrixRain, MatrixCharset, resolveCharset } from "./useMatrixRain";
+import { resolvePreset } from "../../utils/props";
 
 type MatrixRainPreset = "default" | "cyberpunk" | "binary" | "minimal" | "blood" | "monochrome";
 
@@ -71,7 +72,7 @@ export const MatrixRain = forwardRef<HTMLCanvasElement, MatrixRainProps>(
       style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as MatrixRainPreset] || {};
+    const p = resolvePreset("MatrixRain", PRESETS, props);
 
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);

@@ -14,7 +14,7 @@ describe("preset color defaults", () => {
     const src = readFileSync(join(dir, name, `${name}.tsx`), "utf8");
 
     it(`${name}: no preset resolves to "default"`, () => {
-      expect(src).toMatch(/PRESETS\[\(preset \?\? "default"\) as \w+\]/);
+      expect(src).toContain(`resolvePreset("${name}", PRESETS, props)`);
     });
 
     it(`${name}: default preset has colors, monochrome preset exists`, () => {

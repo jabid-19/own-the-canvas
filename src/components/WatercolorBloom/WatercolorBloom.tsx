@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useWatercolorBloom } from "./useWatercolorBloom";
+import { resolvePreset } from "../../utils/props";
 
 type WatercolorBloomPreset = "default" | "sunset" | "ocean" | "spring" | "monochrome" | "neon";
 
@@ -97,7 +98,7 @@ export const WatercolorBloom = forwardRef<HTMLCanvasElement, WatercolorBloomProp
       resolution, animated, maxBlooms, width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as WatercolorBloomPreset] || {};
+    const p = resolvePreset("WatercolorBloom", PRESETS, props);
 
     const { canvasRef, canvas } = useWatercolorBloom({
       colors:            colors            ?? p.colors            ?? ["#ffffff", "#6b7280", "#9ca3af"],

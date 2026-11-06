@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { useMagneticField } from "./useMagneticField";
+import { resolvePreset } from "../../utils/props";
 
 type MagneticFieldPreset = "default" | "neon" | "warm" | "mono" | "electric" | "minimal" | "monochrome";
 
@@ -107,7 +108,7 @@ export const MagneticField = forwardRef<HTMLCanvasElement, MagneticFieldProps>(
       width, height, className, style,
     } = props;
 
-    const p = PRESETS[(preset ?? "default") as MagneticFieldPreset] || {};
+    const p = resolvePreset("MagneticField", PRESETS, props);
     const internalRef = useRef<HTMLCanvasElement | null>(null);
     useImperativeHandle(ref, () => internalRef.current as HTMLCanvasElement);
 
@@ -121,9 +122,9 @@ export const MagneticField = forwardRef<HTMLCanvasElement, MagneticFieldProps>(
       backgroundColor:backgroundColor?? p.backgroundColor?? "#111111",
       lineWidth:      lineWidth      ?? 1,
       lineOpacity:    lineOpacity    ?? p.lineOpacity    ?? 0.6,
-      poleRadius:     poleRadius     ?? 12,
+      poleRadius:     Math.max(0, poleRadius     ?? 12),
       glowEffect:     glowEffect     ?? p.glowEffect     ?? true,
-      glowBlur:       glowBlur       ?? p.glowBlur       ?? 20,
+      glowBlur:       Math.max(0, glowBlur       ?? p.glowBlur       ?? 20),
       animated:       animated       ?? true,
       interactive:    interactive    ?? true,
       maxPoles:       maxPoles       ?? 6,

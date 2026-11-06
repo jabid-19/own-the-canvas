@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { BaseCanvasProps } from "../../types";
 import { RuntimeCanvas } from "../../runtime/RuntimeCanvas";
 import { useSnail } from "./useSnail";
+import { resolvePreset } from "../../utils/props";
 
 type SnailPreset = "default" | "amber" | "forest" | "candy" | "nocturne" | "monochrome";
 
@@ -53,7 +54,7 @@ export const Snail = forwardRef<HTMLCanvasElement, SnailProps>((props, ref) => {
     preset, shellColor, bodyColor, trailColor, backgroundColor, size, speed, trail,
     interactive, overlay, collide, zIndex, width, height, className, style,
   } = props;
-  const p = PRESETS[(preset ?? "default") as SnailPreset] || {};
+  const p = resolvePreset("Snail", PRESETS, props);
 
   const { canvasRef, canvas } = useSnail({
     shellColor:      shellColor      ?? p.shellColor      ?? "#9ca3af",
