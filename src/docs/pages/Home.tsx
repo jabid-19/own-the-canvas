@@ -1,4 +1,5 @@
 import React from "react";
+import pkg from "../../../package.json";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ComponentCard } from "../components/ComponentCard";
@@ -949,7 +950,7 @@ export function Home() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <div className="home-topbar">
-        <span className="home-topbar-version">v2.0.0</span>
+        <span className="home-topbar-version">v{pkg.version}</span>
         <div style={{ display: "flex", gap: 8 }}>
           <a
             href="https://github.com/jabid-19/own-the-canvas"
@@ -1099,7 +1100,7 @@ export default function App() {
         {/* Footer */}
         <footer className="home-footer">
           <span>own-the-canvas · MIT License</span>
-          <span>v2.0.0</span>
+          <span>v{pkg.version}</span>
         </footer>
       </div>
     </>
