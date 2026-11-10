@@ -62,11 +62,6 @@ export function CanvasTop({ seed = "" }: { seed?: string }) {
       <g fill={a}>
         <circle cx="236" cy="38" r="3.5" /><circle cx="262" cy="50" r="2" />
       </g>
-
-      {/* signature */}
-      <text x="1064" y="132" textAnchor="end" fontFamily="var(--font-display)" fontStyle="italic" fontSize="17" fill="#2b2118" opacity="0.55">
-        own the canvas
-      </text>
     </svg>
   );
 }

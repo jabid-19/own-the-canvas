@@ -74,6 +74,11 @@ import { TornadoVortex } from "../../components/TornadoVortex";
 import { SolarFlare } from "../../components/SolarFlare";
 import { ButterflySwarm } from "../../components/ButterflySwarm";
 
+/** The hero window shows one of these, picked at random on each page load. */
+const HERO_CANVASES = [
+  KoiPond, DragonCursor, Eye, Jellyfish, TidePool, InkMountains, CloudSea, SpiderWeb, Rain,
+] as React.ComponentType<{ width?: string; height?: string }>[];
+
 const CSS = `
 .home {
   max-width: 1120px;
@@ -938,6 +943,9 @@ const COMPONENTS = [
 const INSTALL_CMD = "npm install own-the-canvas";
 
 export function Home() {
+  const [HeroCanvas] = React.useState(
+    () => HERO_CANVASES[Math.floor(Math.random() * HERO_CANVASES.length)],
+  );
   return (
     <>
       <Helmet>
@@ -1031,7 +1039,7 @@ export function Home() {
           <div className="home-diorama">
             <PaperScene seed="home" className="home-diorama-scene" cream />
             <div className="home-window">
-              <KoiPond width="100%" height="100%" />
+              <HeroCanvas width="100%" height="100%" />
             </div>
           </div>
         </div>
