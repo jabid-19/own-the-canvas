@@ -1,78 +1,80 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import pkg from "../../../package.json";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ComponentCard } from "../components/ComponentCard";
 import { CodeBlock } from "../components/CodeBlock";
 import { PaperScene } from "../components/PaperScene";
-import { DragonCursor } from "../../components/DragonCursor";
-import { KoiPond } from "../../components/KoiPond";
-import { SpiderWeb } from "../../components/SpiderWeb";
-import { MatrixRain } from "../../components/MatrixRain";
-import { FluidSimulation } from "../../components/FluidSimulation";
-import { FlowField } from "../../components/FlowField";
-import { Boids } from "../../components/Boids";
-import { Confetti } from "../../components/Confetti";
-import { Mandala } from "../../components/Mandala";
-import { Starfield } from "../../components/Starfield";
-import { NoiseGradient } from "../../components/NoiseGradient";
-import { Fireworks } from "../../components/Fireworks";
-import { BubbleUniverse } from "../../components/BubbleUniverse";
-import { SakuraBlossom } from "../../components/SakuraBlossom";
-import { IvyGrowth } from "../../components/IvyGrowth";
-import { Fireflies } from "../../components/Fireflies";
-import { Dandelion } from "../../components/Dandelion";
-import { GrassField } from "../../components/GrassField";
-import { Moths } from "../../components/Moths";
-import { Eye } from "../../components/Eye";
-import { Owl } from "../../components/Owl";
-import { Octopus } from "../../components/Octopus";
-import { Hummingbird } from "../../components/Hummingbird";
-import { Candle } from "../../components/Candle";
-import { Cat } from "../../components/Cat";
-import { Jellyfish } from "../../components/Jellyfish";
-import { Snail } from "../../components/Snail";
-import { Sunflowers } from "../../components/Sunflowers";
-import { Komorebi } from "../../components/Komorebi";
-import { TidePool } from "../../components/TidePool";
-import { SunbeamDust } from "../../components/SunbeamDust";
-import { PaperLanterns } from "../../components/PaperLanterns";
-import { KelpForest } from "../../components/KelpForest";
-import { SnowDrift } from "../../components/SnowDrift";
-import { OrigamiCranes } from "../../components/OrigamiCranes";
-import { SeasonsTree } from "../../components/SeasonsTree";
-import { InkMountains } from "../../components/InkMountains";
-import { WindowRain } from "../../components/WindowRain";
-import { IncenseSmoke } from "../../components/IncenseSmoke";
-import { MoonlitSea } from "../../components/MoonlitSea";
-import { CloudSea } from "../../components/CloudSea";
-import { Ferrofluid } from "../../components/Ferrofluid";
-import { GameOfLife } from "../../components/GameOfLife";
-import { Rain } from "../../components/Rain";
-import { Lightning } from "../../components/Lightning";
-import { FireEffect } from "../../components/FireEffect";
-import { ParticleField } from "../../components/ParticleField";
-import { ReactionDiffusion } from "../../components/ReactionDiffusion";
-import { AuroraBorealis } from "../../components/AuroraBorealis";
-import { Spirograph } from "../../components/Spirograph";
-import { SandSimulation } from "../../components/SandSimulation";
-import { WaveInterference } from "../../components/WaveInterference";
-import { DiffusionAggregation } from "../../components/DiffusionAggregation";
-import { Kaleidoscope } from "../../components/Kaleidoscope";
-import { VoronoiCells } from "../../components/VoronoiCells";
-import { SlimeMold } from "../../components/SlimeMold";
-import { WatercolorBloom } from "../../components/WatercolorBloom";
-import { PendulaWave } from "../../components/PendulaWave";
-import { CrystalGrowth } from "../../components/CrystalGrowth";
-import { NeuralWeb } from "../../components/NeuralWeb";
-import { Metaballs } from "../../components/Metaballs";
-import { AntColony } from "../../components/AntColony";
-import { MagneticField } from "../../components/MagneticField";
-import { BlackHole } from "../../components/BlackHole";
-import { GalaxySpiral } from "../../components/GalaxySpiral";
-import { TornadoVortex } from "../../components/TornadoVortex";
-import { SolarFlare } from "../../components/SolarFlare";
-import { ButterflySwarm } from "../../components/ButterflySwarm";
+
+// Canvas components load on demand, so the landing page's own bundle stays small.
+const DragonCursor = lazy(() => import("../../components/DragonCursor").then((m) => ({ default: m.DragonCursor })));
+const KoiPond = lazy(() => import("../../components/KoiPond").then((m) => ({ default: m.KoiPond })));
+const SpiderWeb = lazy(() => import("../../components/SpiderWeb").then((m) => ({ default: m.SpiderWeb })));
+const MatrixRain = lazy(() => import("../../components/MatrixRain").then((m) => ({ default: m.MatrixRain })));
+const FluidSimulation = lazy(() => import("../../components/FluidSimulation").then((m) => ({ default: m.FluidSimulation })));
+const FlowField = lazy(() => import("../../components/FlowField").then((m) => ({ default: m.FlowField })));
+const Boids = lazy(() => import("../../components/Boids").then((m) => ({ default: m.Boids })));
+const Confetti = lazy(() => import("../../components/Confetti").then((m) => ({ default: m.Confetti })));
+const Mandala = lazy(() => import("../../components/Mandala").then((m) => ({ default: m.Mandala })));
+const Starfield = lazy(() => import("../../components/Starfield").then((m) => ({ default: m.Starfield })));
+const NoiseGradient = lazy(() => import("../../components/NoiseGradient").then((m) => ({ default: m.NoiseGradient })));
+const Fireworks = lazy(() => import("../../components/Fireworks").then((m) => ({ default: m.Fireworks })));
+const BubbleUniverse = lazy(() => import("../../components/BubbleUniverse").then((m) => ({ default: m.BubbleUniverse })));
+const SakuraBlossom = lazy(() => import("../../components/SakuraBlossom").then((m) => ({ default: m.SakuraBlossom })));
+const IvyGrowth = lazy(() => import("../../components/IvyGrowth").then((m) => ({ default: m.IvyGrowth })));
+const Fireflies = lazy(() => import("../../components/Fireflies").then((m) => ({ default: m.Fireflies })));
+const Dandelion = lazy(() => import("../../components/Dandelion").then((m) => ({ default: m.Dandelion })));
+const GrassField = lazy(() => import("../../components/GrassField").then((m) => ({ default: m.GrassField })));
+const Moths = lazy(() => import("../../components/Moths").then((m) => ({ default: m.Moths })));
+const Eye = lazy(() => import("../../components/Eye").then((m) => ({ default: m.Eye })));
+const Owl = lazy(() => import("../../components/Owl").then((m) => ({ default: m.Owl })));
+const Octopus = lazy(() => import("../../components/Octopus").then((m) => ({ default: m.Octopus })));
+const Hummingbird = lazy(() => import("../../components/Hummingbird").then((m) => ({ default: m.Hummingbird })));
+const Candle = lazy(() => import("../../components/Candle").then((m) => ({ default: m.Candle })));
+const Cat = lazy(() => import("../../components/Cat").then((m) => ({ default: m.Cat })));
+const Jellyfish = lazy(() => import("../../components/Jellyfish").then((m) => ({ default: m.Jellyfish })));
+const Snail = lazy(() => import("../../components/Snail").then((m) => ({ default: m.Snail })));
+const Sunflowers = lazy(() => import("../../components/Sunflowers").then((m) => ({ default: m.Sunflowers })));
+const Komorebi = lazy(() => import("../../components/Komorebi").then((m) => ({ default: m.Komorebi })));
+const TidePool = lazy(() => import("../../components/TidePool").then((m) => ({ default: m.TidePool })));
+const SunbeamDust = lazy(() => import("../../components/SunbeamDust").then((m) => ({ default: m.SunbeamDust })));
+const PaperLanterns = lazy(() => import("../../components/PaperLanterns").then((m) => ({ default: m.PaperLanterns })));
+const KelpForest = lazy(() => import("../../components/KelpForest").then((m) => ({ default: m.KelpForest })));
+const SnowDrift = lazy(() => import("../../components/SnowDrift").then((m) => ({ default: m.SnowDrift })));
+const OrigamiCranes = lazy(() => import("../../components/OrigamiCranes").then((m) => ({ default: m.OrigamiCranes })));
+const SeasonsTree = lazy(() => import("../../components/SeasonsTree").then((m) => ({ default: m.SeasonsTree })));
+const InkMountains = lazy(() => import("../../components/InkMountains").then((m) => ({ default: m.InkMountains })));
+const WindowRain = lazy(() => import("../../components/WindowRain").then((m) => ({ default: m.WindowRain })));
+const IncenseSmoke = lazy(() => import("../../components/IncenseSmoke").then((m) => ({ default: m.IncenseSmoke })));
+const MoonlitSea = lazy(() => import("../../components/MoonlitSea").then((m) => ({ default: m.MoonlitSea })));
+const CloudSea = lazy(() => import("../../components/CloudSea").then((m) => ({ default: m.CloudSea })));
+const Ferrofluid = lazy(() => import("../../components/Ferrofluid").then((m) => ({ default: m.Ferrofluid })));
+const GameOfLife = lazy(() => import("../../components/GameOfLife").then((m) => ({ default: m.GameOfLife })));
+const Rain = lazy(() => import("../../components/Rain").then((m) => ({ default: m.Rain })));
+const Lightning = lazy(() => import("../../components/Lightning").then((m) => ({ default: m.Lightning })));
+const FireEffect = lazy(() => import("../../components/FireEffect").then((m) => ({ default: m.FireEffect })));
+const ParticleField = lazy(() => import("../../components/ParticleField").then((m) => ({ default: m.ParticleField })));
+const ReactionDiffusion = lazy(() => import("../../components/ReactionDiffusion").then((m) => ({ default: m.ReactionDiffusion })));
+const AuroraBorealis = lazy(() => import("../../components/AuroraBorealis").then((m) => ({ default: m.AuroraBorealis })));
+const Spirograph = lazy(() => import("../../components/Spirograph").then((m) => ({ default: m.Spirograph })));
+const SandSimulation = lazy(() => import("../../components/SandSimulation").then((m) => ({ default: m.SandSimulation })));
+const WaveInterference = lazy(() => import("../../components/WaveInterference").then((m) => ({ default: m.WaveInterference })));
+const DiffusionAggregation = lazy(() => import("../../components/DiffusionAggregation").then((m) => ({ default: m.DiffusionAggregation })));
+const Kaleidoscope = lazy(() => import("../../components/Kaleidoscope").then((m) => ({ default: m.Kaleidoscope })));
+const VoronoiCells = lazy(() => import("../../components/VoronoiCells").then((m) => ({ default: m.VoronoiCells })));
+const SlimeMold = lazy(() => import("../../components/SlimeMold").then((m) => ({ default: m.SlimeMold })));
+const WatercolorBloom = lazy(() => import("../../components/WatercolorBloom").then((m) => ({ default: m.WatercolorBloom })));
+const PendulaWave = lazy(() => import("../../components/PendulaWave").then((m) => ({ default: m.PendulaWave })));
+const CrystalGrowth = lazy(() => import("../../components/CrystalGrowth").then((m) => ({ default: m.CrystalGrowth })));
+const NeuralWeb = lazy(() => import("../../components/NeuralWeb").then((m) => ({ default: m.NeuralWeb })));
+const Metaballs = lazy(() => import("../../components/Metaballs").then((m) => ({ default: m.Metaballs })));
+const AntColony = lazy(() => import("../../components/AntColony").then((m) => ({ default: m.AntColony })));
+const MagneticField = lazy(() => import("../../components/MagneticField").then((m) => ({ default: m.MagneticField })));
+const BlackHole = lazy(() => import("../../components/BlackHole").then((m) => ({ default: m.BlackHole })));
+const GalaxySpiral = lazy(() => import("../../components/GalaxySpiral").then((m) => ({ default: m.GalaxySpiral })));
+const TornadoVortex = lazy(() => import("../../components/TornadoVortex").then((m) => ({ default: m.TornadoVortex })));
+const SolarFlare = lazy(() => import("../../components/SolarFlare").then((m) => ({ default: m.SolarFlare })));
+const ButterflySwarm = lazy(() => import("../../components/ButterflySwarm").then((m) => ({ default: m.ButterflySwarm })));
 
 /** The hero window shows one of these, picked at random on each page load. */
 const HERO_CANVASES = [
@@ -432,6 +434,32 @@ const CSS = `
   .home-sheet { padding: 30px 20px 34px; }
   .home-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
   .home-hero-eyebrow { font-size: 10px; padding: 6px 16px; letter-spacing: 0.06em; }
+}
+
+/* Landing entrance: the hero settles in piece by piece instead of snapping on */
+@keyframes home-rise {
+  from { opacity: 0; translate: 0 14px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes home-fade { from { opacity: 0; } to { opacity: 1; } }
+.home-hero > *,
+.home-diorama-wrap,
+.home-stats {
+  animation: home-rise 700ms var(--ease) both;
+}
+.home-hero > :nth-child(2) { animation-delay: 70ms; }
+.home-hero > :nth-child(3) { animation-delay: 140ms; }
+.home-hero > :nth-child(4) { animation-delay: 210ms; }
+.home-hero > :nth-child(5) { animation-delay: 260ms; }
+.home-diorama-wrap { animation-delay: 320ms; animation-duration: 900ms; }
+.home-stats        { animation-delay: 420ms; }
+.home-window-canvas {
+  position: absolute;
+  inset: 0;
+  animation: home-fade 900ms ease-out 150ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-hero > *, .home-diorama-wrap, .home-stats, .home-window-canvas { animation: none; }
 }
 `;
 
@@ -1039,7 +1067,11 @@ export function Home() {
           <div className="home-diorama">
             <PaperScene seed="home" className="home-diorama-scene" cream />
             <div className="home-window">
-              <HeroCanvas width="100%" height="100%" />
+              <Suspense fallback={null}>
+                <div className="home-window-canvas">
+                  <HeroCanvas width="100%" height="100%" />
+                </div>
+              </Suspense>
             </div>
           </div>
         </div>

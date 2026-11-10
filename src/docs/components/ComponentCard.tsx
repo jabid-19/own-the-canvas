@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { ComponentIcon } from "./ComponentIcon";
 
@@ -249,7 +249,7 @@ export function ComponentCard({ name, description, path, accent, preview }: Comp
             <span className="component-card-placeholder-hint">hover to preview</span>
           </div>
           <div className={`component-card-canvas${hovered ? " visible" : ""}`}>
-            {hovered ? preview : null}
+            {hovered ? <Suspense fallback={null}>{preview}</Suspense> : null}
           </div>
         </div>
         <div className="component-card-body">
