@@ -62,6 +62,19 @@ All components accept a `preset` prop for instant themed defaults — override a
 
 ---
 
+## Use With AI Assistants
+
+Your coding assistant can read the docs for every component, so it uses real props instead of guessing.
+
+- **Claude Code:** the package ships a skill. Copy it into your project once:
+  ```bash
+  mkdir -p .claude/skills && cp -r node_modules/own-the-canvas/skills/own-the-canvas .claude/skills/
+  ```
+- **Cursor, Copilot, ChatGPT, others:** point them at [`llms.txt`](https://own-the-canvas.vercel.app/llms.txt) (index) or [`llms-full.txt`](https://own-the-canvas.vercel.app/llms-full.txt) (every component and prop).
+- **One component:** every docs page has **Copy prompt**, **Open in Claude**, and **Open in ChatGPT** buttons, and a Markdown version at the page URL plus `.md` (e.g. [`/components/koi-pond.md`](https://own-the-canvas.vercel.app/components/koi-pond.md)).
+
+---
+
 ## Effects That Know Your Page
 
 Mark any element with `data-otc-solid` and effects collide with it. Petals land on your headline, rest on your buttons, and slide off the edges in the wind. Resting petals stay attached when the page scrolls.

@@ -34,6 +34,7 @@
   },
   "files": [
     "lib",
+    "skills",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -41,9 +42,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "build:lib": "tsc -p tsconfig.lib.json && vite build --mode lib",
+    "dev": "node scripts/gen-ai-docs.mjs && vite",
+    "build": "node scripts/gen-ai-docs.mjs && tsc && vite build",
+    "build:lib": "node scripts/gen-ai-docs.mjs && tsc -p tsconfig.lib.json && vite build --mode lib",
     "prepublishOnly": "npm run build:lib",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
