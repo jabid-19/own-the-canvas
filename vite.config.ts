@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
   const isLib = mode === "lib";
 
   return {
+    server: { port: 3004, strictPort: true },
+    preview: { port: 3005, strictPort: true },
     plugins: [
       react(),
       ...(isLib
