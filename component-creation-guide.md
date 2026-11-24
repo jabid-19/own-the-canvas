@@ -14,10 +14,11 @@ For a component named `MyEffect`:
 3. `src/components/MyEffect/index.ts` — barrel re-export
 4. `src/docs/pages/components/MyEffectPage.tsx` — docs playground page
 
-**Edit (3 existing files):**
+**Edit (4 existing files):**
 5. `src/index.ts` — add export
 6. `src/docs/DocsApp.tsx` — add lazy import + route
 7. `src/docs/components/Sidebar.tsx` — add nav link
+8. `src/docs/moods.json` — add mood tags (feeds docs search, llms.txt, the skill and the MCP server)
 
 ---
 
@@ -546,6 +547,8 @@ Add to the `COMPONENT_LINKS` array:
 
 The array is displayed as-is — put your component where it makes sense alphabetically or by category.
 
+Then add 6–10 lowercase mood tags to `src/docs/moods.json`, e.g. `"MyEffect": ["calm", "night", "water", "dreamy"]`. Mix feeling (calm, cozy, eerie), scene (ocean, forest, city), time/season (night, winter) and color words people would type. The build and tests fail without an entry.
+
 ---
 
 ## Checklist
@@ -574,6 +577,7 @@ Copy this into a scratch note and check off as you go:
     [ ] two-column controls layout
 [ ] src/docs/DocsApp.tsx — lazy import + route added
 [ ] src/docs/components/Sidebar.tsx — nav link added
+[ ] src/docs/moods.json — mood tags added
 [ ] npm run dev — smoke test: page loads, canvas renders, controls work
 [ ] npm run type-check — no TypeScript errors
 ```

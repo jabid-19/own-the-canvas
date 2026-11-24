@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { Sidebar } from "./Sidebar";
@@ -47,5 +47,12 @@ describe("Sidebar", () => {
     render(<Wrapper path="/overview" />);
     const link = screen.getByRole("link", { name: /installation/i });
     expect(link).toHaveAttribute("aria-current", "page");
+  });
+
+  it("filters component links by mood", () => {
+    render(<Wrapper />);
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "spooky" } });
+    expect(screen.getByRole("link", { name: "SpiderWeb" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Confetti" })).not.toBeInTheDocument();
   });
 });

@@ -11,6 +11,7 @@ const SITE = "https://own-the-canvas.vercel.app";
 
 export function extractComponents(root = ROOT) {
   const pagesDir = join(root, "src/docs/pages/components");
+  const moods = JSON.parse(readFileSync(join(root, "src/docs/moods.json"), "utf8"));
   const app = readFileSync(join(root, "src/docs/DocsApp.tsx"), "utf8");
   const routes = Object.fromEntries(
     [...app.matchAll(/path="(\/components\/[^"]+)"\s+element=\{<(\w+)\s*\/>\}/g)].map((m) => [m[2], m[1]]),
@@ -24,11 +25,12 @@ export function extractComponents(root = ROOT) {
       const name = src.match(/title="([^"]+)"/)?.[1];
       const lead = src.match(/lead="([^"]+)"/)?.[1];
       const propsSrc = src.match(/const PROPS = (\[[\s\S]*?\n\]);/)?.[1];
-      if (!name || !lead || !propsSrc || !routes[page]) throw new Error(`${file}: missing title, lead, PROPS or route`);
+      if (!name || !lead || !propsSrc || !routes[page] || !moods[name])
+        throw new Error(`${file}: missing title, lead, PROPS, route or src/docs/moods.json entry`);
       // ponytail: PROPS is a plain object literal in our own source files, so evaluating it is safe and
       // cheaper than a TS parser. Switch to the TypeScript compiler API if pages ever compute PROPS.
       const props = new Function(`return ${propsSrc}`)();
-      return { name, lead, path: routes[page], props };
+      return { name, lead, moods: moods[name], path: routes[page], props };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -42,6 +44,8 @@ export function componentMarkdown(c) {
     `# ${c.name}`,
     "",
     c.lead,
+    "",
+    `Mood: ${c.moods.join(", ")}`,
     "",
     `Docs and live playground: ${SITE}${c.path}`,
     "",
@@ -81,7 +85,7 @@ const HEADER = `# own-the-canvas
 
 export function generate(root = ROOT) {
   const components = extractComponents(root);
-  const index = components.map((c) => `- [${c.name}](${SITE}${c.path}.md): ${c.lead}`).join("\n");
+  const index = components.map((c) => `- [${c.name}](${SITE}${c.path}.md): ${c.lead} Mood: ${c.moods.join(", ")}.`).join("\n");
   const full = components.map(componentMarkdown).join("\n---\n\n");
 
   const out = {
@@ -98,9 +102,14 @@ ${USAGE}
 
 Choose from the list below by mood. Then read the component's section in [components.md](components.md) for its exact props and presets before writing code.
 
-${components.map((c) => `- **${c.name}**: ${c.lead}`).join("\n")}
+${components.map((c) => `- **${c.name}** (${c.moods.join(", ")}): ${c.lead}`).join("\n")}
 `,
     "skills/own-the-canvas/components.md": full,
+    // read by bin/mcp.mjs
+    "skills/own-the-canvas/components.json": JSON.stringify({
+      usage: USAGE,
+      components: components.map((c) => ({ name: c.name, lead: c.lead, moods: c.moods, url: `${SITE}${c.path}`, markdown: componentMarkdown(c) })),
+    }),
   };
   for (const c of components) out[`public${c.path}.md`] = componentMarkdown(c);
 

@@ -19,7 +19,8 @@
     "particles",
     "matrix",
     "visual",
-    "typescript"
+    "typescript",
+    "mcp"
   ],
   "main": "./lib/index.cjs.js",
   "module": "./lib/index.es.js",
@@ -32,8 +33,12 @@
       "types": "./lib/index.d.ts"
     }
   },
+  "bin": {
+    "own-the-canvas": "bin/mcp.mjs"
+  },
   "files": [
     "lib",
+    "bin/mcp.mjs",
     "skills",
     "README.md",
     "CHANGELOG.md"

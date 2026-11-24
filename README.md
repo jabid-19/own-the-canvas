@@ -66,7 +66,12 @@ All components accept a `preset` prop for instant themed defaults — override a
 
 Your coding assistant can read the docs for every component, so it uses real props instead of guessing.
 
-- **Claude Code:** the package ships a skill. Copy it into your project once:
+- **MCP server (Claude Code, Cursor, Windsurf, any MCP client):** runs locally, no account or API key. Your AI can then list components by mood and fetch exact props.
+  ```bash
+  claude mcp add own-the-canvas -- npx -y own-the-canvas
+  ```
+  Other clients: add a stdio server with command `npx` and args `["-y", "own-the-canvas"]`.
+- **Claude Code skill:** the package also ships a skill. Copy it into your project once:
   ```bash
   mkdir -p .claude/skills && cp -r node_modules/own-the-canvas/skills/own-the-canvas .claude/skills/
   ```

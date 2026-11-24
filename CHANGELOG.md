@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- MCP server: `npx -y own-the-canvas` runs a local stdio MCP server (zero dependencies, no hosting) with `list_components` and `get_component` tools, so AI assistants pick components by mood and use real props. Setup: `claude mcp add own-the-canvas -- npx -y own-the-canvas`.
+- Mood tags for every component (`src/docs/moods.json`), included in `llms.txt`, the per-component Markdown, and the Claude Code skill.
+- Docs sidebar search by name or vibe ("calm night by the water"), with typo tolerance.
+
 ## [2.0.3] - 2026-11-06
 
 ### Fixed

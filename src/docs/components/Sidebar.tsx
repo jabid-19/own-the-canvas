@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useMatch } from "react-router-dom";
+import { searchComponents } from "../search";
 
 const COMPONENT_LINKS = [
   { name: "DragonCursor", path: "/components/dragon-cursor" },
@@ -71,6 +72,8 @@ const COMPONENT_LINKS = [
   { name: "TornadoVortex", path: "/components/tornado-vortex" },
   { name: "SolarFlare", path: "/components/solar-flare" },
 ];
+
+const MOOD_CHIPS = ["calm", "cozy", "night", "ocean", "spooky", "space"];
 
 const CSS = `
 .sidebar {
@@ -168,6 +171,115 @@ const CSS = `
   background: repeating-linear-gradient(90deg, var(--border-mid) 0 8px, transparent 8px 14px);
 }
 .sidebar-components-scroll .sidebar-label { background: repeating-linear-gradient(-45deg, rgba(232,121,90,.92) 0 6px, rgba(240,140,108,.92) 6px 12px); }
+
+/* search: a cream slip pressed into the sheet, pinned while the list scrolls */
+.sidebar-find {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 -14px 6px;
+  padding: 2px 14px 10px;
+  background: var(--grain), var(--sidebar-bg);
+}
+/* soft fade so links scrolling under the pinned search don't peek out below it */
+.sidebar-find::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 14px;
+  background: linear-gradient(var(--sidebar-bg), transparent);
+  pointer-events: none;
+}
+.sidebar-search-box { position: relative; }
+.sidebar-search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-2);
+  pointer-events: none;
+  transition: color 160ms var(--ease);
+}
+.sidebar-search {
+  display: block;
+  width: 100%;
+  height: 40px;
+  padding: 0 34px 0 34px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-1);
+  background: var(--grain), var(--bg);
+  border: 1.5px solid var(--border-mid);
+  border-radius: var(--r);
+  box-shadow: inset 0 2px 3px rgba(var(--shadow-ink), .12);
+  outline: none;
+  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sidebar-search::-webkit-search-cancel-button { display: none; }
+.sidebar-search::placeholder { color: var(--text-2); opacity: .7; }
+.sidebar-search:hover { border-color: var(--text-2); }
+.sidebar-search:focus-visible {
+  border-color: var(--accent);
+  box-shadow: inset 0 2px 3px rgba(var(--shadow-ink), .12), 0 0 0 3px var(--accent-soft);
+}
+.sidebar-search-box:focus-within .sidebar-search-icon { color: var(--accent); }
+.sidebar-search-kbd, .sidebar-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.sidebar-search-kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-2);
+  padding: 3px 6px;
+  border: 1px solid var(--border-mid);
+  border-radius: 3px;
+  background: var(--bg-subtle);
+  box-shadow: 0 1.5px 0 var(--border-mid);
+  pointer-events: none;
+}
+.sidebar-search-box:focus-within .sidebar-search-kbd { opacity: 0; }
+.sidebar-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  color: var(--text-2);
+  cursor: pointer;
+}
+.sidebar-search-clear:hover { background: var(--accent-soft); color: var(--accent); }
+.sidebar-moods { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.sidebar-mood {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border: 1px dashed var(--border-mid);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 160ms var(--ease), color 160ms var(--ease), border-color 160ms var(--ease);
+}
+.sidebar-mood:hover { border-style: solid; border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.sidebar-search-count {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+}
+.sidebar-empty { padding: 8px 12px; font-size: 13px; line-height: 1.5; color: var(--text-2); }
 
 .sidebar-link {
   display: flex;
@@ -315,6 +427,21 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const playgroundMatch = useMatch("/playground");
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const links = searchComponents(COMPONENT_LINKS, query);
+
+  // "/" focuses search from anywhere, like GitHub and most docs sites
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <>
@@ -351,9 +478,55 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="sidebar-components-scroll">
           <div className="sidebar-section">
             <div className="sidebar-label">Components</div>
-            {COMPONENT_LINKS.map((c) => (
+            <div className="sidebar-find" role="search">
+              <div className="sidebar-search-box">
+                <svg className="sidebar-search-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <circle cx="7" cy="7" r="4.75" stroke="currentColor" strokeWidth="1.8" />
+                  <path d="M10.6 10.6 14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+                <input
+                  ref={inputRef}
+                  type="search"
+                  className="sidebar-search"
+                  placeholder="Name or vibe…"
+                  aria-label="Search components by name or mood"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Escape" && setQuery("")}
+                />
+                {query ? (
+                  <button
+                    type="button"
+                    className="sidebar-search-clear"
+                    aria-label="Clear search"
+                    onClick={() => { setQuery(""); inputRef.current?.focus(); }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                      <path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                ) : (
+                  <kbd className="sidebar-search-kbd" aria-hidden="true">/</kbd>
+                )}
+              </div>
+              {query ? (
+                <div className="sidebar-search-count" aria-live="polite">
+                  {links.length} {links.length === 1 ? "match" : "matches"}
+                </div>
+              ) : (
+                <div className="sidebar-moods" aria-label="Try a mood">
+                  {MOOD_CHIPS.map((m) => (
+                    <button key={m} type="button" className="sidebar-mood" onClick={() => setQuery(m)}>{m}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {links.map((c) => (
               <NavItem key={c.path} to={c.path}>{c.name}</NavItem>
             ))}
+            {!links.length && (
+              <div className="sidebar-empty">Nothing fits that yet. Try a feeling (cozy, eerie), a place (ocean, forest) or a time (night, winter).</div>
+            )}
           </div>
         </div>
 
