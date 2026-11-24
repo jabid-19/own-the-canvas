@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.4] - 2026-11-24
+
 ### Added
 
 - MCP server: `npx -y own-the-canvas` runs a local stdio MCP server (zero dependencies, no hosting) with `list_components` and `get_component` tools, so AI assistants pick components by mood and use real props. Setup: `claude mcp add own-the-canvas -- npx -y own-the-canvas`.
