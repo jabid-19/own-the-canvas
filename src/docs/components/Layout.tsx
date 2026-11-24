@@ -131,7 +131,14 @@ export function Layout({ children }: LayoutProps) {
   useEffect(() => {
     setMobileOpen(false);
     lenisRef.current?.scrollTo(0, { immediate: true });
-  }, [location.pathname]);
+    if (!location.hash) return;
+    // deep links like /overview#ai: wait a frame for the page to render, then glide to the section
+    const id = requestAnimationFrame(() => {
+      const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (el) lenisRef.current?.scrollTo(el, { offset: -24 });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [location.pathname, location.hash]);
 
   return (
     <>

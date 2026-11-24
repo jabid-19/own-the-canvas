@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { ComponentCard } from "../components/ComponentCard";
 import { CodeBlock } from "../components/CodeBlock";
 import { PaperScene } from "../components/PaperScene";
+import { HomeFeatures } from "../components/HomeFeatures";
 
 // Canvas components load on demand, so the landing page's own bundle stays small.
 const DragonCursor = lazy(() => import("../../components/DragonCursor").then((m) => ({ default: m.DragonCursor })));
@@ -249,6 +250,35 @@ const CSS = `
   -webkit-mask: radial-gradient(circle at 0 50%, #0000 9px, #000 9.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, #0000 9px, #000 9.5px) right / 51% 100% no-repeat;
           mask: radial-gradient(circle at 0 50%, #0000 9px, #000 9.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, #0000 9px, #000 9.5px) right / 51% 100% no-repeat;
 }
+.home-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 6px 14px 6px 6px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-1);
+  text-decoration: none;
+  background: var(--grain), var(--bg-subtle);
+  border: 1.5px dashed var(--border-mid);
+  border-radius: 999px;
+  transition: border-color 160ms var(--ease), transform 160ms var(--ease);
+}
+.home-new:hover { border-style: solid; border-color: var(--accent); transform: translateY(-1px); }
+.home-new-tag {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.home-new-arrow { color: var(--accent); font-weight: 700; transition: transform 160ms var(--ease); }
+.home-new:hover .home-new-arrow { transform: translateX(3px); }
 .home-install-prefix { color: var(--accent); font-weight: 700; user-select: none; }
 
 /* Diorama: layered paper hills with a live canvas punched through them */
@@ -433,6 +463,7 @@ const CSS = `
   .home-stat { width: 128px; }
   .home-sheet { padding: 30px 20px 34px; }
   .home-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .home-new { font-size: 13.5px; text-align: left; line-height: 1.35; }
   .home-hero-eyebrow { font-size: 10px; padding: 6px 16px; letter-spacing: 0.06em; }
 }
 
@@ -1060,6 +1091,12 @@ export function Home() {
               <span>{INSTALL_CMD}</span>
             </div>
           </div>
+
+          <Link to="/overview#ai" className="home-new">
+            <span className="home-new-tag">New</span>
+            Your AI can now pick components by mood
+            <span className="home-new-arrow" aria-hidden="true">→</span>
+          </Link>
         </section>
 
         {/* Diorama */}
@@ -1090,6 +1127,8 @@ export function Home() {
             </div>
           ))}
         </div>
+
+        <HomeFeatures />
 
         {/* Grid */}
         <section aria-labelledby="components-heading">

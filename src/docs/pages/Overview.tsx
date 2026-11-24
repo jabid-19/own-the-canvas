@@ -10,6 +10,14 @@ const BASE_PROPS = [
   { name: "style", type: "CSSProperties", default: "—", description: "Inline styles applied to the wrapper div." },
 ];
 
+const LINK: React.CSSProperties = {
+  color: "var(--accent)",
+  fontWeight: 700,
+  textDecoration: "underline dashed",
+  textUnderlineOffset: 4,
+  whiteSpace: "nowrap",
+};
+
 export function Overview() {
   return (
     <PageShell
@@ -90,6 +98,50 @@ export default function App() {
           <InlineCode>height="100%"</InlineCode>. Make sure the parent element has
           explicit dimensions.
         </div>
+      </section>
+
+      <div className="page-divider" />
+
+      {/* AI assistants */}
+      <section className="page-section" id="ai" aria-labelledby="ai-h">
+        <h2 className="page-h2" id="ai-h">Use with AI</h2>
+        <p className="page-p">
+          Connect your coding assistant and it can pick components by mood ("something cozy for the
+          footer") and write code with the real props instead of guessing. Everything runs on your
+          machine: no account, no API key.
+        </p>
+
+        <h3 className="page-h3">Claude Code</h3>
+        <p className="page-p">Add the MCP server once, then run <InlineCode>/mcp</InlineCode> in Claude Code to check it's connected.</p>
+        <CodeBlock code="claude mcp add own-the-canvas -- npx -y own-the-canvas" language="bash" />
+
+        <h3 className="page-h3" style={{ marginTop: 28 }}>Cursor, Windsurf, other MCP clients</h3>
+        <p className="page-p">
+          Add this to your MCP settings (in Cursor: <InlineCode>.cursor/mcp.json</InlineCode> or Settings → MCP).
+        </p>
+        <CodeBlock
+          code={`{
+  "mcpServers": {
+    "own-the-canvas": { "command": "npx", "args": ["-y", "own-the-canvas"] }
+  }
+}`}
+          language="json"
+        />
+
+        <h3 className="page-h3" style={{ marginTop: 28 }}>No MCP? Use llms.txt</h3>
+        <p className="page-p">
+          Point any assistant (ChatGPT, Copilot, Gemini) at{" "}
+          <a style={LINK} href="/llms.txt">llms.txt</a> for the component index, or{" "}
+          <a style={LINK} href="/llms-full.txt">llms-full.txt</a> for every component and prop.
+          Each component page also has <strong>Copy prompt</strong> and <strong>Open in Claude</strong> buttons.
+        </p>
+
+        <h3 className="page-h3" style={{ marginTop: 28 }}>Claude Code skill</h3>
+        <p className="page-p">The package also ships a skill. Copy it into your project to use it without MCP:</p>
+        <CodeBlock
+          code="mkdir -p .claude/skills && cp -r node_modules/own-the-canvas/skills/own-the-canvas .claude/skills/"
+          language="bash"
+        />
       </section>
 
       <div className="page-divider" />

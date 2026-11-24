@@ -43,4 +43,10 @@ describe("Overview", () => {
     render(<Wrapper />);
     expect(screen.getByRole("heading", { name: /typescript/i })).toBeInTheDocument();
   });
+
+  it("explains AI setup with the MCP command", () => {
+    render(<Wrapper />);
+    expect(screen.getByRole("heading", { name: /use with ai/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/claude mcp add own-the-canvas/).length).toBeGreaterThan(0);
+  });
 });
