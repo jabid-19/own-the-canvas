@@ -14,10 +14,51 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       /* kraft desk colour before any JS runs, so the first paint matches the page */
       html, body { background: #e4d3b3; }
+      /* boot loader: paper enso cutting itself, shown until React replaces #root's contents */
+      .boot { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+        background: radial-gradient(ellipse at 50% 42%, #f3e6c8 0%, #e4d3b3 55%, #d4bf96 100%); animation: boot-in 400ms 100ms ease-out both; }
+      .boot::before { content: ""; position: absolute; inset: 0; opacity: .35; mix-blend-mode: multiply; pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .12 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+      .boot-mark { position: relative; width: 168px; height: 168px; overflow: visible; filter: drop-shadow(1px 2px 0 rgba(60,40,20,.18)) drop-shadow(3px 10px 14px rgba(60,40,20,.28)); animation: boot-bob 2.8s ease-in-out infinite; }
+      .boot .spin { transform-origin: 64px 64px; animation: boot-spin 2.4s linear infinite; }
+      .boot .rev { animation-duration: 3.2s; animation-direction: reverse; }
+      .boot .arc, .boot .ink { fill: none; stroke-linecap: round; filter: drop-shadow(.6px 1px .6px rgba(60,40,20,.35)); }
+      .boot .arc { stroke-width: 12; stroke-dasharray: 239 239; animation: boot-cut 2.4s cubic-bezier(.4,0,.2,1) infinite; }
+      .boot .ink { stroke-width: 3; stroke-dasharray: 170 170; animation: boot-ink 3.2s ease-in-out infinite; }
+      .boot .star { transform-box: fill-box; transform-origin: center; animation: boot-pop 2.4s cubic-bezier(.4,0,.2,1) infinite; }
+      .boot .thread { stroke-dasharray: 110; animation: boot-thread 2.4s ease-in-out infinite; }
+      .boot-name { position: relative; font: italic 700 30px/1 Fraunces, 'Iowan Old Style', Georgia, serif; color: #2b2118; letter-spacing: -.01em; animation: boot-rise 700ms 250ms cubic-bezier(.2,.7,.2,1) both; }
+      .boot-cap { position: relative; font: italic 500 15px/1 Fraunces, Georgia, serif; color: #7a6a55; height: 15px; animation: boot-rise 700ms 400ms cubic-bezier(.2,.7,.2,1) both; }
+      .boot-bar { position: relative; width: 120px; height: 3px; border-radius: 3px; background: rgba(60,40,20,.15); overflow: hidden; animation: boot-rise 700ms 500ms both; }
+      .boot-bar::after { content: ""; position: absolute; inset: 0; background: #d9a441; border-radius: 3px; transform-origin: left; animation: boot-fill 2.4s cubic-bezier(.3,.1,.2,1) forwards; }
+      @keyframes boot-in { from { opacity: 0; } }
+      @keyframes boot-rise { from { opacity: 0; transform: translateY(8px); } }
+      @keyframes boot-fill { from { transform: scaleX(.04); } to { transform: scaleX(1); } }
+      @keyframes boot-bob { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(3deg) translateY(-4px); } }
+      @keyframes boot-spin { to { transform: rotate(360deg); } }
+      @keyframes boot-cut { 0% { stroke-dashoffset: 239; } 55% { stroke-dashoffset: 36; } 100% { stroke-dashoffset: -239; } }
+      @keyframes boot-ink { 0% { stroke-dashoffset: 170; } 50% { stroke-dashoffset: 60; } 100% { stroke-dashoffset: -170; } }
+      @keyframes boot-pop { 0%, 10% { transform: scale(0); } 25%, 75% { transform: scale(1); } 90%, 100% { transform: scale(0); } }
+      @keyframes boot-thread { 0%, 15% { stroke-dashoffset: 110; } 50%, 75% { stroke-dashoffset: 0; } 95%, 100% { stroke-dashoffset: -110; } }
+      @media (prefers-reduced-motion: reduce) { .boot, .boot * { animation: none !important; } .boot .arc { stroke-dashoffset: 36; } .boot .ink { stroke-dashoffset: 60; } .boot .star { transform: none; } .boot .thread { stroke-dashoffset: 0; } .boot-bar::after { transform: none; } }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="boot" role="status" aria-label="Loading">
+      <svg class="boot-mark" viewBox="0 0 128 128" aria-hidden="true">
+        <circle cx="64" cy="64" r="58" fill="#fbf5e8"/>
+        <path class="thread" d="M33.5 17.7L23.3 33.8L14.6 57.2L17.7 73.3L27.1 102.7" stroke="#4f4136" stroke-width=".5" fill="none"/><circle class="star" cx="33.5" cy="17.7" r="1.4" fill="#2b2118" style="animation-delay:0.00s"/><circle class="star" cx="23.3" cy="33.8" r="2" fill="#2b2118" style="animation-delay:0.18s"/><circle class="star" cx="14.6" cy="57.2" r="1.4" fill="#2b2118" style="animation-delay:0.36s"/><circle class="star" cx="17.7" cy="73.3" r="2" fill="#2b2118" style="animation-delay:0.54s"/><circle class="star" cx="27.1" cy="102.7" r="1.4" fill="#2b2118" style="animation-delay:0.72s"/>
+        <g class="spin"><circle class="arc" cx="64" cy="64" r="38" stroke="#74493a" transform="translate(-1.2 1.4)"/><circle class="arc" cx="64" cy="64" r="38" stroke="#b17962"/></g>
+        <g class="spin rev"><circle class="ink" cx="66" cy="65" r="27" stroke="#2b2118"/></g>
+      </svg>
+      <div class="boot-name">Own The Canvas</div>
+      <div class="boot-cap" id="boot-cap" aria-hidden="true">Cutting paper…</div>
+      <div class="boot-bar" aria-hidden="true"></div>
+    </div></div>
+    <script>
+      var L = ["Cutting paper…", "Mixing ink…", "Priming the canvas…", "Connecting the stars…"], i = 0, c = document.getElementById("boot-cap");
+      var t = setInterval(function () { if (!document.getElementById("boot-cap")) return clearInterval(t); c.textContent = L[++i % L.length]; }, 900);
+    </script>
     <script type="module" src="/src/docs/main.tsx"></script>
   </body>
 </html>

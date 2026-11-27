@@ -49,6 +49,9 @@ import { TornadoVortex, PRESETS as TORNADO_PRESETS } from "../components/Tornado
 import { SolarFlare, PRESETS as SOLARFLARE_PRESETS } from "../components/SolarFlare";
 import { ButterflySwarm, PRESETS as BUTTERFLY_PRESETS } from "../components/ButterflySwarm";
 import { SpiderWeb, PRESETS as SPIDERWEB_PRESETS } from "../components/SpiderWeb";
+import * as Lib from "../index";
+import { ComponentIcon } from "../docs/components/ComponentIcon";
+import { EXTRA_IDS, EXTRA_SPECS, type ExtraId } from "./extraSpecs";
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -130,6 +133,13 @@ const GLOBAL_CSS = `
     color: var(--text-3); text-transform: uppercase;
   }
   .header-spacer { flex: 1; }
+  .header-search {
+    width: 220px; max-width: 40vw; padding: 6px 10px; border-radius: var(--r-sm);
+    border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-1);
+    font-family: var(--font); font-size: 13px; outline: none;
+  }
+  .header-search:focus { border-color: rgba(107,114,128,0.5); }
+  .tab-empty { padding: 7px 14px; font-size: 13px; color: var(--text-3); }
   .header-badge {
     font-size: 11px; font-weight: 500; font-family: var(--mono);
     padding: 3px 10px; border-radius: 20px;
@@ -925,6 +935,11 @@ const COMPONENT_META: Record<string, { desc: string; accent: string }> = {
   SpiderWeb: { desc: "Procedural spider web with dew drops, sway, and cursor disturbance", accent: "#c8c8c8" },
 };
 
+for (const id of EXTRA_IDS) {
+  COMPONENT_META[id] = { desc: EXTRA_SPECS[id].desc, accent: EXTRA_SPECS[id].accent };
+  icons[id] = <span style={{ display: "inline-flex", width: 16, height: 16 }}><ComponentIcon name={id} /></span>;
+}
+
 type ComponentId =
   | "MatrixRain" | "FluidSimulation" | "FlowField" | "Boids"
   | "Confetti" | "Mandala"
@@ -938,7 +953,7 @@ type ComponentId =
   | "WatercolorBloom" | "PendulaWave" | "CrystalGrowth" | "NeuralWeb"
   | "Metaballs" | "AntColony" | "MagneticField"
   | "BlackHole" | "GalaxySpiral" | "TornadoVortex" | "SolarFlare"
-  | "ButterflySwarm" | "SpiderWeb";
+  | "ButterflySwarm" | "SpiderWeb" | ExtraId;
 
 const ALL_COMPONENTS: ComponentId[] = [
   "DragonCursor", "KoiPond", "MatrixRain", "FluidSimulation", "FlowField", "Boids",
@@ -954,6 +969,7 @@ const ALL_COMPONENTS: ComponentId[] = [
   "Metaballs", "AntColony", "MagneticField",
   "BlackHole", "GalaxySpiral", "TornadoVortex", "SolarFlare",
   "ButterflySwarm", "SpiderWeb",
+  ...EXTRA_IDS,
 ];
 
 // ─── Control Widgets ─────────────────────────────────────────────────────────
@@ -4437,6 +4453,61 @@ function SpiderWebPanel() {
   );
 }
 
+// ─── Generic panel (driven by extraSpecs.ts, generated from docs PROPS tables) ──
+// ponytail: color props are only passed once touched so presets keep working; no per-preset color sync.
+function makeGenericPanel(id: ExtraId): React.FC {
+  const spec = EXTRA_SPECS[id];
+  const Comp = (Lib as unknown as Record<string, React.ElementType>)[id];
+  return function GenericPanel() {
+    const [preset, setPreset] = useState("default");
+    const [vals, setVals] = useState<Record<string, string | number | boolean>>({});
+    const get = (p: { name: string; def: unknown }) => (p.name in vals ? vals[p.name] : p.def);
+    const set = (name: string, v: string | number | boolean) => setVals((o) => ({ ...o, [name]: v }));
+    function handlePreset(p: string) {
+      setPreset(p);
+      // drop color overrides so the preset's palette shows through
+      setVals((o) => Object.fromEntries(Object.entries(o).filter(([k]) => !spec.props.some((q) => q.name === k && q.kind === "color"))));
+    }
+    const code = [
+      `import { ${id} } from 'own-the-canvas';`,
+      ``,
+      `<${id}`,
+      `  preset="${preset}"`,
+      ...Object.entries(vals).map(([k, v]) => typeof v === "string" ? `  ${k}="${v}"` : `  ${k}={${v}}`),
+      `  width="100%"`,
+      `  height="100%"`,
+      `/>`,
+    ].join("\n");
+    return (
+      <>
+        <div className="canvas-wrap">
+          <div className="canvas-wrap-inner">
+            <Comp preset={preset} {...vals} width="100%" height="100%" />
+          </div>
+          <div className="canvas-label"><div className="canvas-dot" /><span>Live preview</span></div>
+          <CodeSnippet code={code} />
+        </div>
+        <div className="controls">
+          <CtrlHeader id={id} />
+          <div className="ctrl-body">
+            <Sel label="Preset" value={preset} options={spec.presets} onChange={handlePreset} />
+            <Divider />
+            {spec.props.map((p) => {
+              const v = get(p);
+              switch (p.kind) {
+                case "color": return <ColorPicker key={p.name} label={p.label} value={v as string} onChange={(x) => set(p.name, x)} />;
+                case "bool": return <Toggle key={p.name} label={p.label} value={v as boolean} onChange={(x) => set(p.name, x)} />;
+                case "sel": return <Sel key={p.name} label={p.label} value={v as string} options={p.options} onChange={(x) => set(p.name, x)} />;
+                case "num": return <Slider key={p.name} label={p.label} value={v as number} min={p.min} max={p.max} step={p.step} onChange={(x) => set(p.name, x)} />;
+              }
+            })}
+          </div>
+        </div>
+      </>
+    );
+  };
+}
+
 // ─── Controls header ──────────────────────────────────────────────────────────
 function CtrlHeader({ id }: { id: ComponentId }) {
   const meta = COMPONENT_META[id];
@@ -4503,6 +4574,7 @@ const PANELS: Record<ComponentId, React.FC> = {
   SolarFlare: SolarFlarePanel,
   ButterflySwarm: ButterflySwarmPanel,
   SpiderWeb: SpiderWebPanel,
+  ...(Object.fromEntries(EXTRA_IDS.map((id) => [id, makeGenericPanel(id)])) as Record<ExtraId, React.FC>),
 };
 
 // ─── App ──────────────────────────────────────────────────────────────────────
@@ -4526,6 +4598,38 @@ export default function App() {
     setResetKey((k) => k + 1);
   }
 
+  const [query, setQuery] = useState("");
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const q = query.trim().toLowerCase();
+  const wordStart = new RegExp("\\b" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+  const visible = q
+    ? ALL_COMPONENTS.filter((id) => id.toLowerCase().includes(q) || wordStart.test(COMPONENT_META[id].desc))
+    : ALL_COMPONENTS;
+
+  // "/" focuses search; ←/→ step through the visible components
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const t = e.target as HTMLElement;
+      if (t.closest("input, select, textarea") || e.metaKey || e.ctrlKey || e.altKey) {
+        if (e.key === "Escape") { setQuery(""); (t as HTMLElement).blur(); }
+        return;
+      }
+      if (e.key === "/") { e.preventDefault(); searchRef.current?.focus(); }
+      else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        const list = visible.length ? visible : ALL_COMPONENTS;
+        const i = list.indexOf(active);
+        const next = list[(i + (e.key === "ArrowRight" ? 1 : -1) + list.length) % list.length];
+        selectComponent(next);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  React.useEffect(() => {
+    document.querySelector(".tab-btn.active")?.scrollIntoView?.({ block: "nearest", inline: "center" });
+  }, [active]);
+
   return (
     <CodeContext.Provider value={{ code, setCode, showCode, setShowCode, onReset: handleReset }}>
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
@@ -4545,14 +4649,24 @@ export default function App() {
             own-the-canvas
           </div>
           <div className="header-divider" aria-hidden="true" />
-          <span className="header-tag">50+ components</span>
+          <span className="header-tag">{ALL_COMPONENTS.length} components</span>
           <div className="header-spacer" />
+          <input
+            ref={searchRef}
+            className="header-search"
+            type="search"
+            placeholder="Search components…  ( / )"
+            aria-label="Search components"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           {/* <span className="header-badge">5</span> */}
         </header>
 
         {/* Component tabs */}
         <nav className="tab-row" role="tablist" aria-label="Components">
-          {ALL_COMPONENTS.map((id) => (
+          {visible.length === 0 && <span className="tab-empty">No components match “{query}”</span>}
+          {visible.map((id) => (
             <button
               key={id}
               className={`tab-btn ${active === id ? "active" : ""}`}

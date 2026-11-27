@@ -83,7 +83,7 @@ export function Playground() {
             Interactive Playground
             <span className="playground-topbar-badge">live</span>
           </div>
-          <span className="playground-topbar-note">All 50+ components · real-time props</span>
+          <span className="playground-topbar-note">Press / to search · ← → to browse · real-time props</span>
         </div>
         <div className="playground-frame">
           <App />
